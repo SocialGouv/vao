@@ -1,10 +1,9 @@
-import * as nodemailer from "nodemailer";
+import { createTransport, type SentMessageInfo } from "nodemailer";
 import * as Sentry from "@sentry/node";
 import { logger } from "../utils/logger";
 import { sentry } from "../config";
 
 import { smtp } from "../config";
-import type SMTPTransport from "nodemailer/lib/smtp-transport";
 
 const smtpSettings = {
   host: smtp.host,
@@ -15,7 +14,7 @@ const smtpSettings = {
     : {}),
 };
 
-export const transporterPool = nodemailer.createTransport(smtpSettings);
+export const transporterPool = createTransport(smtpSettings);
 type MailPayload = {
   from: string;
   replyTo?: string;
@@ -27,8 +26,8 @@ type MailPayload = {
 
 const handleTransportEmailPromise = (
   payload: MailPayload,
-): Promise<SMTPTransport.SentMessageInfo> =>
-  new Promise<SMTPTransport.SentMessageInfo>((resolve, reject) => {
+): Promise<SentMessageInfo> =>
+  new Promise<SentMessageInfo>((resolve, reject) => {
     transporterPool.sendMail(payload, (error, info) => {
       if (error) {
         reject(error);
@@ -40,7 +39,7 @@ const handleTransportEmailPromise = (
 
 export type TransportEmailResponseSuccess = {
   status: "ok";
-  response: SMTPTransport.SentMessageInfo;
+  response: SentMessageInfo;
 };
 
 export type TransportEmailResponseError = {

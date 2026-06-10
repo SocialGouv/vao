@@ -165,6 +165,8 @@ fileignoreconfig:
   checksum: 224832f0b2175b2785a6d45d297e23e2018d068912682e73d411c390fd05a80a
 - filename: packages/backend/src/services/geo/Region.js
   checksum: 5c4d9a0edd3496c3b18663a1f330797b5fa89b541b4c9470e060d60c278f3fd7
+- filename: packages/backend/src/services/mail/transporter.spec.ts
+  checksum: d6fa67718c3c9583d0f32f391b1fded749956499291560cae4cbda325930bce2
 - filename: packages/backend/src/services/pdf/parts/Prestataire.js
   checksum: 88151ad6029d183e17249c7d330d6f763696fb046b03467d274f96dde554d165
 - filename: packages/backend/src/shared/admin/users/users.mapper.ts
@@ -319,6 +321,8 @@ fileignoreconfig:
   checksum: 66638e3856d5d9d0820ada95cac2d6c377b475a545927cb24b52bf1a27afcfde
 - filename: packages/frontend-usagers/src/components/agrement/bilan/sejours.vue
   checksum: 3ddc3235a0b76aa6c7557d666c72e8e419a590db9fe84ec4c9a20de0fb3ab4e8
+- filename: packages/frontend-usagers/src/components/agrement/personne-physique.vue
+  checksum: 934f231653f1b7d7659de7c54675cf5fb59ef89bc87e5616c7f3fae8c24e119a
 - filename: packages/frontend-usagers/src/components/agrement/projets/index.vue
   checksum: 9f97b81400c9543b979e5ee15bb7ebfb4e76c0e7aef020f59e374a5066bd9925
 - filename: packages/frontend-usagers/src/components/agrement/representants.vue
@@ -473,8 +477,6 @@ fileignoreconfig:
   checksum: f93c69228f6832f4417ca3e432f481e23a30aa4b6d4c07082da17d2312c0cd52
 - filename: s/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
-- filename: packages/frontend-usagers/src/components/agrement/personne-physique.vue
-  checksum: 934f231653f1b7d7659de7c54675cf5fb59ef89bc87e5616c7f3fae8c24e119a
 scopeconfig:
 - scope: node
 version: "1.0"

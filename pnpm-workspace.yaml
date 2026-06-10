@@ -19,6 +19,7 @@ catalog:
   jest: "^29.7.0"
   knex: "^3.2.10"
   maplibre-gl: "4.7.1"
+  nodemailer: "^8.0.7"
   nodemon: "^3.1.10"
   nuxt: "^3.21.6"
   nuxt-maplibre: "^1.2.0"

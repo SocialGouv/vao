@@ -116,7 +116,7 @@ export const config = {
     },
     host: process.env.SMTP_HOST,
     pool: process.env.SMTP_IS_POOLED !== "false",
-    port: process.env.SMTP_PORT,
+    port: parseInt(process.env.SMTP_PORT || "587"),
     secure: process.env.SMTP_IS_SECURE === "true",
   },
   tmpDirectory: process.env.TMP_DIRECTORY || "/tmp/",
