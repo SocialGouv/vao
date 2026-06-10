@@ -1,4 +1,5 @@
 import {
+  addMinutes,
   ERRORS_COMMON,
   FUNCTIONAL_ERRORS,
   STATUS_USER_FRONT,
@@ -460,6 +461,54 @@ describe("POST /authentication/email/login", () => {
   });
 });
 describe("POST /authentication/email/verify-otp", () => {
+  it("should return 200 after 1 attemps", async () => {
+    const password = "HelloHello1!!";
+    const timestamp = Date.now();
+    const email = `frontlogin${timestamp}@example.com`;
+
+    const { user: createdUsers } = await UsagersUsersRepository.create({
+      user: {
+        cgu_accepted: true,
+        email,
+        nom: "FrontNom",
+        password,
+        prenom: "FrontPrenom",
+        siret: `123456789012${timestamp.toString().slice(-2)}`,
+        status_code: STATUS_USER_FRONT.VALIDATED,
+        telephone: "0102030405",
+        ter_code: "FRA",
+      },
+    });
+    expect(createdUsers[0]).toBeDefined();
+    const userCreation = await UserService.getByUserId(createdUsers[0].id);
+    expect(userCreation?.statusCode).toContain(STATUS_USER_FRONT.VALIDATED);
+    await createFeatureFlag({});
+    await request(getFoAppHelper())
+      .post("/authentication/email/login")
+      .send({ email, password });
+
+    const otpCode = 123456;
+    await UsagersUsersRepository.updateOtp({
+      otpAttempts: 0,
+      otpAttemptsAt: null,
+      otpCode,
+      otpCodeExpiresAt: addMinutes(new Date(), 15),
+      userId: createdUsers[0].id,
+    });
+
+    const responseAttemps1 = await request(getFoAppHelper())
+      .post("/authentication/email/verify-otp")
+      .send({ code: otpCode, email });
+    expect(responseAttemps1.status).toBe(200);
+
+    const setCookieHeader = responseAttemps1.headers["set-cookie"] || [];
+    expect(setCookieHeader).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("VAO_access_token="),
+        expect.stringContaining("VAO_refresh_token="),
+      ]),
+    );
+  });
   it("should return 422 reject OTP code admin 1 attemps", async () => {
     const password = "HelloHello1!!";
     const timestamp = Date.now();
@@ -578,6 +627,59 @@ describe("POST /authentication/email/verify-otp", () => {
     expect(reponseTemporaryLocked.body.detail.otpAttempts).toEqual(3);
   });
 });
+
+describe("POST /authentication/email/resend-otp", () => {
+  it("should return 200 and send a mail", async () => {
+    const password = "HelloHello1!!";
+    const timestamp = Date.now();
+    const email = `login${timestamp}@example.com`;
+
+    const { user: createdUsers } = await UsagersUsersRepository.create({
+      user: {
+        cgu_accepted: true,
+        email,
+        nom: "FrontNom",
+        password,
+        prenom: "FrontPrenom",
+        siret: `123456789012${timestamp.toString().slice(-2)}`,
+        status_code: STATUS_USER_FRONT.VALIDATED,
+        telephone: "0102030405",
+        ter_code: "FRA",
+      },
+    });
+
+    expect(createdUsers[0]).toBeDefined();
+    await createFeatureFlag({});
+
+    const response = await request(getFoAppHelper())
+      .post("/authentication/email/login")
+      .send({ email, password });
+
+    expect(response.status).toBe(200);
+    expect(response.body.user).toBeDefined();
+    expect(response.body.user.email).toBe(email);
+    expect(response.body.user.featureFlags).toBeDefined();
+    expect(mailService.send).toHaveBeenCalledTimes(1);
+
+    const responseResend = await request(getFoAppHelper())
+      .post("/authentication/email/resend-otp")
+      .send({ email });
+    expect(responseResend.status).toBe(200);
+    expect(mailService.send).toHaveBeenCalledTimes(2);
+  });
+
+  it("should return 422 user not found", async () => {
+    const timestamp = Date.now();
+    const email = `bologin${timestamp}@example.com`;
+
+    const responseResend = await request(getFoAppHelper())
+      .post("/authentication/email/resend-otp")
+      .send({ email });
+
+    expect(responseResend.status).toBe(422);
+  });
+});
+
 describe("POST /authentication/email/renew-password", () => {
   it("should reactivate a TEMPORARY_BLOCKED user and return 200", async () => {
     const timestamp = Date.now();

@@ -71,7 +71,7 @@ export interface UseAuthenticationReturn {
   login: () => Promise<void>;
 
   verify2FACode: (payload: Verify2FAPayload, email: string) => Promise<void>;
-  resendCode: () => Promise<void>;
+  resendCode: (email: string) => Promise<void>;
   cancel2FA: () => void;
 
   // Méthodes - CGU

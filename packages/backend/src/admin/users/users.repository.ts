@@ -95,54 +95,18 @@ export const UsersRepository = {
 
     return userAdminDto;
   },
-  updateOtpAttempts: async ({
+  updateOtp: async ({
     userId,
-    otpAttempts,
-    otpAttemptsAt,
     otpCode,
     otpCodeExpiresAt,
+    otpAttempts,
+    otpAttemptsAt,
   }: {
     userId: number;
-    otpAttempts: number;
-    otpAttemptsAt: Date | null;
     otpCode: number | null;
     otpCodeExpiresAt: Date | null;
-  }): Promise<UserAdminDto> => {
-    log.i("getById - IN");
-    const query = `
-      UPDATE back.users
-      SET
-        otp_attempts = $2,
-        otp_attempts_at = $3,
-        otp_code= $4,
-        otp_code_expires_at = $5
-      WHERE id = $1
-      RETURNING *
-      `;
-    const response = await getPool().query(query, [
-      userId,
-      otpAttempts,
-      otpAttemptsAt,
-      otpCode,
-      otpCodeExpiresAt,
-    ]);
-    const row = response.rows[0] as UserAdminEntity;
-    const userAdminDto = UsersAdminMapper.toDto(row);
-
-    return userAdminDto;
-  },
-  updateOtpCode: async ({
-    userId,
-    otpCode,
-    otpCodeExpiratedAt,
-    otpAttemtps,
-    otpAttemtpsAt,
-  }: {
-    userId: number;
-    otpCode: number;
-    otpCodeExpiratedAt: Date | null;
-    otpAttemtps: number;
-    otpAttemtpsAt: Date | null;
+    otpAttempts: number;
+    otpAttemptsAt: Date | null;
   }): Promise<UserAdminDto> => {
     log.i("getById - IN");
     const query = `
@@ -158,9 +122,9 @@ export const UsersRepository = {
     const response = await getPool().query(query, [
       userId,
       otpCode,
-      otpCodeExpiratedAt,
-      otpAttemtps,
-      otpAttemtpsAt,
+      otpCodeExpiresAt,
+      otpAttempts,
+      otpAttemptsAt,
     ]);
     const row = response.rows[0] as UserAdminEntity;
     const userAdminDto = UsersAdminMapper.toDto(row);

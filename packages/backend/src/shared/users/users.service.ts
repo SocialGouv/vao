@@ -17,18 +17,73 @@ import { OtpService } from "../../utils/otp";
 const log = logger(module.filename);
 
 export const UsersService = {
-  async updateOtpCode({
+  async resendOtpCode({
+    email,
+    target,
+  }: {
+    email: string;
+    target: string;
+  }): Promise<UserAdminDto | UserUsagersDto> {
+    const user =
+      target === "bo"
+        ? await UsersRepositoryAdmin.getByEmail({ email })
+        : await UsersRepositoryUsagers.getByEmail({ email });
+    if (!user) {
+      log.w("Utilisateur non trouvé", email);
+      throw new FunctionalException(FUNCTIONAL_ERRORS.USER_NOT_FOUND);
+    }
+
+    const { code, expiresAt } = OtpService.generate();
+    const userUpdated =
+      target === "bo"
+        ? await UsersRepositoryAdmin.updateOtp({
+            otpAttempts: 0,
+            otpAttemptsAt: null,
+            otpCode: code,
+            otpCodeExpiresAt: expiresAt,
+            userId: Number(user.id),
+          })
+        : await UsersRepositoryUsagers.updateOtp({
+            otpAttempts: 0,
+            otpAttemptsAt: null,
+            otpCode: code,
+            otpCodeExpiresAt: expiresAt,
+            userId: Number(user.id),
+          });
+
+    if (!userUpdated) {
+      log.w("Échec de la mise à jour du code 2FA", user.id);
+      throw new AppError("Échec de la mise à jour du code 2FA", {
+        statusCode: 500,
+      });
+    }
+
+    await mailService.send(
+      target === "bo"
+        ? UserMailAdmin.getOtpCode({
+            mail: user.email,
+            otpCode: code,
+          })
+        : UserMailUsagers.getOtpCode({
+            mail: user.email,
+            otpCode: code,
+          }),
+    );
+
+    return userUpdated;
+  },
+  async updateOtp({
     userId,
-    from,
+    target,
   }: {
     userId: number;
-    from: string;
+    target: string;
   }): Promise<{
     otpAttempts: number;
     otpAttemptsAt: Date;
   }> {
     const user =
-      from === "bo"
+      target === "bo"
         ? await UsersRepositoryAdmin.getById({ userId })
         : await UsersRepositoryUsagers.getById({ userId });
     if (!user) {
@@ -38,19 +93,19 @@ export const UsersService = {
 
     const { code, expiresAt } = OtpService.generate();
     const userUpdated =
-      from === "bo"
-        ? await UsersRepositoryAdmin.updateOtpCode({
-            otpAttemtps: 0,
-            otpAttemtpsAt: null,
+      target === "bo"
+        ? await UsersRepositoryAdmin.updateOtp({
+            otpAttempts: 0,
+            otpAttemptsAt: null,
             otpCode: code,
-            otpCodeExpiratedAt: expiresAt,
+            otpCodeExpiresAt: expiresAt,
             userId,
           })
-        : await UsersRepositoryUsagers.updateOtpCode({
-            otpAttemtps: 0,
-            otpAttemtpsAt: null,
+        : await UsersRepositoryUsagers.updateOtp({
+            otpAttempts: 0,
+            otpAttemptsAt: null,
             otpCode: code,
-            otpCodeExpiratedAt: expiresAt,
+            otpCodeExpiresAt: expiresAt,
             userId,
           });
 
@@ -62,7 +117,7 @@ export const UsersService = {
     }
 
     await mailService.send(
-      from === "bo"
+      target === "bo"
         ? UserMailAdmin.getOtpCode({
             mail: user.email,
             otpCode: code,
@@ -81,16 +136,16 @@ export const UsersService = {
   async verifyOtpCode({
     email,
     code,
-    from,
+    target,
     //rememberDevice,
   }: {
     email: string;
     code: string;
-    from: string;
+    target: string;
     //rememberDevice: boolean;
   }): Promise<UserAdminDto | UserUsagersDto> {
     const user =
-      from === "bo"
+      target === "bo"
         ? await UsersRepositoryAdmin.getByEmail({ email })
         : await UsersRepositoryUsagers.getByEmail({ email });
     if (!user) {
@@ -134,8 +189,8 @@ export const UsersService = {
       log.w("Code OTP invalide pour l'utilisateur", email);
       otpAttempts += 1;
       const otpAttemptsAt = new Date();
-      if (from === "bo") {
-        await UsersRepositoryAdmin.updateOtpAttempts({
+      if (target === "bo") {
+        await UsersRepositoryAdmin.updateOtp({
           otpAttempts,
           otpAttemptsAt,
           otpCode: user.otpCode,
@@ -143,7 +198,7 @@ export const UsersService = {
           userId: Number(user.id),
         });
       } else {
-        await UsersRepositoryUsagers.updateOtpAttempts({
+        await UsersRepositoryUsagers.updateOtp({
           otpAttempts,
           otpAttemptsAt,
           otpCode: user.otpCode,
@@ -169,15 +224,15 @@ export const UsersService = {
     }
 
     // Reset du nombre de tentatives après une vérification réussie
-    return from === "bo"
-      ? await UsersRepositoryAdmin.updateOtpAttempts({
+    return target === "bo"
+      ? await UsersRepositoryAdmin.updateOtp({
           otpAttempts: 0,
           otpAttemptsAt: null,
           otpCode: null,
           otpCodeExpiresAt: null,
           userId: Number(user.id),
         })
-      : await UsersRepositoryUsagers.updateOtpAttempts({
+      : await UsersRepositoryUsagers.updateOtp({
           otpAttempts: 0,
           otpAttemptsAt: null,
           otpCode: null,
