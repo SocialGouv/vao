@@ -1,10 +1,7 @@
 <template>
   <div id="agrement-coordonnees">
     <div id="personne-physique">
-      <div
-        v-if="props.initOrganisme.typeOrganisme === 'personne_physique'"
-        class="fr-col-10"
-      >
+      <div v-if="isPersonnePhysique" class="fr-col-10">
         <TitleWithIcon
           icon="fr-icon-account-pin-circle-fill"
           :level="3"
@@ -35,7 +32,7 @@
           </dd>
         </dl>
       </div>
-      <div class="fr-my-2w">
+      <div v-if="isPersonneMorale" class="fr-my-2w">
         <TitleWithIcon
           icon="fr-icon-building-line"
           :level="3"
@@ -97,17 +94,17 @@
             </dd>
           </dl>
         </div>
+        <div class="separator fr-my-2w"></div>
+        <h3 class="fr-text--lg fr-mt-4w">Procès verbal</h3>
+        <FileUpload
+          v-model="fileProcesVerbal"
+          :cdn-url="props.cdnUrl"
+          label="Dernier procès verbal d'assemblée générale"
+          :modifiable="false"
+        />
       </div>
     </div>
 
-    <h3 class="fr-text--lg fr-mt-4w">Procès verbal</h3>
-    <FileUpload
-      v-model="fileProcesVerbal"
-      :cdn-url="props.cdnUrl"
-      label="Dernier procès verbal d'assemblée générale"
-      :modifiable="false"
-    />
-    <div class="separator fr-my-2w"></div>
     <DisplayLabel
       :value="props.initAgrement.commentaire"
       :input="AgrementDisplayInput.AgrementInput['commentaire']"
@@ -122,7 +119,11 @@ import {
   DisplayLabel,
   AgrementDisplayInput,
 } from "@vao/shared-ui";
-import { getFileByCategory, FILE_CATEGORY } from "@vao/shared-bridge";
+import {
+  getFileByCategory,
+  FILE_CATEGORY,
+  ORGANISME_TYPE,
+} from "@vao/shared-bridge";
 
 const props = defineProps({
   valid: { type: Boolean, default: true },
@@ -131,6 +132,14 @@ const props = defineProps({
   modifiable: { type: Boolean, default: true },
   cdnUrl: { type: String, required: true },
 });
+
+const isPersonneMorale = computed(
+  () => props.initOrganisme?.typeOrganisme === ORGANISME_TYPE.PERSONNE_MORALE,
+);
+
+const isPersonnePhysique = computed(
+  () => props.initOrganisme?.typeOrganisme === ORGANISME_TYPE.PERSONNE_PHYSIQUE,
+);
 
 const representants = computed(
   () => props.initOrganisme?.personneMorale?.representantsLegaux || [],

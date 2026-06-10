@@ -192,7 +192,9 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
     ),
     bilanChangementEvolution: requiredUnlessBrouillon(yup.string().nullable()),
     bilanFinancierCommentaire: yup.string().nullable(),
-    bilanFinancierComparatif: requiredUnlessBrouillon(yup.string().nullable()),
+    bilanFinancierComparatif: requiredUnlessBrouillon(
+      yup.string().min(20, "Minimum 20 caractères.").nullable(),
+    ),
     bilanFinancierComptabilite: requiredUnlessBrouillon(
       yup.string().nullable(),
     ),

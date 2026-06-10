@@ -696,7 +696,7 @@ const AgrementBilanAnnuelInput = {
   },
   bilanFinancierComparatif: {
     inputType: InputTypes.TEXT,
-    label: "Comparatif entre les périodes N et N-1 (optionnel)",
+    label: "Comparatif entre les périodes N et N-1",
   },
   bilanFinancierRessourcesHumaines: {
     inputType: InputTypes.TEXT,

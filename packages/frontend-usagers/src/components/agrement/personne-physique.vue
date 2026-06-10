@@ -13,9 +13,13 @@
       </dt>
       <dd>{{ personnePhysique.prenom || "-" }}</dd>
       <dt>
-        <strong>Nom: </strong>
+        <strong>Nom de naissance: </strong>
       </dt>
-      <dd>{{ personnePhysique.nom || "-" }}</dd>
+      <dd>{{ personnePhysique.nomNaissance || "-" }}</dd>
+      <dt>
+        <strong>Nom d'usage: </strong>
+      </dt>
+      <dd>{{ personnePhysique.nomUsage || "-" }}</dd>
       <dt>
         <strong>Profession: </strong>
       </dt>
@@ -54,22 +58,38 @@
       <dt>
         <strong>Adresse du siège de ses activité: </strong>
       </dt>
-      <dd>{{ personnePhysique.adresseDomicileLabel || "-" }}</dd>
+      <dd>{{ personnePhysique.adresseDomicile.label || "-" }}</dd>
       <dt>
         <strong>Adresse de ses activités: </strong>
       </dt>
-      <dd>{{ personnePhysique.adresseSiegeLabel || "-" }}</dd>
+      <dd>{{ personnePhysique.adresseSiege.label || "-" }}</dd>
     </dl>
   </div>
+  <DsfrAlert
+    v-if="warnings.length > 0"
+    role="status"
+    class="fr-mt-2w"
+    type="warning"
+    :closeable="false"
+  >
+    <p>Certaines informations sont manquantes en base de données :</p>
+    <ul>
+      <li v-for="warning in warnings" :key="warning">
+        {{ warning }}
+      </li>
+    </ul>
+  </DsfrAlert>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from "vue";
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
 import { TitleWithIcon, DsfrLinkV2 } from "@vao/shared-ui";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import type { PersonnePhysiqueDto } from "@vao/shared-bridge";
 import { telephoneYupNullable } from "@/utils/telephoneValidators";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 
 const props = defineProps({
   initOrganisme: { type: Object, required: true },
@@ -79,36 +99,33 @@ const props = defineProps({
 
 const isEditingTelephone = ref(false);
 
-const personnePhysique = computed(() => {
+const personnePhysique = computed<PersonnePhysiqueDto>(() => {
   return props.initOrganisme?.personnePhysique || {};
 });
 
-const requiredUnlessBrouillon = (schema) =>
-  schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
-  });
+const warnings = computed(() => {
+  const msgs = [];
+  const personnePhysique = props.initOrganisme?.personnePhysique;
+
+  if (!personnePhysique?.nomNaissance) {
+    msgs.push("Le nom de naissance est manquant.");
+  }
+  if (!personnePhysique?.adresseDomicile?.label) {
+    msgs.push("L'adresse du domicile est manquante.");
+  }
+  if (!personnePhysique?.adresseSiege?.label) {
+    msgs.push("L'adresse du siège d'activités est manquante.");
+  }
+  return msgs;
+});
 
 const validationSchema = yup.object({
   telephone: requiredUnlessBrouillon(telephoneYupNullable()),
-  prenom: requiredUnlessBrouillon(yup.string().nullable()),
-  nom: requiredUnlessBrouillon(yup.string().nullable()),
-  profession: requiredUnlessBrouillon(yup.string().nullable()),
-  adresseDomicile: requiredUnlessBrouillon(yup.string().nullable()),
-  adresseSiege: requiredUnlessBrouillon(yup.string().nullable()),
 });
 
 const initialValues = {
   statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
   telephone: props.initOrganisme?.personnePhysique?.telephone || "",
-  prenom: props.initOrganisme?.personnePhysique?.prenom || "",
-  nom: props.initOrganisme?.personnePhysique?.nomUsage || "",
-  profession: props.initOrganisme?.personnePhysique?.profession || "",
-  adresseDomicile:
-    props.initOrganisme?.personnePhysique?.adresseDomicile?.label || "",
-  adresseSiege:
-    props.initOrganisme?.personnePhysique?.adresseSiege?.label || "",
 };
 
 const { handleSubmit, setValues } = useForm({
@@ -122,7 +139,7 @@ const {
   errorMessage: telephoneError,
   handleChange: onTelephoneChange,
   meta: telephoneMeta,
-} = useField("telephone");
+} = useField<string | null>("telephone");
 
 function startEditTelephone() {
   isEditingTelephone.value = true;
@@ -137,7 +154,7 @@ async function savePersonnePhysique() {
   await handleSubmit((values) => {
     result = {
       ...personnePhysique.value,
-      ...values,
+      telephone: values.telephone,
     };
     isEditingTelephone.value = false;
   })();

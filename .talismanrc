@@ -465,6 +465,8 @@ fileignoreconfig:
   checksum: f93c69228f6832f4417ca3e432f481e23a30aa4b6d4c07082da17d2312c0cd52
 - filename: s/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
+- filename: packages/frontend-usagers/src/components/agrement/personne-physique.vue
+  checksum: 934f231653f1b7d7659de7c54675cf5fb59ef89bc87e5616c7f3fae8c24e119a
 scopeconfig:
 - scope: node
 version: "1.0"

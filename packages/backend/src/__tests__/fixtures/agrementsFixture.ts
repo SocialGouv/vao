@@ -122,7 +122,7 @@ export async function buildAgrementFixture({
     bilanAucunChangementEvolution: false,
     bilanChangementEvolution: "Ajout de nouvelles activités",
     bilanFinancierCommentaire: "Commentaire financier",
-    bilanFinancierComparatif: "Comparatif OK",
+    bilanFinancierComparatif: "Comparatif entre les années OK",
     bilanFinancierComptabilite: "Comptabilité OK",
     bilanFinancierRessourcesHumaines: "Ressources OK",
     bilanQualElementsMarquants: "Éléments marquants",
