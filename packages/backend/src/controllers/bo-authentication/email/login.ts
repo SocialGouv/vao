@@ -91,12 +91,14 @@ export default async function login(
       roles: user.roles ?? [],
     };
 
+    let otpAttempts = user?.otpAttempts;
+    let otpAttemptsAt = user?.otpAttemptsAt;
     const { featureFlags, isUpdateOtpNecessary, requires2FA } =
       await checkActionsOtp({ user });
     if (isUpdateOtpNecessary) {
-      await UsersService.updateOtpCode({
+      ({ otpAttempts, otpAttemptsAt } = await UsersService.updateOtpCode({
         userId: Number(user.id),
-      });
+      }));
     } else {
       const accessToken = signAccessToken(payload);
       const refreshToken = signRefreshToken(payload);
@@ -119,7 +121,9 @@ export default async function login(
       });
     }
     log.i("DONE");
-    return res.json({ user: { ...user, featureFlags, requires2FA } });
+    return res.json({
+      user: { ...user, featureFlags, requires2FA, otpAttempts, otpAttemptsAt },
+    });
   } catch (error) {
     log.w("DONE with error");
     return next(error);

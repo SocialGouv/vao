@@ -3,7 +3,10 @@ import { UserAdminDto, UserUsagersDto } from "@vao/shared-bridge";
 import { UsersService as UsersServiceShared } from "../../shared/users/users.service";
 
 export const UsersService = {
-  async updateOtpCode({ userId }: { userId: number }): Promise<boolean> {
+  async updateOtpCode({ userId }: { userId: number }): Promise<{
+    otpAttempts: number;
+    otpAttemptsAt: Date;
+  }> {
     return UsersServiceShared.updateOtpCode({ from: "bo", userId });
   },
   async verifyOtpCode({

@@ -68,7 +68,7 @@ fileignoreconfig:
 - filename: packages/backend/src/__tests__/admin/accept-cgu.test.ts
   checksum: 692450d4fc33a59b516dab82ef8a447c1b0afa242acfac281b9c4584e330cbda
 - filename: packages/backend/src/__tests__/admin/authentication.test.ts
-  checksum: 3232182343c91bf59cf38d62665ada413c854a2b5c37143737e6bfb60232ad68
+  checksum: ea232c464554e26b91675de9f52732f4ae9cf026d310956e8cf6d36853f48738
 - filename: packages/backend/src/__tests__/admin/sejour.test.ts
   checksum: d6e5b48000a21797f60865b4c59c09c9860f55c72376b785a21777e1f31d9b40
 - filename: packages/backend/src/__tests__/helper/testContainer.ts

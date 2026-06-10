@@ -162,6 +162,18 @@ describe("POST /bo-authentication/email/login", () => {
     expect(response.status).toBe(400);
     expect(response.body.name).toBe("AppError");
   });
+  it("should return 404 when admin user does not exist", async () => {
+    const password = "SomePassword1!!";
+    const timestamp = Date.now();
+    const email = `bo-login-not-found-${timestamp}@example.com`;
+
+    const response = await request(getBoAppHelper())
+      .post("/bo-authentication/email/login")
+      .send({ email, password });
+
+    expect(response.status).toBe(404);
+    expect(response.body.name).toBe(ERRORS_LOGIN.WrongCredentials);
+  });
 });
 describe("POST /bo-authentication/email/verify-otp", () => {
   it("should return 422 reject OTP code admin 3 attemps", async () => {
@@ -260,21 +272,9 @@ describe("POST /bo-authentication/email/verify-otp", () => {
 
     expect(reponseTemporaryLocked.status).toBe(422);
     expect(reponseTemporaryLocked.body.code).toBe(
-      FUNCTIONAL_ERRORS.USER_OTP_PROVISOIRLY_BLOCKED,
+      FUNCTIONAL_ERRORS.USER_OTP_TEMPORARILY_BLOCKED,
     );
     expect(reponseTemporaryLocked.body.detail.otpAttempts).toEqual(3);
-  });
-  it("should return 404 when admin user does not exist", async () => {
-    const password = "SomePassword1!!";
-    const timestamp = Date.now();
-    const email = `bo-login-not-found-${timestamp}@example.com`;
-
-    const response = await request(getBoAppHelper())
-      .post("/bo-authentication/email/login")
-      .send({ email, password });
-
-    expect(response.status).toBe(404);
-    expect(response.body.name).toBe(ERRORS_LOGIN.WrongCredentials);
   });
 });
 

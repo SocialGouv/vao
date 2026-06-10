@@ -459,7 +459,7 @@ describe("POST /authentication/email/login", () => {
     expect(response.body.name).toBe("UserTemporarilyBlocked");
   });
 });
-describe("POST /bo-authentication/email/verify-otp", () => {
+describe("POST /authentication/email/verify-otp", () => {
   it("should return 422 reject OTP code admin 1 attemps", async () => {
     const password = "HelloHello1!!";
     const timestamp = Date.now();
@@ -573,7 +573,7 @@ describe("POST /bo-authentication/email/verify-otp", () => {
       .send({ code: 999999, email });
     expect(reponseTemporaryLocked.status).toBe(422);
     expect(reponseTemporaryLocked.body.code).toBe(
-      FUNCTIONAL_ERRORS.USER_OTP_PROVISOIRLY_BLOCKED,
+      FUNCTIONAL_ERRORS.USER_OTP_TEMPORARILY_BLOCKED,
     );
     expect(reponseTemporaryLocked.body.detail.otpAttempts).toEqual(3);
   });

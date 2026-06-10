@@ -19,7 +19,7 @@
       <DsfrAlert
         role="alert"
         class="fr-grid-row fr-my-3v"
-        title="Les 30 minutes sont écoulées"
+        title="Les 15 minutes sont écoulées"
         title-tag="h2"
         :description="`Veuillez demander un nouveau code.`"
         type="warning"
@@ -53,14 +53,11 @@
           <span class="fr-hint-text">
             Code valable jusqu'à
             {{ otpExpiresDisplay }}.
-            <span v-if="remainingAttempts < maxAttempts">
+            <span>
               Vous avez {{ props?.otpAttempts }} tentative{{
-                remainingAttempts > 1 ? "s" : ""
+                props?.otpAttempts > 1 ? "s" : ""
               }}
               de saisie.
-            </span>
-            <span v-else>
-              Vous avez {{ props?.otpAttempts }} tentatives de saisie.
             </span>
           </span>
 
@@ -221,7 +218,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, onMounted, onBeforeUnmount } from "vue";
+import {
+  ref,
+  computed,
+  nextTick,
+  onMounted,
+  onBeforeUnmount,
+  onUnmounted,
+} from "vue";
 import createLogger from "../../utils/createLogger";
 import {
   minutesBetween,
@@ -253,10 +257,7 @@ interface ErrorMessage {
 }
 
 const dateNow = ref(new Date());
-
-setInterval(() => {
-  dateNow.value = new Date();
-}, 60000);
+let intervalId: ReturnType<typeof setInterval>;
 
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
@@ -362,6 +363,10 @@ const setInputRef = (el: HTMLInputElement | null, index: number): void => {
 };
 
 onMounted(() => {
+  intervalId = setInterval(() => {
+    dateNow.value = new Date();
+  }, 60000);
+
   nextTick(() => {
     if (inputRefs.value[0]) {
       inputRefs.value[0].focus();
@@ -374,6 +379,10 @@ onBeforeUnmount(() => {
     clearInterval(resendInterval);
     resendInterval = null;
   }
+});
+
+onUnmounted(() => {
+  clearInterval(intervalId);
 });
 
 const handleInput = (index: number, event: InputEvent): void => {
@@ -476,7 +485,7 @@ const validateCode = (): void => {
       title: "Trop de tentatives",
       name: FUNCTIONAL_ERRORS.USER_OTP_MAX_ATTEMPTS,
       message:
-        "Votre session est bloquée pendant 15 minutes. \bTrop de tentatives”.",
+        "Votre session est bloquée pendant 15 minutes. Trop de tentatives”.",
     };
     log.w("validateCode - aucune tentative restante");
     return;

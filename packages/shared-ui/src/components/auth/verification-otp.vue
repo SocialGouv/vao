@@ -2,7 +2,9 @@
   <div class="fr-container fr-container--fluid fr-my-md-14v">
     <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
       <div class="fr-mt-8v fr-mt-md-2v fr-col-10 fr-col-md-8 fr-col-lg-6">
-        <h1>Portail Administration</h1>
+        <h1>
+          {{ props.target === "bo" ? "Portail Administration" : "Portail VAO" }}
+        </h1>
         <TwoFactorCodeVerification
           ref="twoFactorRef"
           :masked-email="maskedEmail"

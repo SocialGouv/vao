@@ -106,17 +106,23 @@ export const UsersRepository = {
     userId,
     otpAttempts,
     otpAttemptsAt,
+    otpCode,
+    otpCodeExpiresAt,
   }: {
     userId: number;
     otpAttempts: number;
     otpAttemptsAt: Date | null;
+    otpCode: number | null;
+    otpCodeExpiresAt: Date | null;
   }): Promise<UserUsagersDto> => {
     log.i("getById - IN");
     const query = `
         UPDATE front.users
         SET
           otp_attempts = $2,
-          otp_attempts_at = $3
+          otp_attempts_at = $3,
+          otp_code= $4,
+          otp_code_expires_at = $5
         WHERE id = $1
         RETURNING *
         `;
@@ -124,6 +130,8 @@ export const UsersRepository = {
       userId,
       otpAttempts,
       otpAttemptsAt,
+      otpCode,
+      otpCodeExpiresAt,
     ]);
     const row = response.rows[0] as UserUsagersEntity;
     const userAdminDto = UsersUsagersMapper.toDto(row);

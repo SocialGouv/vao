@@ -3,7 +3,7 @@ import * as yup from "yup";
 import type { RouteResponseBody, RouteSchema } from "../..";
 
 export interface VerifyOtpUsagersRoute {
-  method: "GET";
+  method: "POST";
   path: "/users/email/verify-otp";
   body: {
     code: string;
