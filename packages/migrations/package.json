@@ -14,11 +14,11 @@
     "seed:run": "knex seed:run --cwd src"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1045.0",
+    "@aws-sdk/client-s3": "catalog:",
     "@vao/shared-bridge": "workspace:^",
     "debug": "catalog:",
     "knex": "catalog:",
-    "pg": "~8.12.0",
+    "pg": "catalog:",
     "pg-query-stream": "^4.7.0"
   },
   "devDependencies": {

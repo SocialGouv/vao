@@ -21,7 +21,7 @@
     "src/**/*.ts": "zsh -c 'pnpm build'"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1045.0",
+    "@aws-sdk/client-s3": "catalog:",
     "@sentry/node": "^8.49.0",
     "@sentry/profiling-node": "^8.49.0",
     "@types/supertest": "^7.2.0",
@@ -39,10 +39,10 @@
     "helmet": "~8.0.0",
     "jsonwebtoken": "^9.0.2",
     "knex": "catalog:",
-    "multer": "^2.1.1",
+    "multer": "catalog:",
     "nodemailer": "catalog:",
     "pdfmake": "^0.2.10",
-    "pg": "~8.13.0",
+    "pg": "catalog:",
     "pg-format": "~1.0.4",
     "proj4": "^2.15.0",
     "ufo": "^1.5.4",
