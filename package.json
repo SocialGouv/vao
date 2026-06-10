@@ -60,6 +60,7 @@
       "eslint-plugin-jest": "^28.11.0",
       "eslint-plugin-import": "^2.32.0",
       "@nuxt/kit": "^3.21.6",
+      "form-data@<2.5.4": "^2.5.5",
       "h3": "^1.15.9",
       "protobufjs": "^7.5.8"
     },

@@ -112,6 +112,7 @@ overrides:
   '@nuxt/kit': ^3.21.6
   h3: ^1.15.9
   protobufjs: ^7.5.8
+  form-data@<2.5.4: ^2.5.5
 
 importers:
 
@@ -6604,8 +6605,8 @@ packages:
       typescript: '>3.6.0'
       webpack: ^5.11.0
 
-  form-data@2.3.3:
-    resolution: {integrity: sha512-1lLKB2Mu3aGP1Q/2eCOx0fNbRMe7XdwktwOruhfqqd0rIJWwN4Dh+E3hrPSlDCXnSR7UtZ1N38rVXm+6+MEhJQ==}
+  form-data@2.5.5:
+    resolution: {integrity: sha512-jqdObeR2rxZZbPSGL+3VckHMYtu+f9//KXBsVny6JSX/pa38Fy+bGjuG8eW/H6USNQWhLi8Num++cU2yOCNz4A==}
     engines: {node: '>= 0.12'}
 
   form-data@4.0.4:
@@ -17435,11 +17436,14 @@ snapshots:
       typescript: 5.7.2
       webpack: 5.97.1
 
-  form-data@2.3.3:
+  form-data@2.5.5:
     dependencies:
       asynckit: 0.4.0
       combined-stream: 1.0.8
+      es-set-tostringtag: 2.1.0
+      hasown: 2.0.2
       mime-types: 2.1.35
+      safe-buffer: 5.2.1
 
   form-data@4.0.4:
     dependencies:
@@ -20572,7 +20576,7 @@ snapshots:
       combined-stream: 1.0.8
       extend: 3.0.2
       forever-agent: 0.6.1
-      form-data: 2.3.3
+      form-data: 2.5.5
       har-validator: 5.1.5
       http-signature: 1.2.0
       is-typedarray: 1.0.0
