@@ -51,6 +51,9 @@ catalogs:
     jest:
       specifier: ^29.7.0
       version: 29.7.0
+    knex:
+      specifier: ^3.2.10
+      version: 3.2.10
     maplibre-gl:
       specifier: 4.7.1
       version: 4.7.1
@@ -238,8 +241,8 @@ importers:
         specifier: ^9.0.2
         version: 9.0.2
       knex:
-        specifier: ^3.1.0
-        version: 3.1.0(pg@8.13.3)
+        specifier: 'catalog:'
+        version: 3.2.10(pg@8.13.3)
       multer:
         specifier: ^2.1.1
         version: 2.1.1
@@ -780,8 +783,8 @@ importers:
         specifier: 'catalog:'
         version: 4.4.3(supports-color@5.5.0)
       knex:
-        specifier: ~3.1.0
-        version: 3.1.0(pg@8.12.0)
+        specifier: 'catalog:'
+        version: 3.2.10(pg-query-stream@4.7.3(pg@8.12.0))(pg@8.12.0)
       pg:
         specifier: ~8.12.0
         version: 8.12.0
@@ -7500,8 +7503,8 @@ packages:
     resolution: {integrity: sha512-dhG34DXATL5hSxJbIexCft8FChFXtmskoZYnoPWjXQuebWYCNkVeV3KkGegCK9CP1oswI/vQibS2GY7Em/sJJA==}
     engines: {node: '>= 8'}
 
-  knex@3.1.0:
-    resolution: {integrity: sha512-GLoII6hR0c4ti243gMs5/1Rb3B+AjwMOfjYm97pu0FOQa7JH56hgBxYf5WK2525ceSbBY1cjeZ9yk99GPMB6Kw==}
+  knex@3.2.10:
+    resolution: {integrity: sha512-oypTHfrc9i72iyxaUQBKHOxhcr0xM65MPf6FpN02nimsftXwzXprIkLjfXdubvhbu4PMWLp023q8o8CYvHSuZw==}
     engines: {node: '>=16'}
     hasBin: true
     peerDependencies:
@@ -7510,6 +7513,7 @@ packages:
       mysql2: '*'
       pg: '*'
       pg-native: '*'
+      pg-query-stream: ^4.14.0
       sqlite3: '*'
       tedious: '*'
     peerDependenciesMeta:
@@ -7522,6 +7526,8 @@ packages:
       pg:
         optional: true
       pg-native:
+        optional: true
+      pg-query-stream:
         optional: true
       sqlite3:
         optional: true
@@ -7642,6 +7648,9 @@ packages:
 
   lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+
+  lodash@4.18.1:
+    resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
 
   log-symbols@4.1.0:
     resolution: {integrity: sha512-8XPvpAA8uyhfteu8pIvQxpJZ7SYYdpUivZpGy6sFsBuKRY/7rQGavedeB8aK+Zkyq6upMFVL/9AW6vOYzfRyLg==}
@@ -18296,7 +18305,7 @@ snapshots:
 
   klona@2.0.6: {}
 
-  knex@3.1.0(pg@8.12.0):
+  knex@3.2.10(pg-query-stream@4.7.3(pg@8.12.0))(pg@8.12.0):
     dependencies:
       colorette: 2.0.19
       commander: 10.0.1
@@ -18306,7 +18315,7 @@ snapshots:
       get-package-type: 0.1.0
       getopts: 2.3.0
       interpret: 2.2.0
-      lodash: 4.17.21
+      lodash: 4.18.1
       pg-connection-string: 2.6.2
       rechoir: 0.8.0
       resolve-from: 5.0.0
@@ -18314,10 +18323,11 @@ snapshots:
       tildify: 2.0.0
     optionalDependencies:
       pg: 8.12.0
+      pg-query-stream: 4.7.3(pg@8.12.0)
     transitivePeerDependencies:
       - supports-color
 
-  knex@3.1.0(pg@8.13.3):
+  knex@3.2.10(pg@8.13.3):
     dependencies:
       colorette: 2.0.19
       commander: 10.0.1
@@ -18327,7 +18337,7 @@ snapshots:
       get-package-type: 0.1.0
       getopts: 2.3.0
       interpret: 2.2.0
-      lodash: 4.17.21
+      lodash: 4.18.1
       pg-connection-string: 2.6.2
       rechoir: 0.8.0
       resolve-from: 5.0.0
@@ -18462,6 +18472,8 @@ snapshots:
   lodash.upperfirst@4.3.1: {}
 
   lodash@4.17.21: {}
+
+  lodash@4.18.1: {}
 
   log-symbols@4.1.0:
     dependencies:
