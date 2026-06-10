@@ -1,6 +1,6 @@
-const yup = require("yup");
+import * as yup from "yup";
 
-const mailSchema = yup.object({
+export const mailSchema = yup.object({
   attachments: yup.array(),
   cc: yup.array(yup.string().email()),
   from: yup.string().email().required(),
@@ -9,5 +9,3 @@ const mailSchema = yup.object({
   subject: yup.string().required(),
   to: yup.array(yup.string().email()),
 });
-
-module.exports = mailSchema;

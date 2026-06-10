@@ -1,15 +1,14 @@
-const nodemailer = require("nodemailer");
+import { createTransport, Transporter } from "nodemailer";
 
-const { config } = require("../../config");
-
-const AppError = require("../../utils/error").default;
-const { logger } = require("../../utils/logger");
+import { config } from "../../config";
+import AppError from "../../utils/error";
+import { logger } from "../../utils/logger";
 
 const log = logger(module.filename);
 
-let transporterPool;
+let transporterPool: Transporter | null = null;
 
-function getTransporter() {
+export function getTransporter() {
   if (transporterPool) {
     return transporterPool;
   }
@@ -17,20 +16,21 @@ function getTransporter() {
   const smtpSettings = { ...config.smtp };
 
   if (config.smtp.auth.user === undefined) {
+    // @ts-ignore
     delete smtpSettings.auth;
   }
 
   log.d("getTransporter - createTransport", { smtpSettings });
 
-  transporterPool = nodemailer.createTransport(smtpSettings);
+  transporterPool = createTransport(smtpSettings);
   return transporterPool;
 }
 
-async function verifyConnection() {
+export async function verifyConnection() {
   try {
     const transporter = getTransporter();
     await transporter.verify();
-  } catch (error) {
+  } catch (error: any) {
     log.w("verifyConnection", error.message);
     throw new AppError("erreur lors de la connexion", {
       cause: error,
@@ -38,8 +38,3 @@ async function verifyConnection() {
     });
   }
 }
-
-module.exports = {
-  getTransporter,
-  verifyConnection,
-};

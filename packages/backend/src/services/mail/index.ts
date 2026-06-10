@@ -1,21 +1,21 @@
-const Sentry = require("@sentry/node");
-const { logger } = require("../../utils/logger");
-const AppError = require("../../utils/error").default;
-const { getTransporter } = require("./transporter");
+import * as Sentry from "@sentry/node";
 
-const mailSchema = require("./schema");
+import AppError from "../../utils/error";
+import { logger } from "../../utils/logger";
+import { mailSchema } from "./schema";
+import { getTransporter } from "./transporter";
 
 const log = logger(module.filename);
 
-module.exports.mailService = {
-  send: async (payload) => {
+export const mailService = {
+  send: async (payload: any) => {
     await Sentry.startSpan({ name: "services.mail.send" }, async () => {
       await doSend(payload);
     });
   },
 };
 
-async function doSend(payload) {
+async function doSend(payload: any) {
   log.i("send - IN", { payload });
 
   const mail = { ...payload };
@@ -32,7 +32,7 @@ async function doSend(payload) {
     await mailSchema.validate(mail, {
       stripUnknown: true,
     });
-  } catch (error) {
+  } catch (error: any) {
     log.w(error.name, error.errors.join(", "));
     throw new AppError(error.errors.join(", "), {
       cause: error,
@@ -51,7 +51,7 @@ async function doSend(payload) {
 
   try {
     await transporter.sendMail(mail);
-  } catch (error) {
+  } catch (error: any) {
     log.w(error.message);
     throw new AppError("An unexpected error happens !", {
       cause: error,

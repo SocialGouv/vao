@@ -17,7 +17,7 @@
     "test": "vitest --project nuxt --passWithNoTests"
   },
   "lint-staged": {
-    "src/**/*.{js,ts,vue}": "corepack pnpm exec eslint"
+    "src/**/*.{js,ts,vue}": "pnpm exec eslint"
   },
   "dependencies": {
     "@gouvfr/dsfr": "catalog:",
