@@ -34,6 +34,14 @@ export function daysBetween(
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
 }
 
+export function minutesBetween(
+  date1: string | number | Date,
+  date2: string | number | Date,
+) {
+  const diff = new Date(date2).getTime() - new Date(date1).getTime();
+  return diff >= 0 ? Math.ceil(diff / (1000 * 60)) : 0;
+}
+
 export function addYears(date: Date | null, years: number) {
   return date ? dayjs(date).add(years, "year").toDate() : null;
 }

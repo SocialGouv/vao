@@ -19,4 +19,6 @@ export interface UserEntity {
   cgu_accepted: boolean;
   otp_code: number | null;
   otp_code_expires_at: Date | null;
+  otp_attempts: number | null;
+  otp_attempts_at: Date | null;
 }

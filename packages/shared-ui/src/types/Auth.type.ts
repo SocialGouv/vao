@@ -50,8 +50,8 @@ export interface AuthState {
 
 export interface ApiEndpoints {
   LOGIN: string;
-  VERIFY_2FA: string;
-  RESEND_2FA: string;
+  VERIFY_OTP: string;
+  RESEND_OTP: string;
   ACCEPT_CGU: string;
 }
 
@@ -70,7 +70,7 @@ export interface UseAuthenticationReturn {
 
   login: () => Promise<void>;
 
-  verify2FACode: (payload: Verify2FAPayload) => Promise<void>;
+  verify2FACode: (payload: Verify2FAPayload, email: string) => Promise<void>;
   resendCode: () => Promise<void>;
   cancel2FA: () => void;
 

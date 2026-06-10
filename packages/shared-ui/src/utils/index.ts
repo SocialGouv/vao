@@ -11,7 +11,7 @@ import * as columnsTable from "./columnsTable";
 import * as fileUtils from "./file";
 import { handleDocumentUploadError } from "./handleDocumentUploadError";
 export * from "./fetchBackend";
-
+export * from "../utils/auth";
 const regex = hebergement;
 const eigUtilsHebergement = hebergement;
 

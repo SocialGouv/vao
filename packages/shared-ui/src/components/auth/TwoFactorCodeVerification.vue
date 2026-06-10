@@ -1,6 +1,6 @@
 <template>
   <div class="two-factor-verification">
-    <h1 id="2fa-title" class="fr-h4">
+    <h1 id="otp-title" class="fr-h4">
       <span aria-hidden="true" class="fr-icon-lock-line fr-pr-1v"></span>
       Vérification sécurisée
     </h1>
@@ -10,12 +10,27 @@
         class="fr-grid-row fr-my-3v"
         title="3 tentatives erronées"
         title-tag="h2"
-        :description="`Vous pourrez demander un nouveau code dans 15 minutes, à ${unlockAtDisplay}, depuis cette page. Merci de patienter.`"
+        :description="`Vous pourrez demander un nouveau code dans ${unlockAtDisplayMinutes} minutes, à ${unlockAtDisplay}, depuis cette page. Merci de patienter.`"
         type="warning"
         :closeable="false"
       />
     </template>
-    <template v-else>
+    <template v-if="isExpirated && !isLocked">
+      <DsfrAlert
+        role="alert"
+        class="fr-grid-row fr-my-3v"
+        title="Les 15 minutes sont écoulées"
+        title-tag="h2"
+        :description="`Veuillez demander un nouveau code.`"
+        type="warning"
+        :closeable="false"
+      />
+      <DsfrButton secondary @click="resendCode"
+        >Demander un nouveau code</DsfrButton
+      >
+    </template>
+
+    <template v-if="!isLocked && !isExpirated">
       <p class="fr-text--sm fr-mb-3v">
         <strong>
           Important : Un code a été envoyé à l'adresse e-mail partiellement
@@ -36,15 +51,13 @@
           </label>
 
           <span class="fr-hint-text">
-            Code valable jusqu'à {{ expirationTime }}.
-            <span v-if="remainingAttempts < maxAttempts">
-              Vous avez {{ remainingAttempts }} tentative{{
-                remainingAttempts > 1 ? "s" : ""
+            Code valable jusqu'à
+            {{ otpExpiresDisplay }}.
+            <span>
+              Vous avez {{ props?.otpAttempts }} tentative{{
+                props?.otpAttempts > 1 ? "s" : ""
               }}
               de saisie.
-            </span>
-            <span v-else>
-              Vous avez {{ maxAttempts }} tentatives de saisie.
             </span>
           </span>
 
@@ -76,9 +89,11 @@
             />
           </div>
           <p v-if="hasValidationError" class="fr-mt-5v fr-message--error">
-            Le code est erroné. Veuillez vérifier et le ressaisir. Il vous reste
-            {{ remainingAttempts }} tentative{{
-              remainingAttempts > 1 ? "s" : ""
+            {{ errorMessage?.message }}
+            {{
+              errorMessage?.name === FUNCTIONAL_ERRORS.USER_OTP_CODE_INVALID
+                ? `Veuillez vérifier et le ressaisir. Il vous reste ${remainingAttempts} tentative${remainingAttempts > 1 ? "s" : ""}`
+                : ""
             }}.
           </p>
         </div>
@@ -120,7 +135,13 @@
             {{ liveMessage }}
           </div>
 
-          <div v-if="resendTimer > 0" class="fr-text--xs" aria-hidden="true">
+          <div
+            v-if="
+              errorMessage?.name === FUNCTIONAL_ERRORS.USER_OTP_MAX_ATTEMPTS
+            "
+            class="fr-text--xs"
+            aria-hidden="true"
+          >
             Vous pourrez demander un nouveau code dans
             {{ resendTimer }} secondes.
           </div>
@@ -197,15 +218,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, onMounted, onBeforeUnmount } from "vue";
+import {
+  ref,
+  computed,
+  nextTick,
+  onMounted,
+  onBeforeUnmount,
+  onUnmounted,
+} from "vue";
 import createLogger from "../../utils/createLogger";
+import {
+  minutesBetween,
+  formatFRTime,
+  FUNCTIONAL_ERROR_VALUES,
+  FUNCTIONAL_ERRORS,
+} from "@vao/shared-bridge";
+import { DsfrButton } from "@gouvminint/vue-dsfr";
 
 interface Props {
   maskedEmail: string;
   loading?: boolean;
   maxAttempts?: number;
-  expirationTime?: string | null;
   unlockAt?: string | Date | null;
+  otpAttempts?: number;
+  otpCodeExpiresAt?: string | Date | null;
 }
 
 interface Emits {
@@ -216,14 +252,19 @@ interface Emits {
 interface ErrorMessage {
   type: "error" | "warning" | "info" | "success";
   title: string;
-  description: string;
+  name?: string;
+  message: string;
 }
+
+const dateNow = ref(new Date());
+let intervalId: ReturnType<typeof setInterval>;
 
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
   maxAttempts: 3,
-  expirationTime: null,
   unlockAt: null,
+  otpAttempts: 0,
+  otpCodeExpiresAt: null,
 });
 
 const logger = createLogger("vao-shared-ui");
@@ -252,27 +293,65 @@ const fullCode = computed<string>(() => {
   return codeDigits.value.join("");
 });
 
-const isLocked = computed(() => remainingAttempts.value === 0);
+const unlockDate = computed<Date | null>(() => {
+  if (!props.unlockAt) return null;
 
-const unlockAtDisplay = computed(() => {
-  if (!props.unlockAt) return "";
   const date =
     typeof props.unlockAt === "string"
       ? new Date(props.unlockAt)
       : props.unlockAt;
-  if (isNaN(date.getTime())) return "";
-  return date.toLocaleTimeString("fr-FR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+
+  return Number.isNaN(date.getTime()) ? null : date;
+});
+
+const isLocked = computed(() => {
+  return (
+    unlockDate.value &&
+    unlockDate.value > new Date() &&
+    props.otpAttempts === props.maxAttempts &&
+    unlockAtDisplayMinutes.value !== 0
+  );
+});
+
+const isExpirated = computed(() => {
+  if (errorMessage.value?.name === FUNCTIONAL_ERRORS.USER_OTP_CODE_EXPIRED) {
+    return true;
+  }
+
+  if (!props.otpCodeExpiresAt) {
+    return false;
+  }
+
+  const expiryDate =
+    typeof props.otpCodeExpiresAt === "string"
+      ? new Date(props.otpCodeExpiresAt)
+      : props.otpCodeExpiresAt;
+
+  return expiryDate < dateNow.value;
+});
+const unlockAtDisplay = computed(() => {
+  return unlockDate.value ? formatFRTime(unlockDate.value) : "";
+});
+
+const unlockAtDisplayMinutes = computed(() => {
+  return unlockDate.value ? minutesBetween(dateNow.value, unlockDate.value) : 0;
+});
+
+const otpExpiresDisplay = computed(() => {
+  const e = props.otpCodeExpiresAt;
+  if (e) {
+    const date = typeof e === "string" ? new Date(e) : e;
+    return formatFRTime(date);
+  }
+  return "";
 });
 
 const remainingAttempts = computed<number>(() => {
-  return Math.max(0, props.maxAttempts - attemptCount.value);
+  return Math.max(0, props.maxAttempts - props.otpAttempts);
 });
 
 const hasValidationError = computed<boolean>(() => {
-  return errorMessage.value?.type === "error";
+  return FUNCTIONAL_ERROR_VALUES.includes(errorMessage.value?.name || "");
 });
 
 const canResend = computed(() => resendTimer.value === 0);
@@ -284,6 +363,10 @@ const setInputRef = (el: HTMLInputElement | null, index: number): void => {
 };
 
 onMounted(() => {
+  intervalId = setInterval(() => {
+    dateNow.value = new Date();
+  }, 60000);
+
   nextTick(() => {
     if (inputRefs.value[0]) {
       inputRefs.value[0].focus();
@@ -296,6 +379,10 @@ onBeforeUnmount(() => {
     clearInterval(resendInterval);
     resendInterval = null;
   }
+});
+
+onUnmounted(() => {
+  clearInterval(intervalId);
 });
 
 const handleInput = (index: number, event: InputEvent): void => {
@@ -391,12 +478,14 @@ const validateCode = (): void => {
     remainingAttempts: remainingAttempts.value,
   });
 
-  if (remainingAttempts.value === 0) {
+  //clearError();
+  if (errorMessage.value?.name === FUNCTIONAL_ERRORS.USER_OTP_MAX_ATTEMPTS) {
     errorMessage.value = {
       type: "error",
       title: "Trop de tentatives",
-      description:
-        "Vous avez épuisé vos tentatives. Veuillez demander un nouveau code.",
+      name: FUNCTIONAL_ERRORS.USER_OTP_MAX_ATTEMPTS,
+      message:
+        "Votre session est bloquée pendant 15 minutes. Trop de tentatives”.",
     };
     log.w("validateCode - aucune tentative restante");
     return;
@@ -406,7 +495,7 @@ const validateCode = (): void => {
     errorMessage.value = {
       type: "error",
       title: "Code incomplet",
-      description: "Veuillez saisir les 6 chiffres du code.",
+      message: "Veuillez saisir les 6 chiffres du code.",
     };
     log.w("validateCode - code incomplet", { code: fullCode.value });
 
@@ -426,7 +515,7 @@ const validateCode = (): void => {
     errorMessage.value = {
       type: "error",
       title: "Format invalide",
-      description: "Le code doit contenir uniquement des chiffres (0-9).",
+      message: "Le code doit contenir uniquement des chiffres (0-9).",
     };
     log.w("validateCode - caractères non-numériques détectés");
     return;
@@ -458,7 +547,7 @@ const setError = (error: ErrorMessage): void => {
   if (error.type === "error" && remainingAttempts.value > 0) {
     errorMessage.value = {
       ...error,
-      description: `${error.description} Il vous reste ${remainingAttempts.value} tentative${remainingAttempts.value > 1 ? "s" : ""}.`,
+      message: `${error.message} Il vous reste ${remainingAttempts.value} tentative${remainingAttempts.value > 1 ? "s" : ""}.`,
     };
   } else {
     errorMessage.value = error;

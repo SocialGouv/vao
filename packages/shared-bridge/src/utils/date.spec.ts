@@ -13,6 +13,7 @@ import {
   isBefore,
   isBetweenDates,
   isValidFrShort,
+  minutesBetween,
   parseFrShort,
   parseIntToMonthFR,
   parseToISODate,
@@ -75,6 +76,16 @@ describe("addYears", () => {
 
   it("should return null when date is null", () => {
     expect(addYears(null, 2)).toBeNull();
+  });
+});
+
+describe("minutesBetween", () => {
+  it("donne le nombre de minutes entres les deux dates", () => {
+    const date1 = new Date("2026-05-27T10:00:00Z");
+    const date2 = new Date("2026-05-27T10:30:00Z");
+
+    const result = minutesBetween(date1, date2);
+    expect(result).toEqual(30);
   });
 });
 

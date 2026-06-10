@@ -217,6 +217,7 @@ const initialValues = computed(() => {
   return values;
 });
 
+// @ts-expect-error: incompatibilité temporaire entre validationSchema et les types de useForm
 const { handleSubmit } = useForm({
   validationSchema,
   initialValues,

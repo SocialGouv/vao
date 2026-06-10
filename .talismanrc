@@ -68,7 +68,7 @@ fileignoreconfig:
 - filename: packages/backend/src/__tests__/admin/accept-cgu.test.ts
   checksum: 692450d4fc33a59b516dab82ef8a447c1b0afa242acfac281b9c4584e330cbda
 - filename: packages/backend/src/__tests__/admin/authentication.test.ts
-  checksum: 63edd76b2f24c07687a9952a288ec5bed831a3b14fdbb69909d897a0ad847dca
+  checksum: ea232c464554e26b91675de9f52732f4ae9cf026d310956e8cf6d36853f48738
 - filename: packages/backend/src/__tests__/admin/sejour.test.ts
   checksum: d6e5b48000a21797f60865b4c59c09c9860f55c72376b785a21777e1f31d9b40
 - filename: packages/backend/src/__tests__/helper/testContainer.ts
@@ -78,13 +78,15 @@ fileignoreconfig:
 - filename: packages/backend/src/__tests__/usagers/agrements.test.ts
   checksum: d0422a97e0bf3177d51d97c0253f50d254331976b359d55341760928e10cab16
 - filename: packages/backend/src/__tests__/usagers/authentification.test.ts
-  checksum: 95b280ea570c9959104c314b772ac6e8de4b0b2be0328239a259a01883114a0f
+  checksum: c983ba2061410c5f2b51bcd915db72cbba419324f05de36ad270e0daf52fc13e
 - filename: packages/backend/src/__tests__/usagers/documents.test.ts
   checksum: d5d23d8aa40adf45f04cb47587350ba4c52423bb669307779f9be0254e77b695
 - filename: packages/backend/src/__tests__/usagers/fo-user.test.ts
   checksum: 1592485597a9d3c481163fc6f495367be3e70c112cb3cbe3d528afc6a7919860
 - filename: packages/backend/src/admin/agrements/agrements.service.ts
   checksum: 7a829c5b141bb9761e1d3fcebacc6d0a5b0ca699af877295d671d33d84728f33
+- filename: packages/backend/src/admin/users/users.service.ts
+  checksum: 3263ede3a41a662307af17ed84d3b2ff62be383c4d758783109e701f8aa91d11
 - filename: packages/backend/src/config.js
   checksum: 5e974a98e40b4f10974b9e57127b8b71e4abef208494d69218b17b3721453ada
 - filename: packages/backend/src/controllers/__tests__/bo-user/accept-cgu.test.js
@@ -169,12 +171,18 @@ fileignoreconfig:
   checksum: 5f6b6a0476a6e4bd63fd0d4290e148f9586ba2494d85bf1041a8d81857cfca2e
 - filename: packages/backend/src/shared/usagers/users/users.mapper.ts
   checksum: 2711081c83e2193ca85b6c8caf775da8bab9accde046840e65b916b5a4fb2e5c
+- filename: packages/backend/src/shared/users/users.mapper.ts
+  checksum: a235158b1fba5035254bd7f85298a06b36887e97936f25b6d072c1be8a59432e
+- filename: packages/backend/src/shared/users/users.service.ts
+  checksum: 2de756afb986efd4fdf8069a6335190e89a5cdf2811f4fbd15a2692efcc1edfe
 - filename: packages/backend/src/sonar-project.properties
   checksum: 971c26e540505ee376587d3fbafb0efb226dbb3202ecf91b1f7820b279ecd28c
 - filename: packages/backend/src/types/reorgQueryParams.ts
   checksum: 48c16e791d844e7d30d14fec5fcf36798ecb4235b685a204ecf7456ca84364ac
 - filename: packages/backend/src/usagers/agrements/agrements.mail.ts
   checksum: 9435876e82a33a64481b490c8d148c9db042fd15ec42e72e6a8ddb23d5356af8
+- filename: packages/backend/src/usagers/users/users.service.ts
+  checksum: 0876f425ef73ea4b029c1ddebf586a639170ac978156b6446338523e70a22ff6
 - filename: packages/backend/src/utils/canBeActivated.ts
   checksum: 212a9a708b5135da12f93d9d98e2f9d2dcb8a3408bd3c6d56910f3c1d78cb66a
 - filename: packages/backend/src/utils/mail-service.js
@@ -402,7 +410,7 @@ fileignoreconfig:
 - filename: packages/shared-ui/src/composables/index.js
   checksum: 1a41578cc15aa2da2b59efa2c378e9ed2552a2912c7d7cd666527e148d4d15f6
 - filename: packages/shared-ui/src/composables/useAuthentication.ts
-  checksum: cca73e0d096e3c7fa35123c8a53888966abdcb6eed089dc2251e4127652ae809
+  checksum: 70d12f131247372acba4d2f5788499a3a7185ae6f4bd75cbf18ed4072536637f
 - filename: packages/shared-ui/src/composables/useToaster.ts
   checksum: 704ad956e4817e92ca2df2f4cbdf14cc7a39218cdacdfef070dd91c8d1e4c563
 - filename: packages/shared-ui/src/types/Auth.type.ts

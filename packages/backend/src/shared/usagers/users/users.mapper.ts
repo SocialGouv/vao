@@ -1,36 +1,14 @@
 import { UserUsagersDto } from "@vao/shared-bridge";
 
+import { mapUserBase } from "../../users/users.mapper";
 import { UserUsagersEntity } from "./users.entity";
 
-/**
- * Mapper to convert database rows (snake_case) to DTOs (camelCase)
- */
 export const UsersUsagersMapper = {
-  toDto: (entity: UserUsagersEntity): UserUsagersDto => {
-    return {
-      cguAccepted: entity.cgu_accepted,
-      cguAcceptedAt: entity.cgu_accepted_at,
-      dateCreation: entity.created_at,
-      deleted: entity.deleted,
-      deletedDate: entity.deleted_date,
-      deletedUseId: entity.deleted_use_id,
-      editedAt: entity.edited_at,
-      email: entity.mail,
-      enddate: entity.enddate,
-      id: entity.id,
-      lastConnectionAt: entity.lastconnection_at,
-      nom: entity.nom,
-      otpCode: entity.otp_code,
-      otpCodeExpiresAt: entity.otp_code_expires_at,
-      prenom: entity.prenom,
-      pwd: entity.pwd,
-      roles: [],
-      userSiret: entity.siret,
-      validated: entity.validated,
-      validatedAt: entity.validated_at,
-    };
-  },
-  toDtos: (entities: UserUsagersEntity[]): UserUsagersDto[] => {
-    return entities.map((entity) => UsersUsagersMapper.toDto(entity));
-  },
+  toDto: (entity: UserUsagersEntity): UserUsagersDto => ({
+    ...mapUserBase(entity),
+    userSiret: entity.siret,
+  }),
+
+  toDtos: (entities: UserUsagersEntity[]): UserUsagersDto[] =>
+    entities.map(UsersUsagersMapper.toDto),
 };

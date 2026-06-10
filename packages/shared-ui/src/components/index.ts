@@ -42,6 +42,7 @@ import DsfrLinkV2 from "./DsfrLinkV2.vue";
 import Historique from "./agrement/Historique.vue";
 import EtapeHistorique from "./agrement/EtapeHistorique.vue";
 import MultiFilesUpload from "./MultiFilesUpload.vue";
+import VerificationOtp from "./auth/verification-otp.vue";
 export {
   AgrementStatusBadge,
   AgrementDocuments,
@@ -87,4 +88,5 @@ export {
   EtapeHistorique,
   DisplayLabel,
   MultiFilesUpload,
+  VerificationOtp,
 };

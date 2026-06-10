@@ -1,28 +1,10 @@
-import { FeatureFlagName } from "../constantes";
 import { USER_COMPETENCE_BO } from "../constantes/users";
+import type { UserBaseDto } from "./userBase.dto";
 
-export interface UserAdminDto {
-  id: string;
-  email: string;
-  nom: string;
-  prenom: string;
-  dateCreation: Date;
-  roles?: string[];
+export interface UserAdminDto extends UserBaseDto {
   territoireCode: string;
-  cguAccepted: boolean | null;
-  cguAcceptedAt: Date | null;
   serviceCompetent?: USER_COMPETENCE_BO | null;
-  featureFlags?: Partial<Record<FeatureFlagName, boolean>>;
-  requires2FA?: boolean | null;
-  otpCode?: number | null;
-  otpCodeExpiresAt?: Date | null;
-  deleted?: boolean | null;
-  deletedDate?: Date | null;
-  deletedUseId?: number | null;
-  editedAt?: Date | null;
-  enddate?: Date | null;
-  lastConnectionAt?: Date | null;
-  validated?: boolean | null;
-  validatedAt?: Date | null;
-  pwd: string;
+
+  // si vraiment obligatoire côté BO
+  dateCreation: Date;
 }

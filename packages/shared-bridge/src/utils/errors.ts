@@ -6,9 +6,11 @@ export function getErrorMessage(error: ERRORS_SIRET): string {
 
 export class FunctionalException extends Error {
   public code: string;
+  public detail?: Record<string, unknown>;
 
-  constructor(code: string) {
+  constructor(code: string, detail?: Record<string, unknown>) {
     super(code);
+    this.detail = detail;
 
     Object.setPrototypeOf(this, new.target.prototype);
 
