@@ -78,6 +78,7 @@ export const AgrementsMapper = {
       statut: entity.statut as any,
       suiviMedAccordSejour: entity.suivi_med_accord_sejour,
       suiviMedDistribution: entity.suivi_med_distribution,
+      supprime: entity.supprime,
       transportAllerRetour: entity.transport_aller_retour,
       transportSejour: entity.transport_sejour,
       updatedAt: entity.updated_at,

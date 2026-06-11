@@ -60,6 +60,7 @@ export interface AgrementEntity {
   commentaire_completude: string | null;
   commentaire_refus: string | null;
   commentaire_correction: string | null;
+  supprime: boolean | null;
 }
 
 /**

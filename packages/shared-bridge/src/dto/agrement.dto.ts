@@ -62,6 +62,7 @@ export interface AgrementDto {
   commentaireCompletude?: string | null;
   commentaireRefus?: string | null;
   commentaireCorrection?: string | null;
+  supprime?: boolean | null;
 }
 
 export interface ActiviteDto {
