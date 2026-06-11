@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 export enum AGREMENT_STATUT {
   // ACTION 1 : OVA : En cours de rédaction par l'OVA
   BROUILLON = "BROUILLON",

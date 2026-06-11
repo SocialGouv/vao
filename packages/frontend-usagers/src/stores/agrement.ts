@@ -86,12 +86,14 @@ export const useAgrementStore = defineStore("agrement", {
         const { agrements } = await AgrementService.getListAgrements({
           statut: AGREMENT_STATUT.VALIDE,
         });
-
-        if (!agrements || agrements.length === 0) {
+        const filtered = agrements.filter(
+          (agrement) => agrement.supprime === false,
+        );
+        if (!filtered || filtered.length === 0) {
           this.agrementCourant = null;
         } else {
           const { agrement: agrementDetail } = await AgrementService.get(
-            agrements[0].id!,
+            filtered[0].id!,
           );
 
           this.agrementCourant = agrementDetail;
