@@ -3,14 +3,15 @@ global:
   imageTag: ""
   imagePullPolicy: ""
   imagePullSecrets: []
-  branchSlug: ""
-  namespace: ""
-  ingressClassName: nginx
-  tlsSecretName: wildcard-crt
-  cnpgOperatorNamespace: cnpg
+  host: ""
+  ingressClassName: public
+  # Si vide : un Secret TLS par ingress (<composant>-tls), émis par cert-manager.
+  # Sinon : secret partagé (ex. wildcard) et certManagerClusterIssuer à vider.
+  tlsSecretName: ""
+  certManagerClusterIssuer: letsencrypt
+  cnpgOperatorNamespace: cnpg-system
   extraLabels: {}
   extraAnnotations: {}
-  namespaceLabels: {}
 
 secrets:
   s3: ""
@@ -295,7 +296,7 @@ frontendBo:
     minAvailable: 1
 
 migrateS3:
-  enabled: true
+  enabled: false
   replicas: 1
   image:
     package: migrations
@@ -330,7 +331,8 @@ jobs:
         memory: 1Gi
       requests:
         cpu: 64m
-        memory: 32Mi
+        # LimitRange Atlas : maxLimitRequestRatio.memory = 2 (≈ limits/2)
+        memory: 512Mi
   migrationsDb:
     enabled: true
     backoffLimit: 3
@@ -342,7 +344,8 @@ jobs:
         memory: 1Gi
       requests:
         cpu: 64m
-        memory: 32Mi
+        # LimitRange Atlas : maxLimitRequestRatio.memory = 2 (≈ limits/2)
+        memory: 512Mi
 
 pg:
   enabled: true
@@ -421,8 +424,10 @@ configMaps:
   pg:
     data: {}
 
+# Off par défaut : la composition Environment Atlas v2 pose sa propre NetworkPolicy ;
+# les sélecteurs ci-dessous (labels network-policy/source) sont ceux de la Fabrique.
 networkPolicy:
-  enabled: true
+  enabled: false
 
 serviceAccount:
   create: true
@@ -431,21 +436,10 @@ serviceAccount:
 
 maildev:
   enabled: false
-  image: maildev/maildev:2.1.0
-  resources:
-    requests:
-      cpu: 50m
-      memory: 64Mi
-    limits:
-      cpu: 100m
-      memory: 128Mi
-
-pgweb:
-  enabled: false
-  image: sosedoff/pgweb:0.14.1
   host: ""
   ingress:
-    annotations: {}
+    enabled: true
+  image: maildev/maildev:2.1.0
   resources:
     requests:
       cpu: 50m

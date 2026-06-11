@@ -1,11 +1,11 @@
-{{- if and .Values.externalApi.enabled .Values.externalApi.ingress.enabled }}
-{{- $host := .Values.externalApi.host | default (printf "external-api-%s" (.Values.global.host | required "global.host must be set")) }}
+{{- if and .Values.maildev.enabled .Values.maildev.ingress.enabled }}
+{{- $host := .Values.maildev.host | default (printf "maildev-%s" (.Values.global.host | required "global.host must be set")) }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: external-api
+  name: maildev
   labels:
-    {{- include "vao.componentLabels" (dict "context" . "component" "external-api") | nindent 4 }}
+    {{- include "vao.componentLabels" (dict "context" . "component" "maildev") | nindent 4 }}
   annotations:
     {{- with .Values.global.certManagerClusterIssuer }}
     cert-manager.io/cluster-issuer: {{ . }}
@@ -19,7 +19,7 @@ spec:
         paths:
           - backend:
               service:
-                name: external-api
+                name: maildev
                 port:
                   name: http
             path: /
@@ -27,5 +27,5 @@ spec:
   tls:
     - hosts:
         - {{ $host }}
-      secretName: {{ .Values.global.tlsSecretName | default "external-api-tls" }}
+      secretName: {{ .Values.global.tlsSecretName | default "maildev-tls" }}
 {{- end }}

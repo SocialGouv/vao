@@ -60,8 +60,9 @@ COPY packages/shared-bridge packages/shared-bridge
 COPY packages/shared-ui packages/shared-ui
 COPY packages/frontend-bo packages/frontend-bo
 
+# secret sentry optionnel : sans token, sentryVitePlugin skip l'upload des sourcemaps
 RUN --mount=type=secret,id=sentry_auth_token \
-    export SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth_token) \
+    { [ ! -f /run/secrets/sentry_auth_token ] || export SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth_token); } \
     && pnpm --filter @vao/frontend-bo generate
 
 FROM ghcr.io/socialgouv/docker/nginx4spa:8.2.4

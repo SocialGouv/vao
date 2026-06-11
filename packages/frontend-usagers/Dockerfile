@@ -60,8 +60,9 @@ COPY packages/shared-bridge packages/shared-bridge
 COPY packages/shared-ui packages/shared-ui
 COPY packages/frontend-usagers packages/frontend-usagers
 
+# secret sentry optionnel : sans token, sentryVitePlugin skip l'upload des sourcemaps
 RUN --mount=type=secret,id=sentry_auth_token \
-    export SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth_token) \
+    { [ ! -f /run/secrets/sentry_auth_token ] || export SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth_token); } \
     && pnpm --filter @vao/frontend-usagers generate
 
 

@@ -22,6 +22,3 @@ Components:
 {{- if .Values.maildev.enabled }}
   - Maildev (dev)
 {{- end }}
-{{- if .Values.pgweb.enabled }}
-  - PgWeb (dev)
-{{- end }}

@@ -7,6 +7,9 @@ metadata:
   labels:
     {{- include "vao.componentLabels" (dict "context" . "component" "backend") | nindent 4 }}
   annotations:
+    {{- with .Values.global.certManagerClusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ . }}
+    {{- end }}
     {{- include "vao.annotations" . | nindent 4 }}
 spec:
   ingressClassName: {{ .Values.global.ingressClassName }}
@@ -24,5 +27,5 @@ spec:
   tls:
     - hosts:
         - {{ $host }}
-      secretName: {{ .Values.global.tlsSecretName }}
+      secretName: {{ .Values.global.tlsSecretName | default "backend-tls" }}
 {{- end }}
