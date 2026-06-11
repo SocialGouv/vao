@@ -25,8 +25,7 @@ variables:
   # Version immuable par-commit : héritée par publish-chart ET par le trigger de déploiement.
   CHART_VERSION: "0.0.0-sha.${CI_COMMIT_SHORT_SHA}"
   # Host backend preprod (Atlas) — figé au build des frontends (Nuxt statique).
-  # env-PLACEHOLDER : remplacé par l'envId réel après création de l'Environment Atlas.
-  PREPROD_BACKEND_URL: "https://api-vao-preprod.env-PLACEHOLDER.dev.atlas-prod.public-cloud.social.gouv.fr"
+  PREPROD_BACKEND_URL: "https://api-vao-preprod.env-01ktvpxqrkny0sxv6qysgj95rt.dev.atlas-prod.public-cloud.social.gouv.fr"
 
 stages:
   - build
