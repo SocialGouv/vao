@@ -5,7 +5,7 @@ import { config } from "../config";
 export interface AccessTokenPayload {
   id: number;
   email: string;
-  territoireCode: string;
+  territoireCode?: string;
   cguAccepted: boolean;
 }
 

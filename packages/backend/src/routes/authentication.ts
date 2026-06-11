@@ -18,6 +18,7 @@ router.post("/email/login", authenticationController.email.login);
 router.post("/email/validate", authenticationController.email.validate);
 router.post("/email/renew-token", authenticationController.email.renewToken);
 router.post("/email/verify-otp", authenticationController.email.verifyOtp);
+router.post("/email/resend-otp", authenticationController.email.resendOtp);
 router.post(
   "/email/forgotten-password",
   authenticationController.email.forgottenPassword,

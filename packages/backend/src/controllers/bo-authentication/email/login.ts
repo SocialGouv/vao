@@ -2,16 +2,14 @@ import { ERRORS_LOGIN, UserDto } from "@vao/shared-bridge";
 import type { NextFunction, Response } from "express";
 
 import { UsersService } from "../../../admin/users/users.service";
-import { config } from "../../../config";
 import { schema } from "../../../helpers/schema";
 import { status } from "../../../helpers/users";
 import User from "../../../services/BoUser";
-import Session from "../../../services/common/Session";
 import CommonUser from "../../../services/common/Users";
 import { UserRequest } from "../../../types/request";
-import { signAccessToken, signRefreshToken } from "../../../utils/bo-token";
 import AppError from "../../../utils/error";
 import { logger } from "../../../utils/logger";
+import connected from "../../common/authentication/connected";
 import { checkActionsOtp } from "../../common/authentication/email/login";
 
 const log = logger(module.filename);
@@ -84,45 +82,20 @@ export default async function login(
   }
 
   try {
-    const payload = {
-      ...user,
-      cguAccepted: Boolean(user.cguAccepted),
-      id: Number(user.id),
-      roles: user.roles ?? [],
-    };
-
     let otpAttempts = user?.otpAttempts;
     let otpAttemptsAt = user?.otpAttemptsAt;
     const { featureFlags, isUpdateOtpNecessary, requires2FA } =
       await checkActionsOtp({ user });
     if (isUpdateOtpNecessary) {
-      ({ otpAttempts, otpAttemptsAt } = await UsersService.updateOtpCode({
+      ({ otpAttempts, otpAttemptsAt } = await UsersService.updateOtp({
         userId: Number(user.id),
       }));
     } else {
-      const accessToken = signAccessToken(payload);
-      const refreshToken = signRefreshToken(payload);
-
-      await Session.clean({ id: user.id }, schema.BACK);
-      await Session.create(user.id, refreshToken, schema.BACK);
-
-      res.cookie("VAO_BO_access_token", accessToken, {
-        httpOnly: true,
-        maxAge: config.accessToken.expiresIn,
-        sameSite: "strict",
-        secure: true,
-      });
-
-      res.cookie("VAO_BO_refresh_token", refreshToken, {
-        httpOnly: true,
-        maxAge: config.refreshToken.expiresIn,
-        sameSite: "strict",
-        secure: true,
-      });
+      await connected(res, user, "bo");
     }
     log.i("DONE");
     return res.json({
-      user: { ...user, featureFlags, requires2FA, otpAttempts, otpAttemptsAt },
+      user: { ...user, featureFlags, otpAttempts, otpAttemptsAt, requires2FA },
     });
   } catch (error) {
     log.w("DONE with error");

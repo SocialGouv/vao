@@ -1,5 +1,6 @@
 import * as yup from "yup";
 
+import type { UserAdminDto } from "../../../dto";
 import type { RouteResponseBody, RouteSchema } from "../..";
 
 export interface VerifyOtpAdminRoute {
@@ -10,7 +11,7 @@ export interface VerifyOtpAdminRoute {
     rememberDevice: string;
     email: string;
   };
-  response: RouteResponseBody<{ verified: boolean }>;
+  response: RouteResponseBody<{ user: UserAdminDto }>;
 }
 
 export const VerifyOtpAdminRouteSchema: RouteSchema<VerifyOtpAdminRoute> = {

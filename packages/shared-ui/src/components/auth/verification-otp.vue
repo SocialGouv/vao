@@ -138,7 +138,7 @@ async function handleVerify2FA(payload: Verify2FAPayload) {
 async function handleResendCode() {
   log.i("handleResendCode");
   try {
-    await resendCode();
+    await resendCode(email.value);
 
     log.i("handleResendCode - succès, démarrage du timer");
     if (twoFactorRef.value) {

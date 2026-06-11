@@ -286,7 +286,6 @@ export const useAuthentication = (
           body: { code, rememberDevice, email },
         },
       );
-
       log.i("verify2FACode - succès");
       if (typeof window !== "undefined") {
         sessionStorage.removeItem(authConfig.sessionStorageKey);
@@ -303,15 +302,15 @@ export const useAuthentication = (
     }
   }
 
-  async function resendCode(): Promise<void> {
+  async function resendCode(email: string): Promise<void> {
     log.i("resendCode");
 
     isResendingCode.value = true;
-
     try {
       await $fetch(backendUrl + API.RESEND_OTP, {
         credentials: "include",
         method: "POST",
+        body: { email },
       });
 
       log.i("resendCode - succès");

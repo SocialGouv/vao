@@ -26,6 +26,7 @@ router.post(
   BOAuthenticationController.email.renewPassword,
 );
 router.post("/email/verify-otp", BOAuthenticationController.email.verifyOtp);
+router.post("/email/resend-otp", BOAuthenticationController.email.resendOtp);
 
 router.post("/disconnect", BOAuthenticationController.disconnect);
 

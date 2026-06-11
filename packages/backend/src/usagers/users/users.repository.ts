@@ -102,7 +102,7 @@ export const UsersRepository = {
     return userAdminDto;
   },
 
-  updateOtpAttempts: async ({
+  updateOtp: async ({
     userId,
     otpAttempts,
     otpAttemptsAt,
@@ -134,44 +134,8 @@ export const UsersRepository = {
       otpCodeExpiresAt,
     ]);
     const row = response.rows[0] as UserUsagersEntity;
-    const userAdminDto = UsersUsagersMapper.toDto(row);
+    const userUsagersDto = UsersUsagersMapper.toDto(row);
 
-    return userAdminDto;
-  },
-  updateOtpCode: async ({
-    userId,
-    otpCode,
-    otpCodeExpiratedAt,
-    otpAttemtps,
-    otpAttemtpsAt,
-  }: {
-    userId: number;
-    otpCode: number;
-    otpCodeExpiratedAt: Date | null;
-    otpAttemtps: number;
-    otpAttemtpsAt: Date | null;
-  }): Promise<UserUsagersDto> => {
-    log.i("getById - IN");
-    const query = `
-        UPDATE front.users
-        SET
-          otp_code = $2,
-          otp_code_expires_at = $3,
-          otp_attempts = $4,
-          otp_attempts_at = $5
-        WHERE id = $1
-        RETURNING *
-        `;
-    const response = await getPool().query(query, [
-      userId,
-      otpCode,
-      otpCodeExpiratedAt,
-      otpAttemtps,
-      otpAttemtpsAt,
-    ]);
-    const row = response.rows[0] as UserUsagersEntity;
-    const userAdminDto = UsersUsagersMapper.toDto(row);
-
-    return userAdminDto;
+    return userUsagersDto;
   },
 };

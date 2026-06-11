@@ -25,7 +25,7 @@
         type="warning"
         :closeable="false"
       />
-      <DsfrButton secondary @click="resendCode"
+      <DsfrButton secondary :disabled="!canResend" @click="resendCode"
         >Demander un nouveau code</DsfrButton
       >
     </template>
