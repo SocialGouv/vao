@@ -60,35 +60,28 @@ spec:
             - name: readiness-check-volume
               mountPath: /var/run/readiness-check
           env:
-            {{- range $key, $value := .Values.cron.env }}
-            - name: {{ $key }}
-              value: {{ tpl $value $ | quote }}
-            {{- end }}
-            - name: PGHOST
+            # valueFrom directs : l'expansion $(VAR) k8s ne voit ni envFrom ni les entrées
+            # env suivantes — toute indirection $() ici arrive littérale dans l'app.
+            # Les creds métier PG_VAO_* arrivent par envFrom (cm pg + secret pg).
+            - name: POSTGRES_HOST
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secrets.pgApp }}
                   key: host
-            - name: PGPORT
+            - name: POSTGRES_PORT
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secrets.pgApp }}
                   key: port
-            - name: PGDATABASE
+            - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secrets.pgApp }}
                   key: dbname
-            - name: PGUSER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.secrets.pgApp }}
-                  key: user
-            - name: PGPASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.secrets.pgApp }}
-                  key: password
+            {{- range $key, $value := .Values.cron.env }}
+            - name: {{ $key }}
+              value: {{ tpl $value $ | quote }}
+            {{- end }}
           envFrom:
             - configMapRef:
                 name: cron

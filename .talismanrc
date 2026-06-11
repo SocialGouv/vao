@@ -533,6 +533,12 @@ fileignoreconfig:
   checksum: 8cc0b4c2e3ad9b25eacf69c77b0d9a5bd5a64917410ebfb42b622c18ea834bc3
 - filename: charts/vao/values.yaml
   checksum: 78569ad63d8013d145897428c259fa5cfa04d7683747f9311ebec412fd56b312
+- filename: charts/vao/templates/deployment-cron.yaml
+  checksum: 31e96a9508ee6f984b94b189f7a80527ce17a18f86ff5e27d2d125b46bd3c035
+- filename: charts/vao/templates/deployment-backend.yaml
+  checksum: c151166e0feea27ef5c8d4ddf34171aad316359cdabd76c58b134f33d390077f
+- filename: charts/vao/templates/deployment-external-api.yaml
+  checksum: ca4bad8fab832c164682a67a43e5d4831c5fb53940df5ea38bdfc5daeec35b95
 scopeconfig:
 - scope: node
 version: "1.0"

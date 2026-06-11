@@ -69,20 +69,13 @@ backend:
       command: ["cat", "/var/run/readiness-check/readiness-file"]
     initialDelaySeconds: 5
     periodSeconds: 5
+  # POSTGRES_* et S3_BUCKET_* (hors ROOT_DIR) : posés par le template en valueFrom directs.
   env:
     DEBUG: "*info*"
     DEBUG_HIDE_DATE: "true"
     TZ: Europe/Paris
     S3_BUCKET_ROOT_DIR: ""
     SENTRY_RELEASE: ""
-    POSTGRES_HOST: "$(PGHOST)"
-    POSTGRES_PORT: "$(PGPORT)"
-    POSTGRES_DB: "$(PGDATABASE)"
-    S3_BUCKET_ENDPOINT: "$(bucket_endpoint)"
-    S3_BUCKET_NAME: "$(bucket_name)"
-    S3_BUCKET_REGION: "$(bucket_region)"
-    S3_BUCKET_ACCESS_KEY: "$(bucket_access_key)"
-    S3_BUCKET_SECRET_KEY: "$(bucket_secret_key)"
   ingress:
     enabled: true
   autoscaling:
@@ -130,20 +123,13 @@ externalApi:
       command: ["cat", "/var/run/readiness-check/readiness-file"]
     initialDelaySeconds: 5
     periodSeconds: 5
+  # POSTGRES_* et S3_BUCKET_* (hors ROOT_DIR) : posés par le template en valueFrom directs.
   env:
     DEBUG: "*info*"
     DEBUG_HIDE_DATE: "true"
     TZ: Europe/Paris
     S3_BUCKET_ROOT_DIR: ""
     SENTRY_RELEASE: ""
-    POSTGRES_HOST: "$(PGHOST)"
-    POSTGRES_PORT: "$(PGPORT)"
-    POSTGRES_DB: "$(PGDATABASE)"
-    S3_BUCKET_ENDPOINT: "$(bucket_endpoint)"
-    S3_BUCKET_NAME: "$(bucket_name)"
-    S3_BUCKET_REGION: "$(bucket_region)"
-    S3_BUCKET_ACCESS_KEY: "$(bucket_access_key)"
-    S3_BUCKET_SECRET_KEY: "$(bucket_secret_key)"
   ingress:
     enabled: true
   autoscaling:
@@ -188,11 +174,9 @@ cron:
     initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 5
+  # POSTGRES_* : posés par le template en valueFrom directs.
   env:
     SENTRY_RELEASE: ""
-    POSTGRES_HOST: "$(PGHOST)"
-    POSTGRES_PORT: "$(PGPORT)"
-    POSTGRES_DB: "$(PGDATABASE)"
   autoscaling:
     enabled: false
     minReplicas: 2
