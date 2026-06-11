@@ -23,6 +23,8 @@ spec:
   podSelector: {}
   policyTypes:
     - Ingress
+{{- end }}
+{{- if and .Values.pg.enabled .Values.networkPolicy.pgOperator.enabled }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy

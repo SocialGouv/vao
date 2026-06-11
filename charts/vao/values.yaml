@@ -424,10 +424,16 @@ configMaps:
   pg:
     data: {}
 
-# Off par défaut : la composition Environment Atlas v2 pose sa propre NetworkPolicy ;
-# les sélecteurs ci-dessous (labels network-policy/source) sont ceux de la Fabrique.
 networkPolicy:
+  # netpol-ingress : off par défaut — la composition Environment Atlas v2 pose sa propre
+  # NetworkPolicy ; les sélecteurs (labels network-policy/source) sont ceux de la Fabrique.
   enabled: false
+  # pg-allow-operator : REQUIS sur Atlas v2 — la netpol default de l'env n'autorise pas
+  # cnpg-system ; sans elle l'operator ne joint pas les pods PG (:8000 status, :5432),
+  # le Cluster reste en "Instance Status Extraction Error" et le health-gate ArgoCD
+  # bloque la progression des sync-waves.
+  pgOperator:
+    enabled: true
 
 serviceAccount:
   create: true
