@@ -1,0 +1,114 @@
+# ============================================================================
+# vao — CI + CD sur GitLab PIC (migration Atlas v2, phase preprod).
+# Source de vérité du code : GitHub SocialGouv/vao (resync manuel vers ce dépôt).
+#   build   : 7 images (monorepo pnpm) via DinD ci-common, en parallel:matrix
+#   publish : chart Helm charts/vao en OCI (version=0.0.0-sha.<short>, appVersion=sha-<sha>)
+#   deploy  : DÉCLENCHE le pipeline vao-gitops (trigger multi-projet, CI_JOB_TOKEN
+#             + allowlist inbound côté gitops) -> commit + render côté gitops.
+# Déploiement : Atlas v2 (zone dev) via ArgoCD synchronisant vao-gitops (branche rendered).
+#
+# ⚠ Frontends Nuxt STATIQUES : NUXT_PUBLIC_* figés au build => les images frontends
+#   sont propres à la preprod (refactor runtimeConfig nécessaire pour build-once).
+# Aucune variable CI/CD secrète requise côté app (DinD + trigger par CI_JOB_TOKEN).
+# ============================================================================
+
+include:
+  - project: socialgouv/produits-dnum/communs/ci-common
+    ref: main
+    file: templates/image-build.yml
+  - project: socialgouv/produits-dnum/communs/ci-common
+    ref: main
+    file: templates/publish-chart.yml
+
+variables:
+  CHART_DIR: charts/vao
+  # Version immuable par-commit : héritée par publish-chart ET par le trigger de déploiement.
+  CHART_VERSION: "0.0.0-sha.${CI_COMMIT_SHORT_SHA}"
+  # Host backend preprod (Atlas) — figé au build des frontends (Nuxt statique).
+  # env-PLACEHOLDER : remplacé par l'envId réel après création de l'Environment Atlas.
+  PREPROD_BACKEND_URL: "https://api-vao-preprod.env-PLACEHOLDER.dev.atlas-prod.public-cloud.social.gouv.fr"
+
+stages:
+  - build
+  - publish
+  - deploy
+
+workflow:
+  auto_cancel:
+    on_new_commit: interruptible
+  rules:
+    - if: $CI_COMMIT_BRANCH
+
+# build/publish : branche de migration + branche par défaut (image déployable)
+.build-rules: &build-rules
+  - if: $CI_COMMIT_BRANCH =~ /^(feat|fix|chore|migration)\//
+  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+# ---------------------------------------------------------------------------
+# BUILD : 7 images (contexte = racine du monorepo, Dockerfile par package).
+# Backends/jobs sans build-arg ; frontends avec NUXT_PUBLIC_* (Sentry/Matomo off phase 1).
+# ---------------------------------------------------------------------------
+build:
+  extends: .build-dind
+  interruptible: true
+  parallel:
+    matrix:
+      - COMPONENT: [backend, external-api, cron, migrations, init-db]
+  variables:
+    BUILD_IMAGE: "$CI_REGISTRY_IMAGE/$COMPONENT"
+    BUILD_DOCKERFILE: "packages/$COMPONENT/Dockerfile"
+    BUILD_TAGS: "sha-$CI_COMMIT_SHA"
+  rules: *build-rules
+
+build-frontends:
+  extends: .build-dind
+  interruptible: true
+  parallel:
+    matrix:
+      - COMPONENT: [frontend-usagers, frontend-bo]
+  variables:
+    BUILD_IMAGE: "$CI_REGISTRY_IMAGE/$COMPONENT"
+    BUILD_DOCKERFILE: "packages/$COMPONENT/Dockerfile"
+    BUILD_TAGS: "sha-$CI_COMMIT_SHA"
+    # NUXT_PUBLIC_API_MAP_TILER : clé publique front (déjà en clair dans le workflow GitHub).
+    BUILD_ARGS: |
+      NUXT_PUBLIC_BACKEND_URL=$PREPROD_BACKEND_URL
+      NUXT_PUBLIC_ENVIRONMENT=preprod-atlas
+      NUXT_PUBLIC_APP_VERSION=sha-$CI_COMMIT_SHORT_SHA
+      NUXT_PUBLIC_SENTRY_ENABLED=false
+      NUXT_PUBLIC_MATOMO_ENABLED=false
+      NUXT_PUBLIC_API_MAP_TILER=g9IvoA8h0Ow8I9szhdzW
+  rules: *build-rules
+
+# Publier le chart Helm en artefact OCI (snapshot SHA) via la brique mutualisée ci-common.
+# appVersion = sha-<sha complet> = tag des images (le chart pilote chart ET images par-sha).
+publish-chart:
+  extends: .publish-chart
+  needs: ["build", "build-frontends"]
+  rules: *build-rules
+
+# ---------------------------------------------------------------------------
+# DEPLOY : l'app ne pousse pas sur le gitops, elle DÉCLENCHE son pipeline
+# (CI_JOB_TOKEN + allowlist inbound côté vao-gitops). CHART_VERSION = variable globale.
+# ---------------------------------------------------------------------------
+.deploy-trigger:
+  stage: deploy
+  variables:
+    SLUG: "$CI_COMMIT_REF_SLUG"
+  trigger:
+    project: socialgouv/produits-dnum/citoyens/vao-gitops
+    branch: main
+    strategy: depend       # le job app suit le statut du pipeline gitops
+
+# Env PREPROD (statique) : bump de la version du chart (côté gitops) -> render -> ArgoCD.
+# Pendant la migration : déclenché par la branche feat/ci-atlas-v2 ; à la bascule, main prend le relais.
+deploy-preprod:
+  extends: .deploy-trigger
+  needs: ["publish-chart"]
+  rules:
+    - if: $CI_COMMIT_BRANCH == "feat/ci-atlas-v2"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  variables:
+    DEPLOY_ACTION: preprod
+  environment:
+    name: preprod
