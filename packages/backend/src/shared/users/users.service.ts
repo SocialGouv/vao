@@ -16,14 +16,19 @@ import { OtpService } from "../../utils/otp";
 
 const log = logger(module.filename);
 
+type OtpTarget = "bo" | "fo";
+type OtpUserDto<T extends OtpTarget> = T extends "bo"
+  ? UserAdminDto
+  : UserUsagersDto;
+
 export const UsersService = {
-  async resendOtpCode({
+  async resendOtpCode<T extends OtpTarget>({
     email,
     target,
   }: {
     email: string;
-    target: string;
-  }): Promise<UserAdminDto | UserUsagersDto> {
+    target: T;
+  }): Promise<OtpUserDto<T>> {
     const user =
       target === "bo"
         ? await UsersRepositoryAdmin.getByEmail({ email })
@@ -31,6 +36,17 @@ export const UsersService = {
     if (!user) {
       log.w("Utilisateur non trouvé", email);
       throw new FunctionalException(FUNCTIONAL_ERRORS.USER_NOT_FOUND);
+    }
+    const { isLocked } = OtpService.isLocked({
+      otpAttempts: user.otpAttempts ?? 0,
+      otpAttemptsAt: user.otpAttemptsAt ?? null,
+    });
+
+    if (isLocked) {
+      log.w("Utilisateur temporairement bloqué", email);
+      throw new FunctionalException(
+        FUNCTIONAL_ERRORS.USER_OTP_TEMPORARILY_BLOCKED,
+      );
     }
 
     const { code, expiresAt } = OtpService.generate();
@@ -70,7 +86,7 @@ export const UsersService = {
           }),
     );
 
-    return userUpdated;
+    return userUpdated as OtpUserDto<T>;
   },
   async updateOtp({
     userId,
@@ -133,7 +149,7 @@ export const UsersService = {
       otpAttemptsAt: userUpdated.otpAttemptsAt!,
     };
   },
-  async verifyOtpCode({
+  async verifyOtpCode<T extends OtpTarget>({
     email,
     code,
     target,
@@ -141,9 +157,9 @@ export const UsersService = {
   }: {
     email: string;
     code: string;
-    target: string;
+    target: T;
     //rememberDevice: boolean;
-  }): Promise<UserAdminDto | UserUsagersDto> {
+  }): Promise<OtpUserDto<T>> {
     const user =
       target === "bo"
         ? await UsersRepositoryAdmin.getByEmail({ email })
@@ -224,20 +240,22 @@ export const UsersService = {
     }
 
     // Reset du nombre de tentatives après une vérification réussie
-    return target === "bo"
-      ? await UsersRepositoryAdmin.updateOtp({
-          otpAttempts: 0,
-          otpAttemptsAt: null,
-          otpCode: null,
-          otpCodeExpiresAt: null,
-          userId: Number(user.id),
-        })
-      : await UsersRepositoryUsagers.updateOtp({
-          otpAttempts: 0,
-          otpAttemptsAt: null,
-          otpCode: null,
-          otpCodeExpiresAt: null,
-          userId: Number(user.id),
-        });
+    const userUpdated =
+      target === "bo"
+        ? await UsersRepositoryAdmin.updateOtp({
+            otpAttempts: 0,
+            otpAttemptsAt: null,
+            otpCode: null,
+            otpCodeExpiresAt: null,
+            userId: Number(user.id),
+          })
+        : await UsersRepositoryUsagers.updateOtp({
+            otpAttempts: 0,
+            otpAttemptsAt: null,
+            otpCode: null,
+            otpCodeExpiresAt: null,
+            userId: Number(user.id),
+          });
+    return userUpdated as OtpUserDto<T>;
   },
 };

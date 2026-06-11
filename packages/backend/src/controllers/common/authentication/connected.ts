@@ -16,19 +16,19 @@ import {
 export default async function connected(
   res: Response,
   user: UserUsagersDto | UserAdminDto,
-  target: String,
+  target: "bo" | "fo",
 ) {
-  const isBo = target === "bo" ? true : false;
+  const isBo = target === "bo";
   const schemaTarget = isBo ? schema.BACK : schema.FRONT;
   const userTokenPayloadUsager = {
     cguAccepted: user.cguAccepted!,
     email: user.email!,
     id: Number(user.id!),
-    territoireCode: (user as any).territoireCode!,
   };
   const userTokenPayloadAdmin = {
     ...userTokenPayloadUsager,
     roles: user.roles!,
+    territoireCode: (user as UserAdminDto).territoireCode!,
   };
   const accessToken = isBo
     ? signAccessTokenAdmin(userTokenPayloadAdmin)

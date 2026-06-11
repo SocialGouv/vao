@@ -134,8 +134,8 @@ export const UsersRepository = {
       otpCodeExpiresAt,
     ]);
     const row = response.rows[0] as UserUsagersEntity;
-    const userAdminDto = UsersUsagersMapper.toDto(row);
+    const userUsagersDto = UsersUsagersMapper.toDto(row);
 
-    return userAdminDto;
+    return userUsagersDto;
   },
 };

@@ -1,13 +1,9 @@
-import { UserAdminDto, UserUsagersDto } from "@vao/shared-bridge";
+import { UserAdminDto } from "@vao/shared-bridge";
 
 import { UsersService as UsersServiceShared } from "../../shared/users/users.service";
 
 export const UsersService = {
-  async resendOtpCode({
-    email,
-  }: {
-    email: string;
-  }): Promise<UserUsagersDto | UserAdminDto> {
+  async resendOtpCode({ email }: { email: string }): Promise<UserAdminDto> {
     return UsersServiceShared.resendOtpCode({ email, target: "bo" });
   },
   async updateOtp({ userId }: { userId: number }): Promise<{
@@ -24,7 +20,7 @@ export const UsersService = {
     email: string;
     code: string;
     //rememberDevice: boolean;
-  }): Promise<UserAdminDto | UserUsagersDto> {
+  }): Promise<UserAdminDto> {
     return UsersServiceShared.verifyOtpCode({ code, email, target: "bo" });
   },
 };

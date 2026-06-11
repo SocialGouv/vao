@@ -500,6 +500,7 @@ describe("POST /authentication/email/verify-otp", () => {
       .post("/authentication/email/verify-otp")
       .send({ code: otpCode, email });
     expect(responseAttemps1.status).toBe(200);
+    expect(responseAttemps1.body.user.email).toEqual(createdUsers[0].email);
 
     const setCookieHeader = responseAttemps1.headers["set-cookie"] || [];
     expect(setCookieHeader).toEqual(
@@ -666,6 +667,53 @@ describe("POST /authentication/email/resend-otp", () => {
       .send({ email });
     expect(responseResend.status).toBe(200);
     expect(mailService.send).toHaveBeenCalledTimes(2);
+  });
+
+  it("should return 422 when user otp is temporary blocked", async () => {
+    const password = "HelloHello1!!";
+    const timestamp = Date.now();
+    const email = `login${timestamp}@example.com`;
+
+    const { user: createdUsers } = await UsagersUsersRepository.create({
+      user: {
+        cgu_accepted: true,
+        email,
+        nom: "FrontNom",
+        password,
+        prenom: "FrontPrenom",
+        siret: `123456789012${timestamp.toString().slice(-2)}`,
+        status_code: STATUS_USER_FRONT.VALIDATED,
+        telephone: "0102030405",
+        ter_code: "FRA",
+      },
+    });
+
+    expect(createdUsers[0]).toBeDefined();
+    await createFeatureFlag({});
+
+    const response = await request(getFoAppHelper())
+      .post("/authentication/email/login")
+      .send({ email, password });
+
+    expect(response.status).toBe(200);
+    expect(response.body.user).toBeDefined();
+    expect(response.body.user.email).toBe(email);
+    expect(response.body.user.featureFlags).toBeDefined();
+    expect(mailService.send).toHaveBeenCalledTimes(1);
+
+    for (let repeat = 0; repeat < 3; repeat++) {
+      await request(getFoAppHelper())
+        .post("/authentication/email/verify-otp")
+        .send({ code: 999999, email });
+    }
+    const responseResend = await request(getFoAppHelper())
+      .post("/authentication/email/resend-otp")
+      .send({ email });
+    expect(responseResend.status).toBe(422);
+    expect(responseResend.body.code).toBe(
+      FUNCTIONAL_ERRORS.USER_OTP_TEMPORARILY_BLOCKED,
+    );
+    expect(mailService.send).toHaveBeenCalledTimes(1);
   });
 
   it("should return 422 user not found", async () => {

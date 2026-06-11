@@ -13,6 +13,6 @@ export interface ResendOtpAdminRoute extends BasicRoute {
 
 export const ResendOtpAdminRouteSchema: RouteSchema<ResendOtpAdminRoute> = {
   body: yup.object({
-    email: yup.string().required(),
+    email: yup.string().email().required(),
   }),
 };

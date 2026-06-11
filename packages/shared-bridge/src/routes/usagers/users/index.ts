@@ -13,6 +13,6 @@ export type UserUsagersRoutes = {
 };
 
 export const UserUsagersRoutesSchema = {
-  ResentOtp: ResendOtpUsagerRouteSchema,
+  ResendOtp: ResendOtpUsagerRouteSchema,
   VerifyOtp: VerifyOtpUsagersRouteSchema,
 };

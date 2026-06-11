@@ -13,6 +13,6 @@ export type UserAdminRoutes = {
 };
 
 export const UserAdminRoutesSchema = {
-  ResentOtp: ResendOtpAdminRouteSchema,
+  ResendOtp: ResendOtpAdminRouteSchema,
   VerifyOtp: VerifyOtpAdminRouteSchema,
 };
