@@ -1,0 +1,19 @@
+{{- if .Values.pgweb.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgweb
+  labels:
+    {{- include "vao.componentLabels" (dict "context" . "component" "pgweb") | nindent 4 }}
+  annotations:
+    {{- include "vao.annotations" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "vao.selectorLabels" (dict "context" . "component" "pgweb") | nindent 4 }}
+{{- end }}

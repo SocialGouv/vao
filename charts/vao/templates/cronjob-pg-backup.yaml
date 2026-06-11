@@ -1,0 +1,76 @@
+{{- if .Values.pgBackupCron.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pg-backup-cron
+  labels:
+    {{- include "vao.componentLabels" (dict "context" . "component" "pg-backup-cron") | nindent 4 }}
+  annotations:
+    {{- include "vao.annotations" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.pgBackupCron.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        metadata:
+          labels:
+            {{- include "vao.componentLabels" (dict "context" . "component" "pg-backup-cron") | nindent 12 }}
+          annotations:
+            {{- include "vao.annotations" . | nindent 12 }}
+        spec:
+          serviceAccountName: {{ include "vao.serviceAccountName" . }}
+          {{- include "vao.imagePullSecrets" . | nindent 10 }}
+          restartPolicy: Never
+          containers:
+            - name: pg-backup
+              image: {{ .Values.pgBackupCron.image }}
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  pg_dump --no-owner --no-acl --clean --if-exists -Fc \
+                    "postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}" \
+                    > /tmp/backup.dump && \
+                  s3cmd put /tmp/backup.dump \
+                    "s3://${S3_BUCKET}/${DESTINATION_PREFIX}/$(date +%Y-%m-%d).dump" \
+                    --host="${S3_ENDPOINT}" \
+                    --host-bucket="${S3_ENDPOINT}" \
+                    --access_key="${AWS_ACCESS_KEY_ID}" \
+                    --secret_key="${AWS_SECRET_ACCESS_KEY}" && \
+                  s3cmd ls "s3://${S3_BUCKET}/${DESTINATION_PREFIX}/" \
+                    --host="${S3_ENDPOINT}" \
+                    --host-bucket="${S3_ENDPOINT}" \
+                    --access_key="${AWS_ACCESS_KEY_ID}" \
+                    --secret_key="${AWS_SECRET_ACCESS_KEY}" | \
+                    while read -r line; do
+                      file_date=$(echo "$line" | awk '{print $1}')
+                      file_path=$(echo "$line" | awk '{print $4}')
+                      if [ $(( ($(date +%s) - $(date -d "$file_date" +%s)) / 86400 )) -gt {{ .Values.pgBackupCron.retentionDays }} ]; then
+                        s3cmd del "$file_path" \
+                          --host="${S3_ENDPOINT}" \
+                          --host-bucket="${S3_ENDPOINT}" \
+                          --access_key="${AWS_ACCESS_KEY_ID}" \
+                          --secret_key="${AWS_SECRET_ACCESS_KEY}"
+                      fi
+                    done
+              env:
+                - name: S3_BUCKET
+                  value: {{ .Values.pgBackupCron.s3Bucket | quote }}
+                - name: DESTINATION_PREFIX
+                  value: {{ .Values.pgBackupCron.destinationPrefix | quote }}
+                - name: S3_ENDPOINT
+                  value: {{ .Values.pgBackupCron.s3Endpoint | quote }}
+              envFrom:
+                - secretRef:
+                    name: {{ .Values.secrets.pgSuperuser }}
+                - secretRef:
+                    name: {{ .Values.secrets.pgDb }}
+                - secretRef:
+                    name: {{ .Values.secrets.s3Backups }}
+              resources:
+                {{- toYaml .Values.pgBackupCron.resources | nindent 16 }}
+{{- end }}

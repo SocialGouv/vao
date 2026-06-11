@@ -1,0 +1,28 @@
+{{- if and .Values.backend.enabled .Values.backend.ingress.enabled }}
+{{- $host := .Values.backend.host | default (printf "api-%s" (.Values.global.host | required "global.host must be set")) }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: backend
+  labels:
+    {{- include "vao.componentLabels" (dict "context" . "component" "backend") | nindent 4 }}
+  annotations:
+    {{- include "vao.annotations" . | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.global.ingressClassName }}
+  rules:
+    - host: {{ $host }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: backend
+                port:
+                  name: http
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - {{ $host }}
+      secretName: {{ .Values.global.tlsSecretName }}
+{{- end }}

@@ -1,0 +1,15 @@
+{{- if .Values.pg.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pg
+  labels:
+    {{- include "vao.componentLabels" (dict "context" . "component" "pg") | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
+    {{- include "vao.annotations" . | nindent 4 }}
+data:
+  {{- range $key, $value := .Values.configMaps.pg.data }}
+  {{ $key }}: {{ tpl $value $ | quote }}
+  {{- end }}
+{{- end }}

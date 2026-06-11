@@ -1,0 +1,93 @@
+{{- if .Values.jobs.initDb.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-db
+  labels:
+    {{- include "vao.componentLabels" (dict "context" . "component" "init-db") | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/sync-wave: "-2"
+    {{- include "vao.annotations" . | nindent 4 }}
+spec:
+  backoffLimit: {{ .Values.jobs.initDb.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.jobs.initDb.activeDeadlineSeconds }}
+  ttlSecondsAfterFinished: {{ .Values.jobs.initDb.ttlSecondsAfterFinished }}
+  template:
+    metadata:
+      labels:
+        {{- include "vao.componentLabels" (dict "context" . "component" "init-db") | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      {{- include "vao.imagePullSecrets" . | nindent 6 }}
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: init-db
+          image: {{ include "vao.image" (dict "context" . "package" "init-db") }}
+          {{- with .Values.global.imagePullPolicy }}
+          imagePullPolicy: {{ . }}
+          {{- end }}
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+          resources:
+            {{- toYaml .Values.jobs.initDb.resources | nindent 12 }}
+          envFrom:
+            - configMapRef:
+                name: pg
+            - secretRef:
+                name: {{ .Values.secrets.pg }}
+          env:
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgSuperuser }}
+                  key: user
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgSuperuser }}
+                  key: password
+            - name: PGHOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgSuperuser }}
+                  key: host
+            - name: PGDATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: dbname
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Initializing database"
+              GEO_COUNT=$(psql -d $PGDATABASE -tAc "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'geo'")
+              if [ "$GEO_COUNT" -gt 0 ]; then
+                echo "Data already loaded"
+              else
+                echo "01-init : "
+                psql -f /workspace/pg/scripts/01-init.sql
+                echo "Users creation : "
+                psql -d $PGDATABASE -c "CREATE USER \"$PG_VAO_USER\" WITH PASSWORD '$PG_VAO_PASSWORD'"
+                psql -d $PGDATABASE -c "CREATE USER \"$PG_VAO_DOCUMENT_USER\" WITH PASSWORD '$PG_VAO_DOCUMENT_PASSWORD'"
+                echo "02-1-geo-init : "
+                psql -d $PGDATABASE -f /workspace/pg/scripts/02/02-1-geo-init.sql
+                echo "02-2-doc-init : "
+                psql -d $PGDATABASE -f /workspace/pg/scripts/02/02-2-doc-init.sql
+                echo "02-3-back-init : "
+                psql -d $PGDATABASE -f /workspace/pg/scripts/02/02-3-back-init.sql
+                echo "02-4-front-init : "
+                psql -d $PGDATABASE -f /workspace/pg/scripts/02/02-4-front-init.sql
+                echo "02-5-ref-init : "
+                psql -d $PGDATABASE -f /workspace/pg/scripts/02/02-5-ref-init.sql
+                echo "03-1-geo-data : "
+                psql -d $PGDATABASE -f /workspace/pg/scripts/03/03-1-geo-data.sql
+                echo "03-2-back-data : "
+                psql -d $PGDATABASE -f /workspace/pg/scripts/03/03-2-back-data.sql
+                echo "03-3-ref-data : "
+                psql -d $PGDATABASE -f /workspace/pg/scripts/03/03-3-ref-data.sql
+              fi
+{{- end }}

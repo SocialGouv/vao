@@ -1,0 +1,108 @@
+{{- if .Values.externalApi.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-api
+  labels:
+    {{- include "vao.componentLabels" (dict "context" . "component" "external-api") | nindent 4 }}
+  annotations:
+    {{- include "vao.annotations" . | nindent 4 }}
+spec:
+  {{- if not .Values.externalApi.autoscaling.enabled }}
+  replicas: {{ .Values.externalApi.replicas }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "vao.selectorLabels" (dict "context" . "component" "external-api") | nindent 6 }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        {{- include "vao.componentLabels" (dict "context" . "component" "external-api") | nindent 8 }}
+      annotations:
+        {{- include "vao.annotations" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "vao.serviceAccountName" . }}
+      {{- include "vao.imagePullSecrets" . | nindent 6 }}
+      {{- include "vao.podAntiAffinity" (dict "context" . "component" "external-api") | nindent 6 }}
+      containers:
+        - name: app
+          image: {{ include "vao.image" (dict "context" . "package" .Values.externalApi.image.package) }}
+          {{- with .Values.global.imagePullPolicy }}
+          imagePullPolicy: {{ . }}
+          {{- end }}
+          ports:
+            - containerPort: {{ .Values.externalApi.containerPort }}
+              name: http
+          {{- with .Values.externalApi.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.externalApi.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.externalApi.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.externalApi.resources | nindent 12 }}
+          lifecycle:
+            postStart:
+              exec:
+                command: ["sh", "-c", "touch /var/run/readiness-check/readiness-file"]
+            preStop:
+              exec:
+                command: ["sh", "-c", "rm -f /var/run/readiness-check/readiness-file; sleep 30"]
+          volumeMounts:
+            - name: readiness-check-volume
+              mountPath: /var/run/readiness-check
+          env:
+            {{- range $key, $value := .Values.externalApi.env }}
+            - name: {{ $key }}
+              value: {{ tpl $value $ | quote }}
+            {{- end }}
+            - name: PGHOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: host
+            - name: PGPORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: port
+            - name: PGDATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: dbname
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: user
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: password
+          envFrom:
+            - configMapRef:
+                name: external-api
+            - configMapRef:
+                name: pg
+            - secretRef:
+                name: {{ .Values.secrets.pg }}
+            - secretRef:
+                name: {{ .Values.secrets.token }}
+            {{- if .Values.secrets.s3 }}
+            - secretRef:
+                name: {{ .Values.secrets.s3 }}
+            {{- end }}
+      volumes:
+        - name: readiness-check-volume
+          emptyDir: {}
+{{- end }}

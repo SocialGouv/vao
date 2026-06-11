@@ -1,0 +1,19 @@
+{{- if .Values.frontendUsagers.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-usagers
+  labels:
+    {{- include "vao.componentLabels" (dict "context" . "component" "frontend-usagers") | nindent 4 }}
+  annotations:
+    {{- include "vao.annotations" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "vao.selectorLabels" (dict "context" . "component" "frontend-usagers") | nindent 4 }}
+{{- end }}

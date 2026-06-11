@@ -1,0 +1,91 @@
+{{- if .Values.jobs.migrationsDb.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrations-db
+  labels:
+    {{- include "vao.componentLabels" (dict "context" . "component" "migrations-db") | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/sync-wave: "-1"
+    {{- include "vao.annotations" . | nindent 4 }}
+spec:
+  backoffLimit: {{ .Values.jobs.migrationsDb.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.jobs.migrationsDb.activeDeadlineSeconds }}
+  ttlSecondsAfterFinished: {{ .Values.jobs.migrationsDb.ttlSecondsAfterFinished }}
+  template:
+    metadata:
+      labels:
+        {{- include "vao.componentLabels" (dict "context" . "component" "migrations-db") | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      {{- include "vao.imagePullSecrets" . | nindent 6 }}
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: migrations-db
+          image: {{ include "vao.image" (dict "context" . "package" "migrations") }}
+          {{- with .Values.global.imagePullPolicy }}
+          imagePullPolicy: {{ . }}
+          {{- end }}
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+          resources:
+            {{- toYaml .Values.jobs.migrationsDb.resources | nindent 12 }}
+          env:
+            - name: PG_VAO_SUPERUSER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgSuperuser }}
+                  key: user
+            - name: PG_VAO_SUPERPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgSuperuser }}
+                  key: password
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgSuperuser }}
+                  key: host
+            - name: POSTGRES_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgSuperuser }}
+                  key: port
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: dbname
+            - name: S3_BUCKET_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.s3 }}
+                  key: {{ .Values.secrets.s3Keys.endpoint }}
+            - name: S3_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.s3 }}
+                  key: {{ .Values.secrets.s3Keys.name }}
+            - name: S3_BUCKET_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.s3 }}
+                  key: {{ .Values.secrets.s3Keys.region }}
+            - name: S3_BUCKET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.s3 }}
+                  key: {{ .Values.secrets.s3Keys.accessKey }}
+            - name: S3_BUCKET_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.s3 }}
+                  key: {{ .Values.secrets.s3Keys.secretKey }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.secrets.s3 }}
+{{- end }}

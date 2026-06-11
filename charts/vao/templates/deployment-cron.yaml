@@ -1,0 +1,104 @@
+{{- if .Values.cron.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cron
+  labels:
+    {{- include "vao.componentLabels" (dict "context" . "component" "cron") | nindent 4 }}
+  annotations:
+    {{- include "vao.annotations" . | nindent 4 }}
+spec:
+  {{- if not .Values.cron.autoscaling.enabled }}
+  replicas: {{ .Values.cron.replicas }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "vao.selectorLabels" (dict "context" . "component" "cron") | nindent 6 }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        {{- include "vao.componentLabels" (dict "context" . "component" "cron") | nindent 8 }}
+      annotations:
+        {{- include "vao.annotations" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "vao.serviceAccountName" . }}
+      {{- include "vao.imagePullSecrets" . | nindent 6 }}
+      {{- include "vao.podAntiAffinity" (dict "context" . "component" "cron") | nindent 6 }}
+      containers:
+        - name: app
+          image: {{ include "vao.image" (dict "context" . "package" .Values.cron.image.package) }}
+          {{- with .Values.global.imagePullPolicy }}
+          imagePullPolicy: {{ . }}
+          {{- end }}
+          ports:
+            - containerPort: {{ .Values.cron.containerPort }}
+              name: http
+          {{- with .Values.cron.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.cron.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.cron.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.cron.resources | nindent 12 }}
+          lifecycle:
+            postStart:
+              exec:
+                command: ["sh", "-c", "touch /var/run/readiness-check/readiness-file"]
+            preStop:
+              exec:
+                command: ["sh", "-c", "rm -f /var/run/readiness-check/readiness-file; sleep 30"]
+          volumeMounts:
+            - name: readiness-check-volume
+              mountPath: /var/run/readiness-check
+          env:
+            {{- range $key, $value := .Values.cron.env }}
+            - name: {{ $key }}
+              value: {{ tpl $value $ | quote }}
+            {{- end }}
+            - name: PGHOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: host
+            - name: PGPORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: port
+            - name: PGDATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: dbname
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: user
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: password
+          envFrom:
+            - configMapRef:
+                name: cron
+            - configMapRef:
+                name: pg
+            - secretRef:
+                name: {{ .Values.secrets.pg }}
+            - secretRef:
+                name: {{ .Values.secrets.smtp }}
+      volumes:
+        - name: readiness-check-volume
+          emptyDir: {}
+{{- end }}

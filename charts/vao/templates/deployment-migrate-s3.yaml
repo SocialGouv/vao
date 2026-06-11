@@ -1,0 +1,117 @@
+{{- if .Values.migrateS3.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: migrate-s3
+  labels:
+    {{- include "vao.componentLabels" (dict "context" . "component" "migrate-s3") | nindent 4 }}
+  annotations:
+    {{- include "vao.annotations" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.migrateS3.replicas }}
+  selector:
+    matchLabels:
+      {{- include "vao.selectorLabels" (dict "context" . "component" "migrate-s3") | nindent 6 }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        {{- include "vao.componentLabels" (dict "context" . "component" "migrate-s3") | nindent 8 }}
+      annotations:
+        {{- include "vao.annotations" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "vao.serviceAccountName" . }}
+      {{- include "vao.imagePullSecrets" . | nindent 6 }}
+      {{- include "vao.podAntiAffinity" (dict "context" . "component" "migrate-s3") | nindent 6 }}
+      containers:
+        - name: app
+          image: {{ include "vao.image" (dict "context" . "package" .Values.migrateS3.image.package) }}
+          {{- with .Values.global.imagePullPolicy }}
+          imagePullPolicy: {{ . }}
+          {{- end }}
+          command: ["tail", "-f", "/dev/null"]
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "ls"]
+            failureThreshold: 15
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "ls"]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          startupProbe:
+            exec:
+              command: ["sh", "-c", "ls"]
+            failureThreshold: 20
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sh", "-c", "sleep 30"]
+          resources:
+            {{- toYaml .Values.migrateS3.resources | nindent 12 }}
+          env:
+            {{- range $key, $value := .Values.migrateS3.env }}
+            - name: {{ $key }}
+              value: {{ tpl $value $ | quote }}
+            {{- end }}
+            - name: PG_VAO_SUPERUSER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgSuperuser }}
+                  key: user
+            - name: PG_VAO_SUPERPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgSuperuser }}
+                  key: password
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgSuperuser }}
+                  key: host
+            - name: POSTGRES_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgSuperuser }}
+                  key: port
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: dbname
+            - name: S3_BUCKET_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.s3 }}
+                  key: {{ .Values.secrets.s3Keys.endpoint }}
+            - name: S3_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.s3 }}
+                  key: {{ .Values.secrets.s3Keys.name }}
+            - name: S3_BUCKET_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.s3 }}
+                  key: {{ .Values.secrets.s3Keys.region }}
+            - name: S3_BUCKET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.s3 }}
+                  key: {{ .Values.secrets.s3Keys.accessKey }}
+            - name: S3_BUCKET_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.s3 }}
+                  key: {{ .Values.secrets.s3Keys.secretKey }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.secrets.s3 }}
+{{- end }}

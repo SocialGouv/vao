@@ -1,0 +1,455 @@
+global:
+  imageRegistry: ""
+  imageTag: ""
+  imagePullPolicy: ""
+  imagePullSecrets: []
+  branchSlug: ""
+  namespace: ""
+  ingressClassName: nginx
+  tlsSecretName: wildcard-crt
+  cnpgOperatorNamespace: cnpg
+  extraLabels: {}
+  extraAnnotations: {}
+  namespaceLabels: {}
+
+secrets:
+  s3: ""
+  s3Keys:
+    endpoint: bucket_endpoint
+    name: bucket_name
+    region: bucket_region
+    accessKey: bucket_access_key
+    secretKey: bucket_secret_key
+  pg: pg
+  pgApp: pg-app
+  pgSuperuser: pg-superuser
+  pgDb: ""
+  apiEntreprise: ""
+  apiInsee: ""
+  smtp: ""
+  token: ""
+  s3Backups: ""
+  s3BackupsKeys:
+    accessKey: bucket_access_key
+    region: bucket_region
+    secretKey: bucket_secret_key
+
+backend:
+  enabled: true
+  replicas: 1
+  image:
+    package: backend
+  host: ""
+  containerPort: 3000
+  resources:
+    requests:
+      cpu: 200m
+      memory: 768Mi
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+  livenessProbe:
+    tcpSocket:
+      port: 3000
+    failureThreshold: 15
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    timeoutSeconds: 5
+  startupProbe:
+    httpGet:
+      path: /
+      port: 3000
+    failureThreshold: 20
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+  readinessProbe:
+    exec:
+      command: ["cat", "/var/run/readiness-check/readiness-file"]
+    initialDelaySeconds: 5
+    periodSeconds: 5
+  env:
+    DEBUG: "*info*"
+    DEBUG_HIDE_DATE: "true"
+    TZ: Europe/Paris
+    S3_BUCKET_ROOT_DIR: ""
+    SENTRY_RELEASE: ""
+    POSTGRES_HOST: "$(PGHOST)"
+    POSTGRES_PORT: "$(PGPORT)"
+    POSTGRES_DB: "$(PGDATABASE)"
+    S3_BUCKET_ENDPOINT: "$(bucket_endpoint)"
+    S3_BUCKET_NAME: "$(bucket_name)"
+    S3_BUCKET_REGION: "$(bucket_region)"
+    S3_BUCKET_ACCESS_KEY: "$(bucket_access_key)"
+    S3_BUCKET_SECRET_KEY: "$(bucket_secret_key)"
+  ingress:
+    enabled: true
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 70
+  pdb:
+    enabled: false
+    minAvailable: 1
+
+externalApi:
+  enabled: true
+  replicas: 1
+  image:
+    package: external-api
+  host: ""
+  containerPort: 3000
+  resources:
+    requests:
+      cpu: 200m
+      memory: 768Mi
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 3000
+    failureThreshold: 15
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    timeoutSeconds: 5
+  startupProbe:
+    httpGet:
+      path: /health
+      port: 3000
+    failureThreshold: 20
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+  readinessProbe:
+    exec:
+      command: ["cat", "/var/run/readiness-check/readiness-file"]
+    initialDelaySeconds: 5
+    periodSeconds: 5
+  env:
+    DEBUG: "*info*"
+    DEBUG_HIDE_DATE: "true"
+    TZ: Europe/Paris
+    S3_BUCKET_ROOT_DIR: ""
+    SENTRY_RELEASE: ""
+    POSTGRES_HOST: "$(PGHOST)"
+    POSTGRES_PORT: "$(PGPORT)"
+    POSTGRES_DB: "$(PGDATABASE)"
+    S3_BUCKET_ENDPOINT: "$(bucket_endpoint)"
+    S3_BUCKET_NAME: "$(bucket_name)"
+    S3_BUCKET_REGION: "$(bucket_region)"
+    S3_BUCKET_ACCESS_KEY: "$(bucket_access_key)"
+    S3_BUCKET_SECRET_KEY: "$(bucket_secret_key)"
+  ingress:
+    enabled: true
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 70
+  pdb:
+    enabled: false
+    minAvailable: 1
+
+cron:
+  enabled: true
+  replicas: 1
+  image:
+    package: cron
+  containerPort: 3000
+  resources:
+    requests:
+      cpu: 200m
+      memory: 768Mi
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+  livenessProbe:
+    exec:
+      command: ["cat", "/app/healthy"]
+    failureThreshold: 15
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    timeoutSeconds: 5
+  readinessProbe:
+    exec:
+      command: ["cat", "/var/run/readiness-check/readiness-file"]
+    initialDelaySeconds: 5
+    periodSeconds: 5
+  startupProbe:
+    exec:
+      command: ["cat", "/app/healthy"]
+    failureThreshold: 20
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+  env:
+    SENTRY_RELEASE: ""
+    POSTGRES_HOST: "$(PGHOST)"
+    POSTGRES_PORT: "$(PGPORT)"
+    POSTGRES_DB: "$(PGDATABASE)"
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 70
+  pdb:
+    enabled: false
+    minAvailable: 1
+
+frontendUsagers:
+  enabled: true
+  replicas: 1
+  image:
+    package: frontend-usagers
+  host: ""
+  containerPort: 8080
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+  livenessProbe:
+    tcpSocket:
+      port: 8080
+    failureThreshold: 15
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    timeoutSeconds: 5
+  readinessProbe:
+    exec:
+      command: ["cat", "/var/run/readiness-check/readiness-file"]
+    initialDelaySeconds: 5
+    periodSeconds: 5
+  startupProbe:
+    httpGet:
+      path: /index.html
+      port: 8080
+    failureThreshold: 20
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+  ingress:
+    enabled: true
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 70
+  pdb:
+    enabled: false
+    minAvailable: 1
+
+frontendBo:
+  enabled: true
+  replicas: 1
+  image:
+    package: frontend-bo
+  host: ""
+  containerPort: 8080
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+  livenessProbe:
+    tcpSocket:
+      port: 8080
+    failureThreshold: 15
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    timeoutSeconds: 5
+  readinessProbe:
+    exec:
+      command: ["cat", "/var/run/readiness-check/readiness-file"]
+    initialDelaySeconds: 5
+    periodSeconds: 5
+  startupProbe:
+    httpGet:
+      path: /index.html
+      port: 8080
+    failureThreshold: 20
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+  ingress:
+    enabled: true
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 70
+  pdb:
+    enabled: false
+    minAvailable: 1
+
+migrateS3:
+  enabled: true
+  replicas: 1
+  image:
+    package: migrations
+  resources:
+    requests:
+      cpu: "1"
+      memory: 4Gi
+    limits:
+      cpu: "2"
+      memory: 6Gi
+  env:
+    S3_BUCKET_ROOT_DIR: ""
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 70
+  pdb:
+    enabled: false
+    minAvailable: 1
+
+jobs:
+  initDb:
+    enabled: true
+    backoffLimit: 10
+    activeDeadlineSeconds: 3600
+    ttlSecondsAfterFinished: 1800
+    resources:
+      limits:
+        cpu: "3"
+        memory: 1Gi
+      requests:
+        cpu: 64m
+        memory: 32Mi
+  migrationsDb:
+    enabled: true
+    backoffLimit: 3
+    activeDeadlineSeconds: 3600
+    ttlSecondsAfterFinished: 1800
+    resources:
+      limits:
+        cpu: "3"
+        memory: 1Gi
+      requests:
+        cpu: 64m
+        memory: 32Mi
+
+pg:
+  enabled: true
+  instances: 1
+  minSyncReplicas: 0
+  maxSyncReplicas: 0
+  imageName: ghcr.io/cloudnative-pg/postgis:14
+  imagePullPolicy: IfNotPresent
+  storage:
+    size: 50Gi
+    storageClass: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 2Gi
+    limits:
+      cpu: 1500m
+      memory: 2Gi
+  postgresql:
+    parameters:
+      TimeZone: Europe/Paris
+      max_standby_archive_delay: 1d
+      max_standby_streaming_delay: 1d
+      pg_stat_statements.max: "10000"
+      pg_stat_statements.track: all
+  monitoring:
+    enablePodMonitor: true
+  priorityClassName: ""
+  enableSuperuserAccess: true
+  enablePDB: false
+  bootstrap:
+    database: vao
+    owner: vao
+    extensions:
+      - postgis
+      - postgis_topology
+      - fuzzystrmatch
+      - postgis_tiger_geocoder
+      - uuid-ossp
+      - citext
+      - pgcrypto
+      - hstore
+  backup:
+    enabled: false
+    schedule: "0 0 0 * * *"
+    retentionPolicy: 7d
+    destinationPath: ""
+    endpointURL: ""
+    immediate: true
+
+pgBackupCron:
+  enabled: false
+  image: ghcr.io/socialgouv/docker/s3-client:1.2.1
+  schedule: "0 0 * * *"
+  retentionDays: 60
+  s3Bucket: ""
+  destinationPrefix: ""
+  s3Endpoint: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+redirectIngresses: []
+
+configMaps:
+  backend:
+    data: {}
+  cron:
+    data: {}
+  externalApi:
+    data: {}
+  pg:
+    data: {}
+
+networkPolicy:
+  enabled: true
+
+serviceAccount:
+  create: true
+  name: ""
+  automountServiceAccountToken: false
+
+maildev:
+  enabled: false
+  image: maildev/maildev:2.1.0
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+pgweb:
+  enabled: false
+  image: sosedoff/pgweb:0.14.1
+  host: ""
+  ingress:
+    annotations: {}
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi

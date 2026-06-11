@@ -1,0 +1,68 @@
+{{- if .Values.pg.enabled }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: pg
+  labels:
+    {{- include "vao.componentLabels" (dict "context" . "component" "pg") | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
+    {{- include "vao.annotations" . | nindent 4 }}
+spec:
+  logLevel: info
+  instances: {{ .Values.pg.instances }}
+  imageName: {{ .Values.pg.imageName }}
+  imagePullPolicy: {{ .Values.pg.imagePullPolicy }}
+  resources:
+    {{- toYaml .Values.pg.resources | nindent 4 }}
+  storage:
+    size: {{ .Values.pg.storage.size }}
+    {{- if .Values.pg.storage.storageClass }}
+    storageClass: {{ .Values.pg.storage.storageClass }}
+    {{- end }}
+  {{- if .Values.pg.backup.enabled }}
+  backup:
+    retentionPolicy: {{ .Values.pg.backup.retentionPolicy }}
+    barmanObjectStore:
+      data:
+        compression: gzip
+      destinationPath: {{ .Values.pg.backup.destinationPath }}
+      endpointURL: {{ .Values.pg.backup.endpointURL }}
+      s3Credentials:
+        accessKeyId:
+          key: {{ .Values.secrets.s3BackupsKeys.accessKey }}
+          name: {{ .Values.secrets.s3Backups }}
+        region:
+          key: {{ .Values.secrets.s3BackupsKeys.region }}
+          name: {{ .Values.secrets.s3Backups }}
+        secretAccessKey:
+          key: {{ .Values.secrets.s3BackupsKeys.secretKey }}
+          name: {{ .Values.secrets.s3Backups }}
+      wal:
+        compression: gzip
+  {{- end }}
+  minSyncReplicas: {{ .Values.pg.minSyncReplicas }}
+  maxSyncReplicas: {{ .Values.pg.maxSyncReplicas }}
+  postgresql:
+    parameters:
+      {{- toYaml .Values.pg.postgresql.parameters | nindent 6 }}
+  monitoring:
+    enablePodMonitor: {{ .Values.pg.monitoring.enablePodMonitor }}
+  {{- if .Values.pg.priorityClassName }}
+  priorityClassName: {{ .Values.pg.priorityClassName }}
+  {{- end }}
+  bootstrap:
+    initdb:
+      database: {{ .Values.pg.bootstrap.database }}
+      owner: {{ .Values.pg.bootstrap.owner }}
+      {{- if .Values.secrets.pgDb }}
+      secret:
+        name: {{ .Values.secrets.pgDb }}
+      {{- end }}
+      postInitTemplateSQL:
+        {{- range .Values.pg.bootstrap.extensions }}
+        - CREATE EXTENSION IF NOT EXISTS "{{ . }}";
+        {{- end }}
+  enablePDB: {{ .Values.pg.enablePDB }}
+  enableSuperuserAccess: {{ .Values.pg.enableSuperuserAccess }}
+{{- end }}

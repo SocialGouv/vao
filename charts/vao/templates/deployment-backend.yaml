@@ -1,0 +1,114 @@
+{{- if .Values.backend.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    {{- include "vao.componentLabels" (dict "context" . "component" "backend") | nindent 4 }}
+  annotations:
+    {{- include "vao.annotations" . | nindent 4 }}
+spec:
+  {{- if not .Values.backend.autoscaling.enabled }}
+  replicas: {{ .Values.backend.replicas }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "vao.selectorLabels" (dict "context" . "component" "backend") | nindent 6 }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        {{- include "vao.componentLabels" (dict "context" . "component" "backend") | nindent 8 }}
+      annotations:
+        {{- include "vao.annotations" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "vao.serviceAccountName" . }}
+      {{- include "vao.imagePullSecrets" . | nindent 6 }}
+      {{- include "vao.podAntiAffinity" (dict "context" . "component" "backend") | nindent 6 }}
+      containers:
+        - name: app
+          image: {{ include "vao.image" (dict "context" . "package" .Values.backend.image.package) }}
+          {{- with .Values.global.imagePullPolicy }}
+          imagePullPolicy: {{ . }}
+          {{- end }}
+          ports:
+            - containerPort: {{ .Values.backend.containerPort }}
+              name: http
+          {{- with .Values.backend.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.backend.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.backend.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          lifecycle:
+            postStart:
+              exec:
+                command: ["sh", "-c", "touch /var/run/readiness-check/readiness-file"]
+            preStop:
+              exec:
+                command: ["sh", "-c", "rm -f /var/run/readiness-check/readiness-file; sleep 30"]
+          volumeMounts:
+            - name: readiness-check-volume
+              mountPath: /var/run/readiness-check
+          env:
+            {{- range $key, $value := .Values.backend.env }}
+            - name: {{ $key }}
+              value: {{ tpl $value $ | quote }}
+            {{- end }}
+            - name: PGHOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: host
+            - name: PGPORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: port
+            - name: PGDATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: dbname
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: user
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.pgApp }}
+                  key: password
+          envFrom:
+            - configMapRef:
+                name: backend
+            - configMapRef:
+                name: pg
+            - secretRef:
+                name: {{ .Values.secrets.pg }}
+            - secretRef:
+                name: {{ .Values.secrets.apiEntreprise }}
+            - secretRef:
+                name: {{ .Values.secrets.apiInsee }}
+            - secretRef:
+                name: {{ .Values.secrets.smtp }}
+            - secretRef:
+                name: {{ .Values.secrets.token }}
+            {{- if .Values.secrets.s3 }}
+            - secretRef:
+                name: {{ .Values.secrets.s3 }}
+            {{- end }}
+      volumes:
+        - name: readiness-check-volume
+          emptyDir: {}
+{{- end }}

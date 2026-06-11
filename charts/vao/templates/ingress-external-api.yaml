@@ -1,0 +1,28 @@
+{{- if and .Values.externalApi.enabled .Values.externalApi.ingress.enabled }}
+{{- $host := .Values.externalApi.host | default (printf "external-api-%s" (.Values.global.host | required "global.host must be set")) }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: external-api
+  labels:
+    {{- include "vao.componentLabels" (dict "context" . "component" "external-api") | nindent 4 }}
+  annotations:
+    {{- include "vao.annotations" . | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.global.ingressClassName }}
+  rules:
+    - host: {{ $host }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: external-api
+                port:
+                  name: http
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - {{ $host }}
+      secretName: {{ .Values.global.tlsSecretName }}
+{{- end }}

@@ -1,0 +1,65 @@
+{{- if .Values.frontendUsagers.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-usagers
+  labels:
+    {{- include "vao.componentLabels" (dict "context" . "component" "frontend-usagers") | nindent 4 }}
+  annotations:
+    {{- include "vao.annotations" . | nindent 4 }}
+spec:
+  {{- if not .Values.frontendUsagers.autoscaling.enabled }}
+  replicas: {{ .Values.frontendUsagers.replicas }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "vao.selectorLabels" (dict "context" . "component" "frontend-usagers") | nindent 6 }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        {{- include "vao.componentLabels" (dict "context" . "component" "frontend-usagers") | nindent 8 }}
+      annotations:
+        {{- include "vao.annotations" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "vao.serviceAccountName" . }}
+      {{- include "vao.imagePullSecrets" . | nindent 6 }}
+      {{- include "vao.podAntiAffinity" (dict "context" . "component" "frontend-usagers") | nindent 6 }}
+      containers:
+        - name: app
+          image: {{ include "vao.image" (dict "context" . "package" .Values.frontendUsagers.image.package) }}
+          {{- with .Values.global.imagePullPolicy }}
+          imagePullPolicy: {{ . }}
+          {{- end }}
+          ports:
+            - containerPort: {{ .Values.frontendUsagers.containerPort }}
+              name: http
+          {{- with .Values.frontendUsagers.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.frontendUsagers.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.frontendUsagers.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.frontendUsagers.resources | nindent 12 }}
+          lifecycle:
+            postStart:
+              exec:
+                command: ["sh", "-c", "touch /var/run/readiness-check/readiness-file"]
+            preStop:
+              exec:
+                command: ["sh", "-c", "rm -f /var/run/readiness-check/readiness-file; sleep 30"]
+          volumeMounts:
+            - name: readiness-check-volume
+              mountPath: /var/run/readiness-check
+      volumes:
+        - name: readiness-check-volume
+          emptyDir: {}
+{{- end }}

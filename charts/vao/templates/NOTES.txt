@@ -1,0 +1,27 @@
+VAO has been deployed.
+
+Components:
+{{- if .Values.backend.enabled }}
+  - Backend API
+{{- end }}
+{{- if .Values.externalApi.enabled }}
+  - External API
+{{- end }}
+{{- if .Values.cron.enabled }}
+  - Cron
+{{- end }}
+{{- if .Values.frontendUsagers.enabled }}
+  - Frontend Usagers
+{{- end }}
+{{- if .Values.frontendBo.enabled }}
+  - Frontend Back-Office
+{{- end }}
+{{- if .Values.pg.enabled }}
+  - PostgreSQL (CNPG)
+{{- end }}
+{{- if .Values.maildev.enabled }}
+  - Maildev (dev)
+{{- end }}
+{{- if .Values.pgweb.enabled }}
+  - PgWeb (dev)
+{{- end }}

@@ -1,0 +1,16 @@
+{{- if and .Values.pg.enabled .Values.pg.backup.enabled }}
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: pg-scheduledbackup
+  labels:
+    {{- include "vao.componentLabels" (dict "context" . "component" "pg") | nindent 4 }}
+  annotations:
+    {{- include "vao.annotations" . | nindent 4 }}
+spec:
+  backupOwnerReference: self
+  cluster:
+    name: pg
+  schedule: {{ .Values.pg.backup.schedule | quote }}
+  immediate: {{ .Values.pg.backup.immediate }}
+{{- end }}

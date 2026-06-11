@@ -1,0 +1,28 @@
+{{- if and .Values.frontendUsagers.enabled .Values.frontendUsagers.ingress.enabled }}
+{{- $host := .Values.frontendUsagers.host | default (.Values.global.host | required "global.host must be set") }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend-usagers
+  labels:
+    {{- include "vao.componentLabels" (dict "context" . "component" "frontend-usagers") | nindent 4 }}
+  annotations:
+    {{- include "vao.annotations" . | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.global.ingressClassName }}
+  rules:
+    - host: {{ $host }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: frontend-usagers
+                port:
+                  name: http
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - {{ $host }}
+      secretName: {{ .Values.global.tlsSecretName }}
+{{- end }}

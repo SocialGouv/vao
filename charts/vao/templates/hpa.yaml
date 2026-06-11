@@ -1,0 +1,37 @@
+{{- $components := dict "backend" .Values.backend "external-api" .Values.externalApi "cron" .Values.cron "frontend-usagers" .Values.frontendUsagers "frontend-bo" .Values.frontendBo "migrate-s3" .Values.migrateS3 }}
+{{- range $name, $config := $components }}
+{{- if and $config.enabled $config.autoscaling.enabled }}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "vao.componentLabels" (dict "context" $ "component" $name) | nindent 4 }}
+  annotations:
+    {{- include "vao.annotations" $ | nindent 4 }}
+spec:
+  minReplicas: {{ $config.autoscaling.minReplicas }}
+  maxReplicas: {{ $config.autoscaling.maxReplicas }}
+  metrics:
+    - resource:
+        name: cpu
+        target:
+          averageUtilization: {{ $config.autoscaling.targetCPUUtilizationPercentage }}
+          type: Utilization
+      type: Resource
+    - resource:
+        name: memory
+        target:
+          averageUtilization: {{ $config.autoscaling.targetMemoryUtilizationPercentage }}
+          type: Utilization
+      type: Resource
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ $name }}
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0
+{{- end }}
+{{- end }}
