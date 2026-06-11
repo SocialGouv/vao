@@ -12,6 +12,12 @@ pg:
       limits:
         cpu: 4500m
         memory: 8Gi
+    postgresqlParameters:
+      # TimeZone repris explicitement pour ne pas le perdre au merge des values
+      TimeZone: "Europe/Paris"
+      # Garde-fou anti-saturation CPU : tue les requetes > 120s (au-dessus des
+      # listings BO legitimes ~113s). pg_dump fixe lui-meme statement_timeout=0.
+      statement_timeout: "120s"
 
 backend:
   autoscale:
