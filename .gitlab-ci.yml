@@ -13,12 +13,11 @@
 # ============================================================================
 
 include:
-  # ⚠ ref temporaire : fix du push DinD (MR ci-common !3) — repasser sur main après merge.
   - project: socialgouv/produits-dnum/communs/ci-common
-    ref: fix/dind-push-last-tag
+    ref: main
     file: templates/image-build.yml
   - project: socialgouv/produits-dnum/communs/ci-common
-    ref: fix/dind-push-last-tag
+    ref: main
     file: templates/publish-chart.yml
 
 variables:
