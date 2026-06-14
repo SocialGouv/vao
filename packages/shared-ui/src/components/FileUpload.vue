@@ -51,7 +51,7 @@ const headers = [
 ];
 const file = defineModel({ type: Object });
 const rows = computed(() => {
-  if (file.value && Object.keys(file.value).length > 0) {
+  if (file.value?.name) {
     const name = file.value.name;
     const extension = name?.split(".").pop()?.toLowerCase() || "-";
     const type = extension;
