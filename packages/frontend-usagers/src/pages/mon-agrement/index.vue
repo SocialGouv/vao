@@ -3,7 +3,7 @@
     <DsfrBreadcrumb :links="links" />
     <div class="fr-grid-row fr-py-5w">
       <h1>
-        Mon agrément : {{ agrementStore.agrementEnTraitement?.numero }}
+        Mon agrément: {{ agrementStore.agrementEnTraitement?.numero }}
         <AgrementStatusBadge
           :statut="
             agrementStore?.agrementEnTraitement?.statut ??
@@ -72,7 +72,7 @@
         :asc="asc"
       >
         <AgrementDocuments
-          :init-agrement="agrementStore.agrementEnTraitement ?? {}"
+          :agrement-courant="agrementStore.agrementCourant ?? {}"
           :cdn-url="`${config.public.backendUrl}/documents/`"
         ></AgrementDocuments>
       </DsfrTabContent>
