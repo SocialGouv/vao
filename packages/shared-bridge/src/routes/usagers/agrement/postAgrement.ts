@@ -33,6 +33,22 @@ const requiredUnlessBrouillon = (field: yup.AnySchema) =>
     then: (schema) => schema.required("Champ obligatoire"),
   });
 
+// NOTE : on ne peut pas passer yup.string().min(20).nullable() directement à
+// requiredUnlessBrouillon pcq les contraintes de chaînage yup sont cumulatives.
+// requiredWithMinCaractersUnlessBrouillon applique .min() uniquement dans la branche `then`,
+// garantissant que la contrainte ne s'active qu'hors BROUILLON et VALIDE.
+const requiredWithMinCaractersUnlessBrouillon = (
+  field: yup.StringSchema<string | null | undefined>,
+  min: number,
+  message: string = `Minimum ${min} caractères.`,
+) =>
+  field.when("statut", {
+    is: (val: string) =>
+      val !== AGREMENT_STATUT.BROUILLON && val !== AGREMENT_STATUT.VALIDE,
+    otherwise: (schema) => schema.nullable(),
+    then: (schema) => schema.required("Champ obligatoire").min(min, message),
+  });
+
 const currentYear = new Date().getFullYear();
 
 const adresseSchema = yup.object({
@@ -190,10 +206,12 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
     bilanAucunChangementEvolution: requiredUnlessBrouillon(
       yup.boolean().nullable(),
     ),
-    bilanChangementEvolution: requiredUnlessBrouillon(yup.string().nullable()),
+    bilanChangementEvolution: yup.string().nullable(),
     bilanFinancierCommentaire: yup.string().nullable(),
-    bilanFinancierComparatif: requiredUnlessBrouillon(
-      yup.string().min(20, "Minimum 20 caractères.").nullable(),
+    bilanFinancierComparatif: requiredWithMinCaractersUnlessBrouillon(
+      yup.string().nullable(),
+      20,
+      "Minimum 20 caractères.",
     ),
     bilanFinancierComptabilite: requiredUnlessBrouillon(
       yup.string().nullable(),

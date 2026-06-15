@@ -29,6 +29,16 @@ import { AgrementsRepository } from "./agrements.repository";
 
 const log = logger(module.filename);
 
+// Statuts pour lesquels l'OVA soumet ou modifie un dossier.
+// PRIS_EN_CHARGE et REFUSE sont pas inclus pcq ce sont des statuts DREETS,
+// l'OVA ne soumet aucune modification à ces étapes.
+const STATUTS_NECESSITANT_PROCES_VERBAL = new Set([
+  AGREMENT_STATUT.TRANSMIS,
+  AGREMENT_STATUT.A_COMPLETER,
+  AGREMENT_STATUT.EN_INSTRUCTION,
+  AGREMENT_STATUT.A_CORRIGER,
+]);
+
 async function getEmailRegion(codeRegion: string): Promise<string | null> {
   const fiche = await TerritoireService.readFicheIdByTerCode(codeRegion);
   if (!fiche?.id) return null;
@@ -143,12 +153,18 @@ export const AgrementService = {
 
     const isPersonneMorale =
       organisme.typeOrganisme === ORGANISME_TYPE.PERSONNE_MORALE;
-    const isAgrementBrouillon = agrement.statut === AGREMENT_STATUT.BROUILLON;
+
+    const isStatutNecessitantProcesVerbal =
+      STATUTS_NECESSITANT_PROCES_VERBAL.has(agrement.statut!);
     const hasProcesVerbal = agrement.agrementFiles?.some(
       (file) => file.category === FILE_CATEGORY.PROCVERBAL,
     );
 
-    if (isPersonneMorale && !isAgrementBrouillon && !hasProcesVerbal) {
+    if (
+      isPersonneMorale &&
+      isStatutNecessitantProcesVerbal &&
+      !hasProcesVerbal
+    ) {
       log.w(
         "Validation échouée : procès verbal manquant pour personne morale",
         { agrementId: agrement.id },
