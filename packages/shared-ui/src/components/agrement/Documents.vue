@@ -22,20 +22,20 @@ import {
 } from "@vao/shared-bridge";
 
 const props = defineProps({
-  initAgrement: { type: Object, required: true },
+  agrementCourant: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
 });
 
 const dreetsFiles = computed(
   () =>
-    props.initAgrement?.agrementFiles?.filter(
+    props.agrementCourant?.agrementFiles?.filter(
       (agrementFile: DocumentDto) => agrementFile.userId === null,
     ) ?? [],
 );
 
 const ovaFiles = computed(
   () =>
-    props.initAgrement?.agrementFiles?.filter(
+    props.agrementCourant?.agrementFiles?.filter(
       (agrementFile: DocumentDto) => agrementFile.userId !== null,
     ) ?? [],
 );
