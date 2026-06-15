@@ -41,7 +41,7 @@
     "nuxt-security": "^2.0.0-rc.9",
     "pinia": "catalog:",
     "query-string": "catalog:",
-    "ufo": "^1.5.4",
+    "ufo": "^1.6.4",
     "vee-validate": "catalog:",
     "vue": "catalog:",
     "vue-matomo": "~4.2.0",

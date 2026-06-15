@@ -45,7 +45,7 @@
     "pg": "catalog:",
     "pg-format": "~1.0.4",
     "proj4": "^2.15.0",
-    "ufo": "^1.5.4",
+    "ufo": "^1.6.4",
     "yup": "catalog:"
   },
   "devDependencies": {
