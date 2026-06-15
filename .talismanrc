@@ -118,7 +118,7 @@ fileignoreconfig:
 - filename: packages/backend/src/controllers/bo-authentication/email/renew-password.js
   checksum: b2cfd04d94c5131c43cb80f0d9f210784da4c61fd42f6defd16f2ef93e83c913
 - filename: packages/backend/src/controllers/common/authentication/connected.ts
-  checksum: da5ddd1946e61cbafd440a2d84008651cfa31113bedb09c6c5ef9f908c13962a
+  checksum: 99dfc74514eb959f72dea3f319b805b5ef7880920074afc70fa0a2783008daad
 - filename: packages/backend/src/controllers/common/authentication/isTrustDevice.ts
   checksum: 8a04d3412dde126c25dba3f3f16237dae0f5f865f59dd7091ddd7e45fbc28411
 - filename: packages/backend/src/controllers/e2e.ts

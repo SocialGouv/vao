@@ -1,5 +1,6 @@
 import { USER_TARGET, UserAdminDto, UserUsagersDto } from "@vao/shared-bridge";
 import type { Request, Response } from "express";
+import jwt from "jsonwebtoken";
 
 import { config } from "../../../config";
 import { schema } from "../../../helpers/schema";
@@ -13,8 +14,6 @@ import {
   signRefreshToken as signRefreshTokenUsager,
 } from "../../../utils/token";
 import { isTrustedDevice } from "./isTrustDevice";
-
-const jwt = require("jsonwebtoken");
 
 export default async function connected({
   req,
@@ -65,25 +64,28 @@ export default async function connected({
     secure: true,
   });
 
-  const isTrustedToken = await isTrustedDevice({
+  const isTrustedToken = isTrustedDevice({
     req,
     target,
     userId: Number(user.id),
   });
   if (!isTrustedToken) {
+    const cookieTrustTokenName = `VAO_trust_token-${target}-${user.id}`;
     if (rememberDevice) {
       const trustToken = jwt.sign(
-        { __v: config.trustToken.version },
-        isBo ? config.tokenSecret_BO : config.tokenSecret_FO,
+        { __v: config.trustToken.version, userId: Number(user.id!) },
+        (isBo ? config.tokenSecret_BO : config.tokenSecret_FO)!,
         { expiresIn: config.trustToken.expiresInSec },
       );
 
-      res.cookie(`VAO_trust_token-${target}-${user.id}`, trustToken, {
+      res.cookie(cookieTrustTokenName, trustToken, {
         httpOnly: true,
         maxAge: config.trustToken.maxAgeMs,
         sameSite: "strict",
         secure: true,
       });
+    } else {
+      res.clearCookie(cookieTrustTokenName);
     }
   }
 }

@@ -8,7 +8,7 @@ export interface VerifyOtpUsagersRoute {
   path: "/users/email/verify-otp";
   body: {
     code: string;
-    rememberDevice: string;
+    rememberDevice: boolean;
     email: string;
   };
   response: RouteResponseBody<{ user: UserUsagersDto }>;
@@ -22,6 +22,6 @@ export const VerifyOtpUsagersRouteSchema: RouteSchema<VerifyOtpUsagersRoute> = {
       .matches(/^[0-9]+$/)
       .required(),
     email: yup.string().email().required(),
-    rememberDevice: yup.string().required(),
+    rememberDevice: yup.boolean().required(),
   }),
 };

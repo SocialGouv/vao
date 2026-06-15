@@ -19,7 +19,7 @@ export default async function verifyOtp(
       email: req.body.email,
     });
     await connected({
-      rememberDevice: Boolean(req.body.rememberDevice),
+      rememberDevice: req.validatedBody!.rememberDevice,
       req,
       res,
       target: USER_TARGET.FO,

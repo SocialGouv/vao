@@ -24,14 +24,13 @@ export async function checkActionsOtp({
     FeatureFlagName.AUTH_2FA,
   );
 
-  const isTrustToken = await isTrustedDevice({
+  const isTrustToken = isTrustedDevice({
     req,
     target,
     userId: Number(user.id),
   });
   const requires2FA = requires2FAConfig && !isTrustToken;
   let isUpdateOtpNecessary = false;
-  isTrustToken;
 
   if (requires2FA) {
     const { isLocked } = OtpService.isLocked({

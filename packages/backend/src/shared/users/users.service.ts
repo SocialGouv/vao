@@ -33,17 +33,25 @@ export const UsersService = {
     user,
     functionnalError,
     isBo,
+    code,
   }: {
     user: OtpUserDto<T>;
     functionnalError: FUNCTIONAL_ERRORS;
-    isBo: Boolean;
+    isBo: boolean;
+    code: string;
   }) {
     try {
       await addHistoric({
         action: TRACKING_ACTIONS.modification,
         data: {
+          enteredCode: code,
           reason: FUNCTIONAL_ERROR_MESSAGES[functionnalError],
-          user,
+          user: {
+            otpAttempts: user.otpAttempts,
+            otpAttemptsAt: user.otpAttemptsAt,
+            otpCode: user.otpCode,
+            otpCodeExpiresAt: user.otpCodeExpiresAt,
+          },
         },
         entity: isBo ? TRACKING_ENTITIES.userBack : TRACKING_ENTITIES.userFront,
         entityId: user.id,
@@ -204,6 +212,7 @@ export const UsersService = {
     // Utilisateur temporairement bloqué en raison de tentatives OTP échouée
     if (isLocked) {
       await UsersService.addAttemptsOtpTrack({
+        code,
         functionnalError: FUNCTIONAL_ERRORS.USER_OTP_TEMPORARILY_BLOCKED,
         isBo,
         user,
@@ -231,6 +240,7 @@ export const UsersService = {
     if (isExpired) {
       log.w("Code OTP expiré pour l'utilisateur", email);
       await UsersService.addAttemptsOtpTrack({
+        code,
         functionnalError: FUNCTIONAL_ERRORS.USER_OTP_CODE_EXPIRED,
         isBo,
         user,
@@ -265,6 +275,7 @@ export const UsersService = {
       if (otpAttempts === 3) {
         log.w("Nombre de tentatives atteinte", email);
         await UsersService.addAttemptsOtpTrack({
+          code,
           functionnalError: FUNCTIONAL_ERRORS.USER_OTP_MAX_ATTEMPTS,
           isBo,
           user,
@@ -276,6 +287,7 @@ export const UsersService = {
       }
       log.w("il reste des tentatives : ", otpAttempts);
       await UsersService.addAttemptsOtpTrack({
+        code,
         functionnalError: FUNCTIONAL_ERRORS.USER_OTP_CODE_INVALID,
         isBo,
         user,

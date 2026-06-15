@@ -17,11 +17,9 @@ export const UsersService = {
   async verifyOtpCode({
     email,
     code,
-    //rememberDevice,
   }: {
     email: string;
     code: string;
-    //rememberDevice: boolean;
   }): Promise<UserUsagersDto> {
     return UsersServiceShared.verifyOtpCode({ code, email, target });
   },

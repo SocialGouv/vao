@@ -8,7 +8,7 @@ export interface VerifyOtpAdminRoute {
   path: "/users/admin/email/verify-otp";
   body: {
     code: string;
-    rememberDevice: string;
+    rememberDevice: boolean;
     email: string;
   };
   response: RouteResponseBody<{ user: UserAdminDto }>;
@@ -22,6 +22,6 @@ export const VerifyOtpAdminRouteSchema: RouteSchema<VerifyOtpAdminRoute> = {
       .matches(/^[0-9]+$/)
       .required(),
     email: yup.string().email().required(),
-    rememberDevice: yup.string().required(),
+    rememberDevice: yup.boolean().required(),
   }),
 };
