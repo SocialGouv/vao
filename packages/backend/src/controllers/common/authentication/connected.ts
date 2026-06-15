@@ -1,5 +1,5 @@
-import { UserAdminDto, UserUsagersDto } from "@vao/shared-bridge";
-import type { Response } from "express";
+import { USER_TARGET, UserAdminDto, UserUsagersDto } from "@vao/shared-bridge";
+import type { Request, Response } from "express";
 
 import { config } from "../../../config";
 import { schema } from "../../../helpers/schema";
@@ -12,13 +12,24 @@ import {
   signAccessToken as signAccessTokenUsager,
   signRefreshToken as signRefreshTokenUsager,
 } from "../../../utils/token";
+import { isTrustedDevice } from "./isTrustDevice";
 
-export default async function connected(
-  res: Response,
-  user: UserUsagersDto | UserAdminDto,
-  target: "bo" | "fo",
-) {
-  const isBo = target === "bo";
+const jwt = require("jsonwebtoken");
+
+export default async function connected({
+  req,
+  res,
+  user,
+  target,
+  rememberDevice,
+}: {
+  req: Request;
+  res: Response;
+  user: UserUsagersDto | UserAdminDto;
+  target: (typeof USER_TARGET)[keyof typeof USER_TARGET];
+  rememberDevice?: boolean;
+}) {
+  const isBo = target === USER_TARGET.BO;
   const schemaTarget = isBo ? schema.BACK : schema.FRONT;
   const userTokenPayloadUsager = {
     cguAccepted: user.cguAccepted!,
@@ -53,4 +64,26 @@ export default async function connected(
     sameSite: "strict",
     secure: true,
   });
+
+  const isTrustedToken = await isTrustedDevice({
+    req,
+    target,
+    userId: Number(user.id),
+  });
+  if (!isTrustedToken) {
+    if (rememberDevice) {
+      const trustToken = jwt.sign(
+        { __v: config.trustToken.version },
+        isBo ? config.tokenSecret_BO : config.tokenSecret_FO,
+        { expiresIn: config.trustToken.expiresInSec },
+      );
+
+      res.cookie(`VAO_trust_token-${target}-${user.id}`, trustToken, {
+        httpOnly: true,
+        maxAge: config.trustToken.maxAgeMs,
+        sameSite: "strict",
+        secure: true,
+      });
+    }
+  }
 }

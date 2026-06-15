@@ -68,7 +68,7 @@ fileignoreconfig:
 - filename: packages/backend/src/__tests__/admin/accept-cgu.test.ts
   checksum: 692450d4fc33a59b516dab82ef8a447c1b0afa242acfac281b9c4584e330cbda
 - filename: packages/backend/src/__tests__/admin/authentication.test.ts
-  checksum: d89186bb3ca9efe3508fef0f2d4263ac2d85a278a1fc1f5d4f2e1d274c4f64d4
+  checksum: c700f757df3799524bcd2e788a81e4835161934f85a739b933a6aa6c21c605e0
 - filename: packages/backend/src/__tests__/admin/sejour.test.ts
   checksum: d6e5b48000a21797f60865b4c59c09c9860f55c72376b785a21777e1f31d9b40
 - filename: packages/backend/src/__tests__/helper/testContainer.ts
@@ -78,7 +78,7 @@ fileignoreconfig:
 - filename: packages/backend/src/__tests__/usagers/agrements.test.ts
   checksum: d0422a97e0bf3177d51d97c0253f50d254331976b359d55341760928e10cab16
 - filename: packages/backend/src/__tests__/usagers/authentification.test.ts
-  checksum: fdaf57af8e97b76f519e11f8664714a2a62a48aa3b370dcd39a420e0786ed582
+  checksum: 06e377621432c4e30d404df659c3b7877fb7bdb0e518d64fdfb2ddc56cafdb65
 - filename: packages/backend/src/__tests__/usagers/documents.test.ts
   checksum: d5d23d8aa40adf45f04cb47587350ba4c52423bb669307779f9be0254e77b695
 - filename: packages/backend/src/__tests__/usagers/fo-user.test.ts
@@ -117,6 +117,10 @@ fileignoreconfig:
   checksum: eed33b015aa92afe378f008ff56de976385b5dccddf1157fadafbe2854884336
 - filename: packages/backend/src/controllers/bo-authentication/email/renew-password.js
   checksum: b2cfd04d94c5131c43cb80f0d9f210784da4c61fd42f6defd16f2ef93e83c913
+- filename: packages/backend/src/controllers/common/authentication/connected.ts
+  checksum: da5ddd1946e61cbafd440a2d84008651cfa31113bedb09c6c5ef9f908c13962a
+- filename: packages/backend/src/controllers/common/authentication/isTrustDevice.ts
+  checksum: 8a04d3412dde126c25dba3f3f16237dae0f5f865f59dd7091ddd7e45fbc28411
 - filename: packages/backend/src/controllers/e2e.ts
   checksum: a2706b88a2ab741936878cf2425703ea45ad856b6968c27a28466090155b6f33
 - filename: packages/backend/src/controllers/siret/getLienSuccession.spec.ts

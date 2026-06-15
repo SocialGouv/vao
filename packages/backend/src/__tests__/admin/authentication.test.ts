@@ -228,6 +228,172 @@ describe("POST /bo-authentication/email/verify-otp", () => {
       ]),
     );
   });
+  it("should remember user login after OTP connection", async () => {
+    const password = "HelloHello1!!";
+    const timestamp = Date.now();
+    const email = `bologin${timestamp}@example.com`;
+
+    const { user: createdUsers } = await AdminUsersRepository.create({
+      user: {
+        cgu_accepted: true,
+        cgu_accepted_at: new Date(),
+        deleted: false,
+        email,
+        nom: "BoNom",
+        password,
+        prenom: "BoPrenom",
+        ter_code: "FRA",
+        validated: true,
+      },
+    });
+
+    expect(createdUsers[0]).toBeDefined();
+    await createFeatureFlag({});
+
+    const response = await request(getBoAppHelper())
+      .post("/bo-authentication/email/login")
+      .send({ email, password });
+
+    expect(response.status).toBe(200);
+    expect(response.body.user).toBeDefined();
+    expect(response.body.user.email).toBe(email);
+    expect(response.body.user.featureFlags).toBeDefined();
+    expect(mailService.send).toHaveBeenCalledTimes(1);
+
+    const otpCode = 123456;
+    await AdminUsersRepository.updateOtp({
+      otpAttempts: 0,
+      otpAttemptsAt: null,
+      otpCode,
+      otpCodeExpiresAt: addMinutes(new Date(), 15),
+      userId: createdUsers[0].id,
+    });
+
+    const responseVerify = await request(getBoAppHelper())
+      .post("/bo-authentication/email/verify-otp")
+      .send({ code: 123456, email, rememberDevice: true });
+    expect(responseVerify.status).toBe(200);
+
+    const setCookieHeader = responseVerify.headers["set-cookie"];
+    const cookies = Array.isArray(setCookieHeader)
+      ? setCookieHeader
+      : setCookieHeader
+        ? [setCookieHeader]
+        : [];
+
+    const responseDisconnection = await request(getBoAppHelper())
+      .post("/bo-authentication/disconnect")
+      .set("Cookie", cookies);
+
+    expect(responseDisconnection.status).toBe(200);
+    expect(responseDisconnection.body.message).toBe("Déconnexion");
+
+    // Relogin user without OTP
+
+    const responseRelogging = await request(getBoAppHelper())
+      .post("/bo-authentication/email/login")
+      .send({ email, password });
+
+    expect(responseRelogging.status).toBe(200);
+    expect(responseRelogging.body.user).toBeDefined();
+    expect(responseRelogging.body.user.email).toBe(email);
+    expect(responseRelogging.body.user.featureFlags).toBeDefined();
+
+    const setCookieHeaderRelogging = responseVerify.headers["set-cookie"];
+
+    expect(setCookieHeaderRelogging).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("VAO_BO_access_token="),
+        expect.stringContaining("VAO_BO_refresh_token="),
+        expect.stringContaining(`VAO_trust_token-bo-${createdUsers[0].id}`),
+      ]),
+    );
+  });
+  it("should notremember user login after OTP connection", async () => {
+    const password = "HelloHello1!!";
+    const timestamp = Date.now();
+    const email = `bologin${timestamp}@example.com`;
+
+    const { user: createdUsers } = await AdminUsersRepository.create({
+      user: {
+        cgu_accepted: true,
+        cgu_accepted_at: new Date(),
+        deleted: false,
+        email,
+        nom: "BoNom",
+        password,
+        prenom: "BoPrenom",
+        ter_code: "FRA",
+        validated: true,
+      },
+    });
+
+    expect(createdUsers[0]).toBeDefined();
+    await createFeatureFlag({});
+
+    const response = await request(getBoAppHelper())
+      .post("/bo-authentication/email/login")
+      .send({ email, password });
+
+    expect(response.status).toBe(200);
+    expect(response.body.user).toBeDefined();
+    expect(response.body.user.email).toBe(email);
+    expect(response.body.user.featureFlags).toBeDefined();
+    expect(mailService.send).toHaveBeenCalledTimes(1);
+
+    const otpCode = 123456;
+    await AdminUsersRepository.updateOtp({
+      otpAttempts: 0,
+      otpAttemptsAt: null,
+      otpCode,
+      otpCodeExpiresAt: addMinutes(new Date(), 15),
+      userId: createdUsers[0].id,
+    });
+
+    const responseVerify = await request(getBoAppHelper())
+      .post("/bo-authentication/email/verify-otp")
+      .send({ code: 123456, email, rememberDevice: false });
+    expect(responseVerify.status).toBe(200);
+
+    const setCookieHeader = responseVerify.headers["set-cookie"];
+    const cookies = Array.isArray(setCookieHeader)
+      ? setCookieHeader
+      : setCookieHeader
+        ? [setCookieHeader]
+        : [];
+
+    const responseDisconnection = await request(getBoAppHelper())
+      .post("/bo-authentication/disconnect")
+      .set("Cookie", cookies);
+
+    expect(responseDisconnection.status).toBe(200);
+    expect(responseDisconnection.body.message).toBe("Déconnexion");
+
+    // Relogin user without OTP
+
+    const responseRelogging = await request(getBoAppHelper())
+      .post("/bo-authentication/email/login")
+      .send({ email, password });
+
+    expect(responseRelogging.status).toBe(200);
+    expect(responseRelogging.body.user).toBeDefined();
+    expect(responseRelogging.body.user.email).toBe(email);
+    expect(responseRelogging.body.user.featureFlags).toBeDefined();
+
+    const setCookieHeaderRelogging = responseVerify.headers["set-cookie"];
+
+    expect(setCookieHeaderRelogging).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("VAO_BO_access_token="),
+        expect.stringContaining("VAO_BO_refresh_token="),
+      ]),
+    );
+    expect(setCookieHeaderRelogging).toEqual(
+      expect.not.arrayContaining([
+        expect.stringContaining(`VAO_trust_token-bo-${createdUsers[0].id}`),
+      ]),
+    );
+  });
   it("should return 422 reject OTP code admin 3 attemps", async () => {
     const password = "HelloHello1!!";
     const timestamp = Date.now();

@@ -1,4 +1,4 @@
-import { UserUsagersRoutes } from "@vao/shared-bridge";
+import { USER_TARGET, UserUsagersRoutes } from "@vao/shared-bridge";
 import type { NextFunction } from "express";
 
 import type { RouteRequest, RouteResponse } from "../../../types/request";
@@ -17,9 +17,14 @@ export default async function verifyOtp(
     const user = await UsersService.verifyOtpCode({
       code: req.body.code,
       email: req.body.email,
-      // rememberDevice: Boolean(req.body.rememberDevice),
     });
-    await connected(res, user, "fo");
+    await connected({
+      rememberDevice: Boolean(req.body.rememberDevice),
+      req,
+      res,
+      target: USER_TARGET.FO,
+      user,
+    });
     return res.json({ user });
   } catch (error) {
     log.w("Erreur lors de la vérification du code OTP", { error });
