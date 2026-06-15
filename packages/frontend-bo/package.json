@@ -56,7 +56,7 @@
     "happy-dom": "^20.0.4",
     "prettier": "catalog:",
     "sass": "~1.79.3",
-    "sass-loader": "~16.0.2",
+    "sass-loader": "~16.0.8",
     "typescript": "catalog:",
     "vitest": "catalog:",
     "vue-dsfr-nuxt-module": "^2.0.0",
