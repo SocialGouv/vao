@@ -8,3 +8,8 @@ export enum USER_TYPE {
   BO = "BO-AGENT", // Back-office Agent
   FU = "FUSAGER-OVA", // Front-office Usager Organisme de Vacances
 }
+
+export const USER_TARGET = {
+  BO: "bo",
+  FO: "fo",
+} as const;

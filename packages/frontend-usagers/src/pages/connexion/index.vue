@@ -132,6 +132,7 @@
 </template>
 
 <script setup lang="ts">
+import { USER_TARGET } from "@vao/shared-bridge";
 import {
   PasswordInput,
   apiModel,
@@ -170,7 +171,7 @@ const {
   validateCgu,
   refuseCgu,
 } = useAuthentication(
-  "fo",
+  USER_TARGET.FO,
   config.public.backendUrl,
   userStore,
   navigateTo,

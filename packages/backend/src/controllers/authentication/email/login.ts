@@ -1,4 +1,4 @@
-import { ERRORS_LOGIN } from "@vao/shared-bridge";
+import { ERRORS_LOGIN, USER_TARGET } from "@vao/shared-bridge";
 import type { NextFunction, Response } from "express";
 
 import { schema } from "../../../helpers/schema";
@@ -13,6 +13,7 @@ import connected from "../../common/authentication/connected";
 import { checkActionsOtp } from "../../common/authentication/email/login";
 
 const log = logger(module.filename);
+const target = USER_TARGET.FO;
 
 export default async function login(
   req: UserRequest,
@@ -106,13 +107,15 @@ export default async function login(
     let otpAttempts = user?.otpAttempts;
     let otpAttemptsAt = user?.otpAttemptsAt;
     const { featureFlags, isUpdateOtpNecessary, requires2FA } =
-      await checkActionsOtp({ user });
+      await checkActionsOtp({ req, target, user });
     if (isUpdateOtpNecessary) {
       ({ otpAttempts, otpAttemptsAt } = await UsersService.updateOtp({
         userId: Number(user.id),
       }));
     } else {
-      await connected(res, user, "fo");
+      if (!requires2FA) {
+        await connected({ rememberDevice: false, req, res, target, user });
+      }
     }
     log.i("DONE");
 

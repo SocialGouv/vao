@@ -3,6 +3,7 @@ import {
   ERRORS_COMMON,
   FUNCTIONAL_ERRORS,
   STATUS_USER_FRONT,
+  USER_TARGET,
 } from "@vao/shared-bridge";
 import jwt from "jsonwebtoken";
 import request from "supertest";
@@ -498,13 +499,151 @@ describe("POST /authentication/email/verify-otp", () => {
 
     const responseAttemps1 = await request(getFoAppHelper())
       .post("/authentication/email/verify-otp")
-      .send({ code: otpCode, email });
+      .send({ code: otpCode, email, rememberDevice: false });
     expect(responseAttemps1.status).toBe(200);
     expect(responseAttemps1.body.user.email).toEqual(createdUsers[0].email);
 
     const setCookieHeader = responseAttemps1.headers["set-cookie"] || [];
     expect(setCookieHeader).toEqual(
       expect.arrayContaining([
+        expect.stringContaining("VAO_access_token="),
+        expect.stringContaining("VAO_refresh_token="),
+      ]),
+    );
+  });
+  it("should return reconnect without otp authent", async () => {
+    const password = "HelloHello1!!";
+    const timestamp = Date.now();
+    const email = `frontlogin${timestamp}@example.com`;
+
+    const { user: createdUsers } = await UsagersUsersRepository.create({
+      user: {
+        cgu_accepted: true,
+        email,
+        nom: "FrontNom",
+        password,
+        prenom: "FrontPrenom",
+        siret: `123456789012${timestamp.toString().slice(-2)}`,
+        status_code: STATUS_USER_FRONT.VALIDATED,
+        telephone: "0102030405",
+        ter_code: "FRA",
+      },
+    });
+    expect(createdUsers[0]).toBeDefined();
+    const userCreation = await UserService.getByUserId(createdUsers[0].id);
+    expect(userCreation?.statusCode).toContain(STATUS_USER_FRONT.VALIDATED);
+    await createFeatureFlag({});
+    await request(getFoAppHelper())
+      .post("/authentication/email/login")
+      .send({ email, password });
+    const otpCode = 123456;
+    await UsagersUsersRepository.updateOtp({
+      otpAttempts: 0,
+      otpAttemptsAt: null,
+      otpCode,
+      otpCodeExpiresAt: addMinutes(new Date(), 15),
+      userId: createdUsers[0].id,
+    });
+
+    const responseAttemps1 = await request(getFoAppHelper())
+      .post("/authentication/email/verify-otp")
+      .send({ code: otpCode, email, rememberDevice: true });
+    expect(responseAttemps1.status).toBe(200);
+    expect(responseAttemps1.body.user.email).toEqual(createdUsers[0].email);
+
+    const setCookieHeader = responseAttemps1.headers["set-cookie"] || [];
+    expect(setCookieHeader).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("VAO_access_token="),
+        expect.stringContaining("VAO_refresh_token="),
+        expect.stringContaining(
+          `VAO_trust_token-${USER_TARGET.FO}-${createdUsers[0].id}=`,
+        ),
+      ]),
+    );
+    const cookies = Array.isArray(setCookieHeader)
+      ? setCookieHeader
+      : setCookieHeader
+        ? [setCookieHeader]
+        : [];
+    await request(getFoAppHelper())
+      .post("/authentication/disconnect")
+      .set("Cookie", cookies);
+    const connexionResponse = await request(getFoAppHelper())
+      .post("/authentication/email/login")
+      .send({ email, password });
+    expect(connexionResponse.status).toBe(200);
+  });
+  it("should return reconnect with otp authent", async () => {
+    const password = "HelloHello1!!";
+    const timestamp = Date.now();
+    const email = `frontlogin${timestamp}@example.com`;
+
+    const { user: createdUsers } = await UsagersUsersRepository.create({
+      user: {
+        cgu_accepted: true,
+        email,
+        nom: "FrontNom",
+        password,
+        prenom: "FrontPrenom",
+        siret: `123456789012${timestamp.toString().slice(-2)}`,
+        status_code: STATUS_USER_FRONT.VALIDATED,
+        telephone: "0102030405",
+        ter_code: "FRA",
+      },
+    });
+    expect(createdUsers[0]).toBeDefined();
+    const userCreation = await UserService.getByUserId(createdUsers[0].id);
+    expect(userCreation?.statusCode).toContain(STATUS_USER_FRONT.VALIDATED);
+    await createFeatureFlag({});
+    await request(getFoAppHelper())
+      .post("/authentication/email/login")
+      .send({ email, password });
+    const otpCode = 123456;
+    await UsagersUsersRepository.updateOtp({
+      otpAttempts: 0,
+      otpAttemptsAt: null,
+      otpCode,
+      otpCodeExpiresAt: addMinutes(new Date(), 15),
+      userId: createdUsers[0].id,
+    });
+
+    const responseAttemps1 = await request(getFoAppHelper())
+      .post("/authentication/email/verify-otp")
+      .send({ code: otpCode, email, rememberDevice: false });
+    expect(responseAttemps1.status).toBe(200);
+    expect(responseAttemps1.body.user.email).toEqual(createdUsers[0].email);
+
+    const setCookieHeader = responseAttemps1.headers["set-cookie"] || [];
+    expect(setCookieHeader).toEqual(
+      expect.arrayContaining([
+        expect.not.stringContaining(
+          `VAO_trust_token-${USER_TARGET.FO}-${createdUsers[0].id}=`,
+        ),
+      ]),
+    );
+    expect(setCookieHeader).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("VAO_access_token="),
+        expect.stringContaining("VAO_refresh_token="),
+      ]),
+    );
+    const cookies = Array.isArray(setCookieHeader)
+      ? setCookieHeader
+      : setCookieHeader
+        ? [setCookieHeader]
+        : [];
+    await request(getFoAppHelper())
+      .post("/authentication/disconnect")
+      .set("Cookie", cookies);
+    const connexionResponse = await request(getFoAppHelper())
+      .post("/authentication/email/login")
+      .send({ email, password });
+    expect(connexionResponse.status).toBe(200);
+    const setCookieHeaderReconnexion =
+      connexionResponse.headers["set-cookie"] || [];
+    expect(setCookieHeaderReconnexion).toEqual(
+      expect.not.arrayContaining([
         expect.stringContaining("VAO_access_token="),
         expect.stringContaining("VAO_refresh_token="),
       ]),
@@ -537,7 +676,7 @@ describe("POST /authentication/email/verify-otp", () => {
       .send({ email, password });
     const responseAttemps1 = await request(getFoAppHelper())
       .post("/authentication/email/verify-otp")
-      .send({ code: 999999, email });
+      .send({ code: 999999, email, rememberDevice: false });
     expect(responseAttemps1.status).toBe(422);
     expect(responseAttemps1.body.code).toBe(
       FUNCTIONAL_ERRORS.USER_OTP_CODE_INVALID,
@@ -571,13 +710,13 @@ describe("POST /authentication/email/verify-otp", () => {
       .send({ email, password });
     await request(getFoAppHelper())
       .post("/authentication/email/verify-otp")
-      .send({ code: 999999, email });
+      .send({ code: 999999, email, rememberDevice: false });
     await request(getFoAppHelper())
       .post("/authentication/email/verify-otp")
-      .send({ code: 999999, email });
+      .send({ code: 999999, email, rememberDevice: false });
     const responseAttemps3 = await request(getFoAppHelper())
       .post("/authentication/email/verify-otp")
-      .send({ code: 999999, email });
+      .send({ code: 999999, email, rememberDevice: false });
     expect(responseAttemps3.status).toBe(422);
     expect(responseAttemps3.body.code).toBe(
       FUNCTIONAL_ERRORS.USER_OTP_MAX_ATTEMPTS,
@@ -611,16 +750,16 @@ describe("POST /authentication/email/verify-otp", () => {
       .send({ email, password });
     await request(getFoAppHelper())
       .post("/authentication/email/verify-otp")
-      .send({ code: 999999, email });
+      .send({ code: 999999, email, rememberDevice: false });
     await request(getFoAppHelper())
       .post("/authentication/email/verify-otp")
-      .send({ code: 999999, email });
+      .send({ code: 999999, email, rememberDevice: false });
     await request(getFoAppHelper())
       .post("/authentication/email/verify-otp")
-      .send({ code: 999999, email });
+      .send({ code: 999999, email, rememberDevice: false });
     const reponseTemporaryLocked = await request(getFoAppHelper())
       .post("/authentication/email/verify-otp")
-      .send({ code: 999999, email });
+      .send({ code: 999999, email, rememberDevice: false });
     expect(reponseTemporaryLocked.status).toBe(422);
     expect(reponseTemporaryLocked.body.code).toBe(
       FUNCTIONAL_ERRORS.USER_OTP_TEMPORARILY_BLOCKED,
@@ -704,7 +843,7 @@ describe("POST /authentication/email/resend-otp", () => {
     for (let repeat = 0; repeat < 3; repeat++) {
       await request(getFoAppHelper())
         .post("/authentication/email/verify-otp")
-        .send({ code: 999999, email });
+        .send({ code: 999999, email, rememberDevice: false });
     }
     const responseResend = await request(getFoAppHelper())
       .post("/authentication/email/resend-otp")
