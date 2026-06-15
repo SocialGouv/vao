@@ -113,7 +113,9 @@ export default async function login(
         userId: Number(user.id),
       }));
     } else {
-      await connected({ rememberDevice: false, req, res, target, user });
+      if (!requires2FA) {
+        await connected({ rememberDevice: false, req, res, target, user });
+      }
     }
     log.i("DONE");
 
