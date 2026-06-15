@@ -7,7 +7,7 @@ catalog:
   "@eslint/js": "^9.39.1"
   "@gouvfr/dsfr": "^1.14.0"
   "@gouvminint/vue-dsfr": "^8.6.0"
-  "@iconify/vue": "^4.3.0"
+  "@iconify/vue": "^5.0.1"
   "@nuxt/eslint-config": "1.9.0"
   "@nuxt/test-utils": "^3.23.0"
   "@pinia/nuxt": "~0.5.4"
