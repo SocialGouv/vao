@@ -415,6 +415,8 @@ fileignoreconfig:
   checksum: 83bcf77f5b7763c7f6bc272366174a0780fec328462c6ca4bc29ef144e2c37de
 - filename: packages/shared-ui/src/components/auth/TwoFactorCodeVerification.vue
   checksum: 2390d3ea1f84fd5826a4fb9f88ae8d434935f0595395538114a43aeee2664be1
+- filename: packages/shared-ui/src/components/cgu/CguValidation.vue
+  checksum: 61730b2fe6b785cf7655e9c6177944eb31c4321282224efd9768df4b51a7f288
 - filename: packages/shared-ui/src/composables/index.js
   checksum: 1a41578cc15aa2da2b59efa2c378e9ed2552a2912c7d7cd666527e148d4d15f6
 - filename: packages/shared-ui/src/composables/useAuthentication.ts
