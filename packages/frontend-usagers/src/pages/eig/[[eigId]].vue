@@ -7,17 +7,13 @@
       </div>
       <div class="fr-col-xs-12 fr-col-md-9 fr-py-3w">
         <div class="text-italic">
-          Il est strictement interdit de saisir dans ces champs des données
-          sensibles telles que des informations relatives à des données à
-          caractère personnel, de santé et des données identifiantes. Toute
-          saisie de ce type de données sera considérée comme non conforme aux
-          règles d'utilisation du service numérique VAO. Le responsable de
-          traitement collecte des données dans l’objectif de suivre
-          l’organisation des séjours et les EIG, en revanche toute donnée
-          nominative relative aux vacanciers ne saurait intéresser le
-          responsable de traitement qui n’est pas chargé du suivi individuel des
-          vacanciers. Le responsable de traitement se réserve le droit de
-          retirer ou faire retirer toute donnée non conforme. »
+          Les informations accessibles sur cette page, notamment celles
+          relatives au personnel encadrant, sont particulièrement sensibles et
+          confidentielles. Elles sont réservées aux seules personnes habilitées
+          à en connaître dans le cadre du traitement de l’EIG et ne doivent en
+          aucun cas être partagées. Les champs libres ne doivent contenir aucune
+          donnée personnelle ou de santé non nécessaire au traitement de
+          l’événement.
         </div>
         <div class="fr-pb-6v">
           <EIGStepper :step="hash" />
@@ -139,8 +135,7 @@ const updateOrCreate = async (data, type) => {
     return toaster.error({
       description: "Une erreur est survenue lors de la mise à jour de l'EIG",
       role: "alert",
-    }
-    );
+    });
   } finally {
     resetApiStatut();
   }
@@ -203,13 +198,10 @@ async function finalize(body) {
     return await navigateTo("/eig/liste");
   } catch (error) {
     log.w("Finalisation de la declaration de sejour : ", { error });
-    return toaster.error(
-      {
-        description:
-          "Une erreur est survenue lors de la transmission de l'EIG",
-        role: "alert",
-      }
-    );
+    return toaster.error({
+      description: "Une erreur est survenue lors de la transmission de l'EIG",
+      role: "alert",
+    });
   } finally {
     resetApiStatut();
   }
