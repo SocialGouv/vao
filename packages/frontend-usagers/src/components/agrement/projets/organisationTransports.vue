@@ -80,30 +80,24 @@ const filesProjetsSejoursOrgaTransports = ref(
 
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
-  transportAllerRetour:
-    props.initAgrement.statut === AGREMENT_STATUT.BROUILLON
-      ? yup.string().nullable()
-      : requiredUnlessBrouillon(
-          yup
-            .string()
-            .min(
-              1,
-              "Veuillez indiquer le moyen de transport aller-retour prévu. Minimum 1 caractère.",
-            )
-            .nullable(),
-        ),
-  transportSejour:
-    props.initAgrement.statut === AGREMENT_STATUT.BROUILLON
-      ? yup.string().nullable()
-      : requiredUnlessBrouillon(
-          yup
-            .string()
-            .min(
-              1,
-              "Veuillez indiquer le moyen de transport prévu pour le séjour. Minimum 1 caractère.",
-            )
-            .nullable(),
-        ),
+  transportAllerRetour: requiredUnlessBrouillon(
+    yup
+      .string()
+      .min(
+        1,
+        "Veuillez indiquer le moyen de transport aller-retour prévu. Minimum 1 caractère.",
+      )
+      .nullable(),
+  ),
+  transportSejour: requiredUnlessBrouillon(
+    yup
+      .string()
+      .min(
+        1,
+        "Veuillez indiquer le moyen de transport prévu pour le séjour. Minimum 1 caractère.",
+      )
+      .nullable(),
+  ),
 });
 
 const initialValues = {

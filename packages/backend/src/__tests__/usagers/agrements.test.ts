@@ -768,7 +768,48 @@ describe("POST /agrements", () => {
     expect(response.status).toBe(404);
     expect(response.body.name).toEqual(ERRORS_COMMON.PATH_NOT_FOUND);
   });
-  it("retourne une erreur 400 si une personne morale transmet un agrément sans procès verbal", async () => {
+  it("retourne une erreur 400 si une personne morale soumet sans procès verbal lors d'un A_COMPLETER", async () => {
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({
+      organisme: {
+        raisonSociale: "ACME Corp",
+        siret: "12345678900000",
+      },
+      typeOrganisme: ORGANISME_TYPE.PERSONNE_MORALE,
+      userId: frontUser.id,
+    });
+
+    // Création initiale avec procès-verbal pour que createAgrement passe
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+
+    // Soumission sans procès-verbal en statut A_COMPLETER
+    const agrementDataWithoutProcVerbal = {
+      ...agrementData,
+      agrementFiles: (agrementData.agrementFiles ?? []).filter(
+        (file) => file.category !== FILE_CATEGORY.PROCVERBAL,
+      ),
+    };
+
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send({
+        ...agrementDataWithoutProcVerbal,
+        id: agrementId,
+        statut: AGREMENT_STATUT.A_COMPLETER,
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toContain("procès verbal");
+  });
+
+  it("retourne une erreur 400 si une personne morale soumet sans procès verbal lors d'un EN_INSTRUCTION", async () => {
     const frontUser = await createUsagersUser();
     const organismeId = await createOrganisme({
       organisme: {
@@ -783,6 +824,10 @@ describe("POST /agrements", () => {
       organismeId,
       statut: AGREMENT_STATUT.BROUILLON,
     });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
 
     const agrementDataWithoutProcVerbal = {
       ...agrementData,
@@ -791,17 +836,51 @@ describe("POST /agrements", () => {
       ),
     };
 
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send({
+        ...agrementDataWithoutProcVerbal,
+        id: agrementId,
+        statut: AGREMENT_STATUT.EN_INSTRUCTION,
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toContain("procès verbal");
+  });
+
+  it("retourne une erreur 400 si une personne morale soumet sans procès verbal lors d'un A_CORRIGER", async () => {
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({
+      organisme: {
+        raisonSociale: "ACME Corp",
+        siret: "12345678900000",
+      },
+      typeOrganisme: ORGANISME_TYPE.PERSONNE_MORALE,
+      userId: frontUser.id,
+    });
+
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
     const agrementId = await createAgrement({
-      agrement: agrementDataWithoutProcVerbal,
+      agrement: agrementData,
       organismeId,
     });
+
+    const agrementDataWithoutProcVerbal = {
+      ...agrementData,
+      agrementFiles: (agrementData.agrementFiles ?? []).filter(
+        (file) => file.category !== FILE_CATEGORY.PROCVERBAL,
+      ),
+    };
 
     const response = await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
       .send({
         ...agrementDataWithoutProcVerbal,
         id: agrementId,
-        statut: AGREMENT_STATUT.TRANSMIS,
+        statut: AGREMENT_STATUT.A_CORRIGER,
       });
 
     expect(response.status).toBe(400);
