@@ -72,7 +72,7 @@
       >
         <div class="tab-scroll">
           <AgrementDocuments
-            :init-agrement="agrementStore.agrementCourant ?? {}"
+            :agrement-courant="agrementStore.agrementCourant ?? {}"
             :cdn-url="`${config.public.backendUrl}/documents/admin`"
           ></AgrementDocuments>
         </div>
