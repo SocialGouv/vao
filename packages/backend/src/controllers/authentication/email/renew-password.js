@@ -1,4 +1,4 @@
-const { ERRORS_COMMON } = require("@vao/shared-bridge");
+const { ERRORS_COMMON, USER_TARGET } = require("@vao/shared-bridge");
 const jwt = require("jsonwebtoken");
 
 const User = require("../../../services/User");
@@ -41,6 +41,11 @@ module.exports = async function register(req, res, next) {
     });
     log.d({ email });
     let user = await User.editPassword({ email, password });
+    res.clearCookie(`VAO_trust_token-${USER_TARGET.FO}-${user.id}`, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: true,
+    });
     if (canBeActivated(user.statusCode)) {
       user = await User.activate(email);
     }

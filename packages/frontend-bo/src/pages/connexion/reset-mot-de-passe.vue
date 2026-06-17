@@ -255,6 +255,7 @@ async function renewPassword() {
     const url = `${config.public.backendUrl}/bo-authentication/email/renew-password?token=${emailToken}`;
     await $fetch(url, {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
