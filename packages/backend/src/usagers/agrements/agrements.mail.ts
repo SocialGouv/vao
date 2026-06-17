@@ -89,6 +89,7 @@ export const AgrementMailUsagers = {
         },
       ],
       `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+      { includeSecurityNotice: true },
     );
     const params = {
       from: config.senderEmail,
