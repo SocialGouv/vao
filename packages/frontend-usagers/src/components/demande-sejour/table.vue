@@ -182,9 +182,9 @@ const title = "Liste des séjours";
 
 const siretUser = computed(
   () =>
-    userStore.user?.userSiret ??
     organismeStore.organismeCourant?.personneMorale?.siret ??
-    organismeStore.organismeCourant?.personnePhysique?.siret,
+    organismeStore.organismeCourant?.personnePhysique?.siret ??
+    userStore.user?.userSiret,
 );
 
 const draftStatus = statusUtils.defaultStatus.BROUILLON;
