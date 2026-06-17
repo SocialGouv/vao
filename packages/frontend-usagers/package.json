@@ -12,12 +12,13 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint ./src",
     "lint:fix": "corepack pnpm lint --fix",
-    "typecheck": "nuxi typecheck",
+    "typecheck": "nuxt typecheck",
     "clean": "nuxt cleanup",
     "test": "vitest --project nuxt --passWithNoTests"
   },
   "lint-staged": {
-    "src/**/*.{js,ts,vue}": "pnpm exec eslint"
+    "src/**/*.{js,ts,vue}": "pnpm exec eslint",
+    "src/**/*.{ts,vue}": "bash -c 'pnpm typecheck'"
   },
   "dependencies": {
     "@gouvfr/dsfr": "catalog:",

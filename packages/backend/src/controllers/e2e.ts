@@ -1,3 +1,4 @@
+import { FeatureFlagName } from "@vao/shared-bridge";
 import { NextFunction, Request, Response } from "express";
 import { PoolClient } from "pg";
 
@@ -152,12 +153,31 @@ export async function resetE2e(
 
       log.i(`reset - ${testsUserIds.length} tests users found`);
 
+      const featureFlagEnabled: FeatureFlagName[] = [];
+      // uniquene en dev et sur les custom env (pr)
+      if (
+        (config.sentry.environment === "development" ||
+          !config.sentry.environment) &&
+        !config.domain?.includes("preprod") &&
+        !config.domain?.includes("main")
+      ) {
+        await tx.query(
+          `
+          UPDATE public.feature_flags SET enabled = true WHERE name = $1
+        `,
+          [FeatureFlagName.AUTH_2FA],
+        );
+        featureFlagEnabled.push(FeatureFlagName.AUTH_2FA);
+        log.i("reset - Feature flag AUTH_2FA enabled");
+      }
+
       if (testsUserIds.length === 0) {
         return res.status(200).json({
           deletedOrganismesCount: 0,
           deletedOrganismesForcedCount: 0,
           deletedUsersCount: 0,
           deletedUsersForcedCount: 0,
+          featureFlagEnabled,
           insertedUserCount,
         });
       }
@@ -213,6 +233,7 @@ export async function resetE2e(
         deletedOrganismesForcedCount: organismesBySiret.length,
         deletedUsersCount: testsUserIds.length,
         deletedUsersForcedCount,
+        featureFlagEnabled,
         insertedUserCount,
       });
     });

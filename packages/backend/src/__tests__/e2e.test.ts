@@ -1,3 +1,4 @@
+import { FeatureFlagName } from "@vao/shared-bridge";
 import request from "supertest";
 
 import app from "../app";
@@ -33,6 +34,7 @@ describe("POST /e2e/reset", () => {
       deletedOrganismesForcedCount: 0,
       deletedUsersCount: 1,
       deletedUsersForcedCount: 0,
+      featureFlagEnabled: [FeatureFlagName.AUTH_2FA],
       insertedUserCount: 2,
     });
 
@@ -43,6 +45,7 @@ describe("POST /e2e/reset", () => {
       deletedOrganismesForcedCount: 0,
       deletedUsersCount: 0,
       deletedUsersForcedCount: 0,
+      featureFlagEnabled: [FeatureFlagName.AUTH_2FA],
       insertedUserCount: 0,
     });
   });
