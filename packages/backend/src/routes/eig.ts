@@ -1,4 +1,8 @@
-import { TRACKING_ACTIONS, TRACKING_USER_TYPE } from "@vao/shared-bridge";
+import {
+  EigAdminRoutesSchema,
+  TRACKING_ACTIONS,
+  TRACKING_USER_TYPE,
+} from "@vao/shared-bridge";
 import express from "express";
 
 import { eigController } from "../controllers";
@@ -12,6 +16,7 @@ import checkPermissionDeclarationSejour from "../middlewares/checkPermissionDecl
 import checkPermissionDeclarationSejourForEig from "../middlewares/checkPermissionDeclarationSejourEig";
 import checkPermissionEIG from "../middlewares/checkPermissionEIG";
 import getDepartements from "../middlewares/getDepartements";
+import { requestValidatorMiddleware } from "../middlewares/requestValidatorMiddleware";
 import trackEig from "../middlewares/trackEig";
 
 const router = express.Router();
@@ -39,7 +44,13 @@ router.get(
   eigController.getByDsId,
 );
 router.get("/available-ds", checkJWT, eigController.getAvailableDs);
-router.get("/admin", boCheckJWT, boCheckRoleEig, eigController.getAdmin);
+router.get(
+  "/admin",
+  boCheckJWT,
+  boCheckRoleEig,
+  requestValidatorMiddleware(EigAdminRoutesSchema["Get"]),
+  eigController.getAdmin,
+);
 router.get(
   "/admin/pdf/:id",
   boCheckJWT,

@@ -17,6 +17,33 @@ const { encrypt, decrypt } = require("../utils/cipher");
 
 const log = logger(module.filename);
 
+const EIG_SORT_COLUMNS = {
+  createdAt: "EIG.CREATED_AT",
+  date: "EIG.DATE",
+  dateDebut: "DS.DATE_DEBUT",
+  dateDepot: "EIG.DATE_DEPOT",
+  dateFin: "DS.DATE_FIN",
+  departement: "EIG.DEPARTEMENT",
+  id: "EIG.ID",
+  idFonctionnelle: "DS.ID_FONCTIONNELLE",
+  libelle: "DS.LIBELLE",
+  organisme:
+    "COALESCE(pm.raison_sociale, CONCAT(pp.prenom, ' ', pp.nom_usage))",
+  statut: "S.STATUT",
+};
+
+const getEigOrderByClause = (sortBy, sortDirection) => {
+  const direction = sortDirection?.toUpperCase();
+  if (direction !== "ASC" && direction !== "DESC") {
+    return "ORDER BY EIG.CREATED_AT DESC";
+  }
+  const column = EIG_SORT_COLUMNS[sortBy];
+  if (!column) {
+    return "ORDER BY EIG.CREATED_AT DESC";
+  }
+  return `ORDER BY ${column} ${direction}, EIG.CREATED_AT DESC`;
+};
+
 const commonQuery = {
   agrementRegionObtention: `
     CASE
@@ -649,7 +676,7 @@ const getEigs = async (
   if (search?.organisme && search.organisme.length) {
     searchQuery.push(`
       (CONCAT(pp.prenom,' ',pp.nom_usage) ILIKE $${params.length + 1}
-	    OR pm.raison_sociale' ILIKE $${params.length + 1})`);
+	    OR pm.raison_sociale ILIKE $${params.length + 1})`);
     params.push(`%${search.organisme}%`);
   }
 
@@ -671,11 +698,7 @@ const getEigs = async (
     searchQuery.map((s) => ` AND ${s} `).join(""),
   );
 
-  if (sortBy && sortDirection) {
-    queryWithPagination += `ORDER BY "${sortBy}" ${sortDirection}, EIG.CREATED_AT DESC`;
-  } else {
-    queryWithPagination += "ORDER BY EIG.CREATED_AT DESC";
-  }
+  queryWithPagination += getEigOrderByClause(sortBy, sortDirection);
 
   const paramsWithPagination = [...params];
   // Pagination management

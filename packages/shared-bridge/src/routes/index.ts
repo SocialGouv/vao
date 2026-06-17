@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable import/no-unresolved */
+
 import * as yup from "yup";
 
 export interface BasicRoute {
@@ -8,7 +8,13 @@ export interface BasicRoute {
   body?: Record<string, any>;
   query?: Record<
     string,
-    string | string[] | number | number[] | boolean | boolean[]
+    | string
+    | string[]
+    | number
+    | number[]
+    | boolean
+    | boolean[]
+    | Record<string, unknown>
   >;
   response:
     | RouteResponseBody<Record<string, any>>
@@ -34,6 +40,8 @@ export type { AgrementAdminRoutes } from "./admin/agrement";
 export { AgrementAdminRoutesSchema } from "./admin/agrement";
 export type { DocumentAdminRoutes } from "./admin/document";
 export { DocumentAdminRoutesSchema } from "./admin/document";
+export type { EigAdminRoutes } from "./admin/eig";
+export { EigAdminRoutesSchema } from "./admin/eig";
 export type { HebergementAdminRoutes } from "./admin/hebergement";
 export { HebergementAdminRoutesSchema } from "./admin/hebergement";
 export type { UserAdminRoutes } from "./admin/users";
