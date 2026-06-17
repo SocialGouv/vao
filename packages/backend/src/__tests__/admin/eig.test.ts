@@ -91,7 +91,46 @@ describe("Domaine /eig (admin)", () => {
         search: "{}",
       });
     expect(response.status).toBe(200);
-    expect(response.body.eig?.eigs).toBeInstanceOf(Array);
+    expect(response.body.eig).toBeInstanceOf(Array);
+    expect(response.body.total).toBeDefined();
+  });
+
+  it("GET /eig/admin accepte un tri valide", async () => {
+    const eigId = await createEig({ declarationId, userId: foUser.id });
+    await eigService.depose(eigId);
+
+    const response = await request(getBoAppHelper(boUser))
+      .get("/eig/admin")
+      .query({
+        search: "{}",
+        sortBy: "libelle",
+        sortDirection: "ASC",
+      });
+    expect(response.status).toBe(200);
+    expect(response.body.eig).toBeInstanceOf(Array);
+    expect(response.body.total).toBeDefined();
+  });
+
+  it("GET /eig/admin retourne 400 avec un sortBy invalide", async () => {
+    const response = await request(getBoAppHelper(boUser))
+      .get("/eig/admin")
+      .query({
+        search: "{}",
+        sortBy: 'id"; SELECT pg_sleep(10); --',
+        sortDirection: "ASC",
+      });
+    expect(response.status).toBe(400);
+  });
+
+  it("GET /eig/admin retourne 400 avec un sortDirection invalide", async () => {
+    const response = await request(getBoAppHelper(boUser))
+      .get("/eig/admin")
+      .query({
+        search: "{}",
+        sortBy: "libelle",
+        sortDirection: "INVALID",
+      });
+    expect(response.status).toBe(400);
   });
 
   it("GET /eig/admin/pdf/:id retourne un pdf", async () => {

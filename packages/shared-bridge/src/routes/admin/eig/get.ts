@@ -8,14 +8,27 @@ const stringOrStringArray = yup.lazy((value) =>
     : yup.string().nullable(),
 );
 
+export const EIG_ADMIN_SORT_COLUMNS = [
+  "organisme",
+  "idFonctionnelle",
+  "departement",
+  "libelle",
+  "dateDebut",
+  "date",
+  "dateDepot",
+  "statut",
+] as const;
+
+export type EigAdminSortColumn = (typeof EIG_ADMIN_SORT_COLUMNS)[number];
+
 export interface GetAdminRoute extends BasicRoute {
   method: "GET";
   path: "/eig/admin";
   query?: {
     limit?: number;
     offset?: number;
-    sortBy?: string;
-    sortDirection?: "asc" | "desc";
+    sortBy?: EigAdminSortColumn;
+    sortDirection?: "ASC" | "DESC";
     search?: {
       libelle?: string | null;
       statut?: string | string[] | null;
@@ -36,20 +49,15 @@ export const GetAdminRouteSchema: RouteSchema<GetAdminRoute> = {
   query: yup.object({
     limit: yup.number().optional(),
     offset: yup.number().optional(),
-    sortBy: yup.string().optional(),
-    sortDirection: yup
-      .mixed<"asc" | "desc">()
-      .oneOf(["asc", "desc"])
-      .optional(),
     search: yup
       .object({
-        libelle: yup.string().nullable().optional(),
-        statut: stringOrStringArray.optional(),
-        idFonctionnelle: yup.string().nullable().optional(),
-        type: stringOrStringArray.optional(),
-        organisme: yup.string().nullable().optional(),
-        departement: stringOrStringArray.optional(),
         dateRange: yup.date().nullable().optional(),
+        departement: stringOrStringArray.optional(),
+        idFonctionnelle: yup.string().nullable().optional(),
+        libelle: yup.string().nullable().optional(),
+        organisme: yup.string().nullable().optional(),
+        statut: stringOrStringArray.optional(),
+        type: stringOrStringArray.optional(),
       })
       .transform((value, originalValue) => {
         if (typeof originalValue === "string") {
@@ -58,5 +66,10 @@ export const GetAdminRouteSchema: RouteSchema<GetAdminRoute> = {
         return value;
       })
       .optional(),
+    sortBy: yup
+      .string()
+      .oneOf([...EIG_ADMIN_SORT_COLUMNS])
+      .optional(),
+    sortDirection: yup.string().oneOf(["ASC", "DESC"]).optional(),
   }),
 };

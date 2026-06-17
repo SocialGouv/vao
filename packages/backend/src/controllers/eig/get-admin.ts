@@ -7,23 +7,18 @@ import { logger } from "../../utils/logger";
 
 const log = logger(module.filename);
 
-export default async function getAdmin({
-  req,
-  res,
-  next,
-}: {
-  req: RouteRequest<EigAdminRoutes["Get"]>;
-  res: RouteResponse<EigAdminRoutes["Get"]>;
-  next: NextFunction;
-}) {
+export default async function getAdmin(
+  req: RouteRequest<EigAdminRoutes["Get"]>,
+  res: RouteResponse<EigAdminRoutes["Get"]>,
+  next: NextFunction,
+) {
   log.i("IN");
-  //const { limit, offset, sortBy, sortDirection, search } = req.query;
   const { limit, offset, sortBy, sortDirection, search } =
-    req.validatedParams ?? {};
+    req.validatedQuery ?? {};
   const params = {
     limit,
     offset,
-    search: JSON.parse(search ?? "{}"),
+    search: search ?? {},
     sortBy,
     sortDirection,
   };
