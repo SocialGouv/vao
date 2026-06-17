@@ -55,9 +55,11 @@ export const AgrementMailUsagers = {
   sendPrisEnChargeMail: ({
     email,
     regionDreets,
+    date,
   }: {
     email: string[];
     regionDreets: string | null;
+    date: Date;
   }) => {
     log.i("sendPrisEnChargeMail - In", { email });
     if (!email) {
@@ -66,15 +68,21 @@ export const AgrementMailUsagers = {
       );
     }
     const urlAgrement = config.frontUsagersDomain + "/mon-agrement";
+    const regionPhrase = regionDreets
+      ? `DREETS ${regionDreets}`
+      : "DREETS compétente";
     const html = sendTemplate.getBody(
-      "Portail VAO – Votre dossier de renouvellement d’agrément est pris en charge par la DREETS",
+      "Portail VAO – Votre dossier de renouvellement d'agrément est pris en charge par la DREETS",
       [
         {
           p: [
             "Bonjour,",
-            `Votre demande de renouvellement d’agrément a été prise en charge par la DREETS ${regionDreets || "compétente"}.`,
-            "Vous pouvez suivre l’avancement de votre demande à tout moment depuis votre espace sur le portail VAO :",
-            `<a href=${urlAgrement}>${urlAgrement}</a>`,
+            `Votre demande d'agrément a bien été transmise le ${formatFR(date)} à la ${regionPhrase}.`,
+            `La ${regionPhrase} vient de prendre en charge votre dossier.`,
+            "Vous pouvez suivre l'avancement de votre dossier à tout moment depuis votre espace personnel sur le portail VAO :",
+            `<a href='${urlAgrement}'>Lien direct vers le dossier</a>`,
+            "Un email vous sera envoyé à chaque évolution du traitement de votre demande.",
+            "Cordialement.",
           ],
           type: "p",
         },
@@ -86,7 +94,7 @@ export const AgrementMailUsagers = {
       html,
       replyTo: config.senderEmail,
       subject:
-        "Portail VAO – Votre dossier de renouvellement d’agrément est pris en charge par la DREETS",
+        "Portail VAO – Votre dossier de renouvellement d'agrément est pris en charge par la DREETS",
       to: email,
     };
     log.d("sendPrisEnChargeMail post email", { params });

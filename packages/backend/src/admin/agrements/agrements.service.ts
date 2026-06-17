@@ -452,6 +452,7 @@ export const AgrementService = {
               break;
             case AGREMENT_STATUT.PRIS_EN_CHARGE:
               mailToSend = AgrementMailUsagers.sendPrisEnChargeMail({
+                date: agrement.dateVerifCompleture!,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
               });
