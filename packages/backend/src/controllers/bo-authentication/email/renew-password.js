@@ -1,3 +1,4 @@
+const { USER_TARGET } = require("@vao/shared-bridge");
 const jwt = require("jsonwebtoken");
 
 const User = require("../../../services/BoUser");
@@ -36,7 +37,13 @@ module.exports = async function renewPassword(req, res, next) {
       algorithm: config.algorithm,
     });
     log.d({ email });
-    await User.editPassword(email, password);
+    const user = await User.editPassword(email, password);
+    res.clearCookie(`VAO_trust_token-${USER_TARGET.BO}-${user.id}`, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: true,
+    });
+
     log.i("DONE");
     return res.status(200).json({ message: "Mot de passe mis à jour" });
   } catch (error) {

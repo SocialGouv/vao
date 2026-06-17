@@ -104,6 +104,7 @@ const query = {
       WHERE
         mail = $1
         and deleted = false
+      RETURNING id
       `,
     [normalize(email), password],
   ],
@@ -426,7 +427,7 @@ module.exports.editPassword = async (email, password) => {
     });
   }
 
-  const { rowCount } = await getPool().query(
+  const { rowCount, rows } = await getPool().query(
     ...query.editPassword(email, password),
   );
   if (rowCount === 0) {
@@ -437,6 +438,7 @@ module.exports.editPassword = async (email, password) => {
   }
   usersCommon.resetLoginAttempt(email, schema.BACK);
   log.i("editPassword - DONE");
+  return rows[0];
 };
 
 module.exports.editStatus = async (userId, isBlocked) => {
