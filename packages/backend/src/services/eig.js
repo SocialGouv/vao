@@ -676,7 +676,7 @@ const getEigs = async (
   if (search?.organisme && search.organisme.length) {
     searchQuery.push(`
       (CONCAT(pp.prenom,' ',pp.nom_usage) ILIKE $${params.length + 1}
-	    OR pm.raison_sociale' ILIKE $${params.length + 1})`);
+	    OR pm.raison_sociale ILIKE $${params.length + 1})`);
     params.push(`%${search.organisme}%`);
   }
 
