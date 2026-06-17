@@ -264,6 +264,7 @@ async function renewPassword() {
     const url = `${config.public.backendUrl}/authentication/email/renew-password?token=${emailToken}`;
     await $fetch(url, {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
