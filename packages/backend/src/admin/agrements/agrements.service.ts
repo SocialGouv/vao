@@ -355,6 +355,7 @@ export const AgrementService = {
       AGREMENT_STATUT.A_CORRIGER,
       AGREMENT_STATUT.REFUSE,
       AGREMENT_STATUT.VALIDE,
+      AGREMENT_STATUT.PRIS_EN_CHARGE,
     ];
     if (allowedStatutsMailDreets.includes(statut)) {
       const regionDreets = await Region.fetchOne(territoireCode);
@@ -420,6 +421,7 @@ export const AgrementService = {
       const allowedStatutsMailOva = [
         AGREMENT_STATUT.A_COMPLETER,
         AGREMENT_STATUT.EN_INSTRUCTION,
+        AGREMENT_STATUT.PRIS_EN_CHARGE,
         AGREMENT_STATUT.A_CORRIGER,
         AGREMENT_STATUT.REFUSE,
         AGREMENT_STATUT.VALIDE,
@@ -444,6 +446,13 @@ export const AgrementService = {
               break;
             case AGREMENT_STATUT.EN_INSTRUCTION:
               mailToSend = AgrementMailUsagers.sendCompletudeConfirmedMail({
+                email: mailsOVA,
+                regionDreets: regionDreets.text,
+              });
+              break;
+            case AGREMENT_STATUT.PRIS_EN_CHARGE:
+              mailToSend = AgrementMailUsagers.sendPrisEnChargeMail({
+                date: agrement.dateVerifCompleture!,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
               });
