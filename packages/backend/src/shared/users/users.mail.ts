@@ -47,6 +47,7 @@ export const UserMail = {
         },
       ],
       `L'équipe du SI VAO<BR><a href=${urlPortail}>Portail VAO</a>`,
+      { includeSecurityNotice: true },
     );
 
     return {

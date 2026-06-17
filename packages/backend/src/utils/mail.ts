@@ -38,6 +38,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontBODomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
 
         const params = {
@@ -1041,6 +1042,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
 
         log.d("sendAccountAlreadyExist - sending validation mail");
@@ -1084,6 +1086,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
         const params = {
           from: config.senderEmail,
@@ -1137,6 +1140,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
 
         const params = {
@@ -1197,6 +1201,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
 
         log.d("sendValidationMail - sending validation mail");
@@ -1264,6 +1269,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
 
         const params = {
@@ -1317,6 +1323,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
 
         const params = {
@@ -1370,6 +1377,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
         const params = {
           from: config.senderEmail,
@@ -1425,6 +1433,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
         const params = {
           cc: cc,
@@ -1476,6 +1485,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
 
         log.d(
@@ -1529,6 +1539,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
 
         const params = {
@@ -1584,6 +1595,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
         const params = {
           from: config.senderEmail,
@@ -1643,6 +1655,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
 
         const params = {
@@ -1683,6 +1696,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
         const params = {
           from: config.senderEmail,
@@ -1714,6 +1728,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
         const params = {
           from: config.senderEmail,
@@ -1752,6 +1767,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
         const params = {
           from: config.senderEmail,
@@ -1809,6 +1825,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
         return {
           from: config.senderEmail,
@@ -1836,6 +1853,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
         const params = {
           from: config.senderEmail,
@@ -1865,6 +1883,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
         const params = {
           from: config.senderEmail,
@@ -1911,6 +1930,7 @@ export const MailUtils = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+          { includeSecurityNotice: true },
         );
 
         return {
