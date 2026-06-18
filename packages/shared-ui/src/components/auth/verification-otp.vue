@@ -28,7 +28,11 @@ import {
   TwoFactorCodeVerification,
   useAuthentication,
 } from "../../";
-import type { AuthType, IUserStore } from "../../composables/useAuthentication";
+import type {
+  AuthType,
+  IUserStore,
+  IOrganismeStore,
+} from "../../composables/useAuthentication";
 import type { Verify2FAPayload } from "../../types/Auth.type";
 import { maskEmail } from "../../utils/auth";
 import { getFunctionalErrorMessage } from "@vao/shared-bridge";
@@ -41,6 +45,7 @@ const route = useRoute();
 const navigateTo = (route: string) => router.push(route);
 const props = defineProps({
   store: { type: Object, required: true },
+  organismeStore: { type: Object, required: false },
   url: { type: String, required: true },
   target: { type: String, required: true },
 });
@@ -91,6 +96,7 @@ const { isVerifying2FA, verify2FACode, resendCode } = useAuthentication(
   props.url,
   props.store as IUserStore,
   navigateTo,
+  props.organismeStore as IOrganismeStore,
 );
 
 const twoFactorRef = ref<InstanceType<typeof TwoFactorCodeVerification> | null>(

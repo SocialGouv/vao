@@ -22,7 +22,7 @@ export interface IUserStore {
   user: UserDto | null;
   refreshProfile: () => Promise<void>;
 }
-interface IOrganismeStore {
+export interface IOrganismeStore {
   setMyOrganisme: () => Promise<void>;
 }
 

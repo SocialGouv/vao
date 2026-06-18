@@ -11,9 +11,16 @@ export const useMenuNavItems = () => {
   const userStore = useUserStore();
   const organismeStore = useOrganismeStore();
   const agrementStore = useAgrementStore();
-  if (userStore.isConnected) {
-    organismeStore.setMyOrganisme();
-  }
+
+  watch(
+    () => userStore.isConnected,
+    (isConnected) => {
+      if (isConnected) {
+        void organismeStore.setMyOrganisme();
+      }
+    },
+    { immediate: true },
+  );
 
   return computed(() => {
     if (!userStore.isConnected) {
