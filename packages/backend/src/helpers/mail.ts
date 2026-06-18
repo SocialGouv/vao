@@ -1,5 +1,9 @@
-/* eslint-disable no-nested-ternary */
-export const getBody = (titre: string, content: any[], signature: string) => {
+export const getBody = (
+  titre: string,
+  content: any[],
+  signature: string,
+  options?: { includeSecurityNotice?: boolean },
+) => {
   const baliseParagraphe = `<p style="Margin:0;mso-line-height-rule:exactly;font: 12px/14px sans-serif;">`;
 
   const head = `
@@ -158,6 +162,34 @@ export const getBody = (titre: string, content: any[], signature: string) => {
       `;
   }
 
+  const securityNotice = options?.includeSecurityNotice
+    ? `
+      <tr>
+        <td align="left" style="padding:0;Margin:0;padding-top:25px">
+          <table width="100%" cellspacing="0" cellpadding="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;border-top:1px solid #cccccc">
+            <tr>
+              <td style="padding-top:15px">
+                ${baliseParagraphe}<strong>Attention à l'hameçonnage (phishing)</strong></p>
+                ${baliseParagraphe}
+                  L'hameçonnage (phishing) consiste à usurper une identité (mail, SMS, faux site) pour vous tromper
+                  et vous amener à divulguer des informations sensibles (identifiants, mots de passe, etc.).
+                </p>
+                ${baliseParagraphe}Il vous est conseillé de :</p>
+                <ul style="font: 12px/14px sans-serif;margin-top:5px">
+                  <li>Vérifier l'expéditeur des messages reçus</li>
+                  <li>N'ouvrir aucun lien ni pièce jointe suspecte</li>
+                  <li>Ne pas communiquer vos identifiants ou mots de passe par message</li>
+                </ul>
+                ${baliseParagraphe}
+                  La vigilance de chacun est essentielle pour protéger notre système d'information et vos données.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>`
+    : "";
+
   const corpsMail = `
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -178,18 +210,19 @@ export const getBody = (titre: string, content: any[], signature: string) => {
                             <tr>
                               <td valign="top" align="center" style="padding:0;Margin:0;width:540px">
                                 <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
-  ${content.map(({ type, ...others }) =>
-    type === "p"
-      ? formatP(others)
-      : type === "link"
-        ? formatLink(others)
-        : type === "quote"
-          ? formatQuote(others)
-          : type === "array"
-            ? formatArray(others)
-            : "",
-  ).join(`
-  `)}
+                                  ${content.map(({ type, ...others }) =>
+                                    type === "p"
+                                      ? formatP(others)
+                                      : type === "link"
+                                        ? formatLink(others)
+                                        : type === "quote"
+                                          ? formatQuote(others)
+                                          : type === "array"
+                                            ? formatArray(others)
+                                            : "",
+                                  ).join(`
+                                  `)}
+                                  ${securityNotice}
                                   <tr>
                                     <td align="left" style="padding:0;Margin:0;padding-top:25px">
                                       ${baliseParagraphe}
