@@ -30,6 +30,7 @@ describe("POST /e2e/reset", () => {
     let response = await request(app).post("/e2e/reset");
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
+      antivirusEnabled: true,
       deletedOrganismesCount: 1,
       deletedOrganismesForcedCount: 0,
       deletedUsersCount: 1,
@@ -41,6 +42,7 @@ describe("POST /e2e/reset", () => {
     response = await request(app).post("/e2e/reset");
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
+      antivirusEnabled: true,
       deletedOrganismesCount: 0,
       deletedOrganismesForcedCount: 0,
       deletedUsersCount: 0,

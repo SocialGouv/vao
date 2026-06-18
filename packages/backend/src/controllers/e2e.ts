@@ -173,6 +173,7 @@ export async function resetE2e(
 
       if (testsUserIds.length === 0) {
         return res.status(200).json({
+          antivirusEnabled: !config.antivirusDisabled,
           deletedOrganismesCount: 0,
           deletedOrganismesForcedCount: 0,
           deletedUsersCount: 0,
@@ -229,6 +230,7 @@ export async function resetE2e(
 
       log.i("reset - DONE");
       return res.status(200).json({
+        antivirusEnabled: !config.antivirusDisabled,
         deletedOrganismesCount: organismes.length,
         deletedOrganismesForcedCount: organismesBySiret.length,
         deletedUsersCount: testsUserIds.length,
