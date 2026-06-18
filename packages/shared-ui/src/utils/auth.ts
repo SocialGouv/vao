@@ -46,7 +46,6 @@ export function createAuthState(): AuthState {
     password: ref<string>(""),
     displayType: ref<LoginErrorType | null>(null),
     openTwoFactor: ref<boolean>(false),
-    openCgu: ref<boolean>(false),
     isLoggingIn: ref<boolean>(false),
     isVerifying2FA: ref<boolean>(false),
     isResendingCode: ref<boolean>(false),

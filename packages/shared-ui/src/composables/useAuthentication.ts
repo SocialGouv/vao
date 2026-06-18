@@ -104,7 +104,6 @@ export const useAuthentication = (
     password,
     displayType,
     openTwoFactor,
-    openCgu,
     isLoggingIn,
     isVerifying2FA,
     isResendingCode,
@@ -162,7 +161,9 @@ export const useAuthentication = (
     }
 
     if (user?.cguAccepted === false) {
-      openCgu.value = true;
+      if (navigateTo) {
+        navigateTo("/connexion?openCgu=true");
+      }
     } else {
       toaster.success({
         titleTag: "h2",
@@ -348,8 +349,6 @@ export const useAuthentication = (
         },
       });
 
-      openCgu.value = false;
-
       // Appels spécifiques FO
       if (authConfig.useOrganismeStore && organismeStore) {
         await organismeStore.setMyOrganisme();
@@ -378,7 +377,6 @@ export const useAuthentication = (
 
   function refuseCgu(): void {
     log.i("refuseCgu");
-    openCgu.value = false;
     if (navigateTo) {
       navigateTo(authConfig.routeLogin);
     }
@@ -389,7 +387,6 @@ export const useAuthentication = (
     password.value = "";
     displayType.value = null;
     openTwoFactor.value = false;
-    openCgu.value = false;
     isLoggingIn.value = false;
     isVerifying2FA.value = false;
     isResendingCode.value = false;
@@ -400,7 +397,6 @@ export const useAuthentication = (
     password,
     displayType,
     openTwoFactor,
-    openCgu,
     isLoggingIn,
     isVerifying2FA,
     isResendingCode,

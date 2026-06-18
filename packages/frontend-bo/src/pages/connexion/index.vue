@@ -140,6 +140,8 @@ const userStore = useUserStore();
 const config = useRuntimeConfig();
 const router = useRouter();
 const navigateTo = (route: string) => router.push(route);
+const route = useRoute();
+const openCgu = computed(() => route.query.openCgu === "true");
 
 useHead({
   title: "VAO - Connexion Portail Administration",
@@ -155,7 +157,6 @@ const {
   email,
   password,
   displayType,
-  openCgu,
   isLoggingIn,
 
   canLogin,
@@ -188,7 +189,7 @@ const currentAlert = computed<{
 });
 
 onMounted(() => {
-  if (userStore?.isConnected) {
+  if (userStore?.isConnected && !openCgu.value) {
     log.i("Utilisateur déjà connecté, redirection");
     navigateTo("/");
   }
