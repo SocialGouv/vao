@@ -1,3 +1,4 @@
+import { FeatureFlagName } from "@vao/shared-bridge";
 import request from "supertest";
 
 import app from "../app";
@@ -29,20 +30,24 @@ describe("POST /e2e/reset", () => {
     let response = await request(app).post("/e2e/reset");
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
+      antivirusEnabled: true,
       deletedOrganismesCount: 1,
       deletedOrganismesForcedCount: 0,
       deletedUsersCount: 1,
       deletedUsersForcedCount: 0,
+      featureFlagEnabled: [FeatureFlagName.AUTH_2FA],
       insertedUserCount: 2,
     });
 
     response = await request(app).post("/e2e/reset");
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
+      antivirusEnabled: true,
       deletedOrganismesCount: 0,
       deletedOrganismesForcedCount: 0,
       deletedUsersCount: 0,
       deletedUsersForcedCount: 0,
+      featureFlagEnabled: [FeatureFlagName.AUTH_2FA],
       insertedUserCount: 0,
     });
   });

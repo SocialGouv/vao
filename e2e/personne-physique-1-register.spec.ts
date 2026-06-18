@@ -6,6 +6,8 @@ import {
   getAgrementFile,
   getTransportsFile,
   loginBo,
+  acceptCgu,
+  expectToast,
   loginUsagers,
   logSuiteName,
   logTestName,
@@ -140,16 +142,7 @@ test.describe.serial(testName, () => {
 
     await page.goto(`${appUsagersUrl}`);
     await loginUsagers(page, userOva.username, userOva.password, true);
-
-    await page
-      .getByText(
-        "Veuillez lire et accepter les Conditions Générales d'Utilisation ",
-      )
-      .click();
-    await page.getByRole("button", { name: "Valider" }).click();
-    await expect(page.locator(alertLocator).first()).toContainText(
-      "CGU acceptées avec succès",
-    );
+    await acceptCgu(page);
     await page.getByRole("link", { name: "Renseigner ma fiche" }).click();
 
     // ETAPES 1
@@ -157,9 +150,7 @@ test.describe.serial(testName, () => {
     await page
       .getByRole("button", { name: "Récupérer les informations de" })
       .click();
-    await expect(page.locator(alertLocator).nth(1)).toContainText(
-      "Données récupérées",
-    );
+    await expectToast(page, "Données récupérées");
     await page
       .getByLabel("Profession")
       .selectOption("Agriculture, sylviculture et pêche");
@@ -173,9 +164,7 @@ test.describe.serial(testName, () => {
     await page.getByRole("button", { name: "Suivant" }).click();
 
     // ETAPES 2
-    await expect(page.locator(alertLocator).nth(2)).toContainText(
-      "Fiche organisateur créée",
-    );
+    await expectToast(page, "Fiche organisateur créée");
     await page
       .getByRole("textbox", { name: "Numéro d'agrément “Vacances" })
       .click();
@@ -194,9 +183,7 @@ test.describe.serial(testName, () => {
     await addInputFile(page, "Si vous souhaitez remplacer", getAgrementFile());
 
     await page.getByRole("button", { name: "Suivant" }).click();
-    await expect(page.locator(alertLocator).nth(3)).toContainText(
-      "Agrément sauvegardé",
-    );
+    await expectToast(page, "Agrément sauvegardé");
 
     // ETAPES 3
     await page.getByText("Le transport vers le lieu de").click();

@@ -145,6 +145,7 @@ const userStore = useUserStore();
 const config = useRuntimeConfig();
 
 const router = useRouter();
+const route = useRoute();
 
 const navigateTo = (route: string) => router.push(route);
 
@@ -159,12 +160,11 @@ useHead({
 });
 
 const organismeStore = useOrganismeStore();
-
+const openCgu = computed(() => route.query.openCgu === "true");
 const {
   email,
   password,
   displayType,
-  openCgu,
   isLoggingIn,
   canLogin,
   login,
@@ -201,7 +201,7 @@ const currentAlert = computed<{
 });
 
 onMounted(() => {
-  if (userStore?.isConnected) {
+  if (userStore?.isConnected && !openCgu.value) {
     log.i("Utilisateur déjà connecté, redirection");
     navigateTo("/");
   }

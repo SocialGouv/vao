@@ -19,6 +19,10 @@ async function scanFile(req: Request, _res: Response, next: NextFunction) {
     );
   }
 
+  if (config.antivirusDisabled) {
+    return next();
+  }
+
   const { path, originalname } = req.file;
   try {
     log.i("IN", { originalname, path });

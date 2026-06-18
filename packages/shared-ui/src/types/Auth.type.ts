@@ -42,7 +42,6 @@ export interface AuthState {
   password: Ref<string>;
   displayType: Ref<LoginErrorType | null>;
   openTwoFactor: Ref<boolean>;
-  openCgu: Ref<boolean>;
   isLoggingIn: Ref<boolean>;
   isVerifying2FA: Ref<boolean>;
   isResendingCode: Ref<boolean>;
@@ -60,7 +59,6 @@ export interface UseAuthenticationReturn {
   password: Ref<string>;
   displayType: Ref<LoginErrorType | null>;
   openTwoFactor: Ref<boolean>;
-  openCgu: Ref<boolean>;
   isLoggingIn: Ref<boolean>;
   isVerifying2FA: Ref<boolean>;
   isResendingCode: Ref<boolean>;

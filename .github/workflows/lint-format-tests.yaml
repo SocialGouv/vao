@@ -24,6 +24,10 @@ jobs:
         run: pnpm -w lint:all
       - name: Run backend tests
         run: pnpm -w test:unit:all
+      - name: Run frontend-bo typecheck
+        run: pnpm --filter @vao/frontend-bo typecheck
+      - name: Run frontend-usagers typecheck
+        run: pnpm --filter @vao/frontend-usagers typecheck
       - name: Run frontend tests
         run: pnpm -w test:unit:frontend
       - name: SonarQube Scan

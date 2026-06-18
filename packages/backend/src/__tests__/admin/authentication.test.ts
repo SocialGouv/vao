@@ -183,7 +183,7 @@ describe("POST /bo-authentication/email/verify-otp", () => {
   it("should return 200 after 1 attemps", async () => {
     const password = "HelloHello1!!";
     const timestamp = Date.now();
-    const email = `BOlogin${timestamp}@example.com`;
+    const email = `bologin${timestamp}@example.com`;
 
     const { user: createdUsers } = await AdminUsersRepository.create({
       user: {

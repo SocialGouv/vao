@@ -67,3 +67,37 @@ services:
       - S3_BUCKET_REGION=us-east-1
     depends_on:
       - minio
+
+  clamav:
+    image: clamav/clamav-debian:1.4
+    restart: unless-stopped
+
+  clamav-rest:
+    image: benzino77/clamav-rest-api:1.5.1
+    restart: unless-stopped
+    depends_on:
+      clamav:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      CLAMD_IP: clamav
+      CLAMD_PORT: 3310
+      APP_FORM_KEY: FILES
+      APP_PORT: 3000
+      APP_MAX_FILE_SIZE: 26214400
+    ports:
+      - "3001:3000"
+    command:
+      [
+        "/usr/bin/wait-for-it",
+        "-h",
+        "clamav",
+        "-p",
+        "3310",
+        "-s",
+        "-t",
+        "120",
+        "--",
+        "npm",
+        "start",
+      ]
