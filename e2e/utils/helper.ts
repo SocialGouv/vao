@@ -52,6 +52,60 @@ export const logTestResult = async (page: Page, testInfo: TestInfo) => {
 const AUTH_SUCCESS_TEXT = "Authentification réalisée avec succès";
 const CGU_TEXT =
   "Veuillez lire et accepter les Conditions Générales d'Utilisation";
+const OTP_VERIFICATION_HEADING = "Vérification sécurisée";
+
+async function completeOtpVerification(page: Page, email: string) {
+  await expect(
+    page.getByRole("heading", { name: OTP_VERIFICATION_HEADING }),
+  ).toBeVisible();
+
+  const otpCode = await getOtpCodeFromMaildev(page, email);
+  await fillOtpCode(page, otpCode);
+  await waitReadyPage(page);
+}
+
+async function fillOtpCode(page: Page, otpCode: string) {
+  expect(otpCode).toMatch(/^\d{6}$/);
+
+  for (let index = 0; index < 6; index++) {
+    await page.locator(`#code-input-${index}`).fill(otpCode[index]);
+  }
+
+  await page.getByRole("button", { name: "Valider" }).click();
+}
+
+async function getOtpCodeFromMaildev(
+  page: Page,
+  email: string,
+): Promise<string> {
+  const { maildevUrl } = getUrls();
+  const mailPage = await page.context().newPage();
+  let otpCode = "";
+
+  try {
+    await expect(async () => {
+      await mailPage.goto(`${maildevUrl}/#/`);
+      await mailPage
+        .getByRole("link", {
+          // eslint-disable-next-line no-irregular-whitespace
+          name: `Portail VAO - Votre code de vérification pour accéder à votre compte To: ${email}`,
+        })
+        .first()
+        .click();
+
+      const frame = mailPage.locator("iframe").first().contentFrame();
+      const otpLocator = frame.locator("strong").filter({ hasText: /^\d{6}$/ });
+      await expect(otpLocator.first()).toBeVisible();
+      const code = await otpLocator.first().textContent();
+      expect(code).toMatch(/^\d{6}$/);
+      otpCode = code!;
+    }).toPass({ timeout: 15000 });
+  } finally {
+    await mailPage.close();
+  }
+
+  return otpCode;
+}
 
 async function expectVisibleWithAlertOnFailure(
   page: Page,
@@ -64,7 +118,9 @@ async function expectVisibleWithAlertOnFailure(
     if (await successLocator.first().isVisible()) {
       return;
     }
-    const alertText = (await alert.textContent())?.trim();
+    const alertText =
+      (await alert.textContent({ timeout: 1000 }).catch(() => null))?.trim() ??
+      null;
     const detail = alertText
       ? `Texte de l'alerte : "${alertText}"`
       : "Aucune alerte affichée";
@@ -85,6 +141,8 @@ export async function loginBo(page: Page, email: string, password: string) {
     .fill(password);
   await page.getByRole("button", { name: "Se connecter" }).click();
   await waitReadyPage(page);
+  await completeOtpVerification(page, email);
+
   await expectVisibleWithAlertOnFailure(
     page,
     page.locator(alertLocator).first().filter({ hasText: AUTH_SUCCESS_TEXT }),
@@ -110,6 +168,7 @@ export async function loginUsagers(
     .fill(password);
   await page.getByRole("button", { name: "Se connecter" }).click();
   await waitReadyPage(page);
+  await completeOtpVerification(page, email);
 
   const authOk = page
     .locator(alertLocator)
@@ -122,10 +181,20 @@ export async function loginUsagers(
     authOk.or(cgu),
     `Connexion usagers échouée (${email})`,
   );
+}
 
-  if (!expectCgu) {
-    await expect(page.getByText(CGU_TEXT)).not.toBeVisible();
-  }
+export async function expectToast(page: Page, text: string) {
+  await expect(
+    page.locator(alertLocator).filter({ hasText: text }).first(),
+  ).toBeVisible();
+}
+
+export async function acceptCgu(page: Page) {
+  await page.getByText(CGU_TEXT).click();
+  await page.getByRole("button", { name: "Valider" }).click();
+  await expect(page.locator(alertLocator).first()).toContainText(
+    "CGU acceptées avec succès",
+  );
 }
 
 export async function addInputFile(

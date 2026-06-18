@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.dev.example.env
-  checksum: 6d2b816034eceab035c41b6b6be08c11b18b011f16cb47f0112e48f2547499c6
+  checksum: 7750aad06145ec2c279c3e85684a5877bb3f5e67c4d3e40f112ff87f3d6869e6
 - filename: .github/workflows/e2e.yaml
   checksum: d96c2e37f40752bf08193617c58876bddbd4ceedf97579b8aef1d4cf03985def
 - filename: .github/workflows/lint-format-tests.yaml
@@ -59,6 +59,8 @@ fileignoreconfig:
   checksum: 28122f4f8a3e21312046f7347bdffa570e24c8a38976417d011efc1e5004a0cf
 - filename: e2e/register-personne-physique.spec.ts
   checksum: 2def9cd46ba58e8b1a354a0594e2f13c9ac7b3bcdb1f265f1225ab1af484e7ee
+- filename: e2e/utils/helper.ts
+  checksum: d2e602965e96911d358a6ec850e85efb88ff791c96b50fe1c74fba8b6564a8d7
 - filename: e2e/utils/users.ts
   checksum: e5bab517626659855438a876dfca7fb40451337adbe8cbc11ca65b8a554adaf8
 - filename: package-lock.json

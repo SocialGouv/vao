@@ -1,17 +1,17 @@
 ---
-name: honorabilite-branch-review
+name: vao-branch-review
 description: >-
   Code review d'une branche Git vs origin/main
 ---
 
-# Review de branche Honorabilite-v2
+# Review de branche VAO
 
 ## Déclenchement
 
 Demander explicitement, par exemple :
 
 - « Fais une review de cette branche par rapport à origin/main »
-- « @honorabilite-branch-review »
+- « @vao-branch-review »
 - « Review PR vs main »
 
 L'agent charge ce skill et compare **la branche courante** à `origin/main`.

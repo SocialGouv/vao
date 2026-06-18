@@ -8,6 +8,7 @@ export const config = {
 
   algorithm: "HS256",
 
+  antivirusDisabled: process.env.ANTIVIRUS_DISABLED === "true",
   antivirusUrl: process.env.ANTIVIRUS_URL,
 
   apiAdresse: {
