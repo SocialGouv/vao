@@ -1,4 +1,4 @@
-import { statusUserFront } from "@vao/shared-bridge";
+import { STATUS_USER_FRONT } from "@vao/shared-bridge";
 import { typeNotification } from "../helpers/notifications";
 import * as Sentry from "@sentry/node";
 import { notifyCompteInactif2m, sentry } from "../config";
@@ -20,7 +20,7 @@ const querySelectNotifyCompteInactif2m = `
   WHERE lastconnection_at >= current_date - interval '3 month'  
     AND lastconnection_at  < current_date - interval '2 month'
     AND last_mail_inactivity_2m_at is null
-    AND status_code not in ('${statusUserFront.BLOCKED}', '${statusUserFront.NEED_SIRET_VALIDATION}');
+    AND status_code not in ('${STATUS_USER_FRONT.BLOCKED}', '${STATUS_USER_FRONT.NEED_SIRET_VALIDATION}');
 `;
 
 const queryUpdateUserNotification2m = `

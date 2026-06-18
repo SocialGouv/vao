@@ -2,16 +2,16 @@ const jwt = require("jsonwebtoken");
 
 const BoUser = require("../../services/BoUser");
 
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error").default;
-const MailUtils = require("../../utils/mail");
+const { MailUtils } = require("../../utils/mail");
 const Send = require("../../services/mail").mailService.send;
 const { buildEmailToken } = require("../../utils/bo-token");
 const serviceCompetence = require("./service-competence");
 const verifyCompetence = require("./service-competence");
 
 const BOUserSchema = require("../../schemas/bo-user");
-const config = require("../../config");
+const { config } = require("../../config");
 
 const log = logger(module.filename);
 

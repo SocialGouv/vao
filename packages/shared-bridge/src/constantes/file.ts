@@ -1,0 +1,230 @@
+export enum FILE_CATEGORY {
+  ARRETE_AGREMENT = "AGR_ARRETE_AGREMENT",
+  AMODIFER = "AGR_AMODIFIER",
+  ACORRIGER = "AGR_ACORRIGER",
+  COMPLETUDE = "AGR_COMPLETUDE",
+  REFUS = "AGR_REFUS",
+  PROCVERBAL = "AGR_PROCVERBAL",
+  MOTIVATION = "AGR_MOTIVATION",
+  IMMATRICUL = "AGR_IMMATRICUL",
+  ASSURRESP = "AGR_ASSURRESP",
+  ASSURRAPAT = "AGR_ASSURRAPAT",
+  SEJOUR = "AGR_SEJOUR",
+  ACCOMPRESP = "AGR_ACCOMPRESP",
+  SUIVIMED = "AGR_SUIVIMED",
+  BUDGET = "AGR_BUDGET",
+  CHANGEEVOL = "AGR_CHANGEEVOL",
+  BILANQUALIT = "AGR_BILANQUALIT",
+  BILANFINANC = "AGR_BILANFINANC",
+  BILANQUALITPERCEPTION = "AGR_BILANQUALITPERCEPTION",
+  BILANQUALITPERSPECTIVE = "AGR_BILANQUALITPERSPECTIVE",
+  BILANQUALITELEMARQ = "AGR_BILANQUALITELEMARQ",
+  BILANQUALITCOMPLEMENTAIRES = "AGR_BILANQUALITCOMPLEMENTAIRES",
+  BILANFINANCIERQUATREANNEES = "AGR_BILANFINANCIERQUATREANNEES",
+  PROJETSSEJOURSPREVUS = "AGR_PROJETSSEJOURSPREVUS",
+  PROJETSSEJOURSCOMPETENCESEXPERIENCE = "AGR_PROJSEJCOMPETEXP",
+  PROJETSSEJOURSMESURES = "AGR_PROJETSSEJOURSMESURES",
+  PROJETSSEJOURSCOMPLEMENTAIRES = "AGR_PROJETSSEJOURSCOMPLEMENTAIRES",
+  PROJETSSEJOURSCASIER = "AGR_PROJETSSEJOURSCASIER",
+  PROJETSSEJOURSORGATRANSPORT = "AGR_PROJSSEJORGATRANSPORT",
+  PROJETSSEJOURSSUIVIMED = "AGR_PROJETSSEJOURSSUIVIMED",
+  PROJSEJPROTCOREORIENT = "AGR_PROJSEJPROTCOREORIENT",
+  PROJSSEJOURSPROTCOLERAPATR = "AGR_PROJSSEJOURSPROTCOLERAPATR",
+  PROJSEJOURSBUDGETPERSONNES = "AGR_PROJSEJOURSBUDGETPERSONNES",
+}
+
+export type FileKey =
+  | "fileCompletude"
+  | "fileACorriger"
+  | "fileArreteAgrement"
+  | "fileAModifier"
+  | "fileRefus"
+  | "filesMotivation"
+  | "fileProcesVerbal"
+  | "fileImmatriculation"
+  | "fileAttestationsRespCivile"
+  | "fileAttestationsRapatriement"
+  | "filesChangeEvol"
+  | "filesBilanQualit"
+  | "filesBilanFinancier"
+  | "filesAgrementSejour"
+  | "filesAccompResp"
+  | "filesSuiviMed"
+  | "filesBudget"
+  | "filesBilanQualitPerception"
+  | "filesBilanQualitPerspectives"
+  | "filesBilanQualitElementsMarquants"
+  | "filesBilanQualitComplementaires"
+  | "filesBilanFinancierQuatreAnnees"
+  | "filesProjetsSejoursPrevus"
+  | "filesProjetsSejoursCompetencesExperience"
+  | "filesProjetsSejoursMesures"
+  | "filesProjetsSejoursComplementaires"
+  | "fileProjetsSejoursCasier"
+  | "filesProjetsSejoursOrgaTransports"
+  | "filesProjetsSejoursSuiviMed"
+  | "filesProjetsSejoursProtocoleReorientation"
+  | "filesProjetsSejoursProtocoleRapatriement"
+  | "filesProjSejoursBudgetPersonnes";
+
+export const FILE_CATEGORY_CONFIG = {
+  [FILE_CATEGORY.COMPLETUDE]: {
+    fileKey: "fileCompletude",
+    label: "Fichier associé à la confirmation de complétude",
+    multiple: false,
+  },
+  [FILE_CATEGORY.AMODIFER]: {
+    fileKey: "fileAModifier",
+    label: "Fichier associé à la demande de complétion",
+    multiple: false,
+  },
+  [FILE_CATEGORY.ACORRIGER]: {
+    fileKey: "fileACorriger",
+    label: "Fichier associé à la demande de correction",
+    multiple: false,
+  },
+  [FILE_CATEGORY.ARRETE_AGREMENT]: {
+    fileKey: "fileArreteAgrement",
+    label: "Arrêté d'agrément",
+    multiple: false,
+  },
+  [FILE_CATEGORY.REFUS]: {
+    fileKey: "fileRefus",
+    label: "Fichier lié au refus de l'agrément",
+    multiple: false,
+  },
+  [FILE_CATEGORY.PROCVERBAL]: {
+    fileKey: "fileProcesVerbal",
+    label: "Procès verbal d’assemblée générale",
+    multiple: false,
+  },
+  [FILE_CATEGORY.MOTIVATION]: {
+    fileKey: "filesMotivation",
+    label: "Motivation, compétences et expériences",
+    multiple: true,
+  },
+  [FILE_CATEGORY.IMMATRICUL]: {
+    fileKey: "fileImmatriculation",
+    label:
+      "Certificat d’immatriculation au registre des opérateurs de voyages et de séjours",
+    multiple: false,
+  },
+  [FILE_CATEGORY.ASSURRESP]: {
+    fileKey: "fileAttestationsRespCivile",
+    label: "Attestation Assurance Responsabilité",
+    multiple: false,
+  },
+  [FILE_CATEGORY.ASSURRAPAT]: {
+    fileKey: "fileAttestationsRapatriement",
+    label: "Attestation Assurance Cas de rapatriement",
+    multiple: false,
+  },
+  [FILE_CATEGORY.SEJOUR]: {
+    fileKey: "filesAgrementSejour",
+    label: "Projet de séjour",
+    multiple: true,
+  },
+  [FILE_CATEGORY.ACCOMPRESP]: {
+    fileKey: "filesAccompResp",
+    label: "Accompagnants & responsables",
+    multiple: true,
+  },
+  [FILE_CATEGORY.SUIVIMED]: {
+    fileKey: "filesSuiviMed",
+    label: "Suivi médical",
+    multiple: true,
+  },
+  [FILE_CATEGORY.BUDGET]: {
+    fileKey: "filesBudget",
+    label: "Budget",
+    multiple: true,
+  },
+  [FILE_CATEGORY.CHANGEEVOL]: {
+    fileKey: "filesChangeEvol",
+    label: "Bilan - Changement ou évolution",
+    multiple: true,
+  },
+  [FILE_CATEGORY.BILANQUALIT]: {
+    fileKey: "filesBilanQualit",
+    label: "Bilan qualitatif 4 dernières années",
+    multiple: true,
+  },
+  [FILE_CATEGORY.BILANFINANC]: {
+    fileKey: "filesBilanFinancier",
+    label: "Bilan financier 4 dernières années",
+    multiple: true,
+  },
+  // ...existing code...
+  [FILE_CATEGORY.BILANQUALITPERCEPTION]: {
+    fileKey: "filesBilanQualitPerception",
+    label: "Bilan qualitatif - Perception et ressenti",
+    multiple: true,
+  },
+  [FILE_CATEGORY.BILANQUALITPERSPECTIVE]: {
+    fileKey: "filesBilanQualitPerspectives",
+    label: "Bilan qualitatif - Perspectives d'évolution",
+    multiple: true,
+  },
+  [FILE_CATEGORY.BILANQUALITELEMARQ]: {
+    fileKey: "filesBilanQualitElementsMarquants",
+    label: "Bilan qualitatif - Éléments marquants",
+    multiple: true,
+  },
+  [FILE_CATEGORY.BILANQUALITCOMPLEMENTAIRES]: {
+    fileKey: "filesBilanQualitComplementaires",
+    label: "Bilan qualitatif - Fichiers complémentaires",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJETSSEJOURSCOMPETENCESEXPERIENCE]: {
+    fileKey: "filesProjetsSejoursCompetencesExperience",
+    label: "Compétences et expériences des accompagnants",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJETSSEJOURSMESURES]: {
+    fileKey: "filesProjetsSejoursMesures",
+    label: "Mesures en cas de recrutement d'urgence",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJETSSEJOURSCOMPLEMENTAIRES]: {
+    fileKey: "filesProjetsSejoursComplementaires",
+    label: "Fichiers complémentaires accompagnants",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJETSSEJOURSPREVUS]: {
+    fileKey: "filesProjetsSejoursPrevus",
+    label: "Séjours prévus",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJETSSEJOURSCASIER]: {
+    fileKey: "fileProjetsSejoursCasier",
+    label: "Casier judiciaire",
+    multiple: false,
+  },
+  [FILE_CATEGORY.PROJETSSEJOURSORGATRANSPORT]: {
+    fileKey: "filesProjetsSejoursOrgaTransports",
+    label: "Organisation des transports prévus",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJETSSEJOURSSUIVIMED]: {
+    fileKey: "filesProjetsSejoursSuiviMed",
+    label: "Suivi médical prévu",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJSEJPROTCOREORIENT]: {
+    fileKey: "filesProjetsSejoursProtocoleReorientation",
+    label: "Protocole de réorientation/évacuation",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJSSEJOURSPROTCOLERAPATR]: {
+    fileKey: "filesProjetsSejoursProtocoleRapatriement",
+    label: "Protocole de rapatriement",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJSEJOURSBUDGETPERSONNES]: {
+    fileKey: "filesProjSejoursBudgetPersonnes",
+    label: "Budget des personnes prévu",
+    multiple: true,
+  },
+} as const;
+
+export type FileCategoryConfig = typeof FILE_CATEGORY_CONFIG;

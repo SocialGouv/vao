@@ -1,8 +1,8 @@
 const FoUser = require("../../services/FoUser");
 const User = require("../../services/User");
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const { TRACKING_ACTIONS, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
-const MailUtils = require("../../utils/mail");
+const { MailUtils } = require("../../utils/mail");
 const Send = require("../../services/mail").mailService.send;
 const AppError = require("../../utils/error").default;
 const { status: userStatus } = require("../../helpers/users");
@@ -44,7 +44,7 @@ module.exports = async function changeStatus(req, res, next) {
   let motif = null;
   try {
     userBeforeUpdate = await FoUser.readOne(userId);
-  } catch (err) {
+  } catch {
     return next(
       new AppError("Utilisateur inexistant", {
         name: "UserNotFound",
@@ -80,7 +80,7 @@ module.exports = async function changeStatus(req, res, next) {
     }
   }
   try {
-    User.addAsyncUserHistoric({
+    await User.addAsyncUserHistoric({
       action: TRACKING_ACTIONS.modification,
       data: {
         newData: { motif, status, userConnectedId, userId },

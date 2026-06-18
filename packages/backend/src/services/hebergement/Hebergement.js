@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const {
   saveAdresse,
   getById: getAdressById,
@@ -225,7 +225,6 @@ ${new Array(nbRows)
 	    LEFT JOIN front.personne_morale pmu ON pmu.siren = pmh.siren AND pmu.current = true
 	    LEFT JOIN front.personne_physique pph ON pph.organisme_id = h.organisme_id AND pph.current = TRUE
 	    LEFT JOIN front.user_organisme uo ON (uo.org_id = pmu.organisme_id OR uo.org_id = pph.organisme_id)
-      LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id AND pp.organisme_id = h.organisme_id AND pp.current = TRUE
       WHERE h.CURRENT IS TRUE AND (pmh.siren = pmu.siren OR o.type_organisme = 'personne_physique') `,
   getPreviousValueForHistory: `
   SELECT
@@ -492,13 +491,14 @@ module.exports.update = async (userId, hebergementId, hebergement, statut) => {
   const {
     rows: [{ hebergementUuid, organismeId, createdBy, createdAt, current }],
   } = await getPool().query(query.getPreviousValueForHistory, [hebergementId]);
-  const client = await getPool().connect();
 
   if (!current) {
     throw new Error("L'hebergement est archivé et ne peux pas etre modifié", {
       cause: "archive",
     });
   }
+
+  const client = await getPool().connect();
 
   let newHebergementId;
   try {
@@ -693,7 +693,7 @@ module.exports.getBySiren = async (siren, search) => {
 
   let queryGet = query.getBySiren;
   const params = [siren];
-  if (search.statut) {
+  if (search?.statut) {
     queryGet = `
     ${queryGet}
     AND h.statut_id = (SELECT id FROM front.hebergement_statut WHERE value = $2)

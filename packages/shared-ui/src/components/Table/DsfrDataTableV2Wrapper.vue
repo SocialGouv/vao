@@ -73,7 +73,7 @@ const props = withDefaults(
     isSortable: false,
     sort: "",
     sortDirection: "",
-    emptyPlaceholder: "No data",
+    emptyPlaceholder: "Aucune donnée à afficher",
     isBordered: false,
     size: "md",
     tableTitle: "",

@@ -31,6 +31,11 @@ import displayInput from "~/utils/display-input";
 
 defineEmits(["emitComment"]);
 
+
+onMounted(async () => {
+  console.log("Display From SharedUI")
+});
+
 const props = defineProps({
   input: {
     required: true,

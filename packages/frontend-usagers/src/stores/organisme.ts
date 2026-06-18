@@ -97,5 +97,54 @@ export const useOrganismeStore = defineStore("organismes", {
         log.i("setOrganismeCourant - DONE with error");
       }
     },
+    async updatePersonne(parametre: any, type: any) {
+      log.i(`updatePersonne - IN (${type})`, { parametre });
+      
+      const organisme = this.organismeCourant;
+      if (!organisme) {
+        throw new Error("Aucun organisme courant sélectionné");
+      }
+
+      const organismeId = organisme?.organismeId;
+      if (!organismeId) throw new Error("Aucun organisme courant sélectionné");
+      try {
+        await $fetchBackend(`/organisme/${organismeId}`, {
+          method: "POST",
+          credentials: "include",
+          body: {
+            parametre,
+            type,
+          },
+        });
+        if (type === "personne_morale") {
+          this.organismeCourant = {
+            ...organisme,
+            personneMorale: {
+              ...organisme.personneMorale,
+              ...parametre,
+            },
+          };
+        } else if (type === "personne_physique") {
+          this.organismeCourant = {
+            ...organisme,
+            personnePhysique: {
+              ...organisme.personnePhysique,
+              ...parametre,
+            },
+          };
+        }
+        log.i(`updatePersonne - DONE (${type})`);
+      } catch (err) {
+        log.w(`updatePersonne - ERROR (${type})`, { err });
+        throw err;
+      }
+    },
+    async updatePersonneMorale(personneMorale: any) {
+      return this.updatePersonne(personneMorale, "personne_morale");
+    },
+    async updatePersonnePhysique(personnePhysique: any) {
+      return this.updatePersonne(personnePhysique, "personne_physique");
+    },
+    // todo: commit changements backend
   },
 });

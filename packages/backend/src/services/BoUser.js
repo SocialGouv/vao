@@ -1,9 +1,9 @@
 const Sentry = require("@sentry/node");
 
-const { sentry } = require("../config");
-const logger = require("../utils/logger");
+const { config } = require("../config");
+const { logger } = require("../utils/logger");
 const { getPool } = require("../utils/pgpool");
-const normalize = require("../utils/normalize");
+const { normalize } = require("../utils/normalize");
 const usersCommon = require("./common/Users");
 const { schema } = require("../helpers/schema");
 const {
@@ -104,6 +104,7 @@ const query = {
       WHERE
         mail = $1
         and deleted = false
+      RETURNING id
       `,
     [normalize(email), password],
   ],
@@ -149,7 +150,8 @@ const query = {
         WHEN us.ter_code = 'FRA' THEN 'Nationale'
         WHEN ter.parent_code = 'FRA' THEN 'Régionale'
         ELSE 'Départementale'
-      END AS "competence"
+      END AS "competence",
+      us.cgu_accepted AS "cguAccepted"
       ${selectQuery}
     FROM back.users AS us
     LEFT OUTER JOIN (
@@ -252,7 +254,10 @@ ${Object.keys(criterias)
       us.validated AS validated,
       us.ter_code as "territoireCode",
       ur.roles,
-      us.cgu_accepted AS "cguAccepted"
+      us.cgu_accepted AS "cguAccepted",
+      us.otp_code_expires_at AS "otpCodeExpiresAt",
+      us.otp_attempts AS "otpAttempts",
+      us.otp_attempts_at AS "otpAttemptsAt"
     FROM back.users us
     LEFT OUTER JOIN (
       SELECT
@@ -336,7 +341,6 @@ module.exports.create = async ({
   const userId = await getPool().query(
     ...query.create(email, nom, prenom, territoireCode),
   );
-
   const [user] = userId.rows;
 
   // Création des rôles en base de données
@@ -423,7 +427,7 @@ module.exports.editPassword = async (email, password) => {
     });
   }
 
-  const { rowCount } = await getPool().query(
+  const { rowCount, rows } = await getPool().query(
     ...query.editPassword(email, password),
   );
   if (rowCount === 0) {
@@ -434,6 +438,7 @@ module.exports.editPassword = async (email, password) => {
   }
   usersCommon.resetLoginAttempt(email, schema.BACK);
   log.i("editPassword - DONE");
+  return rows[0];
 };
 
 module.exports.editStatus = async (userId, isBlocked) => {
@@ -776,7 +781,7 @@ module.exports.login = async ({ email, password }) => {
   if (user.rowCount === 0) {
     return null;
   }
-  getPool().query(query.connection, [user.rows[0].id]);
+  await getPool().query(query.connection, [user.rows[0].id]);
   usersCommon.resetLoginAttempt(email, schema.BACK);
   log.i("login - DONE");
   return user.rows[0];
@@ -791,7 +796,7 @@ const getByUserId = async (userId) => {
     return response.rows[0];
   } catch (error) {
     log.w("getByUserId - DONE with error", error);
-    if (sentry.enabled) {
+    if (config.sentry.enabled) {
       Sentry.captureException(error);
     }
     return null;
@@ -808,7 +813,7 @@ const addAsyncUserHistoric = async ({
   userType,
 }) => {
   try {
-    addHistoric({
+    await addHistoric({
       action,
       data: {
         after: newData,
@@ -821,7 +826,7 @@ const addAsyncUserHistoric = async ({
     });
   } catch (error) {
     log.w("addAsyncHistoric - DONE with error", error);
-    if (sentry.enabled) {
+    if (config.sentry.enabled) {
       Sentry.captureException(error);
     }
   }

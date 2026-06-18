@@ -1,5 +1,5 @@
 import { pool } from "../db";
-import { statusUserFront } from "@vao/shared-bridge";
+import { STATUS_USER_FRONT } from "@vao/shared-bridge";
 import { logger } from "../utils/logger";
 import * as Sentry from "@sentry/node";
 import { disableAccount3m, sentry } from "../config";
@@ -13,7 +13,7 @@ const querySelectUsersToBlock = `
   SELECT id, mail
   FROM front.users
   WHERE lastconnection_at < current_date - interval '3 month'
-    AND status_code = '${statusUserFront.VALIDATED}'
+    AND status_code = '${STATUS_USER_FRONT.VALIDATED}'
     AND last_mail_inactivity_2m_at IS NOT NULL
     AND temporary_blocked_at IS NULL
     AND deleted = false
@@ -21,14 +21,14 @@ const querySelectUsersToBlock = `
 
 const queryBlockUser = `
   UPDATE front.users
-  SET status_code = '${statusUserFront.TEMPORARY_BLOCKED}',
+  SET status_code = '${STATUS_USER_FRONT.TEMPORARY_BLOCKED}',
       temporary_blocked_at = NOW()
   WHERE id = $1
 `;
 
 const queryUnblockUser = `
   UPDATE front.users
-  SET status_code = '${statusUserFront.VALIDATED}',
+  SET status_code = '${STATUS_USER_FRONT.VALIDATED}',
       temporary_blocked_at = NULL
   WHERE id = $1
 `;

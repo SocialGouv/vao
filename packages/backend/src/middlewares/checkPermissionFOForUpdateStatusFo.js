@@ -1,4 +1,4 @@
-const logger = require("../utils/logger");
+const { logger } = require("../utils/logger");
 const AppError = require("../utils/error").default;
 const {
   getIsUserSameOrganismeOtherUser,
@@ -6,7 +6,7 @@ const {
 } = require("../services/FoUser");
 
 const { status } = require("../helpers/users");
-const getByOrganisme = require("../controllers/fo-user/getByOrganisme");
+const { FOUserController } = require("../controllers");
 
 const log = logger(module.filename);
 
@@ -39,8 +39,8 @@ async function checkPermissionFOForUpdateStatusFo(req, _res, next) {
       // Cas d'un utilisateur qui est l'organisme secondaire
       const [organismeUserConnected, idorganismeUserUpdated] =
         await Promise.all([
-          getByOrganisme(userId),
-          getByOrganisme(userIdUpdated),
+          FOUserController.getByOrganisme(userId),
+          FOUserController.getByOrganisme(userIdUpdated),
         ]);
       if (
         !organismeUserConnected ||

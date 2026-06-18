@@ -4,7 +4,7 @@ const AppError = require("../../utils/error").default;
 const { updateRoles } = require("../../services/FoUser");
 const { roles } = require("../../helpers/users");
 
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 
 const log = logger(module.filename);
 

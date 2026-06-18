@@ -637,9 +637,55 @@
       <h2 id="article-9">9. Sécurité</h2>
 
       <p>
-        L’utilisateur s’engage à ne pas perturber le fonctionnement du site et à
-        ne pas tenter d’accéder frauduleusement à des données ou services non
-        autorisés.
+        L’Utilisateur est informé que des tentatives de fraude, notamment par
+        hameçonnage (phishing), peuvent survenir. Le phishing consiste à se
+        faire passer pour un tiers de confiance afin d’obtenir des informations
+        personnelles, des identifiants ou des données sensibles.
+      </p>
+
+      <p>À ce titre :</p>
+
+      <ul>
+        <li>
+          L’Utilisateur s’engage à ne jamais communiquer ses identifiants, mots
+          de passe ou données sensibles à un tiers, quels que soient le support
+          ou le prétexte invoqué.
+        </li>
+        <li>
+          L’Utilisateur est responsable de la confidentialité et de la sécurité
+          de ses accès.
+        </li>
+        <li>
+          L’Utilisateur doit s’assurer de l’authenticité des communications
+          qu’il reçoit prétendument du Site VAO, notamment en vérifiant
+          l’adresse de l’expéditeur et en évitant de cliquer sur des liens
+          suspects.
+        </li>
+      </ul>
+
+      <p>Le Site VAO ne pourra en aucun cas être tenu responsable :</p>
+
+      <ul>
+        <li>
+          des pertes, dommages ou préjudices résultant d’une tentative de
+          phishing ou de fraude externe ;
+        </li>
+        <li>
+          de toute utilisation frauduleuse des identifiants de l’Utilisateur
+          résultant d’une négligence de sa part.
+        </li>
+      </ul>
+
+      <p>
+        En cas de doute ou de tentative suspecte, l’Utilisateur est invité à
+        contacter immédiatement le support officiel via les canaux de
+        communication indiqués sur le site.
+      </p>
+
+      <p>
+        En complément, les représentants du site ou de l’assistance utilisateur
+        ne demanderont jamais la communication de vos identifiants personnels et
+        de votre mot de passe.
       </p>
     </section>
 

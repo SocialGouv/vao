@@ -1,32 +1,48 @@
 import { defineStore } from "pinia";
 import { $fetchBackend, logger } from "#imports";
+import type { GenericMessage } from "@vao/shared-bridge";
+
+export type {
+  DemandeSejourDto,
+  DemandeSejourHebergementDto,
+  DemandeSejourHebergementItemDto,
+  DemandeSejourOrganismeDto,
+  DemandeSejourStatutDto,
+} from "@vao/shared-bridge";
+
+export type DemandeSejourMessage = GenericMessage & {
+  readAt?: string | null;
+};
 
 const log = logger("stores/demande-sejour");
 
+export type DemandeSejourCourante = Partial<DemandeSejourDto>;
 interface DemandeSejourStoreState {
   demandes: unknown[];
   totalDemandes: number;
-  demandeCourante: Record<string, unknown>;
-  messages: unknown[] | null;
+  demandeCourante: DemandeSejourCourante;
+  messages: DemandeSejourMessage[] | null;
   demandesDeprecated: unknown[];
   totalDemandesDeprecated: number;
   stats: unknown | null;
 }
 
 type DemandesResponse = { demandes?: unknown[]; total?: number };
-type DemandeResponse = { demande?: Record<string, unknown> };
+type DemandeResponse = { demande?: DemandeSejourCourante };
 type StatsResponse = { stats?: unknown };
 type ReadMessagesResponse = { readMessages?: unknown };
 
-const resetDemandeCourante = () => ({
-  informationsOrganisme: {},
+const resetDemandeCourante = (): DemandeSejourCourante => ({
   informationsVacanciers: {},
   informationsPersonnel: {},
   projetSejour: {},
   informationsTransport: {},
   informationsSanitaires: {},
-  hebergement: {},
-  stats: null,
+  hebergement: {
+    hebergements: [],
+    sejourEtranger: null,
+    sejourItinerant: null,
+  },
 });
 
 export const useDemandeSejourStore = defineStore("demandeSejour", {
@@ -137,7 +153,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
 
         if (messages) {
           log.i("fetchMessages - DONE");
-          this.messages = messages as unknown[];
+          this.messages = messages as DemandeSejourMessage[];
         } else {
           throw new Error("erreur sur la récupération des messages");
         }

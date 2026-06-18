@@ -1,6 +1,6 @@
 const DeclarationSejourService = require("../../services/DemandeSejour");
-const MailUtils = require("../../utils/mail");
-const postMessage = require("../../helpers/postMessage");
+const { MailUtils } = require("../../utils/mail");
+const postMessage = require("../../helpers/postMessage").default;
 
 module.exports = function postBO(req, res, next) {
   return postMessage({

@@ -1,8 +1,8 @@
 import { processQuery } from "../../helpers/queryParams";
-import Logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
 
-const log = Logger(module.filename);
+const log = logger(module.filename);
 
 export const DemandeSejourRepository = {
   getAdminStats: async ({

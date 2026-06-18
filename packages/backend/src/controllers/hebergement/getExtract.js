@@ -1,6 +1,6 @@
 const { escapeCsvField } = require("../../utils/csv");
 const Hebergement = require("../../services/hebergement/Hebergement");
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const dayjs = require("dayjs");
 
 const log = logger(module.filename);

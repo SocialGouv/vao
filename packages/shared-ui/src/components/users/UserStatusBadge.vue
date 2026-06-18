@@ -5,7 +5,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 import { DsfrBadge } from "@gouvminint/vue-dsfr";
-import { statusUser } from "@vao/shared-ui";
+import { statusUser } from "../../utils";
 
 type UserStatut = (typeof statusUser.status)[keyof typeof statusUser.status];
 

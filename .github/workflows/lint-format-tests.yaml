@@ -24,6 +24,12 @@ jobs:
         run: pnpm -w lint:all
       - name: Run backend tests
         run: pnpm -w test:unit:all
+      - name: Run frontend-bo typecheck
+        run: pnpm --filter @vao/frontend-bo typecheck
+      - name: Run frontend-usagers typecheck
+        run: pnpm --filter @vao/frontend-usagers typecheck
+      - name: Run frontend tests
+        run: pnpm -w test:unit:frontend
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@fd88b7d7ccbaefd23d8f36f73b59db7a3d246602
         # if: ${{ !github.event.pull_request.draft && !contains(github.head_ref || github.ref, 'renovate/') }}

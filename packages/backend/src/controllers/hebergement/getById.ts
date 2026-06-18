@@ -1,16 +1,19 @@
-import type { HebergementDto, HebergementRoutes } from "@vao/shared-bridge";
+import type {
+  HebergementDto,
+  HebergementUsagersRoutes,
+} from "@vao/shared-bridge";
 import { ERRORS_COMMON } from "@vao/shared-bridge";
 import type { NextFunction } from "express";
 
 import Hebergement from "../../services/hebergement/Hebergement";
 import type { RouteRequest, RouteResponse } from "../../types/request";
-import logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 
 const log = logger(module.filename);
 
 export default async function get(
-  req: RouteRequest<HebergementRoutes["GetOne"]>,
-  res: RouteResponse<HebergementRoutes["GetOne"]>,
+  req: RouteRequest<HebergementUsagersRoutes["GetOne"]>,
+  res: RouteResponse<HebergementUsagersRoutes["GetOne"]>,
   next: NextFunction,
 ) {
   log.i("IN");
@@ -25,7 +28,7 @@ export default async function get(
         name: ERRORS_COMMON.NOT_FOUND,
       } as any);
     }
-    log.d(hebergement);
+    log.d("hebergement", hebergement);
     res.json({ hebergement });
   } catch (error) {
     log.w("DONE with error");

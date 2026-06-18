@@ -6,7 +6,7 @@ import DemandeSejour from "../../services/DemandeSejour";
 import Organisme from "../../services/Organisme";
 import { UserRequest } from "../../types/request";
 import AppError from "../../utils/error";
-import logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 
 const log = logger(module.filename);
 

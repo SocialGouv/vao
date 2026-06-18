@@ -5,7 +5,7 @@ import {
 } from "@vao/shared-bridge";
 import type { PoolClient } from "pg";
 
-import logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
 import { addHistoric } from "../Tracking";
 
@@ -176,7 +176,7 @@ export const create = async (
     parametre?.adresseIdentique ?? null,
     parametre?.siret ?? null,
   ]);
-  addHistoric({
+  await addHistoric({
     action: TRACKING_ACTIONS.creation,
     data: { newData: { ...parametre, organismeId } },
     entity: TRACKING_ENTITIES.personnePhysique,
@@ -208,7 +208,7 @@ export const createOrUpdate = async (
   if (rowCount === 0 || parametre.siret !== personnePhysique[0]?.siret) {
     if (rowCount !== 0) {
       await client.query(query.changeCurrent, [personnePhysique[0].id]);
-      addHistoric({
+      await addHistoric({
         action: TRACKING_ACTIONS.deletion,
         data: { newData: parametre, oldData: personnePhysique[0] },
         entity: TRACKING_ENTITIES.personnePhysique,
@@ -252,7 +252,7 @@ export const createOrUpdate = async (
     parametre?.adresseIdentique ?? null,
     parametre?.siret ?? null,
   ]);
-  addHistoric({
+  await addHistoric({
     action: TRACKING_ACTIONS.modification,
     data: { newData: parametre, oldData: personnePhysique[0] },
     entity: TRACKING_ENTITIES.personnePhysique,

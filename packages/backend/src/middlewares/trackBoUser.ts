@@ -13,14 +13,14 @@ interface TrackingRequest extends UserRequest {
   tracking?: Tracking;
 }
 
-function trackFoUser({
+export default function trackBoUser({
   action,
   userType,
   itself,
 }: {
   action: Action;
   userType: UserType;
-  itself: boolean;
+  itself?: boolean;
 }) {
   return async (req: TrackingRequest, res: Response, next: NextFunction) => {
     const userId = req.decoded?.id;
@@ -44,7 +44,7 @@ function trackFoUser({
         newUser = await boUser.getByUserId(id);
       }
 
-      boUser.addAsyncUserHistoric({
+      await boUser.addAsyncUserHistoric({
         action,
         boUserId: id,
         data: { newData: newUser, oldData: oldUser },
@@ -56,5 +56,3 @@ function trackFoUser({
     next();
   };
 }
-
-module.exports = trackFoUser;

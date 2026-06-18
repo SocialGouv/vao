@@ -12,7 +12,7 @@ const getSort = (sortBy, direction, titles, defaultSort = "") => {
     }
     if (
       title?.sortType &&
-      ["date", "number", "boolean"].includes(title.sortType)
+      ["date", "number", "boolean", "custom"].includes(title.sortType)
     ) {
       return `ORDER BY ${title.sortQuery ?? title.key} ${direction}`;
     }
@@ -130,7 +130,7 @@ const applyFilters = (query, initialParams, filters, groupBy = "") => {
   };
 };
 
-const applyGroupBy = (queryInitial, groupByParams = []) => {
+const applyGroupBy = (queryInitial, groupByParams = {}) => {
   if (Object.keys(groupByParams).length === 0) {
     return queryInitial;
   }

@@ -1,4 +1,25 @@
+import qs from "query-string";
+
 import type { BasicRoute } from "../routes";
+
+export function buildRequestQueryString(
+  query: BasicRoute["query"] = {},
+): string {
+  if (!query || Object.keys(query).length === 0) {
+    return "";
+  }
+  const stringQuery = Object.entries(query).reduce((acc, [key, value]) => {
+    // les tableaux étant mal interpretés par query-string, on parse les sous objets ou tableaux en JSON
+    if (Array.isArray(value) || typeof value === "object") {
+      return { ...acc, [key]: JSON.stringify(value) };
+    } else if (!value && value !== false && value !== 0) {
+      return acc;
+    } else {
+      return { ...acc, [key]: value };
+    }
+  }, {});
+  return `?${qs.stringify(stringQuery)}`;
+}
 
 export function buildRequestPath(
   path: BasicRoute["path"],
@@ -22,3 +43,44 @@ export function buildRequestPath(
 
   return finalPath;
 }
+
+export const hashToFormData = <T extends Record<string, unknown>>(
+  hash: T,
+): FormData => {
+  const formData = new FormData();
+
+  Object.entries(hash).forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      value.forEach((arrayValue) => {
+        formData.append(
+          `${key}[]`,
+          typeof arrayValue === "object" && arrayValue !== null
+            ? JSON.stringify(arrayValue)
+            : String(arrayValue),
+        );
+      });
+    } else if (value instanceof Date) {
+      formData.append(`${key}`, value.toISOString());
+    } else if (value instanceof Blob || value instanceof File) {
+      formData.append(`${key}`, value, "file");
+    } else if (typeof value === "object" && value !== null) {
+      Object.entries(value).forEach(([hashKey, hashValue]) => {
+        if (Array.isArray(hashValue)) {
+          hashValue.forEach((arrayValue) => {
+            formData.append(
+              `${key}[${hashKey}][]`,
+              typeof arrayValue === "object" && arrayValue !== null
+                ? JSON.stringify(arrayValue)
+                : String(arrayValue),
+            );
+          });
+        } else {
+          formData.append(`${key}[${hashKey}]`, String(hashValue));
+        }
+      });
+    } else if (value !== undefined) {
+      formData.append(`${key}`, String(value));
+    }
+  });
+  return formData;
+};

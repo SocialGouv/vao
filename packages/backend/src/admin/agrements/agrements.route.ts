@@ -1,0 +1,69 @@
+import { AgrementAdminRoutesSchema } from "@vao/shared-bridge";
+import express from "express";
+
+import boCheckJWT from "../../middlewares/bo-check-JWT";
+import checkPermissionBOAgrement from "../../middlewares/checkPermissionBOAgrement";
+import { requestValidatorMiddleware } from "../../middlewares/requestValidatorMiddleware";
+import { AgrementController } from "./agrements.controller";
+
+const router = express.Router();
+
+router.get(
+  "/",
+  boCheckJWT,
+  requestValidatorMiddleware(AgrementAdminRoutesSchema["GetList"]),
+  checkPermissionBOAgrement,
+  AgrementController.getList,
+);
+
+router.get("/activites", boCheckJWT, AgrementController.getAllActivites);
+
+router.get(
+  "/:agrementId",
+  boCheckJWT,
+  requestValidatorMiddleware(AgrementAdminRoutesSchema["GetOne"]),
+  checkPermissionBOAgrement,
+  AgrementController.getOne,
+);
+
+router.get(
+  "/history/:agrementId",
+  boCheckJWT,
+  requestValidatorMiddleware(AgrementAdminRoutesSchema["GetHistory"]),
+  checkPermissionBOAgrement,
+  AgrementController.getHistory,
+);
+
+router.get(
+  "/:agrementId/messages",
+  boCheckJWT,
+  requestValidatorMiddleware(AgrementAdminRoutesSchema["GetMessages"]),
+  checkPermissionBOAgrement,
+  AgrementController.getMessages,
+);
+
+router.post(
+  "/:agrementId/message",
+  boCheckJWT,
+  requestValidatorMiddleware(AgrementAdminRoutesSchema["PostMessage"]),
+  checkPermissionBOAgrement,
+  AgrementController.postMessage,
+);
+
+router.patch(
+  "/:agrementId/statut",
+  boCheckJWT,
+  requestValidatorMiddleware(AgrementAdminRoutesSchema["PatchStatut"]),
+  checkPermissionBOAgrement,
+  AgrementController.patchStatut,
+);
+
+router.patch(
+  "/:agrementId/messages/read",
+  boCheckJWT,
+  requestValidatorMiddleware(AgrementAdminRoutesSchema["PatchMessages"]),
+  checkPermissionBOAgrement,
+  AgrementController.patchMessages,
+);
+
+export default router;

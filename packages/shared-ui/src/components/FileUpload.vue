@@ -3,14 +3,17 @@
     <div v-if="!props.modifiable">
       <label>{{ $attrs.label }}</label>
     </div>
-    <div v-if="rows.length > 0">
+    <p v-if="rows.length > 0">
       <DsfrTable
         title="Fichier(s) téléversé(s)"
         :headers="headers"
         :rows="rows"
         :no-caption="true"
       />
-    </div>
+    </p>
+    <p v-else class="fr-mb-4v fr-icon-file-line fr-text--sm">
+      Aucun fichier téléversé
+    </p>
 
     <DsfrFileUpload
       v-if="props.modifiable"
@@ -30,7 +33,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { DsfrFileUpload } from "@gouvminint/vue-dsfr";
 import { computed } from "vue";
 import dayjs from "dayjs";
@@ -48,7 +51,7 @@ const headers = [
 ];
 const file = defineModel({ type: Object });
 const rows = computed(() => {
-  if (file.value && Object.keys(file.value).length > 0) {
+  if (file.value?.name) {
     const name = file.value.name;
     const extension = name?.split(".").pop()?.toLowerCase() || "-";
     const type = extension;
@@ -60,7 +63,7 @@ const rows = computed(() => {
           component: "a",
           innerHTML:
             '<span class="fr-icon-file-download-fill" aria-hidden="true"></span>',
-          href: `${props.cdnUrl}/${file.value.uuid}`,
+          href: `${props.cdnUrl}${props.cdnUrl?.endsWith("/") ? "" : "/"}${file.value.uuid}`,
           download: true,
           "aria-label": `Télécharger le fichier ${file.value.name}`,
           title: `Télécharger le fichier ${file.value.name}`,
@@ -71,7 +74,7 @@ const rows = computed(() => {
   } else return [];
 });
 
-function changeFile(fileList) {
+function changeFile(fileList: FileList) {
   file.value = fileList.length > 0 ? fileList[0] : null;
 }
 </script>

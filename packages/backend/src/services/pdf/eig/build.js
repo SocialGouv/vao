@@ -3,7 +3,7 @@ const { fonts, images } = require("../../../utils/staticsFiles");
 const PdfPrinter = require("pdfmake");
 
 const dayjs = require("dayjs");
-const logger = require("../../../utils/logger");
+const { logger } = require("../../../utils/logger");
 const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
 const { mapEigToLabel } = require("../../../helpers/eig");
 

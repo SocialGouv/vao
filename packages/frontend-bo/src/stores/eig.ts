@@ -97,7 +97,7 @@ export const useEigStore = defineStore("eig", {
       log.i("fetchEig - IN");
 
       try {
-        const { eig } = await $fetchBackend(`/eig/admin`, {
+        const { eig, total } = await $fetchBackend(`/eig/admin`, {
           method: "GET",
           credentials: "include",
           params: {
@@ -109,8 +109,8 @@ export const useEigStore = defineStore("eig", {
           },
         });
 
-        this.eigs = eig.eigs;
-        this.total = eig.total;
+        this.eigs = eig;
+        this.total = total;
         log.i("fetchEig - OUT");
       } catch (err) {
         log.w("fetchEig for one id - DONE with error", err);

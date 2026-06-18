@@ -1,0 +1,395 @@
+import type {
+  AGREMENT_HISTORY_TYPE,
+  AgrementFilesDto,
+  AgrementHistoryItem,
+  AgrementHistoryRow,
+  AgrementMessage,
+  AgrementSvaTimerDto,
+} from "@vao/shared-bridge";
+import {
+  AGREMENT_STATUT,
+  AGREMENT_SVA_TIMER_STATUT,
+  AgrementDto,
+  PaginationQueryDto,
+  USER_TYPE,
+} from "@vao/shared-bridge";
+import { PoolClient } from "pg";
+
+import { processQuery } from "../../helpers/queryParams";
+import {
+  AgrementEntity,
+  AgrementSvaTimerEntity,
+} from "../../shared/agrements/agrements.entity";
+import {
+  AgrementsMapper,
+  AgrementSvaTimerMapper,
+} from "../../shared/agrements/agrements.mapper";
+import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
+import { logger } from "../../utils/logger";
+import { getPool } from "../../utils/pgpool";
+
+const log = logger(module.filename);
+// ------------------------------------------------------------
+// 🏗️ Repository Admin
+// ------------------------------------------------------------
+export const AgrementsRepository = {
+  async desactiverAgrement({
+    agrementId,
+    tx,
+  }: {
+    agrementId: number;
+    tx: PoolClient;
+  }): Promise<void> {
+    await tx.query(
+      `UPDATE front.agrements SET supprime = true, updated_at = NOW() WHERE id = $1`,
+      [agrementId],
+    );
+  },
+  async getById({
+    agrementId,
+    withDetails,
+  }: {
+    agrementId: number;
+    withDetails: boolean;
+  }): Promise<AgrementDto | null> {
+    return AgrementsRepositoryShared.getById({ agrementId, withDetails });
+  },
+
+  async getByOrganismeId({
+    organismeId,
+  }: {
+    organismeId: number;
+  }): Promise<{ count: number; result: AgrementDto[] }> {
+    const query = () => `
+      SELECT
+        agr.*
+      FROM front.agrements agr
+      WHERE agr.organisme_id = $1
+    `;
+    const response = await getPool().query(query(), [organismeId]);
+    const agrements = [];
+    for (const row of response.rows) {
+      const agrement = AgrementsMapper.toModel(row as AgrementEntity);
+      agrements.push(agrement);
+    }
+    log.i("getByOrganismeId - DONE");
+
+    return {
+      count: agrements.length,
+      result: agrements,
+    };
+  },
+
+  /**
+   * Récupère une liste d'agréments par région d'obtention
+   */
+  async getByRegionObtention({
+    regionCode,
+    criterias,
+    queryParams,
+  }: {
+    regionCode: string;
+    criterias: Array<Record<string, any>>;
+    queryParams: PaginationQueryDto & {
+      name?: string;
+      numero?: string;
+      siret?: string;
+      statut?: string;
+    };
+  }): Promise<{ count: number; result: AgrementDto[] }> {
+    log.i("getByRegionObtention - IN");
+    const query = () => `
+      SELECT
+        agr.*,
+        pm.siret,
+        pm.raison_sociale,
+        pp.prenom,
+        pp.nom_usage,
+        pp.siret
+      FROM front.agrements agr
+      INNER JOIN front.organismes o ON o.id = agr.organisme_id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = true
+      WHERE agr.region_obtention = $1
+    `;
+
+    const paginatedQuery = processQuery(
+      query,
+      [regionCode],
+      criterias ?? {},
+      queryParams,
+    );
+    const response = await Promise.all([
+      getPool().query(paginatedQuery.query, paginatedQuery.params),
+      getPool().query(
+        paginatedQuery.countQuery,
+        paginatedQuery.countQueryParams,
+      ),
+    ]);
+    const agrements = [];
+    for (const row of response[0].rows) {
+      const agrement = AgrementsMapper.toModel(row as AgrementEntity);
+      agrements.push(agrement);
+    }
+    log.i("getByRegionObtention - DONE");
+
+    return {
+      count: parseInt(response[1].rows[0].total, 10),
+      result: agrements,
+    };
+  },
+
+  async getHistory(agrementId: number): Promise<AgrementHistoryItem[]> {
+    const client = await getPool().connect();
+    try {
+      const query = `
+      SELECT
+        h.id,
+        h.source,
+        h.agrement_id,
+        h.usager_user_id,
+        u.nom AS usager_nom,
+        u.prenom AS usager_prenom,
+        u.mail AS usager_mail,
+        h.bo_user_id,
+        b.nom AS bo_nom,
+        b.prenom AS bo_prenom,
+        b.mail AS bo_mail,
+        h.type,
+        h.type_precision,
+        h.metadata,
+        h.created_at
+      FROM front.agrement_history h
+      LEFT JOIN front.users u ON h.usager_user_id = u.id
+      LEFT JOIN back.users b ON h.bo_user_id = b.id
+      WHERE h.agrement_id = $1
+      ORDER BY h.created_at DESC;
+    `;
+      const result = await client.query(query, [agrementId]);
+      // @ts-expect-error TODO: fix this
+      return result.rows.map((row: AgrementHistoryRow) => ({
+        agrement_id: row.agrement_id,
+        bo_user: row.bo_user_id
+          ? {
+              id: row.bo_user_id,
+              mail: row.bo_mail,
+              nom: row.bo_nom,
+              prenom: row.bo_prenom,
+            }
+          : null,
+        created_at: row.created_at,
+        id: row.id,
+        metadata: row.metadata,
+        source: row.source,
+        type: row.type,
+        type_precision: row.type_precision,
+        usager_user: row.usager_user_id
+          ? {
+              id: row.usager_user_id,
+              mail: row.usager_mail,
+              nom: row.usager_nom,
+              prenom: row.usager_prenom,
+            }
+          : null,
+      }));
+    } finally {
+      client.release();
+    }
+  },
+
+  async getMessages(
+    agrementId: number,
+  ): Promise<{ messages: AgrementMessage[]; unreadCount: number }> {
+    return AgrementsRepositoryShared.getMessages(agrementId, USER_TYPE.BO);
+  },
+
+  async getSvaTimerByStatut({
+    agrementId,
+    statut,
+  }: {
+    agrementId: number;
+    statut: AGREMENT_SVA_TIMER_STATUT;
+  }): Promise<AgrementSvaTimerDto | null> {
+    const response = await getPool().query(
+      `SELECT * FROM front.agrement_sva_timer WHERE agrement_id = $1 AND statut = $2`,
+      [agrementId, statut],
+    );
+    if (!response.rows?.length) return null;
+    const row = response.rows[0] as AgrementSvaTimerEntity;
+    return AgrementSvaTimerMapper.toModel(row);
+  },
+  /**
+   * Récupère le courriel du user responsable d'un agrément.
+   */
+  async getUserMail(agrementId: number): Promise<{ mail: string }[]> {
+    const client = await getPool().connect();
+    try {
+      const result = await client.query(
+        `SELECT u.mail
+          FROM front.agrements a
+          JOIN front.organismes o ON a.organisme_id = o.id
+          JOIN front.user_organisme uo ON uo.org_id = o.id
+          JOIN front.users u ON uo.use_id = u.id
+          WHERE a.id = $1
+          GROUP BY u.mail`,
+        [agrementId],
+      );
+      if (result.rows.length === 0) {
+        return [];
+      }
+      return result.rows;
+    } finally {
+      client.release();
+    }
+  },
+
+  async insertAgrementFiles(
+    client: PoolClient,
+    agrementId: number | null | undefined,
+    file: AgrementFilesDto,
+  ) {
+    if (!file) return;
+    await client.query(
+      `INSERT INTO front.agrement_files (agrement_id, category, file_uuid)
+       VALUES ($1, $2, $3);`,
+      [agrementId, file.category, file.fileUuid],
+    );
+  },
+  async insertHistoryEvent({
+    source,
+    agrementId,
+    boUserId,
+    type,
+    typePrecision,
+    metadata,
+  }: {
+    source: string;
+    agrementId: number;
+    boUserId: number | null;
+    type?: AGREMENT_HISTORY_TYPE | null;
+    typePrecision?: string | null;
+    metadata?: Record<string, unknown> | null;
+  }): Promise<number> {
+    const query = `
+    INSERT INTO front.agrement_history (
+      source,
+      agrement_id,
+      usager_user_id,
+      bo_user_id,
+      type,
+      type_precision,
+      metadata,
+      created_at
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+    RETURNING id;
+  `;
+    const values = [
+      source,
+      agrementId,
+      null, // usager_user_id
+      boUserId ?? null,
+      type ?? null,
+      typePrecision ?? null,
+      metadata ?? null,
+    ];
+    const { rows } = await getPool().query(query, values);
+    return rows[0].id;
+  },
+  async insertMessage({
+    agrementId,
+    backUserId,
+    message,
+  }: {
+    agrementId: number;
+    backUserId: number;
+    message: string;
+  }): Promise<number> {
+    return AgrementsRepositoryShared.insertMessage({
+      agrementId,
+      message,
+      userId: backUserId,
+      userType: USER_TYPE.BO,
+    });
+  },
+  async insertSvaTimer({
+    tx,
+    agrementId,
+  }: {
+    tx: PoolClient;
+    agrementId: number;
+  }): Promise<number> {
+    const { rows } = await tx.query(
+      `INSERT INTO front.agrement_sva_timer (agrement_id, statut, t0, created_at)
+         VALUES ($1, $2, NOW(), NOW()) RETURNING id`,
+      [agrementId, AGREMENT_SVA_TIMER_STATUT.RUNNING],
+    );
+    return rows[0].id;
+  },
+
+  async markMessagesAsRead(agrementId: number): Promise<number> {
+    return AgrementsRepositoryShared.markMessagesAsRead({
+      agrementId,
+      userType: USER_TYPE.BO,
+    });
+  },
+  async updateStatut({
+    agrementId,
+    statut,
+    commentaireCompletude,
+    commentaireCorrection,
+    commentaireRefus,
+    numeroAgrement,
+    dateObtention,
+    dateFinValidite,
+    dateVerifCompletude,
+    dateConfirmCompletude,
+    file,
+    tx,
+  }: {
+    agrementId: number;
+    statut: AGREMENT_STATUT;
+    commentaireCompletude: string;
+    commentaireCorrection: string;
+    commentaireRefus: string;
+    numeroAgrement: string;
+    dateObtention: Date;
+    dateFinValidite: Date;
+    dateVerifCompletude: Date;
+    dateConfirmCompletude: Date;
+    file?: AgrementFilesDto;
+    tx: PoolClient;
+  }): Promise<boolean> {
+    const result = await tx.query(
+      `UPDATE front.agrements
+          SET
+            statut = $2::front.agrement_statut,
+            commentaire_refus = $3,
+            commentaire_completude = $4,
+            commentaire_correction = $5,
+            numero = $6,
+            date_obtention = $7,
+            date_fin_validite = $8,
+            date_verif_completure = $9,
+            date_confirm_completude = $10,
+            updated_at = NOW()
+          WHERE id = $1`,
+      [
+        agrementId,
+        statut,
+        commentaireRefus,
+        commentaireCompletude,
+        commentaireCorrection,
+        numeroAgrement,
+        dateObtention,
+        dateFinValidite,
+        dateVerifCompletude,
+        dateConfirmCompletude,
+      ],
+    );
+    if (file) {
+      await AgrementsRepository.insertAgrementFiles(tx, agrementId, file);
+    }
+
+    return (result.rowCount ?? 0) > 0;
+  },
+};

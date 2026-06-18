@@ -119,6 +119,12 @@ const init = async () => {
       await organismeStore.getOrganisme(organismeId);
     }
   } catch (error) {
+    toaster.error({
+      titleTag: "h2",
+      title: "Erreur lors de la récupération de la demande",
+      description: error.message,
+      role: "alert",
+    });
     navigateTo("/sejours");
     throw error;
   }

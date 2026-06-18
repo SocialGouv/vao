@@ -38,8 +38,10 @@
           <DsfrButton
             id="chercherSiret"
             :disabled="!siretMeta.valid"
+            label="Récupérer les informations de la personne physique"
+            aria-label="Récupérer les informations de la personne physique, cette action est action obligatoire pour la création de l'organisme"
             @click.prevent="searchOrganisme"
-            >Récupérer les informations de la personne physique
+          >
           </DsfrButton>
         </div>
       </div>
@@ -227,6 +229,7 @@
       <DsfrButton
         v-if="!props.isDownloading"
         id="next-step"
+        :disabled="!nomNaissance"
         @click.prevent="next"
         >Suivant
       </DsfrButton>
@@ -241,7 +244,12 @@
 <script setup lang="ts">
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { IsDownloading, ApiUnavailable, apiModel, useToaster } from "@vao/shared-ui";
+import {
+  IsDownloading,
+  ApiUnavailable,
+  apiModel,
+  useToaster,
+} from "@vao/shared-ui";
 import { SiretService } from "~/services/siretService";
 import {
   ERRORS_SIRET_MESSAGES,

@@ -14,7 +14,7 @@ RUN pnpm fetch --prod --ignore-scripts
 
 COPY package.json ./
 COPY packages/backend/package.json packages/backend/
-COPY packages/backend/tsconfig.json packages/backend/
+COPY packages/backend/tsconfig.build.json packages/backend/tsconfig.build.json
 COPY packages/backend/src packages/backend/src
 COPY packages/shared-bridge packages/shared-bridge
 

@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const config = require("../../config");
+const { config } = require("../../config");
 
 const UserBo = require("../../services/BoUser");
 const UserFo = require("../../services/FoUser");
@@ -7,7 +7,7 @@ const Session = require("../../services/common/Session");
 const { schema } = require("../../helpers/schema");
 
 const AppError = require("../../utils/error").default;
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const {
   buildAccessToken: buildAccessTokenBo,
   buildRefreshToken: buildRefreshTokenBo,
@@ -60,10 +60,10 @@ async function handleSessionCheck(refreshToken, targetSchema) {
   }
 }
 
-async function getUserBySchema(targetSchema, userId) {
+async function getUserBySchema(targetSchema, userId, territoireCode) {
   if (targetSchema === schema.BACK) {
     return {
-      ...(await UserBo.readOne(userId)),
+      ...(await UserBo.readOne(userId, territoireCode)),
       id: userId,
     };
   }
@@ -176,7 +176,11 @@ async function checkJWT(req, res, next, targetSchema, checkCgu) {
       );
     }
 
-    const user = await getUserBySchema(targetSchema, rtDecoded.userId);
+    const user = await getUserBySchema(
+      targetSchema,
+      rtDecoded.userId,
+      rtDecoded?.territoireCode,
+    );
     const { buildAccessToken, buildRefreshToken } =
       getTokenBuilders(targetSchema);
     const newAccessTokenPayload = buildAccessToken(user);
@@ -197,9 +201,7 @@ async function checkJWT(req, res, next, targetSchema, checkCgu) {
       refreshToken,
       newRefreshToken,
       targetSchema,
-      {
-        caller: req.originalUrl,
-      },
+      { caller: req.originalUrl },
     );
 
     if (!rotated) {

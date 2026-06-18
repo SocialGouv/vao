@@ -1,23 +1,32 @@
 const Commune = require("../../services/geo/Commune");
 
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 
 const log = logger(module.filename);
 
 module.exports = {
-  fetch: async function fetch(req, res) {
-    const { departement, date = null } = req.query;
-    log.i("IN");
-    const communes = await Commune.fetch({ date, departement });
-    log.i("DONE");
-    return res.json({ communes });
+  fetch: async function fetch(req, res, next) {
+    try {
+      const { departement, date = null } = req.query;
+      const communes = await Commune.fetch({ date, departement });
+      log.i("DONE");
+      return res.json({ communes });
+    } catch (error) {
+      log.w("DONE with error");
+      return next(error);
+    }
   },
-  get: async function get(req, res) {
+  get: async function get(req, res, next) {
     log.i("IN");
     const { communeCode } = req.params;
     const { date = null } = req.query;
-    const commune = await Commune.get({ code: communeCode, date });
-    log.i("DONE");
-    return res.json(commune);
+    try {
+      const commune = await Commune.get({ code: communeCode, date });
+      log.i("DONE");
+      return res.json(commune);
+    } catch (error) {
+      log.w("DONE with error");
+      return next(error);
+    }
   },
 };

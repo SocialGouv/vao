@@ -1,7 +1,7 @@
 const AppError = require("../utils/error").default;
-const logger = require("../utils/logger");
+const { logger } = require("../utils/logger");
 const { getPool } = require("../utils/pgpool");
-const getCodeTerritoireByInseeCode = require("../utils/geo");
+const { getCodeTerritoireByInseeCode } = require("../utils/geo");
 
 const log = logger(module.filename);
 const {
@@ -148,7 +148,6 @@ module.exports.readOne = async (idTerritoire) => {
 
 module.exports.update = async (id, { nom, prenom, email, telephone }) => {
   log.i("update - IN", { id });
-
   const response = await getPool().query(query.update, [
     id,
     nom,

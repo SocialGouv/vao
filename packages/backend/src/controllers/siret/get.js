@@ -1,4 +1,4 @@
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const proj4 = require("proj4");
 const {
   getEtablissement,

@@ -1,6 +1,11 @@
 import { useRuntimeConfig } from "#app";
 import type { BasicRoute } from "@vao/shared-bridge";
-import { buildRequestPath } from "@vao/shared-bridge";
+import {
+  buildRequestPath,
+  buildRequestQueryString,
+  hashToFormData,
+} from "@vao/shared-bridge";
+import { $fetch } from "ofetch";
 
 export type FetchBackendOptions = Record<string, unknown>;
 
@@ -9,7 +14,7 @@ export const $fetchBackend = <T = any>(
   option: FetchBackendOptions = {},
 ): Promise<T> => {
   const config = useRuntimeConfig();
-  // eslint-disable-next-line no-undef
+
   return $fetch(url, {
     baseURL: config.public.backendUrl,
     ...option,
@@ -30,17 +35,15 @@ export function buildRequest<Route extends BasicRoute>({
   method,
   query,
 }: Omit<Route, "response">): () => Promise<Route["response"]> {
-  const url = buildRequestPath(path, params);
-
+  const finalPath = buildRequestPath(path, params);
+  const queryString = buildRequestQueryString(query);
+  const url = `${finalPath}${queryString}`;
   switch (method) {
     case "GET":
       return async () =>
         $fetchBackend(url, {
           ...OPTIONS_DEFAULT,
           method: "GET",
-          params: {
-            search: query,
-          },
         });
     case "POST":
       return async () =>
@@ -56,12 +59,43 @@ export function buildRequest<Route extends BasicRoute>({
           method: "PUT",
           body,
         });
+    case "PATCH":
+      return async () =>
+        $fetchBackend<Route["response"]>(url, {
+          ...OPTIONS_DEFAULT,
+          method: "PATCH",
+          body,
+        });
     case "DELETE":
       return async () =>
         $fetchBackend(url, {
           ...OPTIONS_DEFAULT,
           method: "DELETE",
           body,
+        });
+    default:
+      throw new Error("Method not supported");
+  }
+}
+
+export function buildRequestFile<Route extends BasicRoute>({
+  params,
+  body,
+  path,
+  method,
+  file,
+}: Omit<Route, "response"> & { file: File }): () => Promise<Route["response"]> {
+  const url = buildRequestPath(path, params);
+  const formData = body ? hashToFormData(body) : new FormData();
+  formData.append("file", file, file.name);
+  switch (method) {
+    case "POST":
+      return async () =>
+        $fetchBackend(url, {
+          ...OPTIONS_DEFAULT,
+          method: "POST",
+          body: formData,
+          headers: {},
         });
     default:
       throw new Error("Method not supported");

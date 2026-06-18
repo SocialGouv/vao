@@ -3,9 +3,9 @@ const {
 } = require("../repositories/usagers/DemandeSejour");
 
 const Sentry = require("@sentry/node");
-const { sentry } = require("../config");
+const { config } = require("../config");
 const dayjs = require("dayjs");
-const logger = require("../utils/logger");
+const { logger } = require("../utils/logger");
 const { getPool } = require("../utils/pgpool");
 const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 const PersonneMorale = require("./organisme/PersonneMorale");
@@ -691,7 +691,7 @@ WHERE uo.org_id = $1 AND u.status_code = 'VALIDATED'
         WHERE dsth.demande_sejour_id = ds.id
         AND a.departement = ANY ($1)
       )
-  AND statut <> 'BROUILLON'
+  AND ds.statut <> 'BROUILLON'
   OR a.region_obtention = '${territoireCode}')`,
   getExtractFO: `SELECT
       ds.id as "declarationId",
@@ -1325,7 +1325,7 @@ module.exports.getByDepartementCodes = async (
       key: "o.id",
       queryKey: "organismeId",
       sortEnabled: true,
-      type: "number",
+      type: "default",
     },
     {
       key: "id_fonctionnelle",
@@ -1947,15 +1947,17 @@ module.exports.updateStatut = async (
       statut,
       declarationId,
     ]);
-    await client.query(query.insertEvent, [
-      event.source,
-      event.declarationId,
-      event.userId,
-      event.boUserId,
-      event.type,
-      event.typePrecision,
-      event.metaData,
-    ]);
+    if (event) {
+      await client.query(query.insertEvent, [
+        event.source,
+        event.declarationId,
+        event.userId,
+        event.boUserId,
+        event.type,
+        event.typePrecision,
+        event.metaData,
+      ]);
+    }
     if (cb) {
       await cb();
     }
@@ -1981,7 +1983,7 @@ module.exports.addAsyncDeclarationSejourHistoric = async ({
   userType,
 }) => {
   try {
-    addHistoric({
+    await addHistoric({
       action,
       data: {
         after: newData,
@@ -1994,7 +1996,7 @@ module.exports.addAsyncDeclarationSejourHistoric = async ({
     });
   } catch (error) {
     log.w("addAsyncHistoric - DONE with error", error);
-    if (sentry.enabled) {
+    if (config.sentry.enabled) {
       Sentry.captureException(error);
     }
   }

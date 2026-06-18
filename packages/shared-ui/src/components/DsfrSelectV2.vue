@@ -13,7 +13,7 @@ defineOptions({
   inheritAttrs: false,
 });
 
-const props = withDefaults(defineProps<EnhancedDsfrSelectProps>(), {
+const props: any = withDefaults(defineProps<EnhancedDsfrSelectProps>(), {
   selectId: () => useRandomId("select"),
   modelValue: undefined,
   options: () => [],
@@ -81,7 +81,7 @@ const messageType = computed(() => {
     >
       <option
         :selected="
-          !options.some((option) =>
+          !options.some((option: any) =>
             typeof option !== 'object' || option === null
               ? option === modelValue
               : option.value === modelValue,

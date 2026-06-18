@@ -1,10 +1,24 @@
 /* eslint-disable import/no-unresolved */
+import { FILE_CATEGORY, FILE_CATEGORY_CONFIG } from "../constantes";
+import { AgrementFilesDto } from "../dto";
 import {
   decodeFilename,
   encodeFilename,
+  getFileByCategory,
+  getFileCategoryLabel,
   getFileNameAndExtension,
+  getFilesByCategory,
   getFileUploadErrorMessage,
 } from "./file";
+
+const createFile = (
+  overrides: Partial<AgrementFilesDto> = {},
+): AgrementFilesDto => ({
+  agrementId: 1,
+  category: FILE_CATEGORY.PROCVERBAL,
+  fileUuid: "uuid-1",
+  ...overrides,
+});
 
 describe("file utils", () => {
   describe("encodeFilename", () => {
@@ -242,5 +256,110 @@ describe("file utils", () => {
         "Le type de fichier my document.pdf n'est pas reconnu. Veuillez télécharger un fichier PDF, PNG, JPG ou JPEG.",
       );
     });
+  });
+
+  describe("getFileCategoryLabel", () => {
+    it("should return the configured label when the category exists in config", () => {
+      const result = getFileCategoryLabel(FILE_CATEGORY.BILANQUALITPERCEPTION);
+      expect(result).toBe(
+        FILE_CATEGORY_CONFIG[FILE_CATEGORY.BILANQUALITPERCEPTION].label,
+      );
+    });
+
+    it("should fallback to category value when the category is not in config", () => {
+      const category = "CATEGORY_NOT_IN_CONFIG" as FILE_CATEGORY;
+      const result = getFileCategoryLabel(category);
+      expect(result).toBe(category);
+    });
+  });
+});
+describe("getFileByCategory", () => {
+  it("should return the file matching the category", () => {
+    const files = [
+      createFile({ category: FILE_CATEGORY.PROCVERBAL }),
+      createFile({ category: FILE_CATEGORY.BILANQUALITPERCEPTION }),
+    ];
+
+    const result = getFileByCategory({
+      category: FILE_CATEGORY.PROCVERBAL,
+      files,
+    });
+
+    expect(result).toEqual(files[0]);
+  });
+
+  it("should return null when no file matches", () => {
+    const files = [
+      createFile({ category: FILE_CATEGORY.BILANQUALITPERCEPTION }),
+    ];
+
+    const result = getFileByCategory({
+      category: FILE_CATEGORY.PROCVERBAL,
+      files,
+    });
+
+    expect(result).toBeNull();
+  });
+
+  it("should return null when files is undefined", () => {
+    const result = getFileByCategory({
+      category: FILE_CATEGORY.PROCVERBAL,
+      files: undefined,
+    });
+
+    expect(result).toBeNull();
+  });
+
+  it("should return the first match when multiple exist", () => {
+    const files = [
+      createFile({ category: FILE_CATEGORY.PROCVERBAL, fileUuid: "1" }),
+      createFile({ category: FILE_CATEGORY.PROCVERBAL, fileUuid: "2" }),
+    ];
+
+    const result = getFileByCategory({
+      category: FILE_CATEGORY.PROCVERBAL,
+      files,
+    });
+
+    expect(result).toEqual(files[0]);
+  });
+});
+
+describe("getFilesByCategory", () => {
+  it("should return all matching files", () => {
+    const files = [
+      createFile({ category: FILE_CATEGORY.PROCVERBAL, fileUuid: "1" }),
+      createFile({ category: FILE_CATEGORY.PROCVERBAL, fileUuid: "2" }),
+      createFile({ category: FILE_CATEGORY.BILANQUALITPERCEPTION }),
+    ];
+
+    const result = getFilesByCategory({
+      category: FILE_CATEGORY.PROCVERBAL,
+      files,
+    });
+
+    expect(result).toEqual([files[0], files[1]]);
+  });
+
+  it("should return empty array when no match", () => {
+    const files = [
+      createFile({ category: FILE_CATEGORY.BILANQUALITPERCEPTION }),
+    ];
+
+    const result = getFilesByCategory({
+      category: FILE_CATEGORY.PROCVERBAL,
+      files,
+    });
+
+    expect(result).toEqual([]);
+  });
+
+  it("should return empty array when files is null", () => {
+    const result = getFilesByCategory({
+      category: FILE_CATEGORY.PROCVERBAL,
+      files: null,
+    });
+
+    expect(result).toEqual([]);
   });
 });

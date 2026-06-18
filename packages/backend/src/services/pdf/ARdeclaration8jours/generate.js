@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const logger = require("../../../utils/logger");
+const { logger } = require("../../../utils/logger");
 const build = require("./build");
 const Document = require("../../Document");
 const DemandeSejour = require("../../DemandeSejour");

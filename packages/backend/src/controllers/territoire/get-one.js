@@ -1,7 +1,7 @@
 const AppError = require("../../utils/error").default;
 const Territoire = require("../../services/Territoire");
 
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 
 const log = logger(module.filename);
 

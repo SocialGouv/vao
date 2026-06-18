@@ -1,20 +1,51 @@
 const Sentry = require("@sentry/node");
 
-const { sentry } = require("../config");
+const { config } = require("../config");
 const { statuts, Types, Categorie } = require("../helpers/eig");
-const logger = require("../utils/logger");
+const { logger } = require("../utils/logger");
 const AppError = require("../utils/error").default;
 const { getPool } = require("../utils/pgpool");
 const { addHistoric } = require("./Tracking");
 const { getFileMetaData } = require("./Document");
 
-const { TRACKING_ENTITIES, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
+const {
+  TRACKING_ENTITIES,
+  TRACKING_USER_TYPE,
+  AGREMENT_STATUT,
+} = require("@vao/shared-bridge");
 const { encrypt, decrypt } = require("../utils/cipher");
 
 const log = logger(module.filename);
 
+const EIG_SORT_COLUMNS = {
+  createdAt: "EIG.CREATED_AT",
+  date: "EIG.DATE",
+  dateDebut: "DS.DATE_DEBUT",
+  dateDepot: "EIG.DATE_DEPOT",
+  dateFin: "DS.DATE_FIN",
+  departement: "EIG.DEPARTEMENT",
+  id: "EIG.ID",
+  idFonctionnelle: "DS.ID_FONCTIONNELLE",
+  libelle: "DS.LIBELLE",
+  organisme:
+    "COALESCE(pm.raison_sociale, CONCAT(pp.prenom, ' ', pp.nom_usage))",
+  statut: "S.STATUT",
+};
+
+const getEigOrderByClause = (sortBy, sortDirection) => {
+  const direction = sortDirection?.toUpperCase();
+  if (direction !== "ASC" && direction !== "DESC") {
+    return "ORDER BY EIG.CREATED_AT DESC";
+  }
+  const column = EIG_SORT_COLUMNS[sortBy];
+  if (!column) {
+    return "ORDER BY EIG.CREATED_AT DESC";
+  }
+  return `ORDER BY ${column} ${direction}, EIG.CREATED_AT DESC`;
+};
+
 const commonQuery = {
-  agrementRegionObtention: `    
+  agrementRegionObtention: `
     CASE
       WHEN o.type_organisme = 'personne_morale' AND pm.porteur_agrement::boolean is False
       THEN
@@ -26,7 +57,7 @@ const commonQuery = {
           INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id AND pm2.current = TRUE
           INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
           WHERE pm.siret = etab.siret
-          AND a.supprime = false
+          AND a.supprime = false AND a.statut = '${AGREMENT_STATUT.VALIDE}'
           LIMIT 1
       )
       ELSE (
@@ -34,7 +65,7 @@ const commonQuery = {
             region_obtention
         FROM front.agrements a
         WHERE organisme_id = o.id
-        AND a.supprime = false
+        AND a.supprime = false AND a.statut = '${AGREMENT_STATUT.VALIDE}'
       )
     END AS "agrementRegionObtention"`,
 };
@@ -235,7 +266,7 @@ const query = {
         front.user_organisme UO
         INNER JOIN front.eig eig ON eig.user_id = uo.use_id
     WHERE
-        UO.org_id IN ( SELECT uo.org_id 
+        UO.org_id IN ( SELECT uo.org_id
                       FROM front.user_organisme uo
                       WHERE uo.USE_ID = $1)
         AND eig.id = $2
@@ -265,25 +296,25 @@ const query = {
       INNER JOIN front.organismes o ON o.id = ds.organisme_id
       LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = TRUE
       LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = TRUE
-      WHERE 
+      WHERE
       (
-        o.id IN (SELECT pm.organisme_id 
-                  FROM front.personne_morale pm 
+        o.id IN (SELECT pm.organisme_id
+                  FROM front.personne_morale pm
                    	INNER JOIN front.agrements a ON a.organisme_id = pm.organisme_id
 				            INNER JOIN geo.territoires t ON t.code = a.region_obtention
 				            INNER JOIN back.users u ON u.ter_code = t.code AND u.id = $1
                     INNER JOIN front.personne_morale pms ON pms.siren = substr(pm.siret,1,9)) AND pm.current = TRUE
-     	  OR o.id IN (SELECT pm.organisme_id 
-                  FROM front.personne_physique pp 
+     	  OR o.id IN (SELECT pm.organisme_id
+                  FROM front.personne_physique pp
                    	INNER JOIN front.agrements a ON a.organisme_id = pp.organisme_id AND pp.current = TRUE
                     INNER JOIN geo.territoires t ON t.code = a.region_obtention
-                    INNER JOIN back.users u ON u.ter_code = t.code AND u.id = $1) 
+                    INNER JOIN back.users u ON u.ter_code = t.code AND u.id = $1)
         AND e.read_by_dreets = false
       )
-      OR 
+      OR
       (
-        ds.departement_suivi IN (SELECT ter_code 
-                                FROM back.users u 
+        ds.departement_suivi IN (SELECT ter_code
+                                FROM back.users u
                                 WHERE u.id = $1)
         AND e.read_by_ddets = false
       )
@@ -645,7 +676,7 @@ const getEigs = async (
   if (search?.organisme && search.organisme.length) {
     searchQuery.push(`
       (CONCAT(pp.prenom,' ',pp.nom_usage) ILIKE $${params.length + 1}
-	    OR pm.raison_sociale' ILIKE $${params.length + 1})`);
+	    OR pm.raison_sociale ILIKE $${params.length + 1})`);
     params.push(`%${search.organisme}%`);
   }
 
@@ -667,11 +698,7 @@ const getEigs = async (
     searchQuery.map((s) => ` AND ${s} `).join(""),
   );
 
-  if (sortBy && sortDirection) {
-    queryWithPagination += `ORDER BY "${sortBy}" ${sortDirection}, EIG.CREATED_AT DESC`;
-  } else {
-    queryWithPagination += "ORDER BY EIG.CREATED_AT DESC";
-  }
+  queryWithPagination += getEigOrderByClause(sortBy, sortDirection);
 
   const paramsWithPagination = [...params];
   // Pagination management
@@ -820,7 +847,7 @@ const getByEigId = async (eigId) => {
     return response.rows[0];
   } catch (error) {
     log.w("getByEigId - DONE with error", error);
-    if (sentry.enabled) {
+    if (config.sentry.enabled) {
       Sentry.captureException(error);
     }
     return null;
@@ -837,7 +864,7 @@ module.exports.addAsyncEigHistoric = async ({
   userType,
 }) => {
   try {
-    addHistoric({
+    await addHistoric({
       action,
       data: {
         after: newData,
@@ -850,7 +877,7 @@ module.exports.addAsyncEigHistoric = async ({
     });
   } catch (error) {
     log.w("addAsyncHistoric - DONE with error", error);
-    if (sentry.enabled) {
+    if (config.sentry.enabled) {
       Sentry.captureException(error);
     }
   }

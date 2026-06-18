@@ -6,9 +6,9 @@ import {
   sendAlerte5mEmails,
   sendRappelJ7Emails,
 } from "./notifySuppressionCompteInactif.email";
-import { statusUserFront } from "@vao/shared-bridge";
+import { STATUS_USER_FRONT } from "@vao/shared-bridge";
 import { notifySuppressionCompteInactif, sentry } from "../config";
-import { isAfter, addDays, addMonths } from "../utils/date";
+import { isAfter, addDays, addMonths } from "@vao/shared-bridge";
 import type {
   NotifySuppressionCompteInactifRow,
   SuppressionCompteInactifReport,
@@ -34,11 +34,11 @@ const querySelectComptesInactifs = `
 `;
 
 export const getUsersByStatusCode = async (
-  statusCode: keyof typeof statusUserFront,
+  statusCode: keyof typeof STATUS_USER_FRONT,
 ) =>
   await pool.query<NotifySuppressionCompteInactifRow>(
     querySelectComptesInactifs,
-    [statusUserFront[statusCode]],
+    [STATUS_USER_FRONT[statusCode]],
   );
 
 export const notifySuppressionCompteInactifActions = async () => {
@@ -57,7 +57,7 @@ export const notifySuppressionCompteInactifActions = async () => {
 
   try {
     const { rows: users } = await getUsersByStatusCode(
-      statusUserFront.TEMPORARY_BLOCKED,
+      STATUS_USER_FRONT.TEMPORARY_BLOCKED,
     );
     report.total = users.length;
     const avecDemande = users.filter((row) => Number(row.nombreDemandes) > 0);

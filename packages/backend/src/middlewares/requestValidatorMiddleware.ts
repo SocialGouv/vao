@@ -1,18 +1,16 @@
-import type { BasicRoute, RouteSchema } from "@vao/shared-bridge";
+import {
+  type BasicRoute,
+  type RouteSchema,
+  ERRORS_COMMON,
+} from "@vao/shared-bridge";
 import { NextFunction } from "express";
 import * as yup from "yup";
 
 import type { RouteRequest, RouteResponse } from "../types/request";
 import AppError from "../utils/error";
-import logger from "../utils/logger";
+import { logger } from "../utils/logger";
 
 const log = logger(module.filename);
-
-const ERRORS = {
-  INVALID_BODY: "INVALID_BODY",
-  INVALID_PARAMS: "INVALID_PARAMS",
-  INVALID_QUERY: "INVALID_QUERY",
-};
 
 export function requestValidatorMiddleware<T extends BasicRoute>(
   validator: RouteSchema<T>,
@@ -31,10 +29,36 @@ export function requestValidatorMiddleware<T extends BasicRoute>(
       req.validatedQuery = requestQueryValidator(validator.query, req.query);
       req.validatedBody = requestBodyValidator(validator.body, req.body);
     } catch (error) {
-      log.w("missing or invalid parameter", error);
+      log.w("request validation error", error);
+      const errorMessage = (error as Error).message || "";
+      if (
+        [
+          ERRORS_COMMON.INVALID_PARAMS,
+          ERRORS_COMMON.INVALID_QUERY,
+          ERRORS_COMMON.INVALID_BODY,
+        ].includes(errorMessage as ERRORS_COMMON)
+      ) {
+        const validationError = (error as Error).cause as yup.ValidationError;
+        log.d(
+          "🚨 Invalid request, paths:",
+          validationError.path,
+          "errors:",
+          validationError.errors,
+        );
+        return next(
+          new AppError(`${validationError.errors} : ${validationError.path}`, {
+            cause: error,
+            name: errorMessage,
+            statusCode: 400,
+          }),
+        );
+      }
+
       return next(
-        new AppError("Paramètre incorrect", {
-          statusCode: 400,
+        new AppError(errorMessage, {
+          cause: error,
+          name: ERRORS_COMMON.INTERNAL_SERVER_ERROR,
+          statusCode: 500,
         }),
       );
     }
@@ -51,7 +75,9 @@ export function requestParamsValidator<T>(
       return validator.validateSync(params, { stripUnknown: true });
     } catch (error) {
       log.w("INVALID_PARAMS", error);
-      throw new Error(ERRORS.INVALID_PARAMS);
+      throw new Error(ERRORS_COMMON.INVALID_PARAMS, {
+        cause: error,
+      });
     }
   }
   return {};
@@ -63,10 +89,29 @@ export function requestQueryValidator<T>(
 ) {
   if (query && validator) {
     try {
-      return validator.validateSync(query, { stripUnknown: true });
+      // les tableaux étant mal interpretés par query-string, on parse les sous objets ou tableaux en JSON
+      const parsedQuery = Object.entries(query).reduce((acc, [key, value]) => {
+        if (
+          typeof value === "string" &&
+          (/^\{".*"\}$/.test(value) || /^\[.*\]$/.test(value))
+        ) {
+          try {
+            return { ...acc, [key]: JSON.parse(value) };
+          } catch (error: unknown) {
+            log.d("error parsing query", key, value, (error as Error).message);
+          }
+        }
+        return { ...acc, [key]: value };
+      }, {});
+      const validatedQuery = validator.validateSync(parsedQuery, {
+        stripUnknown: true,
+      });
+      return validatedQuery;
     } catch (error) {
-      log.d("INVALID_QUERY", error);
-      throw new Error(ERRORS.INVALID_QUERY);
+      log.d("INVALID_QUERY", (error as Error).message, error);
+      throw new Error(ERRORS_COMMON.INVALID_QUERY, {
+        cause: error,
+      });
     }
   }
   return {};
@@ -78,10 +123,13 @@ export function requestBodyValidator<T>(
 ) {
   if (body && validator) {
     try {
+      log.d("✅ Validation OK");
       return validator.validateSync(body, { stripUnknown: true });
     } catch (error) {
       log.d("INVALID_BODY", error);
-      throw new Error(ERRORS.INVALID_BODY);
+      throw new Error(ERRORS_COMMON.INVALID_BODY, {
+        cause: error,
+      });
     }
   }
   return {};

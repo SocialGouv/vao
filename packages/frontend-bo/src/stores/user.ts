@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { $fetchBackend, logger } from "#imports";
-import type { UserDto } from "@vao/shared-bridge";
-
+import { type UserDto, USER_COMPETENCE_BO } from "@vao/shared-bridge";
 const log = logger("stores/user");
 
 interface UserStoreState {
@@ -44,10 +43,10 @@ export const useUserStore = defineStore("user", {
           if (this.user) {
             this.user.serviceCompetent =
               this.user.territoireCode === "FRA"
-                ? "NAT"
+                ? USER_COMPETENCE_BO.NATIONALE
                 : /^\d+$/.test(this.user.territoireCode)
-                  ? "DEP"
-                  : "REG";
+                  ? USER_COMPETENCE_BO.DEPARTEMENTALE
+                  : USER_COMPETENCE_BO.REGIONALE;
           } else {
             this.user = null;
           }

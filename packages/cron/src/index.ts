@@ -7,18 +7,31 @@ import { cronNotifyRappelDs8j15j } from "./notifyRappelDs8j15j/notifyRappelDs8j1
 import { cronUpdateStatusDs } from "./updateStatutDs/updateStatusDs.cron";
 import { cronBlocageTemporaire3m } from "./blocageTemporaire3m/blocageTemporaire3m.cron";
 import { cronSuppressionCompteInactif } from "./suppressionCompteInactif/suppressionCompteInactif.cron";
+import { cronNotifyAgrementExpiration } from "./notifyAgrementExpiration/notifyAgrementExpiration.cron";
+import { cronUpdateAndNotifySva } from "./updateAndNotifySva/updateAndNotifySva.cron";
 import { logger } from "./utils/logger";
 
 const startCrons = () => {
   logger.info("Starting crons");
   logger.info("cronNotifyCompteInactif2m");
   cronNotifyCompteInactif2m().start();
+  logger.info("cronNotifySuppressionCompteInactif");
   cronNotifySuppressionCompteInactif().start();
+  logger.info("cronNotifyRappelActionsBo");
   cronNotifyRappelActionsBo().start();
+  logger.info("cronNotifyRappelDs8j15j");
   cronNotifyRappelDs8j15j().start();
+  logger.info("cronUpdateStatusDs");
   cronUpdateStatusDs().start();
+  logger.info("cronBlocageTemporaire3m");
   cronBlocageTemporaire3m().start();
+  logger.info("cronSuppressionCompteInactif");
   cronSuppressionCompteInactif().start();
+  logger.info("cronNotifyAgrementExpiration");
+  cronNotifyAgrementExpiration().start();
+  logger.info("cronUpdateAndNotifySva");
+  cronUpdateAndNotifySva().start();
+  logger.info("Starting crons done");
 };
 
 const stopCrons = () => {
@@ -30,6 +43,8 @@ const stopCrons = () => {
   cronUpdateStatusDs().stop();
   cronBlocageTemporaire3m().stop();
   cronSuppressionCompteInactif().stop();
+  cronNotifyAgrementExpiration().stop();
+  cronUpdateAndNotifySva().stop();
 };
 
 startCrons();

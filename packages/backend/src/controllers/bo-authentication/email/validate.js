@@ -1,10 +1,10 @@
 const jwt = require("jsonwebtoken");
-const config = require("../../../config");
+const { config } = require("../../../config");
 const User = require("../../../services/BoUser");
 
 const AppError = require("../../../utils/error").default;
 
-const logger = require("../../../utils/logger");
+const { logger } = require("../../../utils/logger");
 
 const log = logger(module.filename);
 

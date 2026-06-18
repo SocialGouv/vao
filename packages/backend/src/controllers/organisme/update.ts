@@ -7,8 +7,8 @@ import Organisme from "../../services/Organisme";
 import TerritoireService from "../../services/Territoire";
 import { UserRequest } from "../../types/request";
 import AppError from "../../utils/error";
-import logger from "../../utils/logger";
-import MailUtils from "../../utils/mail";
+import { logger } from "../../utils/logger";
+import { MailUtils } from "../../utils/mail";
 
 const log = logger(module.filename);
 

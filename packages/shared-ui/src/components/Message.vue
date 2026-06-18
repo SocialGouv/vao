@@ -26,8 +26,8 @@ defineProps<{
   name: string;
   isAnswer: boolean;
   createdAt: string;
-  file: { name: string; uuid: string; createdAt: string } | null;
-  cdnUrl: string;
+  file?: { name: string; uuid: string; createdAt: string } | null;
+  cdnUrl?: string;
 }>();
 </script>
 

@@ -1,9 +1,9 @@
 const BoUser = require("../../services/BoUser");
 
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error").default;
 const Send = require("../../services/mail").mailService.send;
-const MailUtils = require("../../utils/mail");
+const { MailUtils } = require("../../utils/mail");
 const BOUserSchema = require("../../schemas/bo-user");
 const serviceCompetence = require("./service-competence");
 const verifyCompetence = require("./service-competence");

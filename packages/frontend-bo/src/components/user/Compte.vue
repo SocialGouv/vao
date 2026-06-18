@@ -217,7 +217,7 @@
                   !props.user.editable ||
                   isSameUser
                 "
-                aria-describedby="toggle-valide"
+                aria-describedby="toggle-valide-texte"
                 @update:model-value="openModal"
               />
               <p v-if="!isActive && props.user.deleted_date">
@@ -226,7 +226,7 @@
               </p>
               <p
                 v-if="usersStore.user.roles.includes('Desactivation')"
-                id="toggle-valide"
+                id="toggle-valide-texte"
                 class="fr-hint-text"
               >
                 {{ isActive ? "Compte actif" : "Compte désactivé" }}

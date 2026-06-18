@@ -1,4 +1,7 @@
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(customParseFormat);
 
 export function isBefore(
   date: string | number | Date,
@@ -14,13 +17,47 @@ export function isAfter(
   return new Date(date).getTime() > new Date(dateToCompare).getTime();
 }
 
+export function isBetweenDates(
+  date: string | number | Date,
+  start: string | number | Date,
+  end: string | number | Date,
+) {
+  const d = new Date(date).getTime();
+  return d >= new Date(start).getTime() && d <= new Date(end).getTime();
+}
+
+export function daysBetween(
+  date1: string | number | Date,
+  date2: string | number | Date,
+) {
+  const diff = new Date(date2).getTime() - new Date(date1).getTime();
+  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+}
+
+export function minutesBetween(
+  date1: string | number | Date,
+  date2: string | number | Date,
+) {
+  const diff = new Date(date2).getTime() - new Date(date1).getTime();
+  return diff >= 0 ? Math.ceil(diff / (1000 * 60)) : 0;
+}
+
+export function addYears(date: Date | null, years: number) {
+  return date ? dayjs(date).add(years, "year").toDate() : null;
+}
+
+export function addMinutes(date: Date | null, minutes: number) {
+  return date ? dayjs(date).add(minutes, "minutes").toDate() : null;
+}
+
 export function addDays(date: Date, days: number) {
-  return new Date(date.getTime() + days * 24 * 60 * 60 * 1000);
+  return dayjs(date).add(days, "day").toDate();
 }
 
 export function addMonths(date: Date, months: number) {
-  return addDays(date, 30 * months);
+  return dayjs(date).add(months, "month").toDate();
 }
+
 export function formatFR(date: Date) {
   return dayjs(date).format("DD/MM/YYYY");
 }
@@ -28,3 +65,57 @@ export function formatFR(date: Date) {
 export function formatFRDateTime(date: Date) {
   return dayjs(date).format("DD/MM/YYYY HH:mm");
 }
+
+export function formatFRTime(date: Date) {
+  return dayjs(date).format("HH:mm");
+}
+
+export function formatISOShort(date?: Date | Dayjs | string | null) {
+  if (!date) return undefined;
+  return dayjs(date).format("YYYY-MM-DD");
+}
+
+export function getYear4k(date: Date) {
+  return dayjs(date).format("YYYY");
+}
+
+/**
+ * JJ/MM/AAAA -> AAAA-MM-JJ
+ */
+export const parseToISODate = (dateString: string | null): string | null => {
+  if (!dateString) return null;
+  const [day, month, year] = dateString.split("/");
+  return `${year}-${month}-${day}`;
+};
+
+export const parseIntToMonthFR = (mois: number[] | null): string => {
+  if (!mois || mois.length === 0) return "-";
+
+  const moisLabels = [
+    "janvier",
+    "février",
+    "mars",
+    "avril",
+    "mai",
+    "juin",
+    "juillet",
+    "août",
+    "septembre",
+    "octobre",
+    "novembre",
+    "décembre",
+  ];
+
+  return mois.map((m) => moisLabels[m - 1] || m).join(", ");
+};
+
+export const isValidFrShort = (date?: string | null): boolean => {
+  if (!date) return false;
+  return dayjs(date, "DD/MM/YYYY", true).isValid();
+};
+
+export const parseFrShort = (date?: string | null): dayjs.Dayjs | undefined => {
+  if (!date) return undefined;
+  const parsed = dayjs(date, "DD/MM/YYYY", true);
+  return parsed.isValid() ? parsed : undefined;
+};

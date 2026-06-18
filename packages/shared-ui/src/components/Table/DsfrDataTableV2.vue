@@ -13,7 +13,7 @@ import {
 } from "vue";
 
 export type Row = {
-  [key: PropertyKey]: Primitive | Row;
+  [key: PropertyKey]: any; // TODO: Replace any with a more specific type
 };
 
 export type Primitive = string | number | boolean | bigint | null | symbol;
@@ -104,7 +104,7 @@ const props = withDefaults(
     isSortable: false,
     sort: "",
     sortDirection: "asc",
-    emptyPlaceholder: "No data",
+    emptyPlaceholder: "Aucune donnée à afficher",
     isBordered: false,
     size: "md",
     tableTitle: "",

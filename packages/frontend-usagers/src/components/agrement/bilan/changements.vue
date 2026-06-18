@@ -1,0 +1,150 @@
+<template>
+  <fieldset class="no-border">
+    <legend class="fr-fieldset__legend fr-text--lead">
+      <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
+      Changement ou évolution
+    </legend>
+    <div class="fr-fieldset__element">
+      <div class="fr-col-12">
+        <DsfrInputGroup
+          v-if="props.modifiable"
+          name="bilanChangementEvolution"
+          :label="
+            displayInput.AgrementBilanAnnuelInput['bilanChangementEvolution']
+              .label
+          "
+          :model-value="bilanChangementEvolution"
+          :label-visible="true"
+          :is-textarea="true"
+          :is-valid="bilanChangementEvolutionMeta.valid"
+          :error-message="bilanChangementEvolutionErrorMessage"
+          hint="De votre propre initiative ou suite aux observations des inspecteurs de l'action sanitaire et sociale, les médecins inspecteurs de santé publique ou les inspecteurs des agences régionales de santé ayant la qualité de médecin à l'issue des contrôles effectués au cours de l'agrément."
+          @update:model-value="onBilanChangementEvolutionChange"
+        />
+        <UtilsDisplayInput
+          v-else
+          :value="bilanChangementEvolution"
+          :input="
+            displayInput.AgrementBilanAnnuelInput['bilanChangementEvolution']
+          "
+          :is-valid="bilanChangementEvolutionMeta.valid"
+          :error-message="bilanChangementEvolutionErrorMessage"
+        />
+      </div>
+    </div>
+    <div class="fr-fieldset__element">
+      <UtilsMultiFilesUpload
+        v-model="filesChangeEvol"
+        hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+        label="Ajouter des fichiers (optionnel)"
+        :modifiable="props.modifiable"
+      />
+    </div>
+    <div class="fr-fieldset__element">
+      <DsfrCheckbox
+        v-model="bilanAucunChangementEvolution"
+        name="checkbox-required-custom"
+        label="Aucun changement ou évolution à déclarer."
+        :readonly="!props.modifiable"
+        :error-message="bilanAucunChangementEvolutionErrorMessage"
+        :value="true"
+      />
+    </div>
+  </fieldset>
+</template>
+
+<script setup lang="ts">
+import { ref } from "vue";
+import { useForm, useField } from "vee-validate";
+import * as yup from "yup";
+import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
+import type { AgrementFilesDto } from "@vao/shared-bridge";
+import displayInput from "../../../utils/display-input";
+
+const props = defineProps({
+  initAgrement: { type: Object, required: true },
+  cdnUrl: { type: String, required: true },
+  modifiable: { type: Boolean, default: true },
+});
+
+const log = logger("components/agrement/bilan/changements");
+
+const filesChangeEvol = ref(
+  props.initAgrement?.agrementFiles?.filter(
+    (file: AgrementFilesDto) => file.category === FILE_CATEGORY.CHANGEEVOL,
+  ) || [],
+);
+
+const validationSchema = yup.object({
+  statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
+  bilanChangementEvolution: yup
+    .string()
+    .nullable()
+    .when([], {
+      is: (val: string | null) => val && val.length > 0,
+      then: (schema) =>
+        schema.min(20, "Merci de décrire au moins 20 caractères."),
+      otherwise: (schema) => schema,
+    }),
+});
+
+const initialValues = {
+  statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
+  bilanChangementEvolution: props.initAgrement.bilanChangementEvolution || null,
+  bilanAucunChangementEvolution:
+    props.initAgrement.bilanAucunChangementEvolution || false,
+};
+
+const { handleSubmit } = useForm({
+  validationSchema,
+  initialValues,
+  validateOnMount: true,
+});
+
+const {
+  value: bilanChangementEvolution,
+  errorMessage: bilanChangementEvolutionErrorMessage,
+  handleChange: onBilanChangementEvolutionChange,
+  meta: bilanChangementEvolutionMeta,
+} = useField<string | null>("bilanChangementEvolution");
+
+const {
+  value: bilanAucunChangementEvolution,
+  errorMessage: bilanAucunChangementEvolutionErrorMessage,
+} = useField<boolean>("bilanAucunChangementEvolution");
+
+const validateForm = async () => {
+  const finalData = {
+    valid: false,
+    bilanChangementEvolution: bilanChangementEvolution.value,
+    bilanAucunChangementEvolution: bilanAucunChangementEvolution.value,
+    filesChangeEvol: filesChangeEvol.value,
+  };
+
+  try {
+    const result = await handleSubmit((values) => values)();
+    if (result) {
+      finalData.bilanChangementEvolution = result.bilanChangementEvolution;
+      finalData.bilanAucunChangementEvolution =
+        result.bilanAucunChangementEvolution;
+      finalData.valid = true;
+    }
+  } catch (error) {
+    log.w("Erreur lors de la validation du formulaire :", error);
+  }
+
+  return finalData;
+};
+
+defineExpose({
+  validateForm,
+});
+</script>
+<style scoped>
+fieldset.no-border {
+  padding: 0;
+}
+legend {
+  padding-left: 0;
+}
+</style>

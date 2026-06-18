@@ -1,4 +1,4 @@
-const logger = require("../utils/logger");
+const { logger } = require("../utils/logger");
 const AppError = require("../utils/error").default;
 const Hebergement = require("../services/hebergement/Hebergement");
 
@@ -22,6 +22,14 @@ function checkStatutHebergement(statut) {
     } catch (error) {
       log.w("DONE with error");
       return next(error);
+    }
+
+    if (!hebergementStatut) {
+      return next(
+        new AppError("Hébergement non trouvé", {
+          statusCode: 404,
+        }),
+      );
     }
 
     if (statut !== hebergementStatut) {

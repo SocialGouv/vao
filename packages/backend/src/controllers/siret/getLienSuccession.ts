@@ -6,7 +6,7 @@ import type { NextFunction } from "express";
 import { getEtablissementSuccesseur } from "../../services/Insee";
 import type { RouteRequest, RouteResponse } from "../../types/request";
 import AppError from "../../utils/error";
-import logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 
 const log = logger(module.filename);
 

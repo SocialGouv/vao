@@ -1,0 +1,189 @@
+<template>
+  <div>
+    <AgrementBilanChangements
+      ref="changementsRef"
+      :init-agrement="props.initAgrement ?? {}"
+      :cdn-url="props.cdnUrl"
+      :modifiable="props.modifiable"
+    />
+    <AgrementBilanSejours
+      ref="sejoursRef"
+      :init-agrement="props.initAgrement ?? {}"
+      :cdn-url="props.cdnUrl"
+      :modifiable="props.modifiable"
+    />
+    <AgrementBilanQualitatif
+      ref="qualitatifRef"
+      :init-agrement="props.initAgrement ?? {}"
+      :cdn-url="props.cdnUrl"
+      :modifiable="props.modifiable"
+    />
+    <div class="separator fr-mt-8v"></div>
+    <AgrementBilanFinancier
+      ref="financierRef"
+      :init-agrement="props.initAgrement ?? {}"
+      :modifiable="props.modifiable"
+    />
+    <div v-if="props.showButtons && props.modifiable">
+      <div class="fr-fieldset__element">
+        <UtilsNavigationButtons
+          :show-buttons="props.showButtons"
+          :is-downloading="props.isDownloading"
+          :message="props.message"
+          :modifiable="props.modifiable"
+          @next="handleSuivant"
+          @previous="emit('previous')"
+        />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from "vue";
+import type { Ref } from "vue";
+import { useToaster } from "@vao/shared-ui";
+
+interface FormulaireItem {
+  ref: Ref<any>;
+  nom: string;
+  cle: string;
+}
+
+const props = defineProps({
+  valid: { type: Boolean, default: true },
+  initAgrement: { type: Object, required: true },
+  showButtons: { type: Boolean, default: true },
+  cdnUrl: { type: String, required: true },
+  message: { type: String, default: null },
+  isDownloading: { type: Boolean, default: false },
+  modifiable: { type: Boolean, default: true },
+  onUpdate: { type: Function, required: false, default: null },
+});
+
+const toaster = useToaster();
+
+const log = logger("AgrementBilan");
+
+const emit = defineEmits(["update:valid", "update", "previous"]);
+
+const changementsRef = ref(null);
+const financierRef = ref(null);
+const sejoursRef = ref(null);
+const qualitatifRef = ref(null);
+const validationErrors = ref<string[]>([]);
+
+const forms: FormulaireItem[] = [
+  { ref: changementsRef, nom: "Changements et évolutions", cle: "changements" },
+  { ref: financierRef, nom: "Bilan financier", cle: "financier" },
+  { ref: sejoursRef, nom: "Bilan des séjours", cle: "sejours" },
+  { ref: qualitatifRef, nom: "Bilan qualitatif", cle: "qualitatif" },
+];
+
+const validateAllForms = async (formulaires: FormulaireItem[]) => {
+  const formsErrors: string[] = [];
+  const formsData: Record<string, any> = {};
+
+  const resultats = await Promise.allSettled(
+    formulaires.map(async (form) => {
+      const data = await form.ref.value.validateForm();
+      return { cle: form.cle, nom: form.nom, data };
+    }),
+  );
+
+  resultats.forEach((result, index) => {
+    const nomFormulaire = formulaires[index].nom;
+
+    if (result.status !== "fulfilled" || !result.value?.data) {
+      formsErrors.push(`Le formulaire "${nomFormulaire}" contient des erreurs`);
+      if (result.status === "rejected") {
+        log.w(`Erreur dans ${nomFormulaire}:`, result.reason);
+      }
+      return;
+    }
+
+    const { cle, nom, data } = result.value;
+
+    if (cle === "sejours") {
+      formsData[cle] = data.data;
+
+      if (!data.valid) {
+        if (data.invalidYears?.length > 0) {
+          const yearsLabel = data.invalidYears
+            .sort((a: number, b: number) => b - a)
+            .join(", ");
+          formsErrors.push(
+            `Le bilan des séjours est incomplet : aucun séjour renseigné pour ${
+              data.invalidYears.length > 1
+                ? `les années ${yearsLabel}`
+                : `l'année ${yearsLabel}`
+            }`,
+          );
+        } else {
+          formsErrors.push(`Le formulaire "${nom}" contient des erreurs`);
+        }
+      }
+    } else {
+      const { valid, ...dataToStore } = data;
+      if (!valid) {
+        formsErrors.push(`Le formulaire "${nom}" contient des erreurs`);
+      }
+      formsData[cle] = dataToStore;
+    }
+  });
+
+  return {
+    formsData,
+    formsErrors,
+    allFormsAreValid: formsErrors.length === 0,
+  };
+};
+
+onMounted(async () => {
+  if (!props.modifiable) {
+    validationForm();
+  }
+});
+
+const validationForm = async () => {
+  validationErrors.value = [];
+  const { formsErrors, allFormsAreValid } = await validateAllForms(forms);
+  validationErrors.value = formsErrors;
+  if (!props.modifiable) {
+    emit("update:valid", allFormsAreValid);
+  }
+};
+
+const buildTransformedData = (formsData: Record<string, any>) => {
+  const transformedData = {
+    ...formsData.changements,
+    ...formsData.financier,
+    agrementBilanAnnuel: formsData.sejours,
+    ...formsData.qualitatif,
+  };
+  delete transformedData.statut;
+  return transformedData;
+};
+
+const handleSuivant = async () => {
+  validationErrors.value = [];
+  const { formsData, formsErrors, allFormsAreValid } =
+    await validateAllForms(forms);
+  validationErrors.value = formsErrors;
+
+  if (allFormsAreValid || props.initAgrement.statut === "BROUILLON") {
+    const transformedData = buildTransformedData(formsData);
+
+    if (props.onUpdate) {
+      await props.onUpdate(transformedData);
+    } else {
+      emit("update", transformedData);
+    }
+  } else {
+    toaster.error({
+      titleTag: "h2",
+      description: "Tous les formulaires doivent être renseignés et valides.",
+    });
+  }
+};
+</script>

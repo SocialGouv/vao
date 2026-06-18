@@ -67,11 +67,11 @@
       />
     </div>
     <DSHebergementsSejourDetail
-      v-else
+      v-if="nuiteeOpened"
       :hebergement="hebergementCourant"
       :date-debut-ini="nextMinDate"
       :date-fin-ini="
-        dayjs(demandeSejourStore.demandeCourante.dateFin).format('YYYY-MM-DD')
+        formatISOShort(demandeSejourStore.demandeCourante.dateFin)!
       "
       :modifiable="props.modifiable"
       @update="addNuitee"
@@ -80,17 +80,31 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { DsfrButtonGroup } from "@gouvminint/vue-dsfr";
 import { useField, useForm } from "vee-validate";
 import dayjs from "dayjs";
-import { hebergement as hebergementUtils, fileUtils, useToaster } from "@vao/shared-ui";
+import {
+  hebergement as hebergementUtils,
+  fileUtils,
+  useToaster,
+} from "@vao/shared-ui";
+import {
+  formatISOShort,
+  type DemandeSejourHebergementItemDto,
+} from "@vao/shared-bridge";
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
+
+type HebergementFormValues = {
+  sejourEtranger: boolean;
+  hebergements: DemandeSejourHebergementItemDto[];
+};
 
 const toaster = useToaster();
 
 const props = defineProps({
   modifiable: { type: Boolean, default: true },
+  showButtons: { type: Boolean, default: true },
   isDownloading: { type: Boolean, required: false, default: false },
   message: { type: String, required: false, default: null },
 });
@@ -115,19 +129,19 @@ const currentIndex = ref(-1);
 
 const validationSchema = computed(() => {
   return DeclarationSejour.hebergementSchema(
-    demandeSejourStore.demandeCourante.dateDebut,
-    demandeSejourStore.demandeCourante.dateFin,
+    demandeSejourStore.demandeCourante.dateDebut!,
+    demandeSejourStore.demandeCourante.dateFin!,
   );
 });
 
-const initialValues = {
-  sejourEtranger:
-    demandeSejourStore.demandeCourante.hebergement?.sejourEtranger ?? false,
-  hebergements:
-    demandeSejourStore.demandeCourante.hebergement?.hebergements ?? [],
+const hebergementDemande = demandeSejourStore.demandeCourante.hebergement;
+
+const initialValues: HebergementFormValues = {
+  sejourEtranger: hebergementDemande?.sejourEtranger ?? false,
+  hebergements: hebergementDemande?.hebergements ?? [],
 };
 
-const { meta, values } = useForm({
+const { meta, values } = useForm<HebergementFormValues>({
   initialValues,
   validationSchema,
 });
@@ -137,9 +151,9 @@ const {
   errorMessage: sejourEtrangerErrorMessage,
   handleChange: onSejourEtrangerChange,
   meta: sejourEtrangerMeta,
-} = useField("sejourEtranger");
+} = useField<boolean>("sejourEtranger");
 const { value: hebergements, handleChange: onHebergementsChange } =
-  useField("hebergements");
+  useField<DemandeSejourHebergementItemDto[]>("hebergements");
 
 hebergementStore.fetch({
   organismeId: demandeSejourStore.demandeCourante.organismeId,
@@ -151,71 +165,69 @@ hebergementStore.fetch({
 });
 
 const syntheseRows = computed(() => {
-  if (hebergementStore.hebergements.length > 0) {
-    return hebergements.value.map((hebergement, index) => {
-      const buttons = [
-        {
-          icon: "ri:delete-bin-2-line",
-          iconOnly: true,
-          tertiary: true,
-          noOutline: true,
-          disabled: !props.modifiable,
-          ariaLabel: `Supprimer l'hébergement: ${hebergement.nom}`,
-          onClick: (event) => {
-            event.stopPropagation();
-            removeHebergement(index);
-          },
+  return hebergements.value.map((hebergement, index) => {
+    const buttons = [
+      {
+        icon: "ri:delete-bin-2-line",
+        iconOnly: true,
+        tertiary: true,
+        noOutline: true,
+        disabled: !props.modifiable,
+        ariaLabel: `Supprimer l'hébergement: ${hebergement.nom}`,
+        onClick: (event: Event) => {
+          event.stopPropagation();
+          removeHebergement(index);
         },
-      ];
+      },
+    ];
 
-      const rows = [
-        `${index + 1}`,
-        hebergement.dateFin && hebergement.dateDebut
-          ? dayjs(hebergement.dateFin)
-              .diff(dayjs(hebergement.dateDebut), "day")
-              .toString()
-          : "",
-        hebergement.dateDebut
-          ? dayjs(hebergement.dateDebut).format("DD/MM/YYYY")
-          : "",
-        hebergement.dateFin
-          ? dayjs(hebergement.dateFin).format("DD/MM/YYYY")
-          : "",
-        hebergement.nom ?? "",
-        hebergement.coordonnees?.adresse?.label ?? "",
-        {
-          component: DsfrButtonGroup,
-          buttons: buttons,
-        },
-      ];
-      return {
-        rowData: rows,
-        rowAttrs: {
-          class: "pointer",
-          onClick: () => editNuitee(index),
-        },
-      };
-    });
-  } else return [];
+    const rows = [
+      `${index + 1}`,
+      hebergement.dateFin && hebergement.dateDebut
+        ? dayjs(hebergement.dateFin)
+            .diff(dayjs(hebergement.dateDebut), "day")
+            .toString()
+        : "",
+      hebergement.dateDebut
+        ? dayjs(hebergement.dateDebut).format("DD/MM/YYYY")
+        : "",
+      hebergement.dateFin
+        ? dayjs(hebergement.dateFin).format("DD/MM/YYYY")
+        : "",
+      hebergement.nom ?? "",
+      hebergement.coordonnees?.adresse?.label ?? "",
+      {
+        component: DsfrButtonGroup,
+        buttons: buttons,
+      },
+    ];
+    return {
+      rowData: rows,
+      rowAttrs: {
+        class: "pointer",
+        onClick: () => editNuitee(index),
+      },
+    };
+  });
 });
 
-const hebergementCourant = ref();
+const hebergementCourant = ref<Partial<DemandeSejourHebergementItemDto>>({});
 
 const nextMinDate = computed(() => {
+  const dateDebut = demandeSejourStore.demandeCourante.dateDebut!;
+
   if (currentIndex.value !== -1) {
-    return dayjs(demandeSejourStore.demandeCourante.dateDebut).format(
-      "YYYY-MM-DD",
-    );
+    return dayjs(dateDebut).format("YYYY-MM-DD");
   }
 
   if (hebergements.value.length === 0) {
-    return dayjs(demandeSejourStore.demandeCourante.dateDebut).format(
-      "YYYY-MM-DD",
-    );
+    return dayjs(dateDebut).format("YYYY-MM-DD");
   }
   return dayjs(
     Math.max(
-      ...hebergements.value.map((hebergement) => dayjs(hebergement.dateFin)),
+      ...hebergements.value.map((hebergement) =>
+        dayjs(hebergement.dateFin).valueOf(),
+      ),
     ),
   ).format("YYYY-MM-DD");
 });
@@ -226,40 +238,47 @@ function onOpenNuitee() {
   hebergementCourant.value = {};
 }
 
-function editNuitee(index) {
+function editNuitee(index: number) {
   currentIndex.value = index;
   nuiteeOpened.value = true;
-  hebergementCourant.value = hebergements.value[index];
+  hebergementCourant.value = { ...hebergements.value[index] };
 }
 
 function onCloseNuitee() {
   nuiteeOpened.value = false;
   currentIndex.value = -1;
-  hebergementCourant.value = null;
+  hebergementCourant.value = {};
+  // hebergementStore.hebergementCourant = null;
 }
 
-function sortByDate(hebergements) {
-  return hebergements.sort(({ dateDebut: a }, { dateDebut: b }) => {
+function sortByDate(items: DemandeSejourHebergementItemDto[]) {
+  return [...items].sort(({ dateDebut: a }, { dateDebut: b }) => {
     return dayjs(a).diff(dayjs(b));
   });
 }
 
-function removeHebergement(index) {
+function removeHebergement(index: number) {
   log.i("removeHebergement", { index });
-  hebergements.value.splice(index);
-  onHebergementsChange(hebergements.value);
+  const newHebergements = hebergements.value.filter((_, i) => i !== index);
+  onHebergementsChange(newHebergements);
 }
 
-async function addNuitee(hebergement) {
+async function addNuitee(hebergement: DemandeSejourHebergementItemDto) {
   log.d("addNuitee - In", { hebergement });
-  let newHebergements;
+  const index = currentIndex.value;
 
   try {
-    await hebergementStore.uploadAllFiles(hebergement);
-  } catch (error) {
+    await hebergementStore.uploadAllFiles(
+      hebergement as unknown as Record<string, unknown>,
+    );
+  } catch (error: unknown) {
+    const uploadError = error as {
+      fileName?: string;
+      data?: { name?: string };
+    };
     const description = getFileUploadErrorMessage(
-      error?.fileName,
-      error?.data?.name,
+      uploadError.fileName ?? "",
+      uploadError.data?.name,
     );
     toaster.error({
       titleTag: "h2",
@@ -269,17 +288,17 @@ async function addNuitee(hebergement) {
     return;
   }
 
-  if (currentIndex.value === -1) {
+  let newHebergements;
+  if (index === -1) {
     newHebergements = [...hebergements.value, hebergement];
   } else {
     newHebergements = [
-      ...hebergements.value.slice(0, currentIndex.value),
+      ...hebergements.value.slice(0, index),
       hebergement,
-      ...hebergements.value.slice(currentIndex.value + 1),
+      ...hebergements.value.slice(index + 1),
     ];
   }
-  sortByDate(newHebergements);
-  onHebergementsChange(newHebergements);
+  onHebergementsChange(sortByDate(newHebergements));
   onCloseNuitee();
   log.d("addNuitee - Done");
 }
@@ -287,8 +306,8 @@ async function addNuitee(hebergement) {
 const isSejourComplet = computed(() =>
   DeclarationSejour.isSejourComplet(
     hebergements.value,
-    demandeSejourStore.demandeCourante.dateDebut,
-    demandeSejourStore.demandeCourante.dateFin,
+    demandeSejourStore.demandeCourante.dateDebut!,
+    demandeSejourStore.demandeCourante.dateFin!,
   ),
 );
 

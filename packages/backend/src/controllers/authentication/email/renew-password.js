@@ -1,13 +1,14 @@
+const { ERRORS_COMMON, USER_TARGET } = require("@vao/shared-bridge");
 const jwt = require("jsonwebtoken");
 
 const User = require("../../../services/User");
 
-const config = require("../../../config");
+const { config } = require("../../../config");
 const passwordSchema = require("../../../schemas/parts/password");
 
 const AppError = require("../../../utils/error").default;
 const ValidationAppError = require("../../../utils/validation-error").default;
-const logger = require("../../../utils/logger");
+const { logger } = require("../../../utils/logger");
 const { canBeActivated } = require("../../../utils/canBeActivated");
 
 const log = logger(module.filename);
@@ -21,6 +22,7 @@ module.exports = async function register(req, res, next) {
 
     return next(
       new AppError("Paramètre incorrect", {
+        name: ERRORS_COMMON.INVALID_QUERY,
         statusCode: 400,
       }),
     );
@@ -39,6 +41,11 @@ module.exports = async function register(req, res, next) {
     });
     log.d({ email });
     let user = await User.editPassword({ email, password });
+    res.clearCookie(`VAO_trust_token-${USER_TARGET.FO}-${user.id}`, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: true,
+    });
     if (canBeActivated(user.statusCode)) {
       user = await User.activate(email);
     }

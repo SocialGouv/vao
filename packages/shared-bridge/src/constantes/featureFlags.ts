@@ -1,0 +1,4 @@
+export enum FeatureFlagName {
+  AUTH_2FA = "AUTH_2FA",
+  RENOUVELLEMENT_AGREMENT = "RENOUVELLEMENT_AGREMENT",
+}

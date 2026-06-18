@@ -8,14 +8,14 @@ const PdfDeclaration2Mois = require("../../services/pdf/declaration2mois/generat
 const PdfDeclaration8jours = require("../../services/pdf/declaration8jours/generate");
 
 const Sentry = require("@sentry/node");
-const { sentry } = require("../../config");
+const { config } = require("../../config");
 
 const {
   schema: DeclarationSejourSchema,
 } = require("../../schemas/declaration-sejour");
 
-const MailUtils = require("../../utils/mail");
-const logger = require("../../utils/logger");
+const { MailUtils } = require("../../utils/mail");
+const { logger } = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error").default;
 const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 const AppError = require("../../utils/error").default;
@@ -131,7 +131,7 @@ module.exports = async function post(req, res, next) {
       await DemandeSejour.finalize8jours(declarationId, declaration);
     } catch (error) {
       log.w(error);
-      if (sentry.enabled) {
+      if (config.sentry.enabled) {
         Sentry.captureException(error);
       }
       return next(
@@ -157,7 +157,7 @@ module.exports = async function post(req, res, next) {
       );
     } catch (error) {
       log.w(error);
-      if (sentry.enabled) {
+      if (config.sentry.enabled) {
         Sentry.captureException(error);
       }
     }
@@ -170,7 +170,7 @@ module.exports = async function post(req, res, next) {
       );
     } catch (error) {
       log.w(error);
-      if (sentry.enabled) {
+      if (config.sentry.enabled) {
         Sentry.captureException(error);
       }
     }
@@ -179,7 +179,7 @@ module.exports = async function post(req, res, next) {
       const destinataires = await DemandeSejour.getEmailToList(
         declaration.organismeId,
       );
-      const filteredCc = declaration.organisme.personneMorale.siren
+      const filteredCc = declaration.organisme.personneMorale?.siren
         ? (
             await DemandeSejour.getEmailCcList(
               declaration.organisme.personneMorale.siren,
@@ -196,7 +196,7 @@ module.exports = async function post(req, res, next) {
           }),
         );
       }
-    } catch (error) {
+    } catch {
       log.w("DONE with error");
       return next(
         new AppError("Une erreur est survenue lors de l'envoi de mails", {
@@ -258,7 +258,7 @@ module.exports = async function post(req, res, next) {
       );
     } catch (error) {
       log.w(error);
-      if (sentry.enabled) {
+      if (config.sentry.enabled) {
         Sentry.captureException(error);
       }
       return next(
@@ -288,7 +288,7 @@ module.exports = async function post(req, res, next) {
       );
     } catch (error) {
       log.w(error);
-      if (sentry.enabled) {
+      if (config.sentry.enabled) {
         Sentry.captureException(error);
       }
     }
@@ -300,7 +300,7 @@ module.exports = async function post(req, res, next) {
       );
     } catch (error) {
       log.w(error);
-      if (sentry.enabled) {
+      if (config.sentry.enabled) {
         Sentry.captureException(error);
       }
     }
@@ -310,7 +310,7 @@ module.exports = async function post(req, res, next) {
         declaration.organismeId,
       );
       const cc = await DemandeSejour.getEmailCcList(
-        declaration.organisme.personneMorale.siren ?? "personnePhysique",
+        declaration.organisme.personneMorale?.siren ?? "personnePhysique",
       );
 
       const filteredCc = cc.filter((d) => !destinataires.includes(d));
@@ -326,7 +326,7 @@ module.exports = async function post(req, res, next) {
           ),
         );
       }
-    } catch (error) {
+    } catch {
       log.w("DONE with error");
       return next(
         new AppError("Une erreur est survenue lors de l'envoi de mails", {

@@ -1,9 +1,9 @@
 const Sentry = require("@sentry/node");
 
-const { sentry } = require("../config");
-const logger = require("../utils/logger");
+const { config } = require("../config");
+const { logger } = require("../utils/logger");
 const { getPool } = require("../utils/pgpool");
-const normalize = require("../utils/normalize");
+const { normalize } = require("../utils/normalize");
 const AppError = require("../utils/error").default;
 const { status } = require("../helpers/users");
 const { addHistoric } = require("./Tracking");
@@ -87,7 +87,10 @@ const query = {
       us.status_code as "statusCode",
       pm.siret as "siret",
       pm.raison_sociale as "raisonSociale",
-      us.cgu_accepted as "cguAccepted"
+      us.cgu_accepted as "cguAccepted",
+      us.otp_code_expires_at AS "otpCodeExpiresAt",
+      us.otp_attempts AS "otpAttempts",
+      us.otp_attempts_at AS "otpAttemptsAt"
     FROM front.users us
     LEFT JOIN front.user_organisme uo ON us.id = uo.use_id
     LEFT JOIN front.organismes o ON uo.org_id = o.id
@@ -282,7 +285,7 @@ module.exports.login = async ({ email, password }) => {
     return null;
   }
   CommonUser.resetLoginAttempt(normalize(email), schema.FRONT);
-  getPool().query(query.updateLastConnection, [user.rows[0].id]);
+  await getPool().query(query.updateLastConnection, [user.rows[0].id]);
   log.i("read - DONE", { user: user.rows[0] });
   return user.rows[0];
 };
@@ -300,7 +303,7 @@ const getByUserId = async (userId) => {
     return response.rows[0];
   } catch (error) {
     log.w("getByUserId - DONE with error", error);
-    if (sentry.enabled) {
+    if (config.sentry.enabled) {
       Sentry.captureException(error);
     }
     return null;
@@ -317,20 +320,20 @@ module.exports.addAsyncUserHistoric = async ({
   userType,
 }) => {
   try {
-    addHistoric({
+    await addHistoric({
       action,
       data: {
         after: newData,
         before: oldData,
       },
-      entity: entities.userFront,
+      entity: entities?.userFront,
       entityId: userId,
       userId: foUserId,
       userType: userType ?? userTypes.front,
     });
   } catch (error) {
     log.w("addAsyncHistoric - DONE with error", error);
-    if (sentry.enabled) {
+    if (config.sentry.enabled) {
       Sentry.captureException(error);
     }
   }

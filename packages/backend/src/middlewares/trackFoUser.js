@@ -1,7 +1,7 @@
 const { TRACKING_ACTIONS } = require("@vao/shared-bridge");
 const foUser = require("../services/User");
 
-function trackFoUser({ action, userType, itself }) {
+function trackFoUser({ action, userType, itself = null }) {
   return async (req, res, next) => {
     const { id: userId } = req.decoded;
 
@@ -24,7 +24,7 @@ function trackFoUser({ action, userType, itself }) {
         newUser = await foUser.getByUserId(id);
       }
       if (foUserId) {
-        foUser.addAsyncUserHistoric({
+        await foUser.addAsyncUserHistoric({
           action,
           data: { newData: newUser, olData: oldUser },
           foUserId: id,

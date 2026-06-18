@@ -1,4 +1,4 @@
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const yup = require("yup");
 const { selectionSejourSchema } = require("../../schemas/eig");
 const ValidationAppError = require("../../utils/validation-error").default;

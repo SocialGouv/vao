@@ -7,29 +7,32 @@
   "license": "Apache-2.0",
   "description": "",
   "scripts": {
-    "lint": "eslint --ext .js,.vue,.ts ./src",
+    "lint": "eslint ./src",
     "lint:fix": "corepack pnpm lint --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "lint-staged": {
-    "src/**/*.{js,ts,vue}": "corepack pnpm exec eslint"
+    "src/**/*.{js,ts,vue}": "pnpm exec eslint"
   },
   "dependencies": {
-    "@gouvfr/dsfr": "^1.14.0",
-    "@gouvminint/vue-dsfr": "^8.4.0",
-    "@iconify/vue": "^4.3.0",
+    "@gouvfr/dsfr": "catalog:",
+    "@gouvminint/vue-dsfr": "catalog:",
+    "@iconify/vue": "catalog:",
     "@vao/shared-bridge": "workspace:^",
-    "@vueform/multiselect": "~2.6.7",
-    "dayjs": "^1.11.11",
-    "debug": "~4.3.4",
-    "vee-validate": "~4.13.0",
+    "@vueform/multiselect": "catalog:",
+    "dayjs": "catalog:",
+    "debug": "catalog:",
+    "ofetch": "catalog:",
+    "nuxt": "catalog:",
+    "vee-validate": "catalog:",
     "vue": "latest",
-    "yup": "~1.4.0"
+    "yup": "catalog:"
   },
   "devDependencies": {
-    "@nuxt/eslint-config": "1.9.0",
-    "eslint": "^9.39.1",
-    "eslint-config-prettier": "^10.1.8",
-    "prettier": "^3.3.3"
+    "@nuxt/eslint-config": "catalog:",
+    "@types/debug": "^4.1.12",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "prettier": "catalog:"
   }
 }

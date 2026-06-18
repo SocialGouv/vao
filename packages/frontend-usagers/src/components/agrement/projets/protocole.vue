@@ -1,0 +1,290 @@
+<template>
+  <TitleWithIcon
+    icon="fr-icon-alarm-warning-fill"
+    :level="3"
+    title-class="fr-text--lead fr-mb-0"
+  >
+    Protocole de réorientation, évacuation, rapatriement prévu
+  </TitleWithIcon>
+  <div>
+    <fieldset class="no-border">
+      <legend class="fr-fieldset__legend fr-text--lg">
+        Réorientation, évacuation
+      </legend>
+      <div class="fr-fieldset__element">
+        <div class="fr-col-12">
+          <DsfrInputGroup
+            v-if="props.modifiable"
+            name="protocoleEvacUrg"
+            :label="displayInput.AgrementProjetsInput['protocoleEvacUrg'].label"
+            hint="Minimum 20 caractères. Identification des risques potentiels, actions prévues par le responsable du séjour, information sur la sécurité du site et modes d’évacuation prévus, information du lieu d’hébergement sur la nature du public et possibles besoins d’aides en cas d’alerte."
+            :model-value="protocoleEvacUrg"
+            :label-visible="true"
+            :is-textarea="true"
+            :is-valid="protocoleEvacUrgMeta.valid"
+            :error-message="protocoleEvacUrgErrorMessage"
+            @update:model-value="onProtocoleEvacUrgChange"
+          />
+          <UtilsDisplayInput
+            v-else
+            :value="protocoleEvacUrg"
+            :input="displayInput.AgrementProjetsInput['protocoleEvacUrg']"
+            :is-valid="protocoleEvacUrgMeta.valid"
+            :error-message="protocoleEvacUrgErrorMessage"
+          />
+        </div>
+      </div>
+      <div class="fr-fieldset__element fr-mt-8v">
+        <div class="fr-col-12">
+          <DsfrInputGroup
+            v-if="props.modifiable"
+            name="protocoleRapatUrg"
+            :label="
+              displayInput.AgrementProjetsInput['protocoleRapatUrg'].label
+            "
+            hint="Minimum 20 caractères. Expliquer les mesures organisationnelles prévues (transports, modalités d’information de l’entourage du vacancier, conditions de retour vers l’ESSMS, le domicile ou autre lieu de séjour, liens avec les services médicaux et de secours)."
+            :model-value="protocoleRapatUrg"
+            :label-visible="true"
+            :is-textarea="true"
+            :is-valid="protocoleRapatUrgMeta.valid"
+            :error-message="protocoleRapatUrgErrorMessage"
+            @update:model-value="onProtocoleRapatUrgChange"
+          />
+          <UtilsDisplayInput
+            v-else
+            :value="protocoleRapatUrg"
+            :input="displayInput.AgrementProjetsInput['protocoleRapatUrg']"
+            :is-valid="protocoleRapatUrgMeta.valid"
+            :error-message="protocoleRapatUrgErrorMessage"
+          />
+        </div>
+      </div>
+
+      <div class="fr-fieldset__element">
+        <UtilsMultiFilesUpload
+          v-model="filesProjetsSejoursProtocoleReorientation"
+          hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+          :modifiable="props.modifiable"
+          label="Ajouter des fichiers (optionnel)"
+        />
+      </div>
+    </fieldset>
+  </div>
+  <div class="fr-my-4w separator"></div>
+  <fieldset class="no-border">
+    <legend class="fr-fieldset__legend fr-text--lg">Rapatriement</legend>
+    <div class="fr-col-12">
+      <DsfrInputGroup
+        v-if="props.modifiable"
+        name="protocoleRapatEtranger"
+        :label="
+          displayInput.AgrementProjetsInput['protocoleRapatEtranger'].label
+        "
+        hint="Minimum 20 caractères. Identification des risques potentiels, actions prévues par le responsable du séjour, information sur la sécurité du site et modes d’évacuation prévus, information du lieu d’hébergement sur la nature du public et possibles besoins d’aides en cas d’alerte"
+        :model-value="protocoleRapatEtranger"
+        :label-visible="true"
+        :is-textarea="true"
+        :is-valid="protocoleRapatEtrangerMeta.valid"
+        :error-message="protocoleRapatEtrangerErrorMessage"
+        @update:model-value="onProtocoleRapatEtrangerChange"
+      />
+      <UtilsDisplayInput
+        v-else
+        :value="protocoleRapatEtranger"
+        :input="displayInput.AgrementProjetsInput['protocoleRapatEtranger']"
+        :is-valid="protocoleRapatEtrangerMeta.valid"
+        :error-message="protocoleRapatEtrangerErrorMessage"
+      />
+    </div>
+    <div class="fr-fieldset__element fr-mt-8v">
+      <div class="fr-col-12">
+        <DsfrInputGroup
+          v-if="props.modifiable"
+          name="protocoleInfoFamille"
+          :label="
+            displayInput.AgrementProjetsInput['protocoleInfoFamille'].label
+          "
+          hint="Minimum 20 caractères. Expliciter les mesures organisationnelles prévues (transports, lien avec ambassade, modalités d’information de l’entourage du vacancier, conditions de retour vers l’ESSMS, le domicile ou autre lieu de séjour, liens avec les services médicaux et de secours) "
+          :model-value="protocoleInfoFamille"
+          :label-visible="true"
+          :is-textarea="true"
+          :is-valid="protocoleInfoFamilleMeta.valid"
+          :error-message="protocoleInfoFamilleErrorMessage"
+          @update:model-value="onProtocoleInfoFamilleChange"
+        />
+        <UtilsDisplayInput
+          v-else
+          :value="protocoleInfoFamille"
+          :input="displayInput.AgrementProjetsInput['protocoleInfoFamille']"
+          :is-valid="protocoleInfoFamilleMeta.valid"
+          :error-message="protocoleInfoFamilleErrorMessage"
+        />
+      </div>
+    </div>
+    <div class="fr-fieldset__element fr-mt-8v">
+      <UtilsMultiFilesUpload
+        v-model="filesProjetsSejoursProtocoleRapatriement"
+        hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+        :modifiable="props.modifiable"
+        label="Ajouter des fichiers (optionnel)"
+      />
+    </div>
+  </fieldset>
+</template>
+
+<script setup lang="ts">
+import { TitleWithIcon } from "@vao/shared-ui";
+import * as yup from "yup";
+import { useForm, useField } from "vee-validate";
+import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
+import type { AgrementFilesDto } from "@vao/shared-bridge";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
+import displayInput from "../../../utils/display-input";
+
+const props = defineProps({
+  initAgrement: { type: Object, required: true },
+  cdnUrl: { type: String, required: true },
+  modifiable: { type: Boolean, default: false },
+});
+
+const log = logger("components/agrement/projets/protocole");
+
+const filesProjetsSejoursProtocoleReorientation = ref(
+  props.initAgrement?.agrementFiles?.filter(
+    (file: AgrementFilesDto) =>
+      file.category === FILE_CATEGORY.PROJSEJPROTCOREORIENT,
+  ) || [],
+);
+const filesProjetsSejoursProtocoleRapatriement = ref(
+  props.initAgrement?.agrementFiles?.filter(
+    (file: AgrementFilesDto) =>
+      file.category === FILE_CATEGORY.PROJSSEJOURSPROTCOLERAPATR,
+  ) || [],
+);
+
+const validationSchema = yup.object({
+  statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
+  protocoleEvacUrg: requiredUnlessBrouillon(
+    yup
+      .string()
+      .min(
+        20,
+        "Veuillez indiquer les mesures d'anticipation prévues par l'organisateur de séjour. Minimum 20 caractères.",
+      )
+      .nullable(),
+  ),
+  protocoleRapatUrg: requiredUnlessBrouillon(
+    yup
+      .string()
+      .min(
+        20,
+        "Veuillez indiquer les modalités d'information, de transports et de réorientation, évacuation. Minimum 20 caractères.",
+      )
+      .nullable(),
+  ),
+  protocoleRapatEtranger: requiredUnlessBrouillon(
+    yup
+      .string()
+      .min(
+        20,
+        "Veuillez indiquer les mesures d'anticipation prévues par l'organisateur de séjour. Minimum 20 caractères.",
+      )
+      .nullable(),
+  ),
+  protocoleInfoFamille: requiredUnlessBrouillon(
+    yup
+      .string()
+      .min(
+        20,
+        "Veuillez indiquer les modalités d'information, de transports et de rapatriement. Minimum 20 caractères.",
+      )
+      .nullable(),
+  ),
+});
+
+const initialValues = {
+  statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
+  protocoleEvacUrg: props.initAgrement.protocoleEvacUrg || "",
+  protocoleRapatUrg: props.initAgrement.protocoleRapatUrg || "",
+  protocoleRapatEtranger: props.initAgrement.protocoleRapatEtranger || "",
+  protocoleInfoFamille: props.initAgrement.protocoleInfoFamille || "",
+};
+
+const { handleSubmit } = useForm({
+  validationSchema,
+  initialValues,
+  validateOnMount: false,
+});
+
+const {
+  value: protocoleEvacUrg,
+  errorMessage: protocoleEvacUrgErrorMessage,
+  meta: protocoleEvacUrgMeta,
+  handleChange: onProtocoleEvacUrgChange,
+} = useField<string>("protocoleEvacUrg");
+
+const {
+  value: protocoleRapatUrg,
+  errorMessage: protocoleRapatUrgErrorMessage,
+  meta: protocoleRapatUrgMeta,
+  handleChange: onProtocoleRapatUrgChange,
+} = useField<string>("protocoleRapatUrg");
+
+const {
+  value: protocoleRapatEtranger,
+  errorMessage: protocoleRapatEtrangerErrorMessage,
+  meta: protocoleRapatEtrangerMeta,
+  handleChange: onProtocoleRapatEtrangerChange,
+} = useField<string>("protocoleRapatEtranger");
+
+const {
+  value: protocoleInfoFamille,
+  errorMessage: protocoleInfoFamilleErrorMessage,
+  meta: protocoleInfoFamilleMeta,
+  handleChange: onProtocoleInfoFamilleChange,
+} = useField<string>("protocoleInfoFamille");
+
+const validateForm = async () => {
+  const finalData = {
+    valid: false,
+    protocoleEvacUrg: protocoleEvacUrg.value || null,
+    protocoleRapatUrg: protocoleRapatUrg.value || null,
+    protocoleRapatEtranger: protocoleRapatEtranger.value || null,
+    protocoleInfoFamille: protocoleInfoFamille.value || null,
+    filesProjetsSejoursProtocoleReorientation:
+      filesProjetsSejoursProtocoleReorientation.value,
+    filesProjetsSejoursProtocoleRapatriement:
+      filesProjetsSejoursProtocoleRapatriement.value,
+  };
+
+  try {
+    const result = await handleSubmit((values) => values)();
+
+    if (result) {
+      finalData.protocoleEvacUrg = result.protocoleEvacUrg || null;
+      finalData.protocoleRapatUrg = result.protocoleRapatUrg || null;
+      finalData.protocoleRapatEtranger = result.protocoleRapatEtranger || null;
+      finalData.protocoleInfoFamille = result.protocoleInfoFamille || null;
+      finalData.valid = true;
+    }
+  } catch (error) {
+    log.w("Erreur lors de la validation du formulaire :", error);
+  }
+
+  return finalData;
+};
+
+defineExpose({
+  validateForm,
+});
+</script>
+
+<style scoped>
+fieldset.no-border {
+  border: none;
+  padding: 0;
+}
+legend {
+  padding-left: 0;
+}
+</style>

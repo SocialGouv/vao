@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken";
 
-import config from "../config";
+import { config } from "../config";
 
 export interface AccessTokenPayload {
   id: number;
   email: string;
-  territoireCode: string;
+  territoireCode?: string;
   cguAccepted: boolean;
 }
 

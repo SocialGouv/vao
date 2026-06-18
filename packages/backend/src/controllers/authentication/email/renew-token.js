@@ -3,13 +3,13 @@ const jwt = require("jsonwebtoken");
 const User = require("../../../services/User");
 const Send = require("../../../services/mail").mailService.send;
 
-const config = require("../../../config");
+const { config } = require("../../../config");
 const { status } = require("../../../helpers/users");
 
-const MailUtils = require("../../../utils/mail");
+const { MailUtils } = require("../../../utils/mail");
 const AppError = require("../../../utils/error").default;
-const logger = require("../../../utils/logger");
-const normalize = require("../../../utils/normalize");
+const { logger } = require("../../../utils/logger");
+const { normalize } = require("../../../utils/normalize");
 const { buildEmailToken } = require("../../../utils/token");
 
 const log = logger(module.filename);

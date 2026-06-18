@@ -1,0 +1,102 @@
+<template>
+  <div>
+    <div v-if="props.modifiable">
+      <DsfrCheckboxSet
+        v-model="typeDeficiencesField"
+        name="typeDeficiences"
+        legend="Type de handicaps"
+        hint="Vous pouvez sélectionner une ou plusieurs options."
+        :options="handicapOptions"
+        :inline="true"
+        :small="true"
+        :error-message="typeDeficiencesErrorMessage"
+      >
+        <template #legend>
+          <span class="fr-text--bold">Type de handicaps</span>
+        </template>
+      </DsfrCheckboxSet>
+    </div>
+    <UtilsDisplayInput
+      v-else
+      :input="displayInput.AgrementBilanAnnuelInput.typeHandicap"
+      :value="typeDeficiencesField"
+      :error-message="typeDeficiencesErrorMessage"
+      :is-valid="typeDeficiencesMeta.valid"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { useField, useForm } from "vee-validate";
+import * as yup from "yup";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
+import displayInput from "../../utils/display-input";
+import { useToaster } from "@vao/shared-ui";
+import { AGREMENT_STATUT } from "@vao/shared-bridge";
+const props = defineProps({
+  statut: { type: String, required: true },
+  typeDeficiences: { type: Array, default: () => [] },
+  modifiable: { type: Boolean, required: false, default: false },
+});
+
+const toaster = useToaster();
+
+const handicapOptions = [
+  { label: "Sensoriel", value: "auditif", name: "typeDeficiences" },
+  { label: "Visuel", value: "visuel", name: "typeDeficiences" },
+  { label: "Cognitif", value: "cognitif", name: "typeDeficiences" },
+  { label: "Mental/Psychique", value: "mental", name: "typeDeficiences" },
+  { label: "Moteur", value: "moteur", name: "typeDeficiences" },
+  { label: "Polyhandicap", value: "polyhandicap", name: "typeDeficiences" },
+];
+
+const validationSchema = yup.object({
+  typeDeficiences:
+    props.statut === AGREMENT_STATUT.BROUILLON
+      ? yup.array().notRequired().nullable()
+      : requiredUnlessBrouillon(
+          yup
+            .array()
+            .min(1, "Veuillez sélectionner au moins un type de déficience."),
+        ),
+});
+
+const initialValues = {
+  statut: props.statut,
+  typeDeficiences: props.typeDeficiences || [],
+};
+
+const { validate } = useForm({
+  validationSchema,
+  initialValues,
+});
+
+const {
+  value: typeDeficiencesField,
+  meta: typeDeficiencesMeta,
+  errorMessage: typeDeficiencesErrorMessage,
+} = useField<string[]>("typeDeficiences");
+
+const validateTypeDeficiences = async () => {
+  const result = await validate();
+  if (!result.valid && typeDeficiencesErrorMessage.value) {
+    toaster.error({
+      description: typeDeficiencesErrorMessage.value,
+    });
+  }
+  return {
+    valid: result.valid,
+    value: typeDeficiencesField.value,
+    errors: typeDeficiencesErrorMessage.value,
+  };
+};
+
+const getCurrentValue = () => {
+  return typeDeficiencesField.value || [];
+};
+
+defineExpose({
+  validateTypeDeficiences,
+  getCurrentValue,
+});
+</script>

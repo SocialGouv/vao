@@ -1,4 +1,4 @@
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const AppError = require("../../utils/error").default;
 const Organisme = require("../../services/Organisme");
 const DemandeSejour = require("../../services/DemandeSejour");
@@ -22,34 +22,48 @@ const checkPermissionDeclarationSejourUtils = async (
       ),
     );
   }
-  const organisme = await Organisme.getOne({
-    use_id: userId,
-  });
 
-  const siren =
-    organisme.typeOrganisme === "personne_morale" &&
-    organisme.personneMorale?.porteurAgrement === true
-      ? organisme.personneMorale?.siren
-      : "";
+  try {
+    const organisme = await Organisme.getOne({
+      use_id: userId,
+    });
 
-  const sejour = await DemandeSejour.getByIdOrUserSiren(
-    declarationId,
-    siren,
-    userId,
-  );
+    if (!organisme) {
+      return next(
+        new AppError("Organisme non trouvé", {
+          statusCode: 404,
+        }),
+      );
+    }
 
-  if (!sejour || sejour.length !== 1) {
-    return next(
-      new AppError(
-        "Vous n'êtes pas autorisé à accéder à cette déclaration de séjour",
-        {
-          statusCode: 403,
-        },
-      ),
+    const siren =
+      organisme.typeOrganisme === "personne_morale" &&
+      organisme.personneMorale?.porteurAgrement === true
+        ? organisme.personneMorale?.siren
+        : "";
+
+    const sejour = await DemandeSejour.getByIdOrUserSiren(
+      declarationId,
+      siren,
+      userId,
     );
+
+    if (!sejour || sejour.length !== 1) {
+      return next(
+        new AppError(
+          "Vous n'êtes pas autorisé à accéder à cette déclaration de séjour",
+          {
+            statusCode: 403,
+          },
+        ),
+      );
+    }
+    log.i("DONE");
+    next();
+  } catch (error) {
+    log.w(error);
+    return next(error);
   }
-  log.i("DONE");
-  next();
 };
 
 //default export

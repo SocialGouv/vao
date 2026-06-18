@@ -1,4 +1,4 @@
-const logger = require("../utils/logger");
+const { logger } = require("../utils/logger");
 const AppError = require("../utils/error").default;
 const Organisme = require("../services/Organisme");
 const Hebergement = require("../services/hebergement/Hebergement");
@@ -22,10 +22,18 @@ async function checkPermissionHebergement(req, res, next) {
     organisme = await Organisme.getOne({
       use_id: userId,
     });
-  } catch (error) {
+  } catch {
     return next(
       new AppError("Vous n'êtes pas autorisé à accéder à cet hébergement", {
         statusCode: 403,
+      }),
+    );
+  }
+
+  if (!organisme) {
+    return next(
+      new AppError("Organisme non trouvé", {
+        statusCode: 404,
       }),
     );
   }

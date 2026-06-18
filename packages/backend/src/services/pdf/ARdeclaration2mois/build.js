@@ -1,7 +1,7 @@
 const { fonts, images } = require("../../../utils/staticsFiles");
 const PdfPrinter = require("pdfmake");
 const dayjs = require("dayjs");
-const logger = require("../../../utils/logger");
+const { logger } = require("../../../utils/logger");
 
 const log = logger(module.filename);
 

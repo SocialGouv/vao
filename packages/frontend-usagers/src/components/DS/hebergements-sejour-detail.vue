@@ -200,6 +200,7 @@
             label="Téléchargement du document Dernière attestation de passage de la commission sécurité"
             hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
             :modifiable="false"
+            :cdn-url="`${config.public.backendUrl}/documents/`"
             :error-message="fileDerniereAttestationSecuriteErrorMessage"
           />
           <FileUpload
@@ -207,6 +208,7 @@
             label="Téléchargement du document Dernier arrêté d’autorisation du maire"
             hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
             :modifiable="false"
+            :cdn-url="`${config.public.backendUrl}/documents/`"
             :error-message="fileDernierArreteAutorisationMaireErrorMessage"
           />
         </div>
@@ -216,6 +218,7 @@
             label="Téléchargement du document Réponse du propriétaire ou exploitant indiquant les raisons pour lesquelles le lieu d’hébergement n’est pas soumis à la réglementation ERP"
             hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
             :modifiable="false"
+            :cdn-url="`${config.public.backendUrl}/documents/`"
             :error-message="fileReponseExploitantOuProprietaireErrorMessage"
           />
         </div>

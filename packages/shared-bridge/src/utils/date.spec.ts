@@ -1,10 +1,22 @@
 import {
   addDays,
+  addMinutes,
   addMonths,
+  addYears,
+  daysBetween,
   formatFR,
   formatFRDateTime,
+  formatFRTime,
+  formatISOShort,
+  getYear4k,
   isAfter,
   isBefore,
+  isBetweenDates,
+  isValidFrShort,
+  minutesBetween,
+  parseFrShort,
+  parseIntToMonthFR,
+  parseToISODate,
 } from "./date";
 
 describe("setFormatDateToFRString", () => {
@@ -52,5 +64,250 @@ describe("addMonths", () => {
     const date = new Date(2023, 0, 1);
     const newDate = addMonths(date, 2);
     expect(newDate.getMonth()).toBe(2);
+  });
+});
+
+describe("addYears", () => {
+  it("should add years to date", () => {
+    const date = new Date(2023, 0, 1);
+    const newDate = addYears(date, 2);
+    expect(newDate?.getFullYear()).toBe(2025);
+  });
+
+  it("should return null when date is null", () => {
+    expect(addYears(null, 2)).toBeNull();
+  });
+});
+
+describe("minutesBetween", () => {
+  it("donne le nombre de minutes entres les deux dates", () => {
+    const date1 = new Date("2026-05-27T10:00:00Z");
+    const date2 = new Date("2026-05-27T10:30:00Z");
+
+    const result = minutesBetween(date1, date2);
+    expect(result).toEqual(30);
+  });
+});
+
+describe("addMinutes", () => {
+  it("ajoute le nombre de minutes à une date", () => {
+    const date = new Date("2026-05-27T10:00:00Z");
+
+    const result = addMinutes(date, 30);
+
+    expect(result).toEqual(new Date("2026-05-27T10:30:00Z"));
+  });
+
+  it("retourne null si la date est null", () => {
+    const result = addMinutes(null, 30);
+
+    expect(result).toBeNull();
+  });
+
+  it("gère les minutes négatives", () => {
+    const date = new Date("2026-05-27T10:00:00Z");
+
+    const result = addMinutes(date, -15);
+
+    expect(result).toEqual(new Date("2026-05-27T09:45:00Z"));
+  });
+
+  it("ne modifie pas la date originale", () => {
+    const date = new Date("2026-05-27T10:00:00Z");
+    const originalTime = date.getTime();
+
+    addMinutes(date, 45);
+
+    expect(date.getTime()).toBe(originalTime);
+  });
+});
+describe("daysBetween", () => {
+  it("should return number of days between two dates", () => {
+    expect(daysBetween("2023-01-01", "2023-01-05")).toBe(4);
+  });
+
+  it("should return 0 if dates are the same", () => {
+    expect(daysBetween("2023-01-01", "2023-01-01")).toBe(0);
+  });
+
+  it("should round up partial days", () => {
+    const date1 = new Date(2023, 0, 1, 0, 0);
+    const date2 = new Date(2023, 0, 2, 12, 0); // 1.5 days
+    expect(daysBetween(date1, date2)).toBe(2);
+  });
+
+  it("should return negative value if date2 is before date1", () => {
+    expect(daysBetween("2023-01-05", "2023-01-01")).toBe(-4);
+  });
+});
+
+describe("isBetweenDates", () => {
+  it("should return true if date is between start and end", () => {
+    expect(isBetweenDates("2023-01-05", "2023-01-01", "2023-01-10")).toBe(true);
+  });
+
+  it("should return false if date is before start", () => {
+    expect(isBetweenDates("2022-12-31", "2023-01-01", "2023-01-10")).toBe(
+      false,
+    );
+  });
+
+  it("should return false if date is after end", () => {
+    expect(isBetweenDates("2023-01-11", "2023-01-01", "2023-01-10")).toBe(
+      false,
+    );
+  });
+
+  it("should return true if date is equal to start", () => {
+    expect(isBetweenDates("2023-01-01", "2023-01-01", "2023-01-10")).toBe(true);
+  });
+
+  it("should return true if date is equal to end", () => {
+    expect(isBetweenDates("2023-01-10", "2023-01-01", "2023-01-10")).toBe(true);
+  });
+});
+
+describe("formatFRTime", () => {
+  it("should format time to FR string", () => {
+    expect(formatFRTime(new Date(2023, 0, 1, 9, 5))).toBe("09:05");
+  });
+});
+
+describe("getYear4k", () => {
+  it("should return year as 4 digits", () => {
+    expect(getYear4k(new Date(1999, 0, 1))).toBe("1999");
+  });
+});
+
+describe("parseToISODate", () => {
+  it("should return null when input is null", () => {
+    expect(parseToISODate(null)).toBeNull();
+  });
+
+  it("should convert JJ/MM/AAAA to AAAA-MM-JJ", () => {
+    expect(parseToISODate("01/02/2023")).toBe("2023-02-01");
+  });
+
+  it("should keep parts even without padding", () => {
+    expect(parseToISODate("1/2/2023")).toBe("2023-2-1");
+  });
+});
+
+describe("parseIntToMonthFR", () => {
+  it("should return '-' when mois is null", () => {
+    expect(parseIntToMonthFR(null)).toBe("-");
+  });
+
+  it("should return '-' when mois is empty", () => {
+    expect(parseIntToMonthFR([])).toBe("-");
+  });
+
+  it("should convert a single month", () => {
+    expect(parseIntToMonthFR([1])).toBe("janvier");
+  });
+
+  it("should convert multiple months", () => {
+    expect(parseIntToMonthFR([1, 2, 3])).toBe("janvier, février, mars");
+  });
+
+  it("should handle unordered months", () => {
+    expect(parseIntToMonthFR([12, 1])).toBe("décembre, janvier");
+  });
+
+  it("should fallback to number if month is invalid", () => {
+    expect(parseIntToMonthFR([13])).toBe("13");
+  });
+
+  it("should mix valid and invalid months", () => {
+    expect(parseIntToMonthFR([1, 13])).toBe("janvier, 13");
+  });
+});
+
+describe("isValidFrShort", () => {
+  it("should return false for undefined", () => {
+    expect(isValidFrShort(undefined)).toBe(false);
+  });
+
+  it("should return false for empty string", () => {
+    expect(isValidFrShort("")).toBe(false);
+  });
+
+  it("should return true for valid date", () => {
+    expect(isValidFrShort("01/02/2023")).toBe(true);
+  });
+
+  it("should return false for invalid day", () => {
+    expect(isValidFrShort("32/01/2023")).toBe(false);
+  });
+
+  it("should return false for invalid month", () => {
+    expect(isValidFrShort("01/13/2023")).toBe(false);
+  });
+
+  it("should return false for invalid date (31/02/2023)", () => {
+    expect(isValidFrShort("31/02/2023")).toBe(false);
+  });
+
+  it("should return false for wrong format", () => {
+    expect(isValidFrShort("2023-01-01")).toBe(false);
+    expect(isValidFrShort("01-01-2023")).toBe(false);
+  });
+});
+
+describe("parseFrShort", () => {
+  it("should return undefined for undefined", () => {
+    expect(parseFrShort(undefined)).toBeUndefined();
+  });
+
+  it("should return undefined for empty string", () => {
+    expect(parseFrShort("")).toBeUndefined();
+  });
+
+  it("should return dayjs object for valid date", () => {
+    const result = parseFrShort("01/02/2023");
+    expect(result).toBeDefined();
+    expect(result?.isValid()).toBe(true);
+    expect(result?.format("DD/MM/YYYY")).toBe("01/02/2023");
+  });
+
+  it("should return undefined for invalid day", () => {
+    expect(parseFrShort("32/01/2023")).toBeUndefined();
+  });
+
+  it("should return undefined for invalid month", () => {
+    expect(parseFrShort("01/13/2023")).toBeUndefined();
+  });
+
+  it("should return undefined for invalid date (31/02/2023)", () => {
+    expect(parseFrShort("31/02/2023")).toBeUndefined();
+  });
+
+  it("should return undefined for wrong format", () => {
+    expect(parseFrShort("2023-01-01")).toBeUndefined();
+    expect(parseFrShort("01-01-2023")).toBeUndefined();
+  });
+});
+
+describe("formatISOShort", () => {
+  it("should return undefined when date is undefined", () => {
+    expect(formatISOShort(undefined)).toBeUndefined();
+  });
+
+  it("should format a Date in YYYY-MM-DD", () => {
+    const isoShortFormatter = new Intl.DateTimeFormat("en-CA", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+
+    const d = new Date(2026, 2, 16);
+    expect(formatISOShort(d)).toBe(isoShortFormatter.format(d));
+  });
+
+  it("should format a Dayjs instance in YYYY-MM-DD", () => {
+    const fromFr = parseFrShort("16/03/2026");
+    expect(fromFr).toBeDefined();
+    expect(Number.isNaN(fromFr!.toDate().getTime())).toBe(false);
+    expect(formatISOShort(fromFr)).toBe("2026-03-16");
   });
 });

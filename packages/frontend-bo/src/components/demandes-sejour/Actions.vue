@@ -14,7 +14,10 @@
       size="xl"
       @close="isModalComplementOpened = false"
     >
-      <DemandesSejourCommentaire @valid="onValidComplement" />
+      <DemandesSejourCommentaire
+        :cdn-url="`${config.public.backendUrl}/documents/`"
+        @valid="onValidComplement"
+      />
     </DsfrModal>
     <DsfrButton
       label="Refuser"
@@ -88,6 +91,7 @@
 <script setup>
 import { useIsDownloading } from "~/composables/useIsDownloading";
 import { useToaster } from "@vao/shared-ui";
+const config = useRuntimeConfig();
 
 const demandeSejourStore = useDemandeSejourStore();
 const userStore = useUserStore();

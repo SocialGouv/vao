@@ -57,7 +57,9 @@
           secondary
           size="small"
           type="button"
-          :label="String(row.statut ?? '') === draftStatus ? 'Supprimer' : 'Annuler'"
+          :label="
+            String(row.statut ?? '') === draftStatus ? 'Supprimer' : 'Annuler'
+          "
           :disabled="
             !enabledDeleteCancelStatus.includes(String(row.statut ?? '')) ||
             siretUser !== row.siret
@@ -267,7 +269,7 @@ const sortableColumns = columns.flatMap((column) =>
   column.options?.isSortable ? [column.key] : [],
 ) as NestedKeys<object>[];
 
-const { limit, offset, sort, sortDirection } = usePagination(
+const { limit, offset, sort, sortDirection } = usePagination<object>(
   {
     limit: queryString.limit,
     offset: queryString.offset,

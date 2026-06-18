@@ -5,9 +5,21 @@
 //
 // This stays test-only (jest setup) to avoid impacting runtime behavior.
 const buffer = require("buffer");
+
 if (!buffer.SlowBuffer) {
   buffer.SlowBuffer = buffer.Buffer;
 }
 
+jest.mock("axios");
+
 process.env.PG_VAO_CIPHER_DATA =
   "e14de305fbac8f2ed5ab96ce9659265625db31d01ea9d5b7a20b5f985612a054";
+process.env.S3_BUCKET_NAME = "vao";
+
+process.env.DEBUG = "*warn*";
+process.env.FRONTEND_BO_URL = "http://localhost:3001";
+process.env.FRONTEND_USAGERS_URL = "http://localhost:3000";
+process.env.TOKEN_SECRET_FO = "test";
+process.env.TOKEN_SECRET_BO = "test";
+process.env.TOKEN_SECRET = "test";
+process.env.TOKEN_SECRET_LINK = "test";

@@ -3,6 +3,7 @@
     <div class="fr-grid-row fr-py-5w">
       <h1>Bienvenue {{ userStore.user.prenom }} {{ userStore.user.nom }}</h1>
     </div>
+    <AgrementAlertRenouvellement> </AgrementAlertRenouvellement>
     <div
       v-if="!organismeCourant || !organismeCourant.complet"
       class="fr-grid-row fr-grid-row--left"
@@ -33,6 +34,7 @@
 
 <script setup>
 import { CardsNumber } from "@vao/shared-ui";
+import { FeatureFlagName } from "@vao/shared-bridge";
 import NationalIdentityCard from "@gouvfr/dsfr/dist/artwork/pictograms/document/national-identity-card.svg";
 import House from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/house.svg";
 import Contract from "@gouvfr/dsfr/dist/artwork/pictograms/document/contract.svg";
@@ -49,11 +51,11 @@ useHead({
 const userStore = useUserStore();
 const demandeSejourStore = useDemandeSejourStore();
 const organismeStore = useOrganismeStore();
+const agrementStore = useAgrementStore();
 
 const organismeCourant = computed(() => {
   return organismeStore.organismeCourant;
 });
-
 demandeSejourStore.getStats();
 
 const topcards = computed(() => [
@@ -106,6 +108,20 @@ const tiles = computed(() => [
     description:
       "Cette page vous permet de renseigner les informations sur l'organisme.",
   },
+  ...(userStore.user?.featureFlags?.[FeatureFlagName.RENOUVELLEMENT_AGREMENT]
+    ? [
+        {
+          title: "Agrément",
+          to: organismeStore.agrement
+            ? `/agrement/${agrementStore.agrement?.id}`
+            : "/agrement/",
+          imgSrc: NationalIdentityCard,
+          titleTag: "h2",
+          description:
+            "Cette page vous permet de renseigner les informations sur l'agrément.",
+        },
+      ]
+    : []),
   ...(organismeStore.organismeCourant && organismeStore.organismeCourant.complet
     ? [
         {
@@ -126,6 +142,15 @@ const tiles = computed(() => [
       ]
     : []),
 ]);
+
+const onClickRenouvellement = async () => {
+  await agrementStore.getEnRenouvellement();
+  if (agrementStore.agrementEnTraitement) {
+    return navigateTo(`/agrement/${agrementStore.agrementEnTraitement.id}`);
+  } else {
+    return navigateTo("/agrement/");
+  }
+};
 
 onMounted(() => {
   document.querySelector("header").focus();
