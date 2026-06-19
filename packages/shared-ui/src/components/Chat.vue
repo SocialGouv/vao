@@ -43,8 +43,8 @@
           @keydown.enter.exact="sendMessage"
         ></textarea>
         <DsfrButton
-          label="Envoyer message"
-          title="Envoyer message"
+          label="Envoyer un message"
+          title="Envoyer un message"
           :icon="isLoading ? 'fr-icon-refresh-line' : 'fr-icon-send-plane-fill'"
           icon-only
           tertiary1
