@@ -17,6 +17,7 @@ import { UserMailUsagers } from "../../usagers/users/users.mail";
 import { UsersRepository as UsersRepositoryUsagers } from "../../usagers/users/users.repository";
 import AppError from "../../utils/error";
 import { logger } from "../../utils/logger";
+import { normalize } from "../../utils/normalize";
 import { OtpService } from "../../utils/otp";
 
 const { addHistoric } = require("../../services/Tracking");
@@ -69,12 +70,13 @@ export const UsersService = {
     email: string;
     target: T;
   }): Promise<OtpUserDto<T>> {
+    const emailNormalized = normalize(email);
     const isBo = target === USER_TARGET.BO;
     const user = isBo
-      ? await UsersRepositoryAdmin.getByEmail({ email })
-      : await UsersRepositoryUsagers.getByEmail({ email });
+      ? await UsersRepositoryAdmin.getByEmail({ email: emailNormalized })
+      : await UsersRepositoryUsagers.getByEmail({ email: emailNormalized });
     if (!user) {
-      log.w("Utilisateur non trouvé", email);
+      log.w("Utilisateur non trouvé", emailNormalized);
       throw new FunctionalException(FUNCTIONAL_ERRORS.USER_NOT_FOUND);
     }
     const { isLocked } = OtpService.isLocked({
@@ -83,7 +85,7 @@ export const UsersService = {
     });
 
     if (isLocked) {
-      log.w("Utilisateur temporairement bloqué", email);
+      log.w("Utilisateur temporairement bloqué", emailNormalized);
       throw new FunctionalException(
         FUNCTIONAL_ERRORS.USER_OTP_TEMPORARILY_BLOCKED,
       );
@@ -196,12 +198,13 @@ export const UsersService = {
     code: string;
     target: T;
   }): Promise<OtpUserDto<T>> {
+    const emailNormalized = normalize(email);
     const isBo = target === USER_TARGET.BO;
     const user = isBo
-      ? await UsersRepositoryAdmin.getByEmail({ email })
-      : await UsersRepositoryUsagers.getByEmail({ email });
+      ? await UsersRepositoryAdmin.getByEmail({ email: emailNormalized })
+      : await UsersRepositoryUsagers.getByEmail({ email: emailNormalized });
     if (!user) {
-      log.w("Utilisateur non trouvé", email);
+      log.w("Utilisateur non trouvé", emailNormalized);
       throw new FunctionalException(FUNCTIONAL_ERRORS.USER_NOT_FOUND);
     }
     let otpAttempts = user.otpAttempts ?? 0;
@@ -230,7 +233,7 @@ export const UsersService = {
 
     // Aucun code ou expiration trouvée
     if (!user.otpCode || !user.otpCodeExpiresAt) {
-      log.w("Aucun code OTP trouvé pour l'utilisateur", email);
+      log.w("Aucun code OTP trouvé pour l'utilisateur", emailNormalized);
       throw new FunctionalException(FUNCTIONAL_ERRORS.USER_OTP_CODE_NOT_FOUND);
     }
     // Code expiré
@@ -238,7 +241,7 @@ export const UsersService = {
       otpCodeExpiresAt: user.otpCodeExpiresAt,
     });
     if (isExpired) {
-      log.w("Code OTP expiré pour l'utilisateur", email);
+      log.w("Code OTP expiré pour l'utilisateur", emailNormalized);
       await UsersService.addAttemptsOtpTrack({
         code,
         functionnalError: FUNCTIONAL_ERRORS.USER_OTP_CODE_EXPIRED,
@@ -250,7 +253,7 @@ export const UsersService = {
       });
     }
     if (user.otpCode !== Number(code)) {
-      log.w("Code OTP invalide pour l'utilisateur", email);
+      log.w("Code OTP invalide pour l'utilisateur", emailNormalized);
       otpAttempts += 1;
       const otpAttemptsAt = new Date();
       if (isBo) {
@@ -273,7 +276,7 @@ export const UsersService = {
       }
       // Nombre de tentatives atteinte
       if (otpAttempts === 3) {
-        log.w("Nombre de tentatives atteinte", email);
+        log.w("Nombre de tentatives atteinte", emailNormalized);
         await UsersService.addAttemptsOtpTrack({
           code,
           functionnalError: FUNCTIONAL_ERRORS.USER_OTP_MAX_ATTEMPTS,
