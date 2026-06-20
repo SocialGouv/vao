@@ -49,7 +49,21 @@ const app = express();
 
 const log = logger(module.filename);
 
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        "object-src": ["'none'"],
+        "script-src": ["'self'"],
+      },
+    },
+    referrerPolicy: { policy: "no-referrer" },
+  }),
+);
+app.use((_req, res, next) => {
+  res.setHeader("X-XSS-Protection", "0");
+  next();
+});
 
 const whitelist = [
   config.frontUsagersDomain,
