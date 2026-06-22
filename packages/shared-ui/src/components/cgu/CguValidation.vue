@@ -634,7 +634,9 @@
     </section>
 
     <section aria-labelledby="article-9">
-      <h2 id="article-9">9. Sécurité</h2>
+      <h2 id="article-9">
+        9. Clause relative à l’hameçonnage (phishing) et à la sécurité
+      </h2>
 
       <p>
         L’Utilisateur est informé que des tentatives de fraude, notamment par

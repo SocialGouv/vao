@@ -24,6 +24,8 @@
         row.organisme?.typeOrganisme === "personne_morale"
           ? row.organisme?.personneMorale?.raisonSociale
           : row.organisme?.personnePhysique?.nomUsage
+            ? row.organisme?.personnePhysique?.nomUsage
+            : row.organisme?.personnePhysique?.nomNaissance
       }}
     </template>
 
