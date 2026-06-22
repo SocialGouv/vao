@@ -31,7 +31,7 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.4.22",
     "@nestjs/swagger": "^8.1.1",
-    "@sentry/nestjs": "^8.55.2",
+    "@sentry/nestjs": "^10.53.1",
     "@sentry/profiling-node": "^8.55.2",
     "@vao/shared-bridge": "workspace:^",
     "axios": "^1.16.1",
