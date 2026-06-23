@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const { AGREMENT_STATUT } = require("@vao/shared-bridge");
 
 const yup = require("yup");
@@ -877,7 +876,10 @@ module.exports.getListe = async (queryParams) => {
             (
               (o.type_organisme = 'personne_morale' AND pm.raison_sociale ILIKE '%' ||  unaccent($${index}) || '%')
                 OR
-              (o.type_organisme = 'personne_physique' AND pp.nom_usage ILIKE '%' ||  unaccent($${index}) || '%')
+              (o.type_organisme = 'personne_physique'
+                AND (pp.nom_usage ILIKE '%' ||  unaccent($${index}) || '%'
+                    OR pp.nom_naissance ILIKE '%' ||  unaccent($${index}) || '%')
+                    )
             )
           `,
           queryParams: [value],

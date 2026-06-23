@@ -44,6 +44,8 @@ export type { EigAdminRoutes } from "./admin/eig";
 export { EigAdminRoutesSchema } from "./admin/eig";
 export type { HebergementAdminRoutes } from "./admin/hebergement";
 export { HebergementAdminRoutesSchema } from "./admin/hebergement";
+export type { OrganismeAdminRoutes } from "./admin/organisme";
+export { OrganismeAdminRoutesSchema } from "./admin/organisme";
 export type { UserAdminRoutes } from "./admin/users";
 export { UserAdminRoutesSchema } from "./admin/users";
 export type { AgrementUsagersRoutes } from "./usagers/agrement";

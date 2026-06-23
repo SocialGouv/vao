@@ -1,3 +1,4 @@
+import { OrganismeAdminRoutesSchema } from "@vao/shared-bridge";
 import express from "express";
 
 import { organismeController } from "../controllers";
@@ -5,10 +6,16 @@ import BOcheckJWT from "../middlewares/bo-check-JWT";
 import checkComingFrom from "../middlewares/checkComingFrom";
 import checkJWT from "../middlewares/checkJWT";
 import checkPermissionOrganisme from "../middlewares/checkPermissionOrganisme";
+import { requestValidatorMiddleware } from "../middlewares/requestValidatorMiddleware";
 
 const router = express.Router();
 
-router.get("/bo/liste", BOcheckJWT, organismeController.getListe);
+router.get(
+  "/bo/liste",
+  BOcheckJWT,
+  requestValidatorMiddleware(OrganismeAdminRoutesSchema["GetList"]),
+  organismeController.getListe,
+);
 router.get("/bo/extract", BOcheckJWT, organismeController.getListeExtract);
 router.get("/bo/nonagrees", BOcheckJWT, organismeController.getNonAgrees);
 router.get(
