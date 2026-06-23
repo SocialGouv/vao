@@ -125,9 +125,8 @@ export const config = {
   tokenSecret_BO: process.env.TOKEN_SECRET_BO,
   tokenSecret_FO: process.env.TOKEN_SECRET_FO,
   trustToken: {
-    expiresInSec: 30 * 24 * 60 * 60,
-    // 30 jours
-    maxAgeMs: 30 * 24 * 60 * 60 * 1000,
+    expiresInSec: 60 * 60, // 1 heure
+    maxAgeMs: 60 * 60 * 1000, // 1 heure
     version: 1,
   },
   validationToken: {
