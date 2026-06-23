@@ -16,6 +16,7 @@ export default async function get(
   try {
     const query = req.validatedQuery ?? {};
     const organismes = await Organisme.getListe(query);
+    log.d("getListe result", { total: organismes?.total });
     return res.status(200).json(organismes);
   } catch (error) {
     log.w("DONE with error");

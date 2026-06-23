@@ -25,6 +25,7 @@ export interface GetListAdminRoute extends BasicRoute {
     sortDirection?: "ASC" | "DESC";
     name?: string;
     siret?: string;
+    complet?: string;
     "agrement:regionObtention"?: string;
     "agrement:dateObtention"?: string;
   };
@@ -38,6 +39,7 @@ export const GetListAdminRouteSchema: RouteSchema<GetListAdminRoute> = {
   query: yup.object({
     "agrement:dateObtention": yup.string().optional(),
     "agrement:regionObtention": yup.string().optional(),
+    complet: yup.string().optional(),
     limit: yup.number().optional(),
     name: yup.string().optional(),
     offset: yup.number().optional(),
