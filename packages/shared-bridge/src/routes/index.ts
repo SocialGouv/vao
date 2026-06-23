@@ -50,6 +50,8 @@ export type { AgrementUsagersRoutes } from "./usagers/agrement";
 export { AgrementUsagersRoutesSchema } from "./usagers/agrement";
 export type { DocumentUsagersRoutes } from "./usagers/document";
 export { DocumentUsagersRoutesSchema } from "./usagers/document";
+export type { EigUsagersRoutes } from "./usagers/eig";
+export { EigUsagersRoutesSchema } from "./usagers/eig";
 export type { HebergementUsagersRoutes } from "./usagers/hebergement";
 export { HebergementUsagersRoutesSchema } from "./usagers/hebergement";
 export type { SiretRoutes } from "./usagers/siret";
