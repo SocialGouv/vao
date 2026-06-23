@@ -1,10 +1,9 @@
 import { EigUsagersRoutes } from "@vao/shared-bridge";
 import type { NextFunction } from "express";
 
+import eigService from "../../services/eig";
 import type { RouteRequest, RouteResponse } from "../../types/request";
-
-const { logger } = require("../../utils/logger");
-const eigService = require("../../services/eig");
+import { logger } from "../../utils/logger";
 
 const log = logger(module.filename);
 

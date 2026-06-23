@@ -4,8 +4,8 @@ import type { BasicRoute, RouteResponseBody, RouteSchema } from "../../..";
 
 const stringOrStringArray = yup.lazy((value) =>
   Array.isArray(value)
-    ? yup.array().of(yup.string().required())
-    : yup.string().nullable(),
+    ? yup.array().of(yup.string().required()).strict()
+    : yup.string().nullable().strict(),
 );
 
 export const EIG_USAGERS_SORT_COLUMNS = [
@@ -22,7 +22,7 @@ export type EigUsagersSortColumn = (typeof EIG_USAGERS_SORT_COLUMNS)[number];
 
 export interface GetUsagersRoute extends BasicRoute {
   method: "GET";
-  path: "/eig/get-me";
+  path: "/eig/me";
   query?: {
     limit?: number;
     offset?: number;
@@ -57,7 +57,11 @@ export const GetUsagersRouteSchema: RouteSchema<GetUsagersRoute> = {
       })
       .transform((value, originalValue) => {
         if (typeof originalValue === "string") {
-          return JSON.parse(originalValue);
+          try {
+            return JSON.parse(originalValue);
+          } catch {
+            return undefined;
+          }
         }
         return value;
       })
