@@ -305,6 +305,8 @@ fileignoreconfig:
   checksum: 56a62209a9c1ac0d43c66a8971c23c9db1bba9e77bc222211e10468fdc795d79
 - filename: packages/frontend-usagers/src/components/DS/hebergements-sejour-detail.vue
   checksum: ea2516289eea24b6cf226322360163f840249383a5b30f5766ac730e52463162
+- filename: packages/frontend-usagers/src/components/DS/hebergements-sejour.vue
+  checksum: 95375f84bc188571397184191ad790781ca2f678718527b61931d95e17a06179
 - filename: packages/frontend-usagers/src/components/DS/synthese.vue
   checksum: 1745df4066b3957901ec41d0b0e546cb5ed32dcc2abadcd1e825e06d092bd031
 - filename: packages/frontend-usagers/src/components/EIG/Recap.vue
