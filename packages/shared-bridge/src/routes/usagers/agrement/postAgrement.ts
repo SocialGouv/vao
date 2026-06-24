@@ -1,7 +1,10 @@
 import * as yup from "yup";
 
 import type { BasicRoute, RouteResponseBody, RouteSchema } from "../../..";
-import { AGREMENT_STATUT } from "../../../constantes/agrement";
+import {
+  AGREMENT_STATUT,
+  AGREMENT_STATUTS_PERMISSIFS,
+} from "../../../constantes/agrement";
 import { FILE_CATEGORY } from "../../../constantes/file";
 import type { AgrementDto, AgrementFilesDto } from "../../../dto";
 
@@ -28,7 +31,7 @@ const REQUIRED_FILE_CATEGORIES: FILE_CATEGORY[] = [
 const requiredUnlessBrouillon = (field: yup.AnySchema) =>
   field.when("statut", {
     is: (val: string) =>
-      val !== AGREMENT_STATUT.BROUILLON && val !== AGREMENT_STATUT.VALIDE,
+      !AGREMENT_STATUTS_PERMISSIFS.has(val as AGREMENT_STATUT),
     otherwise: (schema) => schema.nullable(),
     then: (schema) => schema.required("Champ obligatoire"),
   });
@@ -44,7 +47,7 @@ const requiredWithMinCaractersUnlessBrouillon = (
 ) =>
   field.when("statut", {
     is: (val: string) =>
-      val !== AGREMENT_STATUT.BROUILLON && val !== AGREMENT_STATUT.VALIDE,
+      !AGREMENT_STATUTS_PERMISSIFS.has(val as AGREMENT_STATUT),
     otherwise: (schema) => schema.nullable(),
     then: (schema) => schema.required("Champ obligatoire").min(min, message),
   });
@@ -149,7 +152,7 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
       .nullable()
       .when("statut", {
         is: (val: string) =>
-          val !== AGREMENT_STATUT.BROUILLON && val !== AGREMENT_STATUT.VALIDE,
+          !AGREMENT_STATUTS_PERMISSIFS.has(val as AGREMENT_STATUT),
 
         otherwise: (schema) => schema.nullable(),
 
