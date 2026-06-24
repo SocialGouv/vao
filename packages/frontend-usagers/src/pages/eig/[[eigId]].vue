@@ -144,7 +144,7 @@ const updateOrCreate = async (data: unknown, type: string) => {
 
     toaster.success({
       titleTag: "h2",
-      description: `EIG ${eigId.value ? "sauvegardée" : "créée"}`,
+      description: `EIG ${eigId.value ? "sauvegardé" : "créé"}`,
     });
     log.d(`EIG ${eigId.value} mis à jour`);
     eigId.value = String(response.id);
