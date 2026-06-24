@@ -88,7 +88,16 @@ describe("Domaine /eig (admin)", () => {
     const response = await request(getBoAppHelper(boUser))
       .get("/eig/admin")
       .query({
-        search: "{}",
+        search: {
+          departement: 75,
+          endAt: new Date(),
+          idFonctionnelle: "DS-25-03-4564",
+          libelle: "titi",
+          organisme: "toto",
+          startAt: new Date(),
+          statut: "ENVOYE",
+          type: "PRIVATION_DE_DROIT",
+        },
       });
     expect(response.status).toBe(200);
     expect(response.body.eig).toBeInstanceOf(Array);

@@ -284,6 +284,8 @@ const query = {
       INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
       LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
       LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id AND pm.current = TRUE
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id AND pp.current = TRUE
     WHERE
     ${where}
     ${search.map((s) => ` AND ${s} `).join("")}
