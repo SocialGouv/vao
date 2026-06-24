@@ -7,7 +7,7 @@ const AppError = require("../utils/error").default;
 const { getPool } = require("../utils/pgpool");
 const { addHistoric } = require("./Tracking");
 const { getFileMetaData } = require("./Document");
-
+const { formatISOShort } = require("@vao/shared-bridge");
 const {
   TRACKING_ENTITIES,
   TRACKING_USER_TYPE,
@@ -684,13 +684,14 @@ const getEigs = async (
     searchQuery.push(`eig.departement = $${params.length + 1}`);
     params.push(`${search?.departement}`);
   }
+  if (search?.startAt) {
+    searchQuery.push(`eig.date >= $${params.length + 1}`);
+    params.push(`${formatISOShort(search.startAt)}`);
+  }
 
-  if (search?.dateRange?.start && search?.dateRange?.end) {
-    searchQuery.push(
-      `eig.date BETWEEN $${params.length + 1} AND $${params.length + 2}`,
-    );
-    params.push(`${search.dateRange.start}`);
-    params.push(`${search.dateRange.end}`);
+  if (search?.endAt) {
+    searchQuery.push(`eig.date <= $${params.length + 1}`);
+    params.push(`${formatISOShort(search.endAt)}`);
   }
 
   let queryWithPagination = query.get(
