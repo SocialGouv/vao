@@ -96,3 +96,15 @@ export const AGREMENT_HISTORY_LABELS: Record<AGREMENT_HISTORY_TYPE, string> = {
   VALIDATION: "Validation de la demande d’agrément",
   VERIFICATION: "Vérification en cours de la demande d’agrément",
 };
+
+/**
+ * Statuts pour lesquels la validation du formulaire d'agrément est permissive.
+ * Dans ces états, les champs obligatoires ne sont pas bloquants (sauvegarde intermédiaire).
+ * La validation stricte s'active uniquement pour les statuts de soumission finale
+ * (TRANSMIS, EN_INSTRUCTION).
+ */
+export const AGREMENT_STATUTS_PERMISSIFS = new Set<AGREMENT_STATUT>([
+  AGREMENT_STATUT.BROUILLON,
+  AGREMENT_STATUT.A_COMPLETER,
+  AGREMENT_STATUT.VALIDE,
+]);

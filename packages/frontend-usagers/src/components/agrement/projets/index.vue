@@ -70,6 +70,7 @@
 
 <script setup lang="ts">
 import { useToaster } from "@vao/shared-ui";
+import { AGREMENT_STATUTS_PERMISSIFS } from "@vao/shared-bridge";
 
 const props = defineProps({
   valid: { type: Boolean, default: true },
@@ -202,7 +203,10 @@ const handleSuivant = async () => {
   if (!props.modifiable) {
     emit("update:valid", allFormsAreValid);
   } else {
-    if (allFormsAreValid || props.initAgrement.statut === "BROUILLON") {
+    if (
+      allFormsAreValid ||
+      AGREMENT_STATUTS_PERMISSIFS.has(props.initAgrement.statut)
+    ) {
       const transformedData = {
         ...formsData.sejoursPrevus,
         ...formsData.animationsActivites,

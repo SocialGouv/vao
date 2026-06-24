@@ -119,7 +119,9 @@ import { ref } from "vue";
 import { useForm, useField } from "vee-validate";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import { useToaster } from "@vao/shared-ui";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import * as yup from "yup";
+
 import displayInput from "../../../utils/display-input";
 
 const toaster = useToaster();
@@ -138,13 +140,6 @@ const typeDeficiencesRef = ref(null);
 const hebergementsRef = ref(null);
 
 const agrementId = props.agrementId;
-
-const requiredUnlessBrouillon = (schema) =>
-  schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
-  });
 
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
