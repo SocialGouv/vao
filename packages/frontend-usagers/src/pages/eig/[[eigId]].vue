@@ -126,7 +126,10 @@ const updateOrCreate = async (data, type) => {
       response = await eigStore.create(data);
     }
 
-    toaster.success(`EIG ${eigId.value ? "sauvegardée" : "créée"}`);
+    toaster.success({
+      titleTag: "h2",
+      description: `EIG ${eigId.value ? "sauvegardée" : "créée"}`,
+    });
     log.d(`EIG ${eigId.value} mis à jour`);
     eigId.value = response.id;
     return await nextHash();
@@ -193,7 +196,10 @@ async function finalize(body) {
       body,
     );
     await eigStore.depose(eigId.value, body);
-    toaster.success(`L'EIG a été déposé`);
+    toaster.success({
+      titleTag: "h2",
+      description: "L'EIG a été déposé",
+    });
     log.d(`EIG ${eigId.value} deposé`);
     return await navigateTo("/eig/liste");
   } catch (error) {
