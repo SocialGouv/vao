@@ -16,23 +16,23 @@
     :table-title="title"
     :data="data"
     :total="total"
-    row-id="userId"
+    row-id="id"
     is-sortable
     @update-data="() => updateData()"
   >
-    <template #cell-siegeSocial="{ cell }">
-      {{ cell === true ? "Principal" : "Secondaire" }}
+    <template #cell-siegeSocial="{ row }">
+      {{ row.siegeSocial === true ? "Principal" : "Secondaire" }}
     </template>
-    <template #cell-Adresse="{ cell }">
-      {{ getCommuneCp(cell) }}
+    <template #cell-Adresse="{ row }">
+      {{ getCommuneCp(row.Adresse) }}
     </template>
-    <template #cell-statut="{ cell }">
+    <template #cell-statut="{ row }">
       <div>
-        <UserStatusBadge :statut="cell" />
+        <UserStatusBadge :statut="row.statut" />
       </div>
     </template>
-    <template #cell-dateCreation="{ cell }">
-      {{ getDateCreationLabel(cell) }}
+    <template #cell-dateCreation="{ row }">
+      {{ getDateCreationLabel(row.dateCreation) }}
     </template>
     <template #cell-custom:edit="{ row }">
       <div class="buttons-group">
@@ -58,7 +58,7 @@
           size="small"
           type="button"
           label="Valider le compte"
-          @click="validate(row.userId)"
+          @click="validate(row.id)"
         />
         <DsfrButton
           v-if="row.statut === statusUser.status.NEED_SIRET_VALIDATION"
@@ -86,7 +86,7 @@
   </RefusCompteModal>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
   DsfrDataTableV2Wrapper,
   usePagination,
@@ -96,53 +96,102 @@ import {
   RefusCompteModal,
   columnsTable,
   useToaster,
+  type Columns,
+  type NestedKeys,
 } from "@vao/shared-ui";
+import type { UserDto } from "@vao/shared-bridge";
 import dayjs from "dayjs";
+
+type UserStatut = (typeof statusUser.status)[keyof typeof statusUser.status];
+
+type UserListRow = UserDto & {
+  userId: string;
+  telephone?: string;
+  siegeSocial?: boolean;
+  Adresse?: string;
+  statut: UserStatut;
+};
+
+type PaginationQuery = {
+  limit: string;
+  offset: string;
+  sort: string;
+  sortDirection: "asc" | "desc" | "";
+};
 
 const userStore = useUserStore();
 const route = useRoute();
 const toaster = useToaster();
 
-const utilisateurSelectionne = ref(null);
+const utilisateurSelectionne = ref<UserListRow | null>(null);
 const showRefusModal = ref(false);
 
-const data = computed(() => userStore.users);
+const data = computed<UserListRow[]>(() => userStore.users as UserListRow[]);
 const total = computed(() => userStore.total);
 
 const title = computed(() => `Liste des utilisateurs (${total.value})`);
-const getDateCreationLabel = (date) => dayjs(date).format("DD/MM/YYYY");
+const getDateCreationLabel = (date: string | Date | null) =>
+  date ? dayjs(date).format("DD/MM/YYYY") : "";
 
 const optionType = columnsTable.optionType;
 
-const defs = [
+const defs: [string, string, string][] = [
   ["nom", "Nom", optionType.SORTABLE],
   ["prenom", "Prénom", optionType.SORTABLE],
   ["email", "Adresse courriel", optionType.SORTABLE],
   ["telephone", "N° de téléphone", optionType.SORTABLE],
   ["siegeSocial", "Organisme", optionType.SORTABLE],
-  // Le tri par adresse est désactivé car trop complexe à gérer en back (traitement réalisé en front)
   ["Adresse", "Ville", optionType.NONE],
   ["statut", "Statut", optionType.SORTABLE],
   ["dateCreation", "Date inscription", optionType.SORTABLE],
   ["custom:edit", "Action", optionType.FIXED_RIGHT],
 ];
 
-const columns = columnsTable.buildColumns(defs);
+const columns = columnsTable.buildColumns(defs) as Columns<UserListRow>;
 
-const { query } = route;
+const query = route.query as Record<
+  string,
+  string | string[] | null | undefined
+>;
+
+const parseQueryValue = (
+  value: string | string[] | null | undefined,
+): string => (Array.isArray(value) ? (value[0] ?? "") : (value ?? ""));
+
+const querySearch = {
+  nom: parseQueryValue(query.nom),
+  prenom: parseQueryValue(query.prenom),
+  email: parseQueryValue(query.email),
+  statut: parseQueryValue(query.statut),
+};
 
 const sortableColumns = columns.flatMap((column) =>
   column.options?.isSortable ? [column.key] : [],
-);
+) as NestedKeys<UserListRow>[];
 
 const statusValue = statusUser.label.map(({ value }) => value);
 
-const nom = ref(query.nom ?? "");
-const prenom = ref(query.prenom ?? "");
-const email = ref(query.email ?? "");
-const statut = ref(statusValue.includes(query.statut) ? query.statut : "");
-const { limit, offset, sort, sortDirection } = usePagination(
-  query,
+const nom = ref(querySearch.nom);
+const prenom = ref(querySearch.prenom);
+const email = ref(querySearch.email);
+const statut = ref(
+  statusValue.includes(querySearch.statut) ? querySearch.statut : "",
+);
+
+const paginationQuery: PaginationQuery = {
+  limit: parseQueryValue(query.limit) || "10",
+  offset: parseQueryValue(query.offset) || "0",
+  sort: parseQueryValue(query.sort),
+  sortDirection: ((): "asc" | "desc" | "" => {
+    const value = parseQueryValue(query.sortDirection);
+    return ["asc", "desc", ""].includes(value)
+      ? (value as "asc" | "desc" | "")
+      : "";
+  })(),
+};
+
+const { limit, offset, sort, sortDirection } = usePagination<UserListRow>(
+  paginationQuery,
   sortableColumns,
 );
 
@@ -153,10 +202,11 @@ const getSearchParams = () => ({
   ...(isValidParams(statut.value) ? { statut: statut.value } : {}),
 });
 
-let timeout = null;
+let timeout: ReturnType<typeof setTimeout> | null = null;
 
-async function validate(userId) {
-  const params = { status: statusUser.status.VALIDATED };
+async function validate(userId: string) {
+  const params = { status: statusUser.status.VALIDATED } as Partial<UserDto>;
+
   try {
     await userStore.updateUserStatus(userId, params);
     toaster.success({
@@ -175,24 +225,33 @@ async function validate(userId) {
   }
 }
 
-async function openRefusedModal(state) {
+function openRefusedModal(state: UserListRow) {
   utilisateurSelectionne.value = state;
   showRefusModal.value = true;
 }
+
 const closeRefusModal = () => {
   utilisateurSelectionne.value = null;
   showRefusModal.value = false;
 };
 
-async function refused({ commentaire }) {
-  const params = { status: statusUser.status.BLOCKED, motif: commentaire };
-  await userStore.updateUserStatus(utilisateurSelectionne.value.userId, params);
+async function refused({ commentaire }: { commentaire: string }) {
+  if (!utilisateurSelectionne.value) {
+    return;
+  }
+
+  const params = {
+    status: statusUser.status.BLOCKED,
+    motif: commentaire,
+  } as Partial<UserDto>;
+
+  await userStore.updateUserStatus(utilisateurSelectionne.value.id, params);
   userStore.fetchUsersOrganisme(query);
   utilisateurSelectionne.value = null;
   showRefusModal.value = false;
 }
 
-async function openCompte(userId) {
+function openCompte(userId: string) {
   navigateTo(`/comptes/${userId}`);
 }
 
@@ -200,9 +259,11 @@ const updateData = (resetOffset = false) => {
   if (resetOffset) {
     offset.value = 0;
   }
+
   if (timeout) {
     clearTimeout(timeout);
   }
+
   timeout = setTimeout(() => {
     const query = {
       limit: limit.value,
@@ -219,20 +280,22 @@ const updateData = (resetOffset = false) => {
   }, 300);
 };
 
-const getCommuneCp = (adresse) => {
+const getCommuneCp = (adresse: string | null | undefined) => {
   try {
-    const decomposeAdresse = adresse.split(" ");
+    const decomposeAdresse = (adresse ?? "").split(" ");
     const cpIndex = decomposeAdresse.findIndex((mot) =>
       regex.formatCommuneCP.test(mot),
     );
+
     return cpIndex > 0
       ? `${decomposeAdresse.slice(cpIndex + 1).join(" ")} (${decomposeAdresse[cpIndex]})`
       : null;
   } catch (e) {
-    log.error("Error while decomposing address", e);
+    console.error("Error while decomposing address", e);
     return "";
   }
 };
+
 updateData();
 
 onUnmounted(() => {
