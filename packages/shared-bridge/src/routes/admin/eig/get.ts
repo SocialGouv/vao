@@ -36,7 +36,8 @@ export interface GetAdminRoute extends BasicRoute {
       type?: string | string[] | null;
       organisme?: string | null;
       departement?: string | string[] | null;
-      dateRange?: Date | null;
+      startAt?: Date | null;
+      endAt?: Date | null;
     };
   };
   response: RouteResponseBody<{
@@ -51,11 +52,12 @@ export const GetAdminRouteSchema: RouteSchema<GetAdminRoute> = {
     offset: yup.number().optional(),
     search: yup
       .object({
-        dateRange: yup.date().nullable().optional(),
         departement: stringOrStringArray.optional(),
+        endAt: yup.date().nullable().optional(),
         idFonctionnelle: yup.string().nullable().optional(),
         libelle: yup.string().nullable().optional(),
         organisme: yup.string().nullable().optional(),
+        startAt: yup.date().nullable().optional(),
         statut: stringOrStringArray.optional(),
         type: stringOrStringArray.optional(),
       })

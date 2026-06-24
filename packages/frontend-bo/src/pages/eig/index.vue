@@ -83,12 +83,27 @@
                 @update:model-value="onSelect($event, 'statut')"
               />
             </div>
-            <div
-              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
-            >
-              <RangeDatePicker
-                v-model="searchState.dateRange"
-                label="Date de l'eig"
+          </div>
+          <div class="fr-grid-row fr-grid-row--gutters">
+            <div class="fr-fieldset__element fr-col-12 fr-col-md-3 fr-col-lg-3">
+              <label class="fr-label" for="date-start">Date de début</label>
+              <span class="fr-hint-text">Format attendu : JJ/MM/AAAA</span>
+              <input
+                id="date-start"
+                v-model="searchState.startAt"
+                class="fr-input"
+                type="date"
+              />
+            </div>
+
+            <div class="fr-fieldset__element fr-col-12 fr-col-md-3 fr-col-lg-3">
+              <label class="fr-label" for="date-end">Date de fin</label>
+              <span class="fr-hint-text">Format attendu : JJ/MM/AAAA</span>
+              <input
+                id="date-end"
+                v-model="searchState.endAt"
+                class="fr-input"
+                type="date"
               />
             </div>
           </div>
@@ -121,13 +136,12 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import dayjs from "dayjs";
 import {
   eigModel,
   EigStatusBadge,
   EigTypeListe,
-  RangeDatePicker,
   TableWithBackendPagination,
   ValidationModal,
   eigUtils,
@@ -146,28 +160,80 @@ const eigStore = useEigStore();
 
 const toaster = useToaster();
 
+type SortState = {
+  sortBy?: string;
+  sortDirection?: string;
+};
+
+type SearchPayload = {
+  libelle: string | null;
+  statut: string | null;
+  idFonctionnelle: string | null;
+  type: string | null;
+  organisme: string | null;
+  departement: string | null;
+  startAt: string | null;
+  endAt: string | null;
+};
+
+type SearchPayloadKey = keyof SearchPayload;
+
+type EigListRow = {
+  raisonSociale?: string | null;
+  prenom?: string | null;
+  nom?: string | null;
+  dateDebut?: string;
+  dateFin?: string;
+  types?: Array<string | null> | null;
+  date?: string;
+  dateDepot?: string;
+  statut?: string;
+  readByDreets?: boolean;
+  readByDdets?: boolean;
+  agrementRegionObtention?: string | null;
+  departement?: string | null;
+};
+
 const defaultLimit = 10;
 const defaultOffset = 0;
 
 const allStatus = "Tous les statuts";
-const sortState = ref({});
-const currentPageState = ref(defaultOffset);
-const limitState = ref(defaultLimit);
-const searchState = reactive({
+const sortState = ref<SortState>({});
+const currentPageState = ref<number>(defaultOffset);
+const limitState = ref<number>(defaultLimit);
+const searchState = reactive<SearchPayload>({
   libelle: null,
   statut: null,
   idFonctionnelle: null,
   type: null,
   organisme: null,
   departement: null,
-  dateRange: null,
+  startAt: null,
+  endAt: null,
 });
+
+const isValidDate = (value: string | null) => {
+  if (!value) return false;
+
+  // format exact YYYY-MM-DD
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+
+  const date = new Date(value);
+  return !Number.isNaN(date.getTime());
+};
+
+const buildSearchParam = (search: SearchPayload) =>
+  JSON.stringify({
+    ...search,
+    startAt: isValidDate(search.startAt) ? search.startAt : null,
+    endAt: isValidDate(search.endAt) ? search.endAt : null,
+  });
 
 try {
   await eigStore.get({
     limit: defaultLimit,
     offset: defaultOffset,
-    search: searchState,
+    search: buildSearchParam(searchState),
   });
   await departementStore.fetch();
 } catch (error) {
@@ -178,25 +244,30 @@ try {
   throw error;
 }
 
-const paginateResults = async (sortValue, limitValue, currentPageValue) => {
+const paginateResults = async (
+  sortValue: SortState,
+  limitValue: number,
+  currentPageValue: number,
+) => {
   try {
     await eigStore.get({
       sortBy: sortValue.sortBy,
       sortDirection: sortValue.sortDirection,
       limit: limitValue,
       offset: currentPageValue * limitValue,
-      search: searchState,
+      search: buildSearchParam(searchState),
     });
   } catch (error) {
     toaster.error({
-      description: "Une erreur est survenue lors de la récupération de la demande",
+      description:
+        "Une erreur est survenue lors de la récupération de la demande",
       role: "alert",
     });
     throw error;
   }
 };
 
-const fetchEigsDebounce = debounce(async (search) => {
+const fetchEigsDebounce = debounce(async (search: string) => {
   try {
     await eigStore.get({
       sortBy: sortState.value.sortBy,
@@ -207,7 +278,8 @@ const fetchEigsDebounce = debounce(async (search) => {
     });
   } catch (error) {
     toaster.error({
-      description: "Une erreur est survenue lors de la récupération de la demande",
+      description:
+        "Une erreur est survenue lors de la récupération de la demande",
       role: "alert",
     });
     throw error;
@@ -215,7 +287,7 @@ const fetchEigsDebounce = debounce(async (search) => {
 });
 
 watch([searchState], ([searchValue]) => {
-  fetchEigsDebounce(searchValue);
+  fetchEigsDebounce(buildSearchParam(searchValue));
 });
 
 const status = [allStatus, eigModel.Statuts.ENVOYE, eigModel.Statuts.LU];
@@ -262,19 +334,28 @@ const typesOption = [
     })),
   ].sort((t1, t2) => (t1.text < t2.text ? -1 : 1)),
 ];
-const onSelect = (value, key) => {
+const onSelect = (value: string | number, key: SearchPayloadKey) => {
   if (value === allStatus) {
     searchState[key] = null;
   } else {
-    searchState[key] = value;
+    searchState[key] = String(value);
   }
 };
 
-const headers = [
+type EigTableHeader = {
+  column: string;
+  text: string;
+  sort?: boolean;
+  format?: (value: EigListRow | null | undefined) => string;
+  component?: (value: any) => { component: unknown; [key: string]: unknown };
+};
+
+const headers: Array<EigTableHeader> = [
   {
     column: "organisme",
     text: "Organisme",
-    format: (value) => value.raisonSociale ?? `${value?.prenom} ${value?.nom}`,
+    format: (value: EigListRow | null | undefined) =>
+      value?.raisonSociale ?? `${value?.prenom ?? ""} ${value?.nom ?? ""}`,
     sort: true,
   },
   {
@@ -291,28 +372,32 @@ const headers = [
   {
     column: "dateDebut",
     text: "Dates du séjour (Début-fin)",
-    format: (value) =>
-      `${dayjs(value.dateDebut).format("DD/MM/YYYY")} - ${dayjs(value.dateFin).format("DD/MM/YYYY")}`,
+    format: (value: EigListRow | null | undefined) =>
+      `${dayjs(value?.dateDebut).format("DD/MM/YYYY")} - ${dayjs(value?.dateFin).format("DD/MM/YYYY")}`,
     sort: true,
   },
   {
     column: "types",
     text: "Types d'événement",
-    component: ({ types }) => ({
+    component: ({ types }: { types?: Array<string | null> | null }) => ({
       component: EigTypeListe,
-      types: (types ?? []).map((t) => mapEigToLabel[t]),
+      types: (types ?? [])
+        .filter((t): t is string => typeof t === "string")
+        .map((t) => mapEigToLabel[t]),
     }),
   },
   {
     column: "date",
     text: "Dates de l'incident",
-    format: (value) => dayjs(value.date).format("DD/MM/YYYY"),
+    format: (value: EigListRow | null | undefined) =>
+      dayjs(value?.date).format("DD/MM/YYYY"),
     sort: true,
   },
   {
     column: "dateDepot",
     text: "Dates de dépôt",
-    format: (value) => dayjs(value.dateDepot).format("DD/MM/YYYY"),
+    format: (value: EigListRow | null | undefined) =>
+      dayjs(value?.dateDepot).format("DD/MM/YYYY"),
     sort: true,
   },
   {
@@ -324,6 +409,12 @@ const headers = [
       readByDdets,
       agrementRegionObtention,
       departement,
+    }: {
+      statut?: string;
+      readByDreets?: boolean;
+      readByDdets?: boolean;
+      agrementRegionObtention?: string | null;
+      departement?: string | null;
     }) => ({
       component: EigStatusBadge,
       statut,
@@ -334,25 +425,34 @@ const headers = [
   },
 ];
 
-const updateSort = ({ sortBy: sb, sortDirection: sd }) => {
+const updateSort = ({
+  sortBy: sb,
+  sortDirection: sd,
+}: {
+  sortBy: string;
+  sortDirection: string;
+}) => {
   sortState.value = {
     sortBy: sb,
     sortDirection: sd,
   };
   paginateResults(sortState.value, limitState.value, currentPageState.value);
 };
-const updateItemsByPage = (val) => {
-  limitState.value = parseInt(val);
+const updateItemsByPage = (val: number | string) => {
+  limitState.value = Number(val);
   paginateResults(sortState.value, limitState.value, currentPageState.value);
 };
-const updateCurrentPage = (val) => {
-  currentPageState.value = val;
+const updateCurrentPage = (val: number | string) => {
+  currentPageState.value = Number(val);
   paginateResults(sortState.value, limitState.value, currentPageState.value);
 };
 
-const readEig = async (id) => {
+const readEig = async (id: number | null) => {
+  if (id === null) {
+    return;
+  }
   try {
-    await eigStore.markAsRead(id);
+    await eigStore.markAsRead(String(id));
     navigateTo(`/eig/${id}`);
   } catch (error) {
     toaster.error({
@@ -363,9 +463,9 @@ const readEig = async (id) => {
   }
 };
 
-const eigIdToRead = ref(null);
+const eigIdToRead = ref<number | null>(null);
 
-const openModal = (state) => {
+const openModal = (state: { id: number }) => {
   const eig = eigStore.getById(state.id);
   if (utilsEig.mustMarkAsRead(eig, usersStore.user)) {
     eigIdToRead.value = state.id;

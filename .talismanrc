@@ -287,6 +287,8 @@ fileignoreconfig:
   checksum: b70d397eb0bb35525f88b8cb6e894d4183d65bbfbdc61dd4953dda70f042eaa6
 - filename: packages/frontend-bo/src/pages/connexion/reset-mot-de-passe.vue
   checksum: f544299c6795c35ca29f1ddd0babb1c840f7c25c72435b3c6b0939e0ea55d120
+- filename: packages/frontend-bo/src/pages/eig/index.vue
+  checksum: 2a25c686d9d41d3b32ba100d41b197e2abfbe14655b0316410137784011d0f93
 - filename: packages/frontend-bo/src/pages/hebergements/[type]/[demandeSejourId]/[hebergementId].vue
   checksum: ec721f5acc148b6156ea413f0f3045193d881df49300efffe04722d185f83a5e
 - filename: packages/frontend-bo/src/pages/hebergements/[type]/[hebergementId].vue
