@@ -85,8 +85,9 @@
             </div>
           </div>
           <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-fieldset__element fr-col-12 fr-col-md-3 fr-col-lg-2">
-              <label class="fr-label" for="date-start">Date début</label>
+            <div class="fr-fieldset__element fr-col-12 fr-col-md-3 fr-col-lg-3">
+              <label class="fr-label" for="date-start">Date de début</label>
+              <span class="fr-hint-text">Format attendu : JJ/MM/AAAA</span>
               <input
                 id="date-start"
                 v-model="searchState.startAt"
@@ -95,8 +96,9 @@
               />
             </div>
 
-            <div class="fr-fieldset__element fr-col-12 fr-col-md-3 fr-col-lg-2">
-              <label class="fr-label" for="date-end">Date fin</label>
+            <div class="fr-fieldset__element fr-col-12 fr-col-md-3 fr-col-lg-3">
+              <label class="fr-label" for="date-end">Date de fin</label>
+              <span class="fr-hint-text">Format attendu : JJ/MM/AAAA</span>
               <input
                 id="date-end"
                 v-model="searchState.endAt"
