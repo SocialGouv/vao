@@ -200,7 +200,7 @@
               ></span>
               Si le problème persiste vous pouvez
               <a
-                title="libellé du lien - nouvelle fenêtre"
+                title="Contacter le support - nouvel onglet"
                 href="https://vao-assistance.atlassian.net/servicedesk/customer/portals"
                 target="_blank"
                 rel="noopener external"
