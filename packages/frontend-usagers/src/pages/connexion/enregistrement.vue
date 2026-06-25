@@ -299,6 +299,12 @@ interface GlobalErrorItem {
   anchor: string;
 }
 
+interface ApiError {
+  response?: { status: number };
+  statusCode?: number;
+  data?: { name: string; message?: string };
+}
+
 const apiTypes = apiModel.apiTypes;
 const log = logger("pages/connexion/enregistrement");
 const toaster = useToaster();
@@ -311,6 +317,42 @@ const formErrorRef = ref<HTMLElement | null>(null);
 const showGlobalError = ref(false);
 
 const submitted = ref(false);
+
+const isFormValid = computed(
+  () =>
+    emailField.isValid &&
+    passwordField.isValid &&
+    confirmField.isValid &&
+    nomField.isValid &&
+    prenomField.isValid &&
+    telephoneField.isValid &&
+    siretField.isValid &&
+    isApiAvailable,
+);
+
+const globalErrorList = computed<GlobalErrorItem[]>(() => {
+  const entries: GlobalErrorItem[] = [];
+  if (!emailField.isValid)
+    entries.push({ label: "Adresse courriel", anchor: "#field-email" });
+  if (!passwordField.isValid)
+    entries.push({ label: "Mot de passe", anchor: "#field-password" });
+  if (!confirmField.isValid)
+    entries.push({
+      label: "Confirmation mot de passe",
+      anchor: "#field-confirm",
+    });
+  if (!nomField.isValid) entries.push({ label: "Nom", anchor: "#field-nom" });
+  if (!prenomField.isValid)
+    entries.push({ label: "Prénom", anchor: "#field-prenom" });
+  if (!telephoneField.isValid)
+    entries.push({
+      label: "Numéro de téléphone",
+      anchor: "#field-telephone",
+    });
+  if (!siretField.isValid)
+    entries.push({ label: "SIRET", anchor: "#field-siret" });
+  return entries;
+});
 
 try {
   await Promise.all([
@@ -389,6 +431,25 @@ const isPwdRules = reactive<PwdRules>({
   number: false,
   maj: false,
   min: false,
+});
+
+watch(
+  [() => passwordField.modelValue, () => confirmField.modelValue, submitted],
+  () => {
+    confirmField.isValid =
+      !!confirmField.modelValue &&
+      confirmField.modelValue === passwordField.modelValue;
+    confirmField.errorMessage = resolveErrorMessage(
+      confirmField.modelValue,
+      confirmField.isValid,
+      'Le champ "Confirmation mot de passe" est vide. Veuillez répéter votre mot de passe. Exemple : 3V@cancesAdaptées!',
+      "Les mots de passe ne correspondent pas.",
+    );
+  },
+);
+
+watch(isFormValid, (valid) => {
+  if (valid) showGlobalError.value = false;
 });
 
 function resolveErrorMessage(
@@ -506,68 +567,18 @@ function checkValidSiret(siret: string) {
   siretField.errorMessage = "";
 }
 
-watch([() => passwordField.modelValue, () => confirmField.modelValue], () => {
-  confirmField.isValid =
-    !!confirmField.modelValue &&
-    confirmField.modelValue === passwordField.modelValue;
-  confirmField.errorMessage = resolveErrorMessage(
-    confirmField.modelValue,
-    confirmField.isValid,
-    'Le champ "Confirmation mot de passe" est vide. Veuillez répéter votre mot de passe. Exemple : 3V@cancesAdaptées!',
-    "Les mots de passe ne correspondent pas.",
-  );
-});
-
 function validateAllFields() {
   checkValidEmail(emailField.modelValue);
   checkValidPassword(passwordField.modelValue);
-  confirmField.errorMessage = resolveErrorMessage(
-    confirmField.modelValue,
-    confirmField.isValid,
-    'Le champ "Confirmation mot de passe" est vide. Veuillez répéter votre mot de passe. Exemple : 3V@cancesAdaptées!',
-    "Les mots de passe ne correspondent pas.",
-  );
   checkValidNom(nomField.modelValue);
   checkValidPrenom(prenomField.modelValue);
   checkValidTelephone(telephoneField.modelValue);
   checkValidSiret(siretField.modelValue);
 }
 
-const isFormValid = computed(
-  () =>
-    emailField.isValid &&
-    passwordField.isValid &&
-    confirmField.isValid &&
-    nomField.isValid &&
-    prenomField.isValid &&
-    telephoneField.isValid &&
-    siretField.isValid &&
-    isApiAvailable,
-);
-
-const globalErrorList = computed<GlobalErrorItem[]>(() => {
-  const entries: GlobalErrorItem[] = [];
-  if (!emailField.isValid)
-    entries.push({ label: "Adresse courriel", anchor: "#field-email" });
-  if (!passwordField.isValid)
-    entries.push({ label: "Mot de passe", anchor: "#field-password" });
-  if (!confirmField.isValid)
-    entries.push({
-      label: "Confirmation mot de passe",
-      anchor: "#field-confirm",
-    });
-  if (!nomField.isValid) entries.push({ label: "Nom", anchor: "#field-nom" });
-  if (!prenomField.isValid)
-    entries.push({ label: "Prénom", anchor: "#field-prenom" });
-  if (!telephoneField.isValid)
-    entries.push({
-      label: "Numéro de téléphone",
-      anchor: "#field-telephone",
-    });
-  if (!siretField.isValid)
-    entries.push({ label: "SIRET", anchor: "#field-siret" });
-  return entries;
-});
+function isApiError(error: unknown): error is ApiError {
+  return typeof error === "object" && error !== null;
+}
 
 async function register(): Promise<void> {
   submitted.value = true;
@@ -605,6 +616,17 @@ async function register(): Promise<void> {
     });
     await navigateTo("/");
   } catch (error: unknown) {
+    if (!isApiError(error)) {
+      log.w("Erreur inattendue non-objet lors de l'inscription", error);
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "Une erreur inattendue est survenue. Veuillez réessayer plus tard.",
+        role: "alert",
+      });
+      return;
+    }
+
     const err = error as {
       response?: { status: number };
       statusCode?: number;
@@ -654,7 +676,13 @@ async function register(): Promise<void> {
       return;
     }
 
-    throw error;
+    log.w("Erreur backend non gérée", error);
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "Une erreur inattendue est survenue. Veuillez réessayer plus tard.",
+      role: "alert",
+    });
   }
 }
 </script>

@@ -364,7 +364,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/pages/agrement/[[agrementId]].vue
   checksum: 14668bf8e44773f20e9b201b6292db4598a42f3919b2af5be54fdb8b616a5d6b
 - filename: packages/frontend-usagers/src/pages/connexion/enregistrement.vue
-  checksum: 814be53fd127684ae81fae8f4f39a03f56835b4053b63683964ea4dd2d2275bc
+  checksum: d7f27b7ab97e487d35332e5c3255604ad143319750517f9f722c33f0adbf5e27
 - filename: packages/frontend-usagers/src/pages/connexion/index.vue
   checksum: f7c52d87d6cd2945c9f77bf893a0b225b8793879e6102b3c88f635be30f09485
 - filename: packages/frontend-usagers/src/pages/connexion/mot-de-passe-oublie.vue
