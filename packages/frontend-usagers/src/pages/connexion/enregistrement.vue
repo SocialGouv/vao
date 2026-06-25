@@ -318,18 +318,6 @@ const showGlobalError = ref(false);
 
 const submitted = ref(false);
 
-const isFormValid = computed(
-  () =>
-    emailField.isValid &&
-    passwordField.isValid &&
-    confirmField.isValid &&
-    nomField.isValid &&
-    prenomField.isValid &&
-    telephoneField.isValid &&
-    siretField.isValid &&
-    isApiAvailable,
-);
-
 const globalErrorList = computed<GlobalErrorItem[]>(() => {
   const entries: GlobalErrorItem[] = [];
   if (!emailField.isValid)
@@ -432,6 +420,18 @@ const isPwdRules = reactive<PwdRules>({
   maj: false,
   min: false,
 });
+
+const isFormValid = computed(
+  () =>
+    emailField.isValid &&
+    passwordField.isValid &&
+    confirmField.isValid &&
+    nomField.isValid &&
+    prenomField.isValid &&
+    telephoneField.isValid &&
+    siretField.isValid &&
+    isApiAvailable,
+);
 
 watch(
   [() => passwordField.modelValue, () => confirmField.modelValue, submitted],
@@ -627,13 +627,7 @@ async function register(): Promise<void> {
       return;
     }
 
-    const err = error as {
-      response?: { status: number };
-      statusCode?: number;
-      data?: { name: string; message?: string };
-    };
-
-    const statusCode = err.response?.status ?? err.statusCode ?? 0;
+    const statusCode = error.response?.status ?? error.statusCode ?? 0;
 
     if (statusCode === 500) {
       toaster.error({
@@ -645,7 +639,7 @@ async function register(): Promise<void> {
       return;
     }
 
-    const codeError = err.data?.name;
+    const codeError = error.data?.name;
     let description = "";
 
     switch (codeError) {
@@ -663,7 +657,7 @@ async function register(): Promise<void> {
         break;
       case ERRORS_LOGIN.SiretNotFound:
         description =
-          err.data?.message ||
+          error.data?.message ||
           "Champ SIRET incorrect. Vérifiez le numéro fourni par votre entreprise. Le SIRET de votre entité doit être valide.";
         toaster.error({ titleTag: "h2", description, role: "alert" });
         await nextTick();
@@ -676,7 +670,7 @@ async function register(): Promise<void> {
       return;
     }
 
-    log.w("Erreur backend non gérée", error);
+    log.w("Erreur backend non gérée lors de l'inscription", error);
     toaster.error({
       titleTag: "h2",
       description:
