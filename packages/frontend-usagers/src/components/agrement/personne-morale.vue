@@ -88,6 +88,7 @@ import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
 import { TitleWithIcon, DsfrLinkV2, useToaster } from "@vao/shared-ui";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import { telephoneYupNullable } from "@/utils/telephoneValidators";
 
 const props = defineProps({
@@ -105,13 +106,6 @@ const toaster = useToaster();
 const personneMorale = computed(() => {
   return props.initOrganisme?.personneMorale || {};
 });
-
-const requiredUnlessBrouillon = (schema) =>
-  schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable().notRequired(),
-  });
 
 const validationSchema = yup.object({
   telephone: requiredUnlessBrouillon(telephoneYupNullable()),

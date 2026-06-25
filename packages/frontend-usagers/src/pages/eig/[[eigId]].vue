@@ -3,7 +3,10 @@
     <DsfrBreadcrumb :links="links" />
     <div class="fr-grid-row fr-px-3w">
       <div class="fr-col-xs-12 fr-col-md-3">
-        <EIGMenu :active-id="hash" :eig-id="eigId ? parseInt(eigId) : null" />
+        <EIGMenu
+          :active-id="hash"
+          :eig-id="eigId ? Number(eigId) : undefined"
+        />
       </div>
       <div class="fr-col-xs-12 fr-col-md-9 fr-py-3w">
         <div class="text-italic">
@@ -69,9 +72,21 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { eigModel, fileUtils, useToaster } from "@vao/shared-ui";
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
+
+interface FinalizeBody {
+  file?: File;
+  name?: string;
+  [key: string]: unknown;
+}
+
+interface UploadError {
+  data?: {
+    name?: string;
+  };
+}
 
 definePageMeta({
   middleware: ["is-connected", "check-roles", "check-eig-id-param"],
@@ -95,7 +110,7 @@ const config = useRuntimeConfig();
 
 const log = logger("pages/eig/[[eigId]]");
 
-const eigId = ref(route.params.eigId);
+const eigId = ref<string | null>(route.params.eigId?.toString() ?? null);
 
 const hash = computed(() => route.hash.slice(1) || eigMenu[0].id);
 
@@ -113,22 +128,26 @@ const links = [
   },
 ];
 
-const updateOrCreate = async (data, type) => {
+const updateOrCreate = async (data: unknown, type: string) => {
   log.i("updateOrCreate - IN", { data, type });
   setApiStatut(
     `${eigId.value ? "Sauvegarde" : "Création"} de la demande de séjour en cours`,
   );
   try {
-    let response;
+    let response: { id: string | number };
+
     if (eigId.value) {
       response = await eigStore.updateEig(eigId.value, type, data);
     } else {
       response = await eigStore.create(data);
     }
 
-    toaster.success(`EIG ${eigId.value ? "sauvegardée" : "créée"}`);
+    toaster.success({
+      titleTag: "h2",
+      description: `EIG ${eigId.value ? "sauvegardé" : "créé"}`,
+    });
     log.d(`EIG ${eigId.value} mis à jour`);
-    eigId.value = response.id;
+    eigId.value = String(response.id);
     return await nextHash();
   } catch (error) {
     log.w("Creation/modification EIG: ", { error });
@@ -154,7 +173,10 @@ const nextHash = () => {
   });
 };
 
-async function finalize(body) {
+async function finalize(body: FinalizeBody) {
+  if (!eigId.value) {
+    return;
+  }
   log.i("finalize eig -IN");
   setApiStatut("Transmission de l'eig en cours");
   const newFile = {};
@@ -171,9 +193,10 @@ async function finalize(body) {
         description: "Document déposé",
       });
     } catch (error) {
+      const uploadError = error as UploadError;
       const description = getFileUploadErrorMessage(
         body.file?.name,
-        error?.data?.name,
+        uploadError.data?.name,
       );
       toaster.error({
         titleTag: "h2",
@@ -192,8 +215,12 @@ async function finalize(body) {
       eigModel.UpdateTypes.EMAIL_AUTRES_DESTINATAIRES,
       body,
     );
+
     await eigStore.depose(eigId.value, body);
-    toaster.success(`L'EIG a été déposé`);
+    toaster.success({
+      titleTag: "h2",
+      description: "L'EIG a été déposé",
+    });
     log.d(`EIG ${eigId.value} deposé`);
     return await navigateTo("/eig/liste");
   } catch (error) {

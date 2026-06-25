@@ -1,4 +1,4 @@
-import { DEMANDE_SEJOUR_STATUTS } from "@vao/shared-bridge";
+import { DEMANDE_SEJOUR_STATUTS, STATUS_USER_FRONT } from "@vao/shared-bridge";
 import * as Sentry from "@sentry/node";
 import { notifyDs8jDs15, sentry } from "../config";
 import { pool } from "../db";
@@ -22,7 +22,7 @@ const querySelectRappelDeclarationSejour8j15j = `
     use.mail
   FROM front.demande_sejour ds
   INNER JOIN front.user_organisme uso on uso.org_id = ds.organisme_id
-  INNER JOIN front.users use on use.id = uso.use_id
+  INNER JOIN front.users use on use.id = uso.use_id AND use.status_code = '${STATUS_USER_FRONT.VALIDATED}' AND use.deleted = false
   WHERE (ds.date_debut - (('${deadlineRemind}'+8) * INTERVAL '1 day'))::date<= now()::date
   AND now()::date<=(ds.date_debut - (8 * INTERVAL '1 day'))::date
   AND ds.statut = '${DEMANDE_SEJOUR_STATUTS.ATTENTE_8_JOUR}'

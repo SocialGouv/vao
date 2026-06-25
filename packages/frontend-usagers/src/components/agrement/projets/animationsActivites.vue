@@ -55,6 +55,7 @@
 import { computed, onMounted } from "vue";
 import { useForm, useField } from "vee-validate";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import type { ActiviteDto, AgrementAnimationDto } from "@vao/shared-bridge";
 import * as yup from "yup";
 
@@ -127,13 +128,6 @@ const initActivitesFromStore = (): string[] => {
     )
     .filter(Boolean) as string[];
 };
-
-const requiredUnlessBrouillon = (schema: yup.Schema) =>
-  schema.when("statut", {
-    is: (val: AGREMENT_STATUT) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema: yup.Schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema: yup.Schema) => schema.nullable(),
-  });
 
 const validationSchema = yup.object({
   activitesSelectionnees: requiredUnlessBrouillon(

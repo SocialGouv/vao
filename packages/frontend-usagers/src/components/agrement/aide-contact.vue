@@ -3,10 +3,7 @@
     <h2 class="fr-h3 fr-mb-4v">Aide et contact</h2>
     <div class="aide-container">
       <div class="aide-image">
-        <img
-          src="../../assets/undraw_questions_g2px.svg"
-          alt="Illustration questions"
-        />
+        <img src="../../assets/undraw_questions_g2px.svg" alt="" />
       </div>
       <div class="aide-contact-cards">
         <div class="fr-card fr-mb-3v flex-card">

@@ -96,3 +96,20 @@ export const AGREMENT_HISTORY_LABELS: Record<AGREMENT_HISTORY_TYPE, string> = {
   VALIDATION: "Validation de la demande d’agrément",
   VERIFICATION: "Vérification en cours de la demande d’agrément",
 };
+
+/**
+ * Statuts pour lesquels la validation du formulaire d'agrément est permissive.
+ * Dans ces états, les champs obligatoires ne sont pas bloquants.
+ * La validation stricte s'active uniquement lors de la soumission finale
+ * (statuts TRANSMIS et EN_INSTRUCTION).
+ *
+ * Pourquoi VALIDE est inclus : dans le workflow de renouvellement, l'OVA
+ * repart d'un agrément VALIDE pour initier un nouveau cycle. Les sauvegardes
+ * intermédiaires étape par étape doivent rester permissives, exactement comme
+ * pour BROUILLON.
+ */
+export const AGREMENT_STATUTS_PERMISSIFS = new Set<AGREMENT_STATUT>([
+  AGREMENT_STATUT.BROUILLON,
+  AGREMENT_STATUT.A_COMPLETER,
+  AGREMENT_STATUT.VALIDE,
+]);

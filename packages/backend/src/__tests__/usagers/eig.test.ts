@@ -116,7 +116,7 @@ describe("Domaine /eig", () => {
         });
 
       expect(response.status).toBe(400);
-      expect(response.body.name).toBe("ValidationError");
+      expect(response.body.name).toBe("INVALID_QUERY");
     });
   });
 

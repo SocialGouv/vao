@@ -10,11 +10,44 @@
       <div class="fr-fieldset">
         <div class="fr-fieldset__element fr-col-12">
           <div>
-            <DsfrTable
-              title="Liste des hébergements sélectionnés"
-              :headers="headers"
-              :rows="syntheseRows"
-            />
+            <DsfrDataTableV2Wrapper
+              v-model:limit="limit"
+              v-model:offset="offset"
+              :columns="columns"
+              :data="paginatedTableData"
+              :total="tableData.length"
+              :table-title="`Liste des hébergements sélectionnés (${tableData.length})`"
+              row-id="id"
+              @update-data="updateData"
+            >
+              <template #cell-custom:actions="{ row }">
+                <div class="buttons-group">
+                  <DsfrButton
+                    icon="ri:arrow-right-s-line"
+                    icon-only
+                    primary
+                    no-outline
+                    size="small"
+                    type="button"
+                    title="Naviguer"
+                    :disabled="!props.modifiable"
+                    @click="editNuitee(row.index)"
+                  />
+
+                  <DsfrButton
+                    icon="ri:delete-bin-2-line"
+                    icon-only
+                    tertiary
+                    no-outline
+                    size="small"
+                    type="button"
+                    title="Supprimer"
+                    :disabled="!props.modifiable"
+                    @click="removeHebergement(row.index)"
+                  />
+                </div>
+              </template>
+            </DsfrDataTableV2Wrapper>
           </div>
           <DsfrButton
             v-if="props.modifiable"
@@ -81,14 +114,16 @@
 </template>
 
 <script setup lang="ts">
-import { DsfrButtonGroup } from "@gouvminint/vue-dsfr";
-import { useField, useForm } from "vee-validate";
-import dayjs from "dayjs";
 import {
+  DsfrDataTableV2Wrapper,
+  columnsTable,
   hebergement as hebergementUtils,
   fileUtils,
   useToaster,
 } from "@vao/shared-ui";
+import type { Columns } from "@vao/shared-ui";
+import { useField, useForm } from "vee-validate";
+import dayjs from "dayjs";
 import {
   formatISOShort,
   type DemandeSejourHebergementItemDto,
@@ -113,15 +148,41 @@ const emit = defineEmits(["previous", "next", "update"]);
 
 const log = logger("components/DS/hebergement-sejour");
 
-const headers = [
-  "Numéro",
-  "Nombre de nuits",
-  "Du",
-  "Au",
-  "Nom",
-  "Adresse",
-  "Actions",
+const optionType = columnsTable.optionType;
+
+const limit = ref(10);
+const offset = ref(0);
+
+const paginatedTableData = ref<HebergementTableRow[]>([]);
+
+type HebergementTableRow = {
+  id: number;
+  index: number;
+  numero: number;
+  nombreNuits: string | number;
+  dateDebut: string;
+  dateFin: string;
+  nom: string;
+  adresse: string;
+};
+
+const defs: Array<
+  [
+    keyof HebergementTableRow | "custom:actions",
+    string,
+    (typeof optionType)[keyof typeof optionType],
+  ]
+> = [
+  ["numero", "Numéro", optionType.NONE],
+  ["nombreNuits", "Nombre de nuits", optionType.NONE],
+  ["dateDebut", "Du", optionType.NONE],
+  ["dateFin", "Au", optionType.NONE],
+  ["nom", "Nom", optionType.NONE],
+  ["adresse", "Adresse", optionType.NONE],
+  ["custom:actions", "Actions", optionType.FIXED_RIGHT],
 ];
+
+const columns = columnsTable.buildColumns(defs) as Columns<HebergementTableRow>;
 const hebergementStore = useHebergementStore();
 const demandeSejourStore = useDemandeSejourStore();
 const nuiteeOpened = ref(false);
@@ -158,57 +219,26 @@ const { value: hebergements, handleChange: onHebergementsChange } =
 hebergementStore.fetch({
   organismeId: demandeSejourStore.demandeCourante.organismeId,
   statut: hebergementUtils.statut.ACTIF,
-  // TO DO : Juste pour le hotfix. A élargir avec valeur par défaut dans applyPagination
-  limit: 10000,
-  offset: 0,
-  sortBy: "nom",
 });
 
-const syntheseRows = computed(() => {
-  return hebergements.value.map((hebergement, index) => {
-    const buttons = [
-      {
-        icon: "ri:delete-bin-2-line",
-        iconOnly: true,
-        tertiary: true,
-        noOutline: true,
-        disabled: !props.modifiable,
-        ariaLabel: `Supprimer l'hébergement: ${hebergement.nom}`,
-        onClick: (event: Event) => {
-          event.stopPropagation();
-          removeHebergement(index);
-        },
-      },
-    ];
-
-    const rows = [
-      `${index + 1}`,
+const tableData = computed(() => {
+  return hebergements.value.map((hebergement, index) => ({
+    id: index,
+    index,
+    numero: index + 1,
+    nombreNuits:
       hebergement.dateFin && hebergement.dateDebut
-        ? dayjs(hebergement.dateFin)
-            .diff(dayjs(hebergement.dateDebut), "day")
-            .toString()
+        ? dayjs(hebergement.dateFin).diff(dayjs(hebergement.dateDebut), "day")
         : "",
-      hebergement.dateDebut
-        ? dayjs(hebergement.dateDebut).format("DD/MM/YYYY")
-        : "",
-      hebergement.dateFin
-        ? dayjs(hebergement.dateFin).format("DD/MM/YYYY")
-        : "",
-      hebergement.nom ?? "",
-      hebergement.coordonnees?.adresse?.label ?? "",
-      {
-        component: DsfrButtonGroup,
-        buttons: buttons,
-      },
-    ];
-    return {
-      rowData: rows,
-      rowAttrs: {
-        class: "pointer",
-        onClick: () => editNuitee(index),
-      },
-    };
-  });
+    dateDebut: hebergement.dateDebut
+      ? dayjs(hebergement.dateDebut).format("DD/MM/YYYY")
+      : "",
+    dateFin: hebergement.dateFin
+      ? dayjs(hebergement.dateFin).format("DD/MM/YYYY")
+      : "",
+    nom: hebergement.nom ?? "",
+    adresse: hebergement.coordonnees?.adresse?.label ?? "",
+  }));
 });
 
 const hebergementCourant = ref<Partial<DemandeSejourHebergementItemDto>>({});
@@ -261,8 +291,8 @@ function removeHebergement(index: number) {
   log.i("removeHebergement", { index });
   const newHebergements = hebergements.value.filter((_, i) => i !== index);
   onHebergementsChange(newHebergements);
+  updateData();
 }
-
 async function addNuitee(hebergement: DemandeSejourHebergementItemDto) {
   log.d("addNuitee - In", { hebergement });
   const index = currentIndex.value;
@@ -299,6 +329,7 @@ async function addNuitee(hebergement: DemandeSejourHebergementItemDto) {
     ];
   }
   onHebergementsChange(sortByDate(newHebergements));
+  updateData();
   onCloseNuitee();
   log.d("addNuitee - Done");
 }
@@ -322,6 +353,22 @@ async function next() {
   };
   emit("update", data, "hebergements");
 }
+watch([tableData, limit, offset], () => updateData(), {
+  immediate: true,
+});
+function updateData() {
+  const rows = [...tableData.value];
+
+  paginatedTableData.value = rows.slice(
+    offset.value,
+    offset.value + limit.value,
+  );
+}
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.buttons-group {
+  display: flex;
+  gap: 0.3rem;
+}
+</style>

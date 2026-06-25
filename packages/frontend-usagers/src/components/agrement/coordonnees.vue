@@ -188,9 +188,18 @@ async function validatePersonne(
         return data;
       } catch (err: any) {
         console.error("Erreur lors de la sauvegarde :", err);
-        errorRef.value =
-          "Erreur lors de la sauvegarde : " +
-          (err?.message || "Erreur inconnue.");
+
+        const status = err?.status ?? err?.response?.status;
+        const description =
+          status === 403
+            ? "Vous n'avez pas les droits pour effectuer cette action."
+            : "Un problème est survenu lors de la sauvegarde. Veuillez réessayer.";
+
+        toaster.error({
+          titleTag: "h2",
+          description,
+        });
+
         return null;
       }
     }

@@ -287,6 +287,8 @@ fileignoreconfig:
   checksum: b70d397eb0bb35525f88b8cb6e894d4183d65bbfbdc61dd4953dda70f042eaa6
 - filename: packages/frontend-bo/src/pages/connexion/reset-mot-de-passe.vue
   checksum: f544299c6795c35ca29f1ddd0babb1c840f7c25c72435b3c6b0939e0ea55d120
+- filename: packages/frontend-bo/src/pages/eig/index.vue
+  checksum: 2a25c686d9d41d3b32ba100d41b197e2abfbe14655b0316410137784011d0f93
 - filename: packages/frontend-bo/src/pages/hebergements/[type]/[demandeSejourId]/[hebergementId].vue
   checksum: ec721f5acc148b6156ea413f0f3045193d881df49300efffe04722d185f83a5e
 - filename: packages/frontend-bo/src/pages/hebergements/[type]/[hebergementId].vue
@@ -305,6 +307,8 @@ fileignoreconfig:
   checksum: 56a62209a9c1ac0d43c66a8971c23c9db1bba9e77bc222211e10468fdc795d79
 - filename: packages/frontend-usagers/src/components/DS/hebergements-sejour-detail.vue
   checksum: ea2516289eea24b6cf226322360163f840249383a5b30f5766ac730e52463162
+- filename: packages/frontend-usagers/src/components/DS/hebergements-sejour.vue
+  checksum: 95375f84bc188571397184191ad790781ca2f678718527b61931d95e17a06179
 - filename: packages/frontend-usagers/src/components/DS/synthese.vue
   checksum: 1745df4066b3957901ec41d0b0e546cb5ed32dcc2abadcd1e825e06d092bd031
 - filename: packages/frontend-usagers/src/components/EIG/Recap.vue
@@ -369,6 +373,8 @@ fileignoreconfig:
   checksum: 4d8c14f196fb8fa661a90545fca0297d5481334bafbe4a22d12e33a039de4c98
 - filename: packages/frontend-usagers/src/pages/demande-sejour/liste.vue
   checksum: 1a15627cce01ea6d0bbff2d1ea7d71a44da574a5b69b1a565d275c704138ef69
+- filename: packages/frontend-usagers/src/pages/eig/[[eigId]].vue
+  checksum: dddfd11b0f714543393f310edcfba77652ce3c8d3021ca34e572043ee66ee267
 - filename: packages/frontend-usagers/src/pages/operateur/renseignements-generaux/[[idOperateur]].vue
   checksum: 3a6a45bbf16e8501e4d9bae581348c9b620df3417e0bc4953ef00b67e4213050
 - filename: packages/frontend-usagers/src/public/js/jquery.min.js

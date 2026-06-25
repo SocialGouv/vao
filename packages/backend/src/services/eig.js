@@ -7,7 +7,7 @@ const AppError = require("../utils/error").default;
 const { getPool } = require("../utils/pgpool");
 const { addHistoric } = require("./Tracking");
 const { getFileMetaData } = require("./Document");
-
+const { formatISOShort } = require("@vao/shared-bridge");
 const {
   TRACKING_ENTITIES,
   TRACKING_USER_TYPE,
@@ -284,6 +284,8 @@ const query = {
       INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
       LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
       LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id AND pm.current = TRUE
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id AND pp.current = TRUE
     WHERE
     ${where}
     ${search.map((s) => ` AND ${s} `).join("")}
@@ -684,13 +686,14 @@ const getEigs = async (
     searchQuery.push(`eig.departement = $${params.length + 1}`);
     params.push(`${search?.departement}`);
   }
+  if (search?.startAt) {
+    searchQuery.push(`eig.date >= $${params.length + 1}`);
+    params.push(`${formatISOShort(search.startAt)}`);
+  }
 
-  if (search?.dateRange?.start && search?.dateRange?.end) {
-    searchQuery.push(
-      `eig.date BETWEEN $${params.length + 1} AND $${params.length + 2}`,
-    );
-    params.push(`${search.dateRange.start}`);
-    params.push(`${search.dateRange.end}`);
+  if (search?.endAt) {
+    searchQuery.push(`eig.date <= $${params.length + 1}`);
+    params.push(`${formatISOShort(search.endAt)}`);
   }
 
   let queryWithPagination = query.get(
