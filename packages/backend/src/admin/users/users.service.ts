@@ -11,6 +11,7 @@ export const UsersService = {
   async updateOtp({ userId }: { userId: number }): Promise<{
     otpAttempts: number;
     otpAttemptsAt: Date;
+    otpCodeExpiresAt: Date;
   }> {
     return UsersServiceShared.updateOtp({ target, userId });
   },
