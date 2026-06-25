@@ -13,43 +13,16 @@
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
           <p>
-            L'inscription n'est pas automatique. Vous devrez valider votre
+            L’inscription n’est pas automatique. Vous devrez valider votre
             email, puis votre demande sera prise en compte par les services
             compétents pour valider la création de votre compte
           </p>
           <p>
             Afin de respecter les meilleures pratiques et notamment les
-            recommandations de la CNIL, nous recommandons l'utilisation
-            d'adresses e-mail nominatives en lieu et place d'adresses génériques
+            recommandations de la CNIL, nous recommandons l’utilisation
+            d'adresses e-mail nominatives en lieu et place d’adresses génériques
             ou utilisées par plusieurs utilisateurs
           </p>
-
-          <div
-            v-if="showGlobalError && globalErrorList.length > 0"
-            ref="formErrorRef"
-            class="fr-mb-6v"
-            role="alert"
-            tabindex="-1"
-          >
-            <div class="fr-alert fr-alert--error">
-              <h2 class="fr-alert__title">
-                Le formulaire contient des erreurs.
-              </h2>
-              <p>
-                Veuillez corriger les champs signalés ci-dessous avant de
-                continuer.
-              </p>
-              <ul>
-                <li
-                  v-for="fieldError in globalErrorList"
-                  :key="fieldError.anchor"
-                >
-                  <a :href="fieldError.anchor">{{ fieldError.label }}</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-
           <div class="fr-mb-6v">
             <p class="fr-hint-text">Tous les champs sont obligatoires.</p>
           </div>
@@ -62,7 +35,7 @@
               label="Adresse courriel"
               name="email"
               :label-visible="true"
-              placeholder="Veuillez saisir votre email"
+              placeholder=""
               hint="Format attendu : nom@domaine.fr"
               :is-valid="emailField.isValid"
               aria-required="true"
@@ -294,11 +267,6 @@ interface PwdRules {
   min: boolean;
 }
 
-interface GlobalErrorItem {
-  label: string;
-  anchor: string;
-}
-
 interface ApiError {
   response?: { status: number };
   statusCode?: number;
@@ -312,35 +280,8 @@ const config = useRuntimeConfig();
 const useExternalApi = useExternalApiStore();
 
 const siretInputRef = ref<InstanceType<typeof DsfrInputGroup> | null>(null);
-const formErrorRef = ref<HTMLElement | null>(null);
-
-const showGlobalError = ref(false);
 
 const submitted = ref(false);
-
-const globalErrorList = computed<GlobalErrorItem[]>(() => {
-  const entries: GlobalErrorItem[] = [];
-  if (!emailField.isValid)
-    entries.push({ label: "Adresse courriel", anchor: "#field-email" });
-  if (!passwordField.isValid)
-    entries.push({ label: "Mot de passe", anchor: "#field-password" });
-  if (!confirmField.isValid)
-    entries.push({
-      label: "Confirmation mot de passe",
-      anchor: "#field-confirm",
-    });
-  if (!nomField.isValid) entries.push({ label: "Nom", anchor: "#field-nom" });
-  if (!prenomField.isValid)
-    entries.push({ label: "Prénom", anchor: "#field-prenom" });
-  if (!telephoneField.isValid)
-    entries.push({
-      label: "Numéro de téléphone",
-      anchor: "#field-telephone",
-    });
-  if (!siretField.isValid)
-    entries.push({ label: "SIRET", anchor: "#field-siret" });
-  return entries;
-});
 
 try {
   await Promise.all([
@@ -447,10 +388,6 @@ watch(
     );
   },
 );
-
-watch(isFormValid, (valid) => {
-  if (valid) showGlobalError.value = false;
-});
 
 function resolveErrorMessage(
   value: string,
@@ -585,13 +522,8 @@ async function register(): Promise<void> {
   validateAllFields();
 
   if (!isFormValid.value) {
-    showGlobalError.value = true;
-    await nextTick();
-    formErrorRef.value?.focus();
     return;
   }
-
-  showGlobalError.value = false;
 
   const email = emailField.modelValue;
   const password = passwordField.modelValue;
