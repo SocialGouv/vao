@@ -58,7 +58,7 @@
           size="small"
           type="button"
           label="Valider le compte"
-          @click="validate(row.id)"
+          @click="validate(row.userId)"
         />
         <DsfrButton
           v-if="row.statut === statusUser.status.NEED_SIRET_VALIDATION"
