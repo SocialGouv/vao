@@ -15,7 +15,44 @@ const ouiNon = {
   false: "Non",
   true: "Oui",
 };
-
+const IUser = {
+  email: {
+    inputType: InputTypes.TEXT,
+    label: "Adresse courriel",
+  },
+  nom: {
+    inputType: InputTypes.TEXT,
+    label: "Nom",
+  },
+  prenom: {
+    inputType: InputTypes.TEXT,
+    label: "Prénom",
+  },
+  createdAt: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Date de création du compte",
+    formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
+  },
+  telephone: {
+    inputType: InputTypes.TEXT,
+    label: "Numéro de téléphone",
+  },
+  lastConnectionAt: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Date de dernière connexion",
+    formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
+  },
+  statutLabel: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "StatutLabel",
+    formatter: (value) => value,
+  },
+  organisme: {
+    inputType: InputTypes.TEXT,
+    label: "Organisme",
+    formatter: (value) => value,
+  },
+};
 const IPersonneMorale = {
   complet: {
     inputType: InputTypes.RADIO,
@@ -860,4 +897,5 @@ export default {
   AgrementInput,
   AgrementProjetsInput,
   AgrementBilanAnnuelInput,
+  IUser,
 };
