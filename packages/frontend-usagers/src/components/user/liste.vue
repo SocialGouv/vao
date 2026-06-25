@@ -280,7 +280,7 @@ const updateData = (resetOffset = false) => {
   }, 300);
 };
 
-const getCommuneCp = (adresse: string | null | undefined) => {
+const getCommuneCp = (adresse?: string | null) => {
   try {
     const decomposeAdresse = (adresse ?? "").split(" ");
     const cpIndex = decomposeAdresse.findIndex((mot) =>
