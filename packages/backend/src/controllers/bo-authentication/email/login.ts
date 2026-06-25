@@ -85,13 +85,15 @@ export default async function login(
   try {
     let otpAttempts = user?.otpAttempts;
     let otpAttemptsAt = user?.otpAttemptsAt;
+    let otpCodeExpiresAt = user?.otpCodeExpiresAt;
     const { featureFlags, isUpdateOtpNecessary, requires2FA } =
       await checkActionsOtp({ req, target, user });
 
     if (isUpdateOtpNecessary) {
-      ({ otpAttempts, otpAttemptsAt } = await UsersService.updateOtp({
-        userId: Number(user.id),
-      }));
+      ({ otpAttempts, otpAttemptsAt, otpCodeExpiresAt } =
+        await UsersService.updateOtp({
+          userId: Number(user.id),
+        }));
     } else {
       if (!requires2FA) {
         await connected({ rememberDevice: false, req, res, target, user });
@@ -99,7 +101,14 @@ export default async function login(
     }
     log.i("DONE");
     return res.json({
-      user: { ...user, featureFlags, otpAttempts, otpAttemptsAt, requires2FA },
+      user: {
+        ...user,
+        featureFlags,
+        otpAttempts,
+        otpAttemptsAt,
+        otpCodeExpiresAt,
+        requires2FA,
+      },
     });
   } catch (error) {
     log.w("DONE with error");

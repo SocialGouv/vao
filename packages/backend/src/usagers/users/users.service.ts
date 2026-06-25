@@ -7,11 +7,11 @@ export const UsersService = {
   async resendOtpCode({ email }: { email: string }): Promise<UserUsagersDto> {
     return UsersServiceShared.resendOtpCode({ email, target });
   },
-  async updateOtp({
-    userId,
-  }: {
-    userId: number;
-  }): Promise<{ otpAttempts: number; otpAttemptsAt: Date }> {
+  async updateOtp({ userId }: { userId: number }): Promise<{
+    otpAttempts: number;
+    otpAttemptsAt: Date;
+    otpCodeExpiresAt: Date;
+  }> {
     return UsersServiceShared.updateOtp({ target, userId });
   },
   async verifyOtpCode({

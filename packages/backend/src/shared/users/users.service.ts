@@ -138,6 +138,7 @@ export const UsersService = {
   }): Promise<{
     otpAttempts: number;
     otpAttemptsAt: Date;
+    otpCodeExpiresAt: Date;
   }> {
     const isBo = target === USER_TARGET.BO;
     const user = isBo
@@ -187,6 +188,7 @@ export const UsersService = {
     return {
       otpAttempts: userUpdated.otpAttempts!,
       otpAttemptsAt: userUpdated.otpAttemptsAt!,
+      otpCodeExpiresAt: userUpdated.otpCodeExpiresAt!,
     };
   },
   async verifyOtpCode<T extends OtpTarget>({
