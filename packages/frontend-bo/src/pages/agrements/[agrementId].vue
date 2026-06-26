@@ -112,6 +112,13 @@ import {
 import { useOrganismeStore } from "~/stores/organisme";
 import { formatFR } from "@vao/shared-bridge";
 
+const TAB_PAGE_TITLES = [
+  "Dossier",
+  "Documents",
+  "Historique",
+  "Messagerie",
+] as const;
+
 const organismeStore = useOrganismeStore();
 
 const route = useRoute();
@@ -197,6 +204,7 @@ useAgrementPageTitle({
   agrementLabel: "Mon agrément",
   appSuffix: "Vacances Adaptées Organisées",
   selectedTabIndex,
+  tabPageTitles: TAB_PAGE_TITLES,
 });
 
 const asc = ref(true);

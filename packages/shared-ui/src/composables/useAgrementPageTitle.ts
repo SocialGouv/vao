@@ -6,9 +6,10 @@ interface UseAgrementPageTitleOptions {
   agrementLabel: string; // "Mon agrément" ou "Agrément"
   appSuffix: string; // "Vacances Adaptées Organisées" ou "Portail Administration | VAO"
   selectedTabIndex: Ref<number>;
+  tabPageTitles: readonly string[]; 
 }
 
-const TAB_PAGE_TITLES = [
+const DEFAULT_TAB_TITLES = [
   "Dossier",
   "Documents joints",
   "Historique",
@@ -20,9 +21,12 @@ export function useAgrementPageTitle({
   agrementLabel,
   appSuffix,
   selectedTabIndex,
+  tabPageTitles,
 }: UseAgrementPageTitleOptions) {
+  
   const pageTitle = computed(() => {
-    const label = TAB_PAGE_TITLES[selectedTabIndex.value] ?? "";
+    const titles = tabPageTitles ?? DEFAULT_TAB_TITLES;
+    const label = titles[selectedTabIndex.value] ?? "";
 
     const agrement = agrementNumero.value
       ? `${agrementLabel} n° ${agrementNumero.value}`
@@ -32,6 +36,6 @@ export function useAgrementPageTitle({
   });
 
   useHead({
-    title: () => pageTitle.value, // ← getter () => string, accepté nativement par Unhead
+    title: () => pageTitle.value,
   });
 }

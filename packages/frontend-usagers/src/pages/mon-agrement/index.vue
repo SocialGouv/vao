@@ -117,6 +117,13 @@ import {
 
 import { nextTick } from "vue";
 
+const TAB_PAGE_TITLES = [
+  "Dossier",
+  "Documents joints",
+  "Historique",
+  "Messagerie",
+] as const;
+
 const agrementStore = useAgrementStore();
 const territoireStore = useTerritoireStore();
 const organismeStore = useOrganismeStore();
@@ -203,6 +210,7 @@ useAgrementPageTitle({
   agrementLabel: "Mon agrément",
   appSuffix: "Vacances Adaptées Organisées",
   selectedTabIndex,
+  tabPageTitles: TAB_PAGE_TITLES,
 });
 
 const asc = ref(true);
