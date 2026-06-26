@@ -197,6 +197,14 @@ export const AgrementsRepository = {
     }
   },
 
+  async getIdByFileUuid(uuid: string): Promise<number | null> {
+    const response = await getPool().query(
+      `SELECT agrement_id AS id FROM front.agrement_files WHERE file_uuid = $1 LIMIT 1`,
+      [uuid],
+    );
+    return response.rows[0]?.id ?? null;
+  },
+
   async getMessages(
     agrementId: number,
   ): Promise<{ messages: AgrementMessage[]; unreadCount: number }> {

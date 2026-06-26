@@ -123,6 +123,12 @@ const query = {
     FROM front.org_protocole_sanitaire
     WHERE organisme_id = $1
   `,
+  getOrgIdByUuid: `
+      SELECT ps.organisme_id AS "organismeId"
+      FROM front.org_protocole_sanitaire_files psf
+      INNER JOIN front.org_protocole_sanitaire ps ON ps.id = psf.protocole_sanitaire_id
+      WHERE files = $1
+    `,
   getPSFiles: `
     SELECT files AS "uuid"
     FROM front.org_protocole_sanitaire_files psf
@@ -308,6 +314,13 @@ module.exports.getByOrganismeId = async (organismeId) => {
   );
   log.i("getByOrganismeId - DONE");
   return rowCount === 0 ? {} : { ...protocoleSanitaire[0], files };
+};
+
+module.exports.getOrgIdByUuid = async (uuid) => {
+  log.i("getOrgIdByUuid - IN");
+  const response = await getPool().query(query.getOrgIdByUuid, [uuid]);
+  log.d("getOrgIdByUuid - DONE");
+  return response.rows[0];
 };
 
 const { create } = module.exports;

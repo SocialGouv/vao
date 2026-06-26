@@ -16,6 +16,7 @@ export interface DocumentDtoOptional {
 
 export interface FileMetaDataDto {
   uuid: string;
+  category: FILE_CATEGORY;
   name: string;
   userId: string | number;
   createdAt: Date;

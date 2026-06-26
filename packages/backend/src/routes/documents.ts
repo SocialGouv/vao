@@ -5,6 +5,7 @@ import { config } from "../config";
 import { documentsController } from "../controllers";
 import boCheckJWT from "../middlewares/bo-check-JWT";
 import checkJWT from "../middlewares/checkJWT";
+import checkPermissionBoDocument from "../middlewares/checkPermissionBoDocument";
 import scanFile from "../middlewares/scan-file";
 import { logger } from "../utils/logger";
 
@@ -45,7 +46,12 @@ function uploadFile(req: Request, res: Response, next: NextFunction) {
 }
 
 router.get("/:uuid", checkJWT, documentsController.download);
-router.get("/admin/:uuid", boCheckJWT, documentsController.adminDownload);
+router.get(
+  "/admin/:uuid",
+  boCheckJWT,
+  checkPermissionBoDocument,
+  documentsController.adminDownload,
+);
 router.get("/admin/static/:name", boCheckJWT, documentsController.getStatic);
 router.get("/public/:name", documentsController.getPublic);
 router.post("/", checkJWT, uploadFile, scanFile, documentsController.upload);

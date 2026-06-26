@@ -123,6 +123,24 @@ const query = {
     `,
     Object.values(criterias),
   ],
+  getAgrementById: `
+  with agr AS (
+    SELECT a.id
+      FROM front.agrements a
+      INNER JOIN front.organismes o ON o.id = a.organisme_id
+      WHERE o.id = $1
+    UNION
+    SELECT a.id
+      FROM front.agrements a
+      INNER JOIN front.organismes o ON o.id = a.organisme_id
+      INNER JOIN front.personne_morale pm_siege ON pm_siege.organisme_id = o.id
+      INNER JOIN front.personne_morale pm ON pm.siren = pm_siege.siren AND pm.porteur_agrement = false
+      WHERE pm.organisme_id = $1
+  ) 
+  SELECT agr.id
+  FROM agr
+  LIMIT 1
+  `,
   getBySiren: `
     SELECT
       o.id as "organismeId",
@@ -918,6 +936,13 @@ module.exports.getListe = async (queryParams) => {
     rows: result[0].rows,
     total: parseInt(result[1].rows[0].total, 10),
   };
+};
+
+module.exports.getAgrementById = async (organismeId) => {
+  log.i("getAgrementById - IN", { organismeId });
+  const response = await getPool().query(query.getAgrementById, [organismeId]);
+  log.i("getAgrementById - DONE");
+  return response.rows[0]?.id ?? null;
 };
 
 module.exports.getListeExtract = async () => {
