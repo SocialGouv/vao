@@ -107,6 +107,7 @@ import {
   Historique,
   AgrementDocuments,
   AgrementStatusBadge,
+  useAgrementPageTitle,
 } from "@vao/shared-ui";
 import { useOrganismeStore } from "~/stores/organisme";
 import { formatFR } from "@vao/shared-bridge";
@@ -190,6 +191,13 @@ const initialSelectedIndex =
 
 const selectedTabIndex = ref(initialSelectedIndex);
 const config = useRuntimeConfig();
+
+useAgrementPageTitle({
+  agrementNumero: computed(() => agrementCourant.value?.numero),
+  agrementLabel: "Mon agrément",
+  appSuffix: "Vacances Adaptées Organisées",
+  selectedTabIndex,
+});
 
 const asc = ref(true);
 
