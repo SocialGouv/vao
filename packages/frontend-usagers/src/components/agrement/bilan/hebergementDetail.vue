@@ -95,7 +95,8 @@
         v-if="props.modifiable"
         class="fr-mt-2v"
         type="button"
-        label="supprimer l'hébergement"
+        :label="deleteButtonLabel"
+        :aria-label="deleteButtonLabel"
         secondary
         icon="fr-icon-delete-line"
         icon-only
@@ -133,6 +134,12 @@ const showNbJours = computed(() =>
 const showNbVacanciers = computed(() =>
   Object.prototype.hasOwnProperty.call(props.hebergement, "nbVacanciers"),
 );
+
+const deleteButtonLabel = computed(() => {
+  const nom = props.hebergement.nomHebergement?.trim();
+
+  return nom ? `Supprimer l'hébergement ${nom}` : "Supprimer l'hébergement";
+});
 
 function emitDelete() {
   emits("delete");
