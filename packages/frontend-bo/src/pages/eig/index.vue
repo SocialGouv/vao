@@ -86,7 +86,7 @@
           </div>
           <div class="fr-grid-row fr-grid-row--gutters">
             <div class="fr-fieldset__element fr-col-12 fr-col-md-3 fr-col-lg-3">
-              <label class="fr-label" for="date-start">Date de début</label>
+              <label class="fr-label" for="date-start">Date de l’EIG du</label>
               <span class="fr-hint-text">Format attendu : JJ/MM/AAAA</span>
               <input
                 id="date-start"
@@ -97,7 +97,7 @@
             </div>
 
             <div class="fr-fieldset__element fr-col-12 fr-col-md-3 fr-col-lg-3">
-              <label class="fr-label" for="date-end">Date de fin</label>
+              <label class="fr-label" for="date-end">au</label>
               <span class="fr-hint-text">Format attendu : JJ/MM/AAAA</span>
               <input
                 id="date-end"

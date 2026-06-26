@@ -98,7 +98,12 @@ describe("Domaine /eig", () => {
         .query({
           limit: 10,
           offset: 0,
-          search: "{}",
+          search: {
+            departement: 75,
+            endAt: new Date(),
+            startAt: new Date(),
+            statut: "BROUILLON",
+          },
           sortBy: "id",
           sortDirection: "ASC",
         });

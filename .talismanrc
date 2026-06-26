@@ -375,6 +375,8 @@ fileignoreconfig:
   checksum: 1a15627cce01ea6d0bbff2d1ea7d71a44da574a5b69b1a565d275c704138ef69
 - filename: packages/frontend-usagers/src/pages/eig/[[eigId]].vue
   checksum: dddfd11b0f714543393f310edcfba77652ce3c8d3021ca34e572043ee66ee267
+- filename: packages/frontend-usagers/src/pages/eig/liste.vue
+  checksum: 5f59f38e9d1ab52725d8edde9ede70da9b2b10ec5d9fabb026537fc1a41c3cb3
 - filename: packages/frontend-usagers/src/pages/operateur/renseignements-generaux/[[idOperateur]].vue
   checksum: 3a6a45bbf16e8501e4d9bae581348c9b620df3417e0bc4953ef00b67e4213050
 - filename: packages/frontend-usagers/src/public/js/jquery.min.js

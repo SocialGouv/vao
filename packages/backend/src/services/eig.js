@@ -133,7 +133,7 @@ const query = {
     FRONT.EIG EIG
     INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
     INNER JOIN FRONT.organismes o ON uo.org_id = o.id
-    LEFT JOIN FRONT.AGREMENTS AGR on AGR.ORGANISME_ID = UO.ORG_ID
+    LEFT JOIN FRONT.AGREMENTS AGR on AGR.ORGANISME_ID = UO.ORG_ID AND AGR.statut = '${AGREMENT_STATUT.VALIDE}'
     LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
     LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
     LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
@@ -218,7 +218,7 @@ const query = {
     FROM FRONT.EIG EIG
         INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
         INNER JOIN FRONT.organismes o ON uo.org_id = o.id
-        LEFT JOIN FRONT.AGREMENTS AGR on AGR.ORGANISME_ID = UO.ORG_ID
+        LEFT JOIN FRONT.AGREMENTS AGR on AGR.ORGANISME_ID = UO.ORG_ID AND AGR.statut = '${AGREMENT_STATUT.VALIDE}'
         LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
         LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
         LEFT JOIN FRONT.EIG_CATEGORIE EC ON EC.ID = ET.EIG_CATEGORIE_ID
@@ -302,13 +302,13 @@ const query = {
       (
         o.id IN (SELECT pm.organisme_id
                   FROM front.personne_morale pm
-                   	INNER JOIN front.agrements a ON a.organisme_id = pm.organisme_id
+                   	INNER JOIN front.agrements a ON a.organisme_id = pm.organisme_id AND a.statut = '${AGREMENT_STATUT.VALIDE}'
 				            INNER JOIN geo.territoires t ON t.code = a.region_obtention
 				            INNER JOIN back.users u ON u.ter_code = t.code AND u.id = $1
                     INNER JOIN front.personne_morale pms ON pms.siren = substr(pm.siret,1,9)) AND pm.current = TRUE
      	  OR o.id IN (SELECT pm.organisme_id
                   FROM front.personne_physique pp
-                   	INNER JOIN front.agrements a ON a.organisme_id = pp.organisme_id AND pp.current = TRUE
+                   	INNER JOIN front.agrements a ON a.organisme_id = pp.organisme_id AND pp.current = TRUE AND a.statut = '${AGREMENT_STATUT.VALIDE}'
                     INNER JOIN geo.territoires t ON t.code = a.region_obtention
                     INNER JOIN back.users u ON u.ter_code = t.code AND u.id = $1)
         AND e.read_by_dreets = false
@@ -744,7 +744,27 @@ module.exports.getByUserId = async (
   { limit, offset, sortBy, sortDirection = "ASC", search } = {},
 ) => {
   const params = [userId];
-  const where = `UO.ORG_ID IN ( SELECT ORG_ID FROM FRONT.USER_ORGANISME WHERE USE_ID = $1)`;
+  /*
+  const where = `
+    UO.ORG_ID IN (SELECT ORG_ID FROM FRONT.USER_ORGANISME WHERE USE_ID = $1)`;
+    */
+  const where = `(
+    UO.ORG_ID IN (SELECT ORG_ID FROM FRONT.USER_ORGANISME WHERE USE_ID = $1)
+    OR UO.ORG_ID IN (
+      SELECT pm2.organisme_id
+      FROM FRONT.PERSONNE_MORALE pm2
+      WHERE pm2.current = TRUE
+        AND pm2.siren IN (
+          SELECT pm3.siren
+          FROM FRONT.PERSONNE_MORALE pm3
+          WHERE pm3.current = TRUE AND pm3.siege_social = true
+            AND pm3.organisme_id IN (
+              SELECT ORG_ID FROM FRONT.USER_ORGANISME WHERE USE_ID = $1
+            )
+        )
+    )
+  )
+    `;
 
   return await getEigs(where, params, {
     limit,

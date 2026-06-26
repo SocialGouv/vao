@@ -112,7 +112,7 @@ export const useEigStore = defineStore("eig", {
       offset?: number;
       sortBy?: string;
       sortDirection?: string;
-      search?: Record<string, unknown>;
+      search?: string;
     } = {}) {
       log.i("fetchEig - IN");
       try {
