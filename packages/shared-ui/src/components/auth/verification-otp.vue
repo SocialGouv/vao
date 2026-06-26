@@ -50,7 +50,7 @@ const props = defineProps({
   target: { type: String, required: true },
 });
 useHead({
-  title: `Vérification en deux étapes - ${props.target === "bo" ? "Portail Administration | VAO" : "Vacances Adaptées Organisées"}`,
+  title: `Vérification sécurisée en deux étapes - ${props.target === "bo" ? "Portail Administration | VAO" : "Vacances Adaptées Organisées"}`,
   meta: [
     {
       name: "description",
