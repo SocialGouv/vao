@@ -12,10 +12,12 @@ export const EIG_USAGERS_SORT_COLUMNS = [
   "libelle",
   "statut",
   "id",
+  "date",
   "dateDebut",
   "dateFin",
   "idFonctionnelle",
   "createdAt",
+  "departement",
 ] as const;
 
 export type EigUsagersSortColumn = (typeof EIG_USAGERS_SORT_COLUMNS)[number];
@@ -33,8 +35,10 @@ export interface GetUsagersRoute extends BasicRoute {
       statut?: string | string[] | null;
       idFonctionnelle?: string | null;
       id?: string | null;
-      createdAt?: Date | null;
+      startAt?: Date | null;
+      endAt?: Date | null;
       type?: string | string[] | null;
+      departement?: string | null;
     };
   };
   response: RouteResponseBody<{
@@ -49,9 +53,12 @@ export const GetUsagersRouteSchema: RouteSchema<GetUsagersRoute> = {
     search: yup
       .object({
         createdAt: yup.date().nullable().optional(),
+        departement: yup.string().nullable().optional(),
+        endAt: yup.date().nullable().optional(),
         id: yup.string().nullable().optional(),
         idFonctionnelle: yup.string().nullable().optional(),
         libelle: yup.string().nullable().optional(),
+        startAt: yup.date().nullable().optional(),
         statut: stringOrStringArray.optional(),
         type: stringOrStringArray.optional(),
       })

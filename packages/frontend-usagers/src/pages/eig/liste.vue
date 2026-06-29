@@ -65,12 +65,26 @@
                 />
               </div>
             </div>
-            <div
-              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
-            >
-              <RangeDatePicker
-                v-model="searchState.dateRange"
-                label="Date de l'eig"
+          </div>
+          <div class="fr-fieldset fr-grid-row fr-grid-row--gutters">
+            <div class="fr-fieldset__element fr-col-12 fr-col-md-3 fr-col-lg-2">
+              <label class="fr-label" for="date-start">Date de l’EIG du</label>
+              <span class="fr-hint-text">Format attendu : JJ/MM/AAAA</span>
+              <input
+                id="date-start"
+                v-model="searchState.startAt"
+                class="fr-input"
+                type="date"
+              />
+            </div>
+            <div class="fr-fieldset__element fr-col-12 fr-col-md-3 fr-col-lg-2">
+              <label class="fr-label" for="date-end">au</label>
+              <span class="fr-hint-text">Format attendu : JJ/MM/AAAA</span>
+              <input
+                id="date-end"
+                v-model="searchState.endAt"
+                class="fr-input"
+                type="date"
               />
             </div>
           </div>
@@ -108,12 +122,11 @@
   </div>
 </template>
 
-<script setup>
-import dayjs from "dayjs";
+<script setup lang="ts">
+import { formatFR, isValidIsoShort } from "@vao/shared-bridge";
 import {
   eigModel,
   EigTypeListe,
-  RangeDatePicker,
   TableWithBackendPagination,
   ValidationModal,
   eigUtils,
@@ -121,11 +134,32 @@ import {
   useToaster,
 } from "@vao/shared-ui";
 import { getEigPermissions, canDelete } from "../../utils/eig";
+
 const mapEigToLabel = eigUtils.mapEigToLabel;
+
+defineOptions({
+  name: "ListeEigPage",
+});
 
 definePageMeta({
   middleware: ["is-connected", "check-roles"],
 });
+
+type SortState = {
+  sortBy?: string;
+  sortDirection?: string;
+};
+
+type SearchPayload = {
+  libelle: string | null;
+  statut: string | null;
+  idFonctionnelle: string | null;
+  type: string | null;
+  startAt: string | null;
+  endAt: string | null;
+};
+
+type SearchFilterKey = "libelle" | "statut" | "idFonctionnelle" | "type";
 
 const eig = reactive({
   allowEigReadWrite: false,
@@ -134,8 +168,8 @@ const eig = reactive({
 });
 
 const { allowEigReadWrite, allowEigReadOnly } = getEigPermissions();
-eig.allowEigReadWrite = allowEigReadWrite;
-eig.allowEigReadOnly = allowEigReadOnly;
+eig.allowEigReadWrite = allowEigReadWrite ?? false;
+eig.allowEigReadOnly = allowEigReadOnly ?? false;
 
 const DsfrButton = resolveComponent("DsfrButton");
 
@@ -146,55 +180,69 @@ const defaultLimit = 10;
 const defaultOffset = 0;
 
 const allStatus = "Tous les statuts";
-const sortState = ref({});
-const currentPageState = ref(defaultOffset);
-const limitState = ref(defaultLimit);
-const searchState = reactive({
+const sortState = ref<SortState>({});
+const currentPageState = ref<number>(defaultOffset);
+const limitState = ref<number>(defaultLimit);
+const searchState = reactive<SearchPayload>({
   libelle: null,
   statut: null,
   idFonctionnelle: null,
   type: null,
-  dateRange: null,
+  startAt: null,
+  endAt: null,
 });
 
-const paginateResults = async (sortValue, limitValue, currentPageValue) => {
+const buildSearchParam = (search: SearchPayload) =>
+  JSON.stringify({
+    ...search,
+    startAt: isValidIsoShort(search.startAt) ? search.startAt : null,
+    endAt: isValidIsoShort(search.endAt) ? search.endAt : null,
+  });
+
+const paginateResults = async (
+  sortValue: SortState,
+  limitValue: number,
+  currentPageValue: number,
+) => {
   try {
     await eigStore.get({
       sortBy: sortValue.sortBy,
       sortDirection: sortValue.sortDirection,
       limit: limitValue,
       offset: currentPageValue * limitValue,
-      search: searchState,
+      search: buildSearchParam(searchState),
     });
   } catch (error) {
     toaster.error({
-      description: "Une erreur est survenue lors de la récupération de la demande",
+      description:
+        "Une erreur est survenue lors de la récupération de la demande",
       role: "alert",
     });
     throw error;
   }
 };
 
-const fetchEigDebounce = debounce(async (search) => {
+const fetchEigDebounce = debounce(async () => {
   try {
     await eigStore.get({
       sortBy: sortState.value.sortBy,
       sortDirection: sortState.value.sortDirection,
       limit: limitState.value,
       offset: currentPageState.value * limitState.value,
-      search,
+      search: buildSearchParam(searchState),
     });
   } catch (error) {
     toaster.error({
-      description: "Une erreur est survenue lors de la récupération de la demande",
+      description:
+        "Une erreur est survenue lors de la récupération de la demande",
       role: "alert",
     });
     throw error;
   }
 });
 
-watch([searchState], ([searchValue]) => {
-  fetchEigDebounce(searchValue);
+watch([searchState], () => {
+  void fetchEigDebounce();
 });
 
 const status = [
@@ -206,35 +254,41 @@ const status = [
 const typesOption = [
   allStatus,
   ...[
-    ...Object.values(eigModel.Types[eigModel.Categorie.VICTIMES]).map((t) => ({
-      text:
-        mapEigToLabel[t] +
-        (t === eigModel.Types[eigModel.Categorie.VICTIMES].AUTRE
-          ? " (victime)"
-          : ""),
-      value: t,
-    })),
-    ...Object.values(eigModel.Types[eigModel.Categorie.SANTE]).map((t) => ({
-      text:
-        mapEigToLabel[t] +
-        (t === eigModel.Types[eigModel.Categorie.SANTE].AUTRE
-          ? " (santé)"
-          : ""),
-      value: t,
-    })),
-    ...Object.values(eigModel.Types[eigModel.Categorie.SECURITE]).map((t) => ({
-      text:
-        mapEigToLabel[t] +
-        (t === eigModel.Types[eigModel.Categorie.SECURITE].AUTRE
-          ? " (sécurité)"
-          : ""),
-      value: t,
-    })),
+    ...Object.values(eigModel.Types[eigModel.Categorie.VICTIMES]).map(
+      (t: string) => ({
+        text:
+          mapEigToLabel[t as keyof typeof mapEigToLabel] +
+          (t === eigModel.Types[eigModel.Categorie.VICTIMES].AUTRE
+            ? " (victime)"
+            : ""),
+        value: t,
+      }),
+    ),
+    ...Object.values(eigModel.Types[eigModel.Categorie.SANTE]).map(
+      (t: string) => ({
+        text:
+          mapEigToLabel[t as keyof typeof mapEigToLabel] +
+          (t === eigModel.Types[eigModel.Categorie.SANTE].AUTRE
+            ? " (santé)"
+            : ""),
+        value: t,
+      }),
+    ),
+    ...Object.values(eigModel.Types[eigModel.Categorie.SECURITE]).map(
+      (t: string) => ({
+        text:
+          mapEigToLabel[t as keyof typeof mapEigToLabel] +
+          (t === eigModel.Types[eigModel.Categorie.SECURITE].AUTRE
+            ? " (sécurité)"
+            : ""),
+        value: t,
+      }),
+    ),
     ...Object.values(
       eigModel.Types[eigModel.Categorie.FONCTIONNEMENT_ORGANISME],
-    ).map((t) => ({
+    ).map((t: string) => ({
       text:
-        mapEigToLabel[t] +
+        mapEigToLabel[t as keyof typeof mapEigToLabel] +
         (t === eigModel.Types[eigModel.Categorie.FONCTIONNEMENT_ORGANISME].AUTRE
           ? " (fonctionnement organisme)"
           : ""),
@@ -242,12 +296,9 @@ const typesOption = [
     })),
   ].sort((t1, t2) => (t1.text < t2.text ? -1 : 1)),
 ];
-const onSelect = (value, key) => {
-  if (value === allStatus) {
-    searchState[key] = null;
-  } else {
-    searchState[key] = value;
-  }
+const onSelect = (value: string | number | null, key: SearchFilterKey) => {
+  const nextValue = value === allStatus ? null : String(value);
+  searchState[key] = nextValue;
 };
 
 const headers = [
@@ -259,11 +310,11 @@ const headers = [
   {
     column: "createdAt",
     text: "Date de déclaration de l’EIG",
-    format: (value) => dayjs(value.createdAt).format("DD/MM/YYYY"),
+    format: (value: { createdAt?: string }) =>
+      value?.createdAt ? formatFR(new Date(value.createdAt)) : "",
     sort: true,
   },
   { column: "departement", text: "Territoire", sort: true },
-
   {
     column: "libelle",
     text: "Séjour",
@@ -272,22 +323,26 @@ const headers = [
   {
     column: "dateDebut",
     text: "Dates (Début-fin)",
-    format: (value) =>
-      `${dayjs(value.dateDebut).format("DD/MM/YYYY")} - ${dayjs(value.dateFin).format("DD/MM/YYYY")}`,
+    format: (value: { dateDebut?: string; dateFin?: string }) =>
+      `${value?.dateDebut ? formatFR(new Date(value.dateDebut)) : ""} - ${value?.dateFin ? formatFR(new Date(value.dateFin)) : ""}`,
+
     sort: true,
   },
   {
     column: "types",
     text: "Types d'événement",
-    component: ({ types }) => ({
+    component: ({ types }: { types?: Array<string | null> | null }) => ({
       component: EigTypeListe,
-      types: (types ?? []).map((t) => mapEigToLabel[t]),
+      types: (types ?? []).map((t: string | null) =>
+        t ? mapEigToLabel[t as keyof typeof mapEigToLabel] : "",
+      ),
     }),
   },
   {
     column: "date",
     text: "Dates de l'incident",
-    format: (value) => dayjs(value.date).format("DD/MM/YYYY"),
+    format: (value: { date?: string }) =>
+      value?.date ? formatFR(new Date(value.date)) : "",
     sort: true,
   },
   {
@@ -299,9 +354,15 @@ const headers = [
       readByDdets,
       agrementRegionObtention,
       departement,
+    }: {
+      statut?: string;
+      readByDreets?: boolean;
+      readByDdets?: boolean;
+      agrementRegionObtention?: string | null;
+      departement?: string | null;
     }) => ({
       component: EigStatusBadge,
-      statut: statut,
+      statut,
       dreets: { isRead: readByDreets, territoireCode: agrementRegionObtention },
       ddets: { isRead: readByDdets, territoireCode: departement },
     }),
@@ -309,12 +370,12 @@ const headers = [
   },
   {
     text: "Actions",
-    component: ({ statut, id }) => ({
+    component: ({ statut, id }: { statut?: string; id?: string }) => ({
       component: DsfrButton,
       disabled: !(eig.canDelete(statut) && eig.allowEigReadWrite),
-      onClick: (event) => {
+      onClick: (event: MouseEvent) => {
         event.stopPropagation();
-        eigToDelete.value = id;
+        eigToDelete.value = id ?? null;
       },
       label: "Suppression",
       iconOnly: true,
@@ -323,32 +384,48 @@ const headers = [
   },
 ];
 
-const updateSort = ({ sortBy: sb, sortDirection: sd }) => {
+const updateSort = ({ sortBy: sb, sortDirection: sd }: SortState) => {
   sortState.value = {
     sortBy: sb,
     sortDirection: sd,
   };
-  paginateResults(sortState.value, limitState.value, currentPageState.value);
+  void paginateResults(
+    sortState.value,
+    limitState.value,
+    currentPageState.value,
+  );
 };
-const updateItemsByPage = (val) => {
-  limitState.value = parseInt(val);
-  paginateResults(sortState.value, limitState.value, currentPageState.value);
+const updateItemsByPage = (val: string | number) => {
+  limitState.value = parseInt(String(val), 10);
+  void paginateResults(
+    sortState.value,
+    limitState.value,
+    currentPageState.value,
+  );
 };
-const updateCurrentPage = (val) => {
+const updateCurrentPage = (val: number) => {
   currentPageState.value = val;
-  paginateResults(sortState.value, limitState.value, currentPageState.value);
+  void paginateResults(
+    sortState.value,
+    limitState.value,
+    currentPageState.value,
+  );
 };
 
-const navigate = (state) => {
+const navigate = (state: { id: string; statut?: string }) => {
   navigateTo(
     `/eig/${state.id}${state.statut !== eigModel.Statuts.BROUILLON ? "#eig-recap" : ""}`,
   );
 };
 
-const eigToDelete = ref(null);
+const eigToDelete = ref<string | null>(null);
 
 const closeEigModal = () => (eigToDelete.value = null);
 const deleteEig = async () => {
+  if (!eigToDelete.value) {
+    return;
+  }
+
   try {
     await eigStore.delete(eigToDelete.value);
     await eigStore.get();
@@ -367,7 +444,7 @@ try {
   await eigStore.get({
     limit: defaultLimit,
     offset: defaultOffset,
-    search: searchState,
+    search: buildSearchParam(searchState),
   });
 } catch (error) {
   toaster.error({

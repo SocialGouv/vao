@@ -13,6 +13,7 @@ import {
   isBefore,
   isBetweenDates,
   isValidFrShort,
+  isValidIsoShort,
   minutesBetween,
   parseFrShort,
   parseIntToMonthFR,
@@ -309,5 +310,41 @@ describe("formatISOShort", () => {
     expect(fromFr).toBeDefined();
     expect(Number.isNaN(fromFr!.toDate().getTime())).toBe(false);
     expect(formatISOShort(fromFr)).toBe("2026-03-16");
+  });
+});
+
+describe("isValidIsoShort", () => {
+  it("retourne false si date est undefined", () => {
+    expect(isValidIsoShort(undefined)).toBe(false);
+  });
+
+  it("retourne false si date est null", () => {
+    expect(isValidIsoShort(null)).toBe(false);
+  });
+
+  it("retourne false si date est une chaîne vide", () => {
+    expect(isValidIsoShort("")).toBe(false);
+  });
+
+  it("retourne true pour une date valide au format YYYY-MM-DD", () => {
+    expect(isValidIsoShort("2024-01-15")).toBe(true);
+    expect(isValidIsoShort("2000-02-29")).toBe(true); // année bissextile
+  });
+
+  it("retourne false pour une date invalide", () => {
+    expect(isValidIsoShort("2024-02-30")).toBe(false);
+    expect(isValidIsoShort("2023-13-01")).toBe(false);
+    expect(isValidIsoShort("2023-00-10")).toBe(false);
+  });
+
+  it("retourne false si le format n'est pas YYYY-MM-DD", () => {
+    expect(isValidIsoShort("15-01-2024")).toBe(false);
+    expect(isValidIsoShort("2024/01/15")).toBe(false);
+    expect(isValidIsoShort("20240115")).toBe(false);
+  });
+
+  it("retourne false pour des valeurs non date", () => {
+    expect(isValidIsoShort("hello")).toBe(false);
+    expect(isValidIsoShort("123")).toBe(false);
   });
 });

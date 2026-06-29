@@ -86,7 +86,7 @@
           </div>
           <div class="fr-grid-row fr-grid-row--gutters">
             <div class="fr-fieldset__element fr-col-12 fr-col-md-3 fr-col-lg-3">
-              <label class="fr-label" for="date-start">Date de début</label>
+              <label class="fr-label" for="date-start">Date de l’EIG du</label>
               <span class="fr-hint-text">Format attendu : JJ/MM/AAAA</span>
               <input
                 id="date-start"
@@ -97,7 +97,7 @@
             </div>
 
             <div class="fr-fieldset__element fr-col-12 fr-col-md-3 fr-col-lg-3">
-              <label class="fr-label" for="date-end">Date de fin</label>
+              <label class="fr-label" for="date-end">au</label>
               <span class="fr-hint-text">Format attendu : JJ/MM/AAAA</span>
               <input
                 id="date-end"
@@ -137,7 +137,6 @@
 </template>
 
 <script setup lang="ts">
-import dayjs from "dayjs";
 import {
   eigModel,
   EigStatusBadge,
@@ -147,6 +146,7 @@ import {
   eigUtils,
   useToaster,
 } from "@vao/shared-ui";
+import { isValidIsoShort, formatFR } from "@vao/shared-bridge";
 const mapEigToLabel = eigUtils.mapEigToLabel;
 
 definePageMeta({
@@ -212,21 +212,11 @@ const searchState = reactive<SearchPayload>({
   endAt: null,
 });
 
-const isValidDate = (value: string | null) => {
-  if (!value) return false;
-
-  // format exact YYYY-MM-DD
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-
-  const date = new Date(value);
-  return !Number.isNaN(date.getTime());
-};
-
 const buildSearchParam = (search: SearchPayload) =>
   JSON.stringify({
     ...search,
-    startAt: isValidDate(search.startAt) ? search.startAt : null,
-    endAt: isValidDate(search.endAt) ? search.endAt : null,
+    startAt: isValidIsoShort(search.startAt) ? search.startAt : null,
+    endAt: isValidIsoShort(search.endAt) ? search.endAt : null,
   });
 
 try {
@@ -373,7 +363,9 @@ const headers: Array<EigTableHeader> = [
     column: "dateDebut",
     text: "Dates du séjour (Début-fin)",
     format: (value: EigListRow | null | undefined) =>
-      `${dayjs(value?.dateDebut).format("DD/MM/YYYY")} - ${dayjs(value?.dateFin).format("DD/MM/YYYY")}`,
+      value?.dateDebut && value?.dateFin
+        ? `${formatFR(new Date(value?.dateDebut))} - ${formatFR(new Date(value?.dateFin))}`
+        : "",
     sort: true,
   },
   {
@@ -390,14 +382,14 @@ const headers: Array<EigTableHeader> = [
     column: "date",
     text: "Dates de l'incident",
     format: (value: EigListRow | null | undefined) =>
-      dayjs(value?.date).format("DD/MM/YYYY"),
+      value?.date ? formatFR(new Date(value.date)) : "",
     sort: true,
   },
   {
     column: "dateDepot",
     text: "Dates de dépôt",
     format: (value: EigListRow | null | undefined) =>
-      dayjs(value?.dateDepot).format("DD/MM/YYYY"),
+      value?.dateDepot ? formatFR(new Date(value.dateDepot)) : "",
     sort: true,
   },
   {
