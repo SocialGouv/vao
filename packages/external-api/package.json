@@ -29,7 +29,7 @@
     "@nestjs/core": "^10.4.22",
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/passport": "^10.0.3",
-    "@nestjs/platform-express": "^10.4.22",
+    "@nestjs/platform-express": "^11.1.24",
     "@nestjs/swagger": "^8.1.1",
     "@sentry/nestjs": "^8.55.2",
     "@sentry/profiling-node": "^8.55.2",
