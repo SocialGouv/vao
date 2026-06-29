@@ -202,7 +202,7 @@ const config = useRuntimeConfig();
 useAgrementPageTitle({
   agrementNumero: computed(() => agrementCourant.value?.numero),
   agrementLabel: "Mon agrément",
-  appSuffix: "Vacances Adaptées Organisées",
+  appSuffix: "Portail Administration | VAO",
   selectedTabIndex,
   tabPageTitles: TAB_PAGE_TITLES,
 });

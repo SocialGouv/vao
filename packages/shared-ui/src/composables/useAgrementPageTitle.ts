@@ -3,10 +3,10 @@ import { computed, type Ref } from "vue";
 
 interface UseAgrementPageTitleOptions {
   agrementNumero: Ref<string | undefined | null>;
-  agrementLabel: string; // "Mon agrément" ou "Agrément"
-  appSuffix: string; // "Vacances Adaptées Organisées" ou "Portail Administration | VAO"
+  agrementLabel: "Mon agrément" | "Agrément";
+  appSuffix: "Vacances Adaptées Organisées" | "Portail Administration | VAO";
   selectedTabIndex: Ref<number>;
-  tabPageTitles: readonly string[]; 
+  tabPageTitles: readonly string[];
 }
 
 const DEFAULT_TAB_TITLES = [
@@ -23,7 +23,6 @@ export function useAgrementPageTitle({
   selectedTabIndex,
   tabPageTitles,
 }: UseAgrementPageTitleOptions) {
-  
   const pageTitle = computed(() => {
     const titles = tabPageTitles ?? DEFAULT_TAB_TITLES;
     const label = titles[selectedTabIndex.value] ?? "";
