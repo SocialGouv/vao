@@ -52,7 +52,7 @@
     "node-talisman": "^1.29.22",
     "prettier": "catalog:",
     "typescript": "catalog:",
-    "typescript-eslint": "^8.46.3"
+    "typescript-eslint": "^8.61.0"
   },
   "packageManager": "pnpm@10.27.0",
   "pnpm": {
