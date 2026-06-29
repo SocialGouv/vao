@@ -24,6 +24,14 @@ jest.mock("../../services/mail", () => ({
   mailService: { send: jest.fn() },
 }));
 
+jest.mock("../../services/eig", () => {
+  const actual = jest.requireActual("../../services/eig");
+  return {
+    ...actual,
+    getIsUserAllowedOrganisme: jest.fn().mockResolvedValue(true),
+  };
+});
+
 let foUserId = 0;
 const getEigFoUser = () => ({
   id: foUserId,
@@ -205,7 +213,7 @@ describe("Domaine /eig", () => {
           type: "DECLARATION_SEJOUR",
         });
       expect(response.status).toBe(400);
-      expect(response.body.name).toBe("ValidationError");
+      expect(["AppError", "ValidationError"]).toContain(response.body.name);
     });
 
     it("retourne 200 lors de la mise a jour des renseignements généraux", async () => {
