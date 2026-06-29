@@ -266,9 +266,25 @@ const query = {
         front.user_organisme UO
         INNER JOIN front.eig eig ON eig.user_id = uo.use_id
     WHERE
-        UO.org_id IN ( SELECT uo.org_id
-                      FROM front.user_organisme uo
-                      WHERE uo.USE_ID = $1)
+        (UO.org_id IN (
+          SELECT uo.org_id
+          FROM front.user_organisme uo
+          WHERE uo.use_id = $1
+        )
+        OR UO.ORG_ID IN (
+          SELECT pm.organisme_id
+          FROM FRONT.PERSONNE_MORALE pm
+          WHERE pm.current = TRUE
+          AND pm.siren IN (
+            SELECT pmsc.siren
+            FROM FRONT.PERSONNE_MORALE pmsc
+            WHERE pmsc.current = TRUE AND pmsc.siege_social = true
+              AND pmsc.organisme_id IN (
+                SELECT org_id FROM from.user_organisme WHERE use_id = $1
+              )
+            )
+          )
+        )
         AND eig.id = $2
     `,
   getStatut: `
@@ -744,10 +760,6 @@ module.exports.getByUserId = async (
   { limit, offset, sortBy, sortDirection = "ASC", search } = {},
 ) => {
   const params = [userId];
-  /*
-  const where = `
-    UO.ORG_ID IN (SELECT ORG_ID FROM FRONT.USER_ORGANISME WHERE USE_ID = $1)`;
-    */
   const where = `(
     UO.ORG_ID IN (SELECT ORG_ID FROM FRONT.USER_ORGANISME WHERE USE_ID = $1)
     OR UO.ORG_ID IN (

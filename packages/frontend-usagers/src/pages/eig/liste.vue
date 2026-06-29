@@ -123,7 +123,7 @@
 </template>
 
 <script setup lang="ts">
-import dayjs from "dayjs";
+import { formatFR, isValidIsoShort } from "@vao/shared-bridge";
 import {
   eigModel,
   EigTypeListe,
@@ -191,21 +191,12 @@ const searchState = reactive<SearchPayload>({
   startAt: null,
   endAt: null,
 });
-const isValidDate = (value: string | null) => {
-  if (!value) return false;
-
-  // format exact YYYY-MM-DD
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-
-  const date = new Date(value);
-  return !Number.isNaN(date.getTime());
-};
 
 const buildSearchParam = (search: SearchPayload) =>
   JSON.stringify({
     ...search,
-    startAt: isValidDate(search.startAt) ? search.startAt : null,
-    endAt: isValidDate(search.endAt) ? search.endAt : null,
+    startAt: isValidIsoShort(search.startAt) ? search.startAt : null,
+    endAt: isValidIsoShort(search.endAt) ? search.endAt : null,
   });
 
 const paginateResults = async (
@@ -320,7 +311,7 @@ const headers = [
     column: "createdAt",
     text: "Date de déclaration de l’EIG",
     format: (value: { createdAt?: string }) =>
-      dayjs(value.createdAt).format("DD/MM/YYYY"),
+      value?.createdAt ? formatFR(new Date(value.createdAt)) : "",
     sort: true,
   },
   { column: "departement", text: "Territoire", sort: true },
@@ -333,7 +324,8 @@ const headers = [
     column: "dateDebut",
     text: "Dates (Début-fin)",
     format: (value: { dateDebut?: string; dateFin?: string }) =>
-      `${dayjs(value.dateDebut).format("DD/MM/YYYY")} - ${dayjs(value.dateFin).format("DD/MM/YYYY")}`,
+      `${value?.dateDebut ? formatFR(new Date(value.dateDebut)) : ""} - ${value?.dateFin ? formatFR(new Date(value.dateFin)) : ""}`,
+
     sort: true,
   },
   {
@@ -350,7 +342,7 @@ const headers = [
     column: "date",
     text: "Dates de l'incident",
     format: (value: { date?: string }) =>
-      dayjs(value.date).format("DD/MM/YYYY"),
+      value?.date ? formatFR(new Date(value.date)) : "",
     sort: true,
   },
   {

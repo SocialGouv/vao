@@ -38,6 +38,7 @@ export interface GetUsagersRoute extends BasicRoute {
       startAt?: Date | null;
       endAt?: Date | null;
       type?: string | string[] | null;
+      departement?: string | null;
     };
   };
   response: RouteResponseBody<{
@@ -52,6 +53,7 @@ export const GetUsagersRouteSchema: RouteSchema<GetUsagersRoute> = {
     search: yup
       .object({
         createdAt: yup.date().nullable().optional(),
+        departement: yup.string().nullable().optional(),
         endAt: yup.date().nullable().optional(),
         id: yup.string().nullable().optional(),
         idFonctionnelle: yup.string().nullable().optional(),
