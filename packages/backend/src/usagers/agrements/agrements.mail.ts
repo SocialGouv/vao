@@ -289,9 +289,15 @@ export const AgrementMailUsagers = {
   sendStatutValideMail: ({
     email,
     regionDreets,
+    numeroAgrement,
+    dateObtention,
+    dateFinValidite,
   }: {
     email: string[];
     regionDreets: string;
+    numeroAgrement: string;
+    dateObtention: Date;
+    dateFinValidite: Date;
   }) => {
     log.i("sendStatutValideMail - In", { email });
     if (!email) {
@@ -307,7 +313,8 @@ export const AgrementMailUsagers = {
           p: [
             "Bonjour,",
             `La DREETS ${regionDreets} a terminé l'instruction de votre demande d'agrément.`,
-            "Nous avons le plaisir de vous informer que votre demande d'agrément a été validée.",
+            `Nous avons le plaisir de vous informer que votre demande d'agrément a été validée sous le N°${numeroAgrement}.`,
+            `Votre agrément est valable à partir du ${formatFR(dateObtention)} et jusqu'au ${formatFR(dateFinValidite)}.`,
             "Vous pouvez consulter votre agrément depuis votre espace personnel sur le portail VAO :",
             `<a href='${urlAgrement}'>Lien direct vers le dossier</a>`,
             "Cordialement.",

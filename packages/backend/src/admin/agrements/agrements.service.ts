@@ -472,10 +472,12 @@ export const AgrementService = {
               break;
             case AGREMENT_STATUT.VALIDE:
               mailToSend = AgrementMailUsagers.sendStatutValideMail({
+                dateFinValidite: agrement.dateFinValidite!,
+                dateObtention: agrement.dateObtention!,
                 email: mailsOVA,
+                numeroAgrement: agrement.numero!,
                 regionDreets: regionDreets.text,
               });
-
               break;
             default:
               throw new Error(
