@@ -188,7 +188,7 @@ export const AgrementMailUsagers = {
       html,
       replyTo: config.senderEmail,
       subject:
-        "Portail VAO - Demande de compléments d’informations suite à votre demande de renouvellement d’agrément",
+        "Portail VAO - Demande de correction sur votre dossier de renouvellement d'agrément",
       to: email,
     };
     log.d("sendStatutACorrigerMail post email", { params });
