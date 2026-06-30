@@ -10,7 +10,7 @@ const Sentry = require("@sentry/node");
 
 const log = logger(module.filename);
 
-export default async function getByDepartementCodes(
+async function getByDepartementCodes(
   req: RouteRequest<SejourAdminRoutes["Get"]>,
   res: RouteResponse<SejourAdminRoutes["Get"]>,
   next: NextFunction,
@@ -53,10 +53,13 @@ export default async function getByDepartementCodes(
         }
       }
     }
+    if (!req.departements?.length) {
+      return next(new Error("Missing departements"));
+    }
     const demandesWithPagination = await DemandeSejour.getByDepartementCodes(
       params,
       territoireCode,
-      req.departements!.map((d) => d.value),
+      req.departements.map((d) => d.value),
     );
     log.d(demandesWithPagination);
     return res.status(200).json({ demandesWithPagination });
@@ -65,7 +68,7 @@ export default async function getByDepartementCodes(
   }
 }
 
-module.exports = async function get(
+async function get(
   req: RouteRequest<SejourAdminRoutes["Get"]>,
   res: RouteResponse<SejourAdminRoutes["Get"]>,
   next: NextFunction,
@@ -82,4 +85,6 @@ module.exports = async function get(
       },
     );
   });
-};
+}
+export { getByDepartementCodes };
+export default get;

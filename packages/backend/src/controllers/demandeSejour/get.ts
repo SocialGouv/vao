@@ -15,46 +15,37 @@ export default async function get(
 ) {
   log.i("IN");
 
-  const userId = req.decoded?.id;
-  log.d("userId", { userId });
-
-  const {
-    limit,
-    offset,
-    sortBy,
-    sortDirection,
-    departementSuivi,
-    idFonctionnelle,
-    libelle,
-    periode,
-    statut,
-  } = req.validatedQuery ?? {};
   try {
+    const userId = req.decoded?.id;
+    log.d("userId", { userId });
+
+    const query = req.validatedQuery ?? {};
+
     const params = {
-      departementSuivi,
-      idFonctionnelle,
-      libelle,
-      limit,
-      offset,
-      periode,
-      sortBy,
-      sortDirection,
-      statut,
+      departementSuivi: query.departementSuivi ?? undefined,
+      idFonctionnelle: query.idFonctionnelle ?? undefined,
+      libelle: query.libelle ?? undefined,
+      limit: query.limit,
+
+      offset: query.offset,
+      periode: query.periode ?? undefined,
+      sortBy: query.sortBy,
+      sortDirection: query.sortDirection,
+      statut: query.statut ?? undefined,
     };
 
     const organisme = await Organisme.getOne({
       use_id: userId,
     });
-    let organismesId;
-    if (organisme.personneMorale?.porteurAgrement) {
-      const organismes = await Organisme.getBySiren(
-        organisme.personneMorale.siren,
-      );
-      organismesId = organismes.map((o) => o.organismeId);
-    } else {
-      organismesId = [organisme.organismeId];
-    }
+
+    const organismesId = organisme.personneMorale?.porteurAgrement
+      ? (await Organisme.getBySiren(organisme.personneMorale.siren)).map(
+          (o) => o.organismeId,
+        )
+      : [organisme.organismeId];
+
     const demandes = await DemandeSejour.get(organismesId, params);
+
     return res.status(200).json({
       demandes: demandes.rows,
       total: demandes.total,

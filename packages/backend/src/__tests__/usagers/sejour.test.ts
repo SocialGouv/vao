@@ -210,9 +210,13 @@ describe("Domaine /sejour", () => {
 
   describe("GET /sejour", () => {
     it("retourne 200 avec la liste des demandes", async () => {
-      const response = await request(getFoAppHelper(getSejourFoUser())).get(
-        "/sejour",
-      );
+      const response = await request(getFoAppHelper(getSejourFoUser()))
+        .get("/sejour")
+        .query({
+          search: {
+            idFonctionnelle: "DS-25-41-41",
+          },
+        });
       expect(response.status).toBe(200);
     });
 
