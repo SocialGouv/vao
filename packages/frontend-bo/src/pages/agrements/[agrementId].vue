@@ -107,9 +107,17 @@ import {
   Historique,
   AgrementDocuments,
   AgrementStatusBadge,
+  useAgrementPageTitle,
 } from "@vao/shared-ui";
 import { useOrganismeStore } from "~/stores/organisme";
 import { formatFR } from "@vao/shared-bridge";
+
+const TAB_PAGE_TITLES = [
+  "Dossier",
+  "Documents",
+  "Historique",
+  "Messagerie",
+] as const;
 
 const organismeStore = useOrganismeStore();
 
@@ -190,6 +198,14 @@ const initialSelectedIndex =
 
 const selectedTabIndex = ref(initialSelectedIndex);
 const config = useRuntimeConfig();
+
+useAgrementPageTitle({
+  agrementNumero: computed(() => agrementCourant.value?.numero),
+  agrementLabel: "Mon agrément",
+  appSuffix: "Portail Administration | VAO",
+  selectedTabIndex,
+  tabPageTitles: TAB_PAGE_TITLES,
+});
 
 const asc = ref(true);
 
