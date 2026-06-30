@@ -22,8 +22,9 @@
       </DsfrAlert>
     </div>
     <div class="answer">
-      <label for="chat-textarea" class="fr-label fr-mb-2v"
-        >Votre message (maximum {{ MAX_MESSAGE_LENGTH }} caractères)</label
+      <label for="chat-textarea" class="fr-label fr-mb-2v">Votre message</label>
+      <span class="fr-hint-text">
+        (maximum {{ MAX_MESSAGE_LENGTH }} caractères)</span
       >
       <div class="fr-input-group answer__form">
         <DsfrButton
@@ -42,6 +43,7 @@
         <textarea
           id="chat-textarea"
           v-model="message"
+          hint="hey"
           class="fr-input answer__form__textare"
           name="textarea"
           :maxlength="MAX_MESSAGE_LENGTH"
