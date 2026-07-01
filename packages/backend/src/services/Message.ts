@@ -1,7 +1,6 @@
-const { getPool } = require("../utils/pgpool");
-const { logger } = require("../utils/logger");
-
-const AppError = require("../utils/error").default;
+import AppError from "../utils/error";
+import { logger } from "../utils/logger";
+import { getPool } from "../utils/pgpool";
 
 const log = logger(module.filename);
 
@@ -15,8 +14,8 @@ const query = {
       SET read_at = current_timestamp
       WHERE declaration_id =$1
       AND read_at is NULL
-      AND 
-        CASE 
+      AND
+        CASE
           WHEN $2 = 'back' THEN front_user_id IS NOT NULL
           ELSE back_user_id IS NOT NULL
         END
@@ -27,7 +26,7 @@ const query = {
       m.front_user_id as "frontUserId",
       m.back_user_id as "backUserId",
       m.message as "message",
-      m.created_at as "created",
+      m.created_at as "createdAt",
       m.read_at as "readAt",
       fu.prenom as "frontUserPrenom",
       bu.prenom as "backUserPrenom",
@@ -40,7 +39,13 @@ const query = {
       `,
 };
 
-module.exports.post = async (declarationId, userId, message, file, sender) => {
+export const post = async (
+  declarationId: string,
+  userId: string | undefined,
+  message: string | null | undefined,
+  file: any | null | undefined,
+  sender: string,
+) => {
   log.i("create - IN");
   const response =
     sender === "back"
@@ -64,7 +69,7 @@ module.exports.post = async (declarationId, userId, message, file, sender) => {
   return id;
 };
 
-module.exports.select = async (declarationId) => {
+export const select = async (declarationId: string) => {
   log.i("select - IN");
   const messages = await getPool().query(query.select, [declarationId]);
   if (!messages) throw new AppError("erreur sur la récupération des messages'");
@@ -72,14 +77,20 @@ module.exports.select = async (declarationId) => {
   return messages.rows;
 };
 
-module.exports.markAsRead = async (declarationId, origin) => {
+export const markAsRead = async (declarationId: string, origin: string) => {
   log.i("markAsRead - IN");
   const messages = await getPool().query(query.markAsRead, [
     declarationId,
     origin,
   ]);
   if (!messages) throw new AppError("erreur sur la lecture des messages'");
-  log.i(messages.rowCount);
+  log.i(messages.rowCount?.toString() + " messages marqués comme lus");
   log.i("markAsRead - DONE");
   return messages.rowCount;
+};
+
+export default {
+  markAsRead,
+  post,
+  select,
 };
