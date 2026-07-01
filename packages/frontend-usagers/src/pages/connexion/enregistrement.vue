@@ -13,36 +13,41 @@
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
           <p>
-            L'inscription n'est pas automatique. Vous devrez valider votre
+            L’inscription n’est pas automatique. Vous devrez valider votre
             email, puis votre demande sera prise en compte par les services
             compétents pour valider la création de votre compte
           </p>
           <p>
             Afin de respecter les meilleures pratiques et notamment les
             recommandations de la CNIL, nous recommandons l’utilisation
-            d’adresses e-mail nominatives en lieu et place d’adresses génériques
+            d'adresses e-mail nominatives en lieu et place d’adresses génériques
             ou utilisées par plusieurs utilisateurs
           </p>
-          <div class="fr-input-group">
+          <div class="fr-mb-6v">
+            <p class="fr-hint-text">Tous les champs sont obligatoires.</p>
+          </div>
+
+          <div id="field-email" class="fr-input-group">
             <DsfrInputGroup
-              ref="siretInput"
               :error-message="emailField.errorMessage"
               :model-value="emailField.modelValue"
               type="text"
               label="Adresse courriel"
               name="email"
               :label-visible="true"
-              placeholder="Veuillez saisir votre email"
+              placeholder=""
               hint="Format attendu : nom@domaine.fr"
               :is-valid="emailField.isValid"
+              aria-required="true"
               @update:model-value="checkValidEmail"
             />
           </div>
         </div>
+
         <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
-          <div class="fr-input-group">
+          <div id="field-password" class="fr-input-group">
             <DsfrInputGroup
               :error-message="passwordField.errorMessage"
               :model-value="passwordField.modelValue"
@@ -54,53 +59,63 @@
               placeholder=""
               hint="Veuillez saisir votre mot de passe"
               :is-valid="passwordField.isValid"
+              aria-required="true"
               @update:model-value="checkValidPassword"
             />
           </div>
           <div
-            v-if="!passwordField.isValid"
+            v-if="passwordField.modelValue && !passwordField.isValid"
             class="fr-messages-group"
             aria-live="assertive"
           >
             <p class="fr-message">Votre mot de passe doit contenir :</p>
             <ul>
-              <li :class="[isPwdLong ? 'fr-valid-text' : ' fr-error-text']">
+              <li
+                :class="[isPwdRules.long ? 'fr-valid-text' : 'fr-error-text']"
+              >
                 12 caractères minimum
-                <span v-if="isPwdLong" class="fr-sr-only">
-                  La règle est respectèe.
+                <span v-if="isPwdRules.long" class="fr-sr-only">
+                  La règle est respectée.
                 </span>
               </li>
-              <li :class="[isPwdMin ? 'fr-valid-text' : ' fr-error-text']">
+              <li :class="[isPwdRules.min ? 'fr-valid-text' : 'fr-error-text']">
                 1 lettre minuscule minimum
-                <span v-if="isPwdMin" class="fr-sr-only">
-                  La règle est respectèe.
+                <span v-if="isPwdRules.min" class="fr-sr-only">
+                  La règle est respectée.
                 </span>
               </li>
-              <li :class="[isPwdMaj ? 'fr-valid-text' : ' fr-error-text']">
+              <li :class="[isPwdRules.maj ? 'fr-valid-text' : 'fr-error-text']">
                 1 lettre majuscule minimum
-                <span v-if="isPwdMaj" class="fr-sr-only">
-                  La règle est respectèe.
+                <span v-if="isPwdRules.maj" class="fr-sr-only">
+                  La règle est respectée.
                 </span>
               </li>
-              <li :class="[isPwdNumber ? 'fr-valid-text' : ' fr-error-text']">
+              <li
+                :class="[isPwdRules.number ? 'fr-valid-text' : 'fr-error-text']"
+              >
                 1 chiffre minimum
-                <span v-if="isPwdNumber" class="fr-sr-only">
-                  La règle est respectèe.
+                <span v-if="isPwdRules.number" class="fr-sr-only">
+                  La règle est respectée.
                 </span>
               </li>
-              <li :class="[isPwdSpecial ? 'fr-valid-text' : ' fr-error-text']">
+              <li
+                :class="[
+                  isPwdRules.special ? 'fr-valid-text' : 'fr-error-text',
+                ]"
+              >
                 1 caractère spécial minimum
-                <span v-if="isPwdSpecial" class="fr-sr-only">
-                  La règle est respectèe.
+                <span v-if="isPwdRules.special" class="fr-sr-only">
+                  La règle est respectée.
                 </span>
               </li>
             </ul>
           </div>
         </div>
+
         <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
-          <div class="fr-input-group">
+          <div id="field-confirm" class="fr-input-group">
             <DsfrInputGroup
               :error-message="confirmField.errorMessage"
               :model-value="confirmField.modelValue"
@@ -112,8 +127,11 @@
               placeholder=""
               hint="Veuillez répéter le mot de passe"
               :is-valid="confirmField.isValid"
+              aria-required="true"
               @update:model-value="
-                (confirm) => (confirmField.modelValue = confirm)
+                (confirm: string) => {
+                  confirmField.modelValue = confirm;
+                }
               "
             />
           </div>
@@ -122,7 +140,7 @@
         <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
-          <div class="fr-input-group">
+          <div id="field-nom" class="fr-input-group">
             <DsfrInputGroup
               :error-message="nomField.errorMessage"
               :model-value="nomField.modelValue"
@@ -132,6 +150,7 @@
               :label-visible="true"
               placeholder=""
               hint="Veuillez saisir votre nom d'usage. Exemple: Martin"
+              aria-required="true"
               :is-valid="nomField.isValid"
               @update:model-value="checkValidNom"
             />
@@ -141,7 +160,7 @@
         <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
-          <div class="fr-input-group">
+          <div id="field-prenom" class="fr-input-group">
             <DsfrInputGroup
               :error-message="prenomField.errorMessage"
               :model-value="prenomField.modelValue"
@@ -151,6 +170,7 @@
               :label-visible="true"
               hint="Veuillez saisir votre prénom. Exemple: Jean"
               placeholder=""
+              aria-required="true"
               :is-valid="prenomField.isValid"
               @update:model-value="checkValidPrenom"
             />
@@ -160,7 +180,7 @@
         <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
-          <div class="fr-input-group">
+          <div id="field-telephone" class="fr-input-group">
             <DsfrInputGroup
               :error-message="telephoneField.errorMessage"
               :model-value="telephoneField.modelValue"
@@ -170,6 +190,7 @@
               :label-visible="true"
               hint="Veuillez saisir votre numéro de téléphone. Exemple: 0612345678"
               :is-valid="telephoneField.isValid"
+              aria-required="true"
               @update:model-value="checkValidTelephone"
             />
           </div>
@@ -178,8 +199,9 @@
         <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
-          <div class="fr-input-group siret-input-group">
+          <div id="field-siret" class="fr-input-group siret-input-group">
             <DsfrInputGroup
+              ref="siretInputRef"
               name="siret"
               label="SIRET"
               :label-visible="true"
@@ -187,19 +209,22 @@
               :is-valid="siretField.isValid"
               :error-message="siretField.errorMessage"
               placeholder=""
+              aria-required="true"
               hint="Veuillez indiquer le siret de l´organisme que vous souhaitez rejoindre. Exemple: 1100007200014"
               @update:model-value="checkValidSiret"
             />
           </div>
         </div>
+
         <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
           <ApiUnavailable
             :api-unavailable-types="useExternalApi.apisUnavailable"
             :display-types="[apiTypes.INSEE, apiTypes.ENTREPRISE]"
-          ></ApiUnavailable>
+          />
         </div>
+
         <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
@@ -210,32 +235,53 @@
               </p>
             </li>
             <li role="listitem">
-              <DsfrButton :disabled="!canRegister" @click.prevent="register"
-                >Créer mon compte
+              <DsfrButton @click.prevent="register">
+                Créer mon compte
               </DsfrButton>
             </li>
           </ul>
         </div>
-        <div class="fr-messages-group" aria-live="assertive"></div>
       </div>
     </form>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import "@vueform/multiselect/themes/default.css";
 import { ERRORS_LOGIN } from "@vao/shared-bridge";
 import { nextTick } from "vue";
 import { ApiUnavailable, apiModel, useToaster } from "@vao/shared-ui";
+import type { DsfrInputGroup } from "@gouvminint/vue-dsfr";
+
+interface FieldState {
+  errorMessage: string;
+  modelValue: string;
+  isValid: boolean;
+}
+
+interface PwdRules {
+  long: boolean;
+  special: boolean;
+  number: boolean;
+  maj: boolean;
+  min: boolean;
+}
+
+interface ApiError {
+  response?: { status: number };
+  statusCode?: number;
+  data?: { name: string; message?: string };
+}
+
 const apiTypes = apiModel.apiTypes;
-
 const log = logger("pages/connexion/enregistrement");
-
 const toaster = useToaster();
 const config = useRuntimeConfig();
 const useExternalApi = useExternalApiStore();
 
-const siretInput = ref(null);
+const siretInputRef = ref<InstanceType<typeof DsfrInputGroup> | null>(null);
+
+const submitted = ref(false);
 
 try {
   await Promise.all([
@@ -243,7 +289,12 @@ try {
     useExternalApi.checkApiEntreprise(),
   ]);
 } catch {
-  toaster.info("La détection de la disponibilité des API a échoué.");
+  toaster.error({
+    titleTag: "h2",
+    description:
+      "La détection de la disponibilité des API a échoué. Veuillez réessayer plus tard.",
+    role: "alert",
+  });
 }
 
 const isApiAvailable =
@@ -251,190 +302,243 @@ const isApiAvailable =
   !useExternalApi.apisUnavailable.ENTREPRISE;
 
 const links = [
-  {
-    to: "/",
-    text: "Accueil",
-  },
-  {
-    to: "/connexion",
-    text: "Connexion",
-  },
-  {
-    text: "Création de compte",
-  },
+  { to: "/", text: "Accueil" },
+  { to: "/connexion", text: "Connexion" },
+  { text: "Création de compte" },
 ];
 
 useHead({
   title: "Création de compte | Vacances Adaptées Organisées",
-  meta: [
-    {
-      name: "description",
-      content: "Page de création de compte.",
-    },
-  ],
+  meta: [{ name: "description", content: "Page de création de compte." }],
 });
-const emailField = reactive({
+
+const emailField = reactive<FieldState>({
   errorMessage: "",
   modelValue: "",
   isValid: false,
 });
 
-const passwordField = reactive({
+const passwordField = reactive<FieldState>({
   errorMessage: "",
   modelValue: "",
   isValid: false,
 });
 
-const confirmField = reactive({
+const confirmField = reactive<FieldState>({
   errorMessage: "",
   modelValue: "",
   isValid: false,
 });
 
-const nomField = reactive({
-  errorMessage: "",
-  modelValue: null,
-  isValid: false,
-});
-
-const prenomField = reactive({
-  errorMessage: "",
-  modelValue: null,
-  isValid: false,
-});
-
-const telephoneField = reactive({
-  errorMessage: "",
-  modelValue: null,
-  isValid: false,
-});
-
-const siretField = reactive({
+const nomField = reactive<FieldState>({
   errorMessage: "",
   modelValue: "",
   isValid: false,
 });
 
-const isPwdLong = ref(false);
-const isPwdSpecial = ref(false);
-const isPwdNumber = ref(false);
-const isPwdMaj = ref(false);
-const isPwdMin = ref(false);
+const prenomField = reactive<FieldState>({
+  errorMessage: "",
+  modelValue: "",
+  isValid: false,
+});
 
-function checkValidEmail(email) {
-  emailField.modelValue = email;
-  emailField.isValid = !email || regex.emailRegex.test(email);
-  emailField.errorMessage =
-    !email || emailField.isValid
-      ? ""
-      : "Cette adresse courriel semble incorrect";
-}
+const telephoneField = reactive<FieldState>({
+  errorMessage: "",
+  modelValue: "",
+  isValid: false,
+});
 
-function checkValidPassword(pwd) {
-  passwordField.modelValue = pwd;
-  passwordField.isValid = !pwd || regex.pwdRegex.test(pwd);
+const siretField = reactive<FieldState>({
+  errorMessage: "",
+  modelValue: "",
+  isValid: false,
+});
 
-  isPwdLong.value = pwd.length > 11;
-  isPwdSpecial.value = regex.pwdRegexSpecial.test(pwd);
-  isPwdNumber.value = regex.pwdRegexNumber.test(pwd);
-  isPwdMaj.value = regex.pwdRegexMaj.test(pwd);
-  isPwdMin.value = regex.pwdRegexMin.test(pwd);
-}
+const isPwdRules = reactive<PwdRules>({
+  long: false,
+  special: false,
+  number: false,
+  maj: false,
+  min: false,
+});
 
-function checkValidNom(n) {
-  nomField.modelValue = n;
-  nomField.isValid =
-    n !== null &&
-    regex.acceptedCharsRegex.test(n) &&
-    !regex.doubleSpacesRegex.test(n) &&
-    !regex.spaceFollowingDashRegex.test(n) &&
-    !regex.tripleDashRegex.test(n);
-  nomField.errorMessage =
-    !n || nomField.isValid ? "" : "Le nom contient des caractères incorrects";
-}
-
-function checkValidPrenom(p) {
-  prenomField.modelValue = p;
-  prenomField.isValid =
-    p !== null &&
-    regex.acceptedCharsRegex.test(p) &&
-    !regex.doubleSpacesRegex.test(p) &&
-    !regex.spaceFollowingDashRegex.test(p) &&
-    !regex.doubleDashRegex.test(p);
-  prenomField.errorMessage =
-    !p || prenomField.isValid
-      ? ""
-      : "Le prénom contient des caractères incorrects";
-}
-
-function checkValidTelephone(p) {
-  telephoneField.modelValue = p;
-  telephoneField.isValid = p !== null && regex.numTelephoneRegex.test(p);
-  telephoneField.errorMessage =
-    !p || telephoneField.isValid
-      ? ""
-      : "Le numéro de téléphone n'est pas au format attendu";
-}
-
-const checkValidSiret = (siret) => {
-  siretField.modelValue = siret;
-  siretField.isValid = !siret || regex.siretRegex.test(siret);
-  siretField.errorMessage =
-    !siret || siretField.isValid
-      ? ""
-      : "Le numéro SIRET n'est pas au format attendu";
-};
-
-watch(
-  [() => passwordField.modelValue, () => confirmField.modelValue],
-  function () {
-    confirmField.isValid =
-      confirmField.modelValue &&
-      confirmField.modelValue === passwordField.modelValue;
-
-    confirmField.errorMessage =
-      !confirmField.modelValue ||
-      confirmField.modelValue === passwordField.modelValue
-        ? ""
-        : "Les mots de passe diffèrent";
-  },
-);
-
-const canRegister = computed(() => {
-  return (
+const isFormValid = computed(
+  () =>
+    emailField.isValid &&
     passwordField.isValid &&
     confirmField.isValid &&
-    emailField.isValid &&
     nomField.isValid &&
     prenomField.isValid &&
     telephoneField.isValid &&
     siretField.isValid &&
-    isApiAvailable
-  );
-});
+    isApiAvailable,
+);
 
-async function register() {
+watch(
+  [() => passwordField.modelValue, () => confirmField.modelValue, submitted],
+  () => {
+    confirmField.isValid =
+      !!confirmField.modelValue &&
+      confirmField.modelValue === passwordField.modelValue;
+    confirmField.errorMessage = resolveErrorMessage(
+      confirmField.modelValue,
+      confirmField.isValid,
+      'Le champ "Confirmation mot de passe" est vide. Veuillez répéter votre mot de passe. Exemple : 3V@cancesAdaptées!',
+      "Les mots de passe ne correspondent pas.",
+    );
+  },
+);
+
+function resolveErrorMessage(
+  value: string,
+  isValid: boolean,
+  emptyMessage: string,
+  invalidMessage: string,
+): string {
+  if (isValid) return "";
+  if (!value) return submitted.value ? emptyMessage : "";
+  return invalidMessage;
+}
+
+function checkValidEmail(email: string) {
+  emailField.modelValue = email;
+  emailField.isValid = !!email && regex.emailRegex.test(email);
+  emailField.errorMessage = resolveErrorMessage(
+    email,
+    emailField.isValid,
+    'Le champ "Adresse courriel" est vide. Veuillez renseigner votre adresse courriel. Exemple : nom@domaine.fr',
+    'Le champ "Adresse courriel" est invalide. Vérifiez le format attendu. Exemple : nom@domaine.fr',
+  );
+}
+
+function checkValidPassword(pwd: string) {
+  passwordField.modelValue = pwd;
+  passwordField.isValid = !!pwd && regex.pwdRegex.test(pwd);
+
+  isPwdRules.long = pwd.length > 11;
+  isPwdRules.special = regex.pwdRegexSpecial.test(pwd);
+  isPwdRules.number = regex.pwdRegexNumber.test(pwd);
+  isPwdRules.maj = regex.pwdRegexMaj.test(pwd);
+  isPwdRules.min = regex.pwdRegexMin.test(pwd);
+
+  passwordField.errorMessage = resolveErrorMessage(
+    pwd,
+    passwordField.isValid,
+    'Le champ "Mot de passe" est vide. Veuillez renseigner votre mot de passe. Exemple : 3V@cancesAdaptées!',
+    'Le champ "Mot de passe" ne respecte pas les critères requis.',
+  );
+}
+
+function checkValidNom(nom: string) {
+  nomField.modelValue = nom;
+  nomField.isValid =
+    !!nom &&
+    regex.acceptedCharsRegex.test(nom) &&
+    !regex.doubleSpacesRegex.test(nom) &&
+    !regex.spaceFollowingDashRegex.test(nom) &&
+    !regex.tripleDashRegex.test(nom);
+  nomField.errorMessage = resolveErrorMessage(
+    nom,
+    nomField.isValid,
+    'Le champ "Nom" est vide. Veuillez saisir votre nom d\'usage. Exemple : Martin',
+    'Le champ "Nom" contient des caractères incorrects. Exemple : Martin',
+  );
+}
+
+function checkValidPrenom(prenom: string) {
+  prenomField.modelValue = prenom;
+  prenomField.isValid =
+    !!prenom &&
+    regex.acceptedCharsRegex.test(prenom) &&
+    !regex.doubleSpacesRegex.test(prenom) &&
+    !regex.spaceFollowingDashRegex.test(prenom) &&
+    !regex.doubleDashRegex.test(prenom);
+  prenomField.errorMessage = resolveErrorMessage(
+    prenom,
+    prenomField.isValid,
+    'Le champ "Prénom" est vide. Veuillez saisir votre prénom d\'usage. Exemple : Jean',
+    'Le champ "Prénom" contient des caractères incorrects. Exemple : Jean',
+  );
+}
+
+function checkValidTelephone(telephone: string) {
+  telephoneField.modelValue = telephone;
+  telephoneField.isValid =
+    !!telephone && regex.numTelephoneRegex.test(telephone);
+  telephoneField.errorMessage = resolveErrorMessage(
+    telephone,
+    telephoneField.isValid,
+    'Le champ "Numéro de téléphone" est vide. Veuillez saisir votre numéro de téléphone. Exemple : 0612030405',
+    'Le champ "Numéro de téléphone" est invalide. Veuillez saisir un numéro à 10 chiffres. Exemple : 0612345678 ou +33612345678',
+  );
+}
+
+function checkValidSiret(siret: string) {
+  siretField.modelValue = siret;
+
+  if (!siret) {
+    siretField.isValid = false;
+    siretField.errorMessage = submitted.value
+      ? 'Le champ "SIRET" est vide. Veuillez saisir le SIRET de l\'organisme que vous souhaitez rejoindre. Exemple : 1100007200014'
+      : "";
+    return;
+  }
+
+  // teste caractères non numériques
+  if (!/^\d+$/.test(siret)) {
+    siretField.isValid = false;
+    siretField.errorMessage =
+      "Champ SIRET incorrect. Supprimez les espaces ou caractères spéciaux. Le SIRET doit contenir uniquement des chiffres.";
+    return;
+  }
+
+  // test sur la longueur
+  if (siret.length !== 14) {
+    siretField.isValid = false;
+    siretField.errorMessage =
+      "Champ SIRET incorrect. Vérifiez le nombre de chiffres et saisissez exactement 14 chiffres.";
+    return;
+  }
+
+  siretField.isValid = true;
+  siretField.errorMessage = "";
+}
+
+function validateAllFields() {
+  checkValidEmail(emailField.modelValue);
+  checkValidPassword(passwordField.modelValue);
+  checkValidNom(nomField.modelValue);
+  checkValidPrenom(prenomField.modelValue);
+  checkValidTelephone(telephoneField.modelValue);
+  checkValidSiret(siretField.modelValue);
+}
+
+function isApiError(error: unknown): error is ApiError {
+  return typeof error === "object" && error !== null;
+}
+
+async function register(): Promise<void> {
+  submitted.value = true;
+  validateAllFields();
+
+  if (!isFormValid.value) {
+    return;
+  }
+
   const email = emailField.modelValue;
   const password = passwordField.modelValue;
   const nom = nomField.modelValue;
   const prenom = prenomField.modelValue;
   const telephone = telephoneField.modelValue;
   const siret = siretField.modelValue;
+
   log.i("register - IN");
+
   try {
     await $fetch(`${config.public.backendUrl}/authentication/email/register`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-        nom,
-        prenom,
-        telephone,
-        siret,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, nom, prenom, telephone, siret }),
     });
 
     toaster.success({
@@ -442,9 +546,21 @@ async function register() {
       description:
         "Votre formulaire a été envoyé. Veuillez valider votre adresse mail en cliquant sur le lien reçu par mail.",
     });
-    return navigateTo("/");
-  } catch (error) {
-    const statusCode = error.response?.status || error.statusCode || 0;
+    await navigateTo("/");
+  } catch (error: unknown) {
+    if (!isApiError(error)) {
+      log.w("Erreur inattendue non-objet lors de l'inscription", error);
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "Une erreur inattendue est survenue. Veuillez réessayer plus tard.",
+        role: "alert",
+      });
+      return;
+    }
+
+    const statusCode = error.response?.status ?? error.statusCode ?? 0;
+
     if (statusCode === 500) {
       toaster.error({
         titleTag: "h2",
@@ -452,10 +568,12 @@ async function register() {
           "Une erreur technique est survenue, veuillez réessayer plus tard",
         role: "alert",
       });
+      return;
     }
-    const body = error.data;
-    const codeError = body.name;
+
+    const codeError = error.data?.name;
     let description = "";
+
     switch (codeError) {
       case "UserAlreadyExists":
         description =
@@ -471,31 +589,26 @@ async function register() {
         break;
       case ERRORS_LOGIN.SiretNotFound:
         description =
-          body.message ||
-          "Le SIRET fourni est inconnu. Veuillez vérifier et réessayer.";
-        nextTick(() => {
-          const inputElement = document.querySelector(
-            ".siret-input-group input",
-          );
-          inputElement?.focus();
-        });
-        if (description) {
-          toaster.error({
-            titleTag: "h2",
-            description,
-            role: "alert",
-          });
-        }
+          error.data?.message ||
+          "Champ SIRET incorrect. Vérifiez le numéro fourni par votre entreprise. Le SIRET de votre entité doit être valide.";
+        toaster.error({ titleTag: "h2", description, role: "alert" });
+        await nextTick();
+        siretInputRef.value?.$el?.querySelector("input")?.focus();
         return;
     }
+
     if (description) {
-      toaster.error({
-        titleTag: "h2",
-        description,
-        role: "alert",
-      });
+      toaster.error({ titleTag: "h2", description, role: "alert" });
+      return;
     }
-    throw error;
+
+    log.w("Erreur backend non gérée lors de l'inscription", error);
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "Une erreur inattendue est survenue. Veuillez réessayer plus tard.",
+      role: "alert",
+    });
   }
 }
 </script>
