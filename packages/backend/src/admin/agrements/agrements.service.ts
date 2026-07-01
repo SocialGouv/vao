@@ -439,27 +439,27 @@ export const AgrementService = {
           switch (statut) {
             case AGREMENT_STATUT.A_COMPLETER:
               mailToSend = AgrementMailUsagers.sendStatutACompleterMail({
-                commentaire,
+                date: agrement.dateDepot,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
               });
               break;
             case AGREMENT_STATUT.EN_INSTRUCTION:
               mailToSend = AgrementMailUsagers.sendCompletudeConfirmedMail({
+                date: agrement.dateConfirmCompletude,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
               });
               break;
             case AGREMENT_STATUT.PRIS_EN_CHARGE:
               mailToSend = AgrementMailUsagers.sendPrisEnChargeMail({
-                date: agrement.dateVerifCompleture!,
+                date: agrement.dateVerifCompleture,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
               });
               break;
             case AGREMENT_STATUT.A_CORRIGER:
               mailToSend = AgrementMailUsagers.sendStatutACorrigerMail({
-                commentaire,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
               });
