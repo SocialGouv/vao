@@ -9,22 +9,20 @@
           <br />Documents importés : taille maximale à 5 Mo, les formats
           supportés sont jpg, png, pdf.
         </p>
-        <div aria-live="polite" aria-atomic="true">
-          <p>
-            <span
-              class="fr-icon-success-fill default-success fr-mr-1w"
-              aria-hidden="true"
-            ></span>
-            <b>
-              <span class="default-success"
-                >Saisies enregistrées à chaque étape :</span
-              >
-              au clic sur “Suivant”, vos informations sont enregistrées, vous
-              pourrez reprendre plus tard, en retrouvant le lien depuis
-              l’accueil.</b
+        <p>
+          <span
+            class="fr-icon-success-fill default-success fr-mr-1w"
+            aria-hidden="true"
+          ></span>
+          <b>
+            <span class="default-success"
+              >Saisies enregistrées à chaque étape :</span
             >
-          </p>
-        </div>
+            au clic sur “Suivant”, vos informations sont enregistrées, vous
+            pourrez reprendre plus tard, en retrouvant le lien depuis
+            l’accueil.</b
+          >
+        </p>
       </div>
     </div>
     <div class="fr-grid-row">
@@ -287,7 +285,7 @@ async function updateOrCreate(formValues: AgrementFormValues) {
       titleTag: "h2",
       description: "Données enregistrées avec succès !",
     });
-    nextHash();
+    await nextHash();
     return true;
   } catch (error) {
     toaster.error({
