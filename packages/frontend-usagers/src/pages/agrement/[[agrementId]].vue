@@ -3,7 +3,7 @@
     <div class="fr-grid-row">
       <div class="fr-pb-3w fr-col-12">
         <DsfrBreadcrumb :links="links" />
-        <h1>Renouvellement d’agrément</h1>
+        <h1 ref="pageHeadingRef" tabindex="-1">Renouvellement d’agrément</h1>
         <p class="fr-mb-2w">
           Sauf mention contraire, tous les champs sont obligatoires.
           <br />Documents importés : taille maximale à 5 Mo, les formats
@@ -130,6 +130,8 @@ const documentStore = useDocumentStore();
 const config = useRuntimeConfig();
 const log = logger("components/agrement/[[agrementId]].vue");
 const readOnly = false;
+
+const pageHeadingRef = ref<HTMLHeadingElement | null>(null);
 
 type AgrementFormValues = Partial<AgrementDto> & {
   [K in FileKey]?: any;
@@ -400,18 +402,22 @@ useHead({
   ],
 });
 
-function previousHash() {
-  const index = sommaireOptions.value.findIndex((o) => o === hash.value);
-  return navigateTo({ hash: "#" + sommaireOptions.value[index - 1] });
-}
-
-function nextHash() {
+async function nextHash() {
   const index = sommaireOptions.value.findIndex((o) => o === hash.value);
   const id = agrementStore.agrementEnTraitement?.id ?? "";
-  return navigateTo({
+  await navigateTo({
     path: `/agrement/${id}`,
     hash: "#" + sommaireOptions.value[index + 1],
   });
+  await nextTick();
+  pageHeadingRef.value?.focus();
+}
+
+async function previousHash() {
+  const index = sommaireOptions.value.findIndex((o) => o === hash.value);
+  await navigateTo({ hash: "#" + sommaireOptions.value[index - 1] });
+  await nextTick();
+  pageHeadingRef.value?.focus();
 }
 
 const sommaireOptions = computed(() => agrementMenu.menus.map((m) => m.id));
