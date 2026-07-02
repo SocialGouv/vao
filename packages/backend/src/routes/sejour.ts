@@ -1,4 +1,9 @@
-import { TRACKING_ACTIONS, TRACKING_USER_TYPE } from "@vao/shared-bridge";
+import {
+  SejourAdminRoutesSchema,
+  SejourUsagersRoutesSchema,
+  TRACKING_ACTIONS,
+  TRACKING_USER_TYPE,
+} from "@vao/shared-bridge";
 import express from "express";
 
 import { demandeSejourController } from "../controllers";
@@ -10,6 +15,7 @@ import checkPermissionBODeclarationSejour from "../middlewares/checkPermissionBO
 import checkPermissionBODeclarationSejourUpdate from "../middlewares/checkPermissionBODeclarationSejourUpdate";
 import checkPermissionDeclarationSejour from "../middlewares/checkPermissionDeclarationSejour";
 import getDepartements from "../middlewares/getDepartements";
+import { requestValidatorMiddleware } from "../middlewares/requestValidatorMiddleware";
 import trackDemandeSejour from "../middlewares/trackDemandeSejour";
 
 const router = express.Router();
@@ -25,6 +31,7 @@ router.get(
   boCheckJWT,
   boCheckRoleDS,
   getDepartements,
+  requestValidatorMiddleware(SejourAdminRoutesSchema["Get"]),
   demandeSejourController.getByDepartementCodes,
 );
 router.get(
@@ -125,7 +132,12 @@ router.get(
   demandeSejourController.historique,
 );
 
-router.get("/", checkJWT, demandeSejourController.get);
+router.get(
+  "/",
+  checkJWT,
+  requestValidatorMiddleware(SejourUsagersRoutesSchema["Get"]),
+  demandeSejourController.get,
+);
 router.post(
   "/depose/:declarationId",
   checkJWT,

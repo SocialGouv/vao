@@ -210,9 +210,11 @@ describe("Domaine /sejour", () => {
 
   describe("GET /sejour", () => {
     it("retourne 200 avec la liste des demandes", async () => {
-      const response = await request(getFoAppHelper(getSejourFoUser())).get(
-        "/sejour",
-      );
+      const response = await request(getFoAppHelper(getSejourFoUser()))
+        .get("/sejour")
+        .query({
+          idFonctionnelle: "DS-25-41-41",
+        });
       expect(response.status).toBe(200);
     });
 
@@ -226,6 +228,15 @@ describe("Domaine /sejour", () => {
       );
       expect(response.status).toBe(500);
       getSpy.mockRestore();
+    });
+    it("retourne 400 avec parametres invalides", async () => {
+      const response = await request(getFoAppHelper(getSejourFoUser()))
+        .get("/sejour/")
+        .query({
+          sortDirection: "xsdsd",
+        });
+
+      expect(response.status).toBe(400);
     });
   });
 
