@@ -55,14 +55,18 @@
           "
         >
           <h2 class="fr-mb-0">
-            Formulaire du renouvellement d’agrément ({{
-              agrementAnneeRenouvellement
-            }})
+            {{
+              !agrementStore.agrementCourant
+                ? "Formulaire de demande de premier agrément"
+                : "Formulaire du renouvellement d’agrément"
+            }}
+            ({{ agrementAnneeRenouvellement }})
           </h2>
           <AgrementReadOnly
             class="fr-my-2w"
             :init-organisme="organismeStore.organismeCourant ?? {}"
             :init-agrement="agrementStore.agrementEnTraitement ?? {}"
+            :first-agrement="!agrementStore.agrementCourant"
             :modifiable="false"
             :cdn-url="`${config.public.backendUrl}/documents/`"
           />

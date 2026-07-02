@@ -28,7 +28,11 @@
     <div class="fr-grid-row">
       <div class="fr-col-xs-12 fr-col-md-3">
         <!-- todo -->
-        <AgrementMenuAgrement :active-id="hash" @select="hash = $event" />
+        <AgrementMenuAgrement
+          :active-id="hash"
+          :first-agrement="!agrementStore.agrementCourant"
+          @select="hash = $event"
+        />
       </div>
 
       <div class="fr-col-xs-12 fr-col-md-9">
@@ -93,6 +97,7 @@
               class="fr-my-2w"
               :init-organisme="organismeStore.organismeCourant ?? {}"
               :init-agrement="agrementStore.agrementEnTraitement ?? {}"
+              :first-agrement="!agrementStore.agrementCourant"
               :modifiable="false"
               :cdn-url="`${config.public.backendUrl}/documents/`"
               @update="saveAndTransmitAgrement"
@@ -433,7 +438,14 @@ async function previousHash() {
   pageHeadingRef.value?.focus();
 }
 
-const sommaireOptions = computed(() => agrementMenu.menus.map((m) => m.id));
+const sommaireOptions = computed(() =>
+  agrementMenu.menus
+    .filter(
+      (m) =>
+        m.id !== "agrement-bilan" || Boolean(agrementStore.agrementCourant?.id),
+    )
+    .map((m) => m.id),
+);
 
 const titles = computed(() => agrementMenu.titles());
 </script>

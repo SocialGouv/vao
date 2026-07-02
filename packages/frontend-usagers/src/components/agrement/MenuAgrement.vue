@@ -11,6 +11,7 @@
 <script setup>
 const props = defineProps({
   activeId: { type: String, default: "agrement-coordonnees", required: false },
+  firstAgrement: { type: Boolean, default: false, required: false },
 });
 
 const emit = defineEmits(["select"]);
@@ -26,11 +27,16 @@ const menus = [
     text: "Dossier de candidature",
     to: { hash: "#agrement-dossier" },
   },
-  {
-    id: "agrement-bilan",
-    text: "Bilan des 4 années précédentes",
-    to: { hash: "#agrement-bilan" },
-  },
+  ...(props.firstAgrement
+    ? []
+    : [
+        {
+          id: "agrement-bilan",
+          text: "Bilan des 4 années précédentes",
+          to: { hash: "#agrement-bilan" },
+        },
+      ]),
+
   {
     id: "agrement-projets",
     text: "Projets de séjours envisagés pour les 12 prochains mois",
