@@ -20,7 +20,7 @@ export type SejourUsagersSortColumn =
 
 export interface GetUsagersRoute extends BasicRoute {
   method: "GET";
-  path: "/Sejour/Usagers";
+  path: "/sejour";
   query?: {
     limit?: number;
     offset?: number;

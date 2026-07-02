@@ -64,6 +64,17 @@ describe("Domaine /sejour (admin)", () => {
 
       expect(response.status).toBe(200);
     });
+    it("retourne 400 avec parametres invalides", async () => {
+      const response = await request(getBoAppHelper(boUser))
+        .get("/sejour/admin")
+        .query({
+          search: {
+            organismeId: "xxsd",
+          },
+        });
+
+      expect(response.status).toBe(400);
+    });
   });
 
   describe("GET /sejour/admin/messages", () => {

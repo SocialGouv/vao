@@ -1,11 +1,12 @@
 import { PersonneMoraleDto, SejourAdminRoutes } from "@vao/shared-bridge";
 import type { NextFunction } from "express";
 
+import DemandeSejour from "../../services/DemandeSejour";
+import Organisme from "../../services/Organisme";
 import type { RouteRequest, RouteResponse } from "../../types/request";
+import AppError from "../../utils/error";
+import { logger } from "../../utils/logger";
 
-const DemandeSejour = require("../../services/DemandeSejour");
-const Organisme = require("../../services/Organisme");
-const { logger } = require("../../utils/logger");
 const Sentry = require("@sentry/node");
 
 const log = logger(module.filename);
@@ -19,7 +20,7 @@ async function getByDepartementCodes(
   const { decoded } = req;
   const { id: adminId, territoireCode } = decoded ?? {};
   if (!territoireCode) {
-    return next(new Error("Missing territoireCode"));
+    throw new AppError("Code territoire absent", { statusCode: 500 });
   }
   log.d("userId", { adminId });
   const { limit, offset, sortBy, sortDirection, search } =
@@ -54,14 +55,13 @@ async function getByDepartementCodes(
       }
     }
     if (!req.departements?.length) {
-      return next(new Error("Missing departements"));
+      throw new AppError("Département absent", { statusCode: 500 });
     }
     const demandesWithPagination = await DemandeSejour.getByDepartementCodes(
       params,
       territoireCode,
       req.departements.map((d) => d.value),
     );
-    log.d(demandesWithPagination);
     return res.status(200).json({ demandesWithPagination });
   } catch (error) {
     return next(error);

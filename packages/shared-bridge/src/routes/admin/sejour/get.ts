@@ -11,13 +11,13 @@ const stringOrStringArray = yup.lazy((value) =>
 export const SEJOUR_ADMIN_SORT_COLUMNS = [
   "organisme",
   "idFonctionnelle",
-  "departement",
   "libelle",
   "dateDebut",
-  "date",
-  "dateDepot",
   "statut",
   "messageOrdreEtat",
+  "siren",
+  "siret",
+  "orgnismeId",
 ] as const;
 
 export type SejourAdminSortColumn = (typeof SEJOUR_ADMIN_SORT_COLUMNS)[number];
@@ -51,7 +51,7 @@ export interface GetAdminRoute extends BasicRoute {
     };
   };
   response: RouteResponseBody<{
-    demandesWithPagination: { demande_sejour: unknown[]; total: number };
+    demandesWithPagination: { demandes_sejour: unknown[]; total: number };
   }>;
 }
 
@@ -78,12 +78,6 @@ export const GetAdminRouteSchema: RouteSchema<GetAdminRoute> = {
         siret: yup.string().nullable().optional(),
         statuts: stringOrStringArray.optional(),
         typeOrganisme: yup.string().nullable().optional(),
-      })
-      .transform((value, originalValue) => {
-        if (typeof originalValue === "string") {
-          return JSON.parse(originalValue);
-        }
-        return value;
       })
       .optional(),
     sortBy: yup
