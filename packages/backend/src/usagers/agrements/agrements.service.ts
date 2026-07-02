@@ -16,9 +16,12 @@ import { PoolClient } from "pg";
 
 import { AgrementMailAdmin } from "../../admin/agrements/agrements.mail";
 import Region from "../../services/geo/Region";
+import insee from "../../services/Insee";
 import { mailService } from "../../services/mail";
 import Organisme from "../../services/Organisme";
-import TerritoireService from "../../services/Territoire";
+import TerritoireService, {
+  getFichesTerritoireForRegionByInseeCode,
+} from "../../services/Territoire";
 import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
 import { AgrementServiceShared } from "../../shared/agrements/agrements.service";
 import AppError from "../../utils/error";
@@ -316,6 +319,39 @@ export const AgrementService = {
       }
       log.d("updated meta values - DONE", { agrementId });
     } else {
+      // Pour la création d'un nouvel agrément,
+      // si c'est le premier agrément, on ne connait pas la région d'obtention,
+      // Il faut donc la récupérer à partir de l'insee de l'adresse de la personne morale ou physique.
+      if (!agrement.regionObtention) {
+        const siret =
+          organisme.personneMorale?.siret ?? organisme.personnePhysique?.siret;
+
+        try {
+          const etablissement = await insee.getEtablissement(siret);
+          if (!etablissement) {
+            throw new AppError(
+              "problème de retour de l'insee Etablissement non trouvé.",
+              {
+                statusCode: 400,
+              },
+            );
+          }
+          const inseeCode = String(
+            etablissement.adresseEtablissement.codeCommuneEtablissement,
+          );
+          const codeRegionObtention =
+            await getFichesTerritoireForRegionByInseeCode({
+              inseeCode,
+            });
+          agrement.regionObtention = codeRegionObtention.terCode;
+        } catch (error) {
+          throw new AppError("Erreur de retour de l'insee.", {
+            cause: error,
+            statusCode: 400,
+          });
+        }
+      }
+
       agrementId = await AgrementsRepository.create({
         agrement,
       });

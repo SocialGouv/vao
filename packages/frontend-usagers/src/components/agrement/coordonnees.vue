@@ -134,6 +134,7 @@ async function saveAgrement() {
   }
 
   if (
+    Object.keys(props.initAgrement).length > 0 &&
     isPersonneMorale.value &&
     props.initAgrement.statut !== AGREMENT_STATUT.BROUILLON &&
     !fileProcesVerbal.value

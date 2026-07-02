@@ -14,7 +14,7 @@
       <dd>{{ personneMorale.statut || "-" }}</dd>
 
       <template v-if="!isEditingTelephone">
-        <dt><strong>Téléphone:</strong></dt>
+        <dt><strong>Téléphone :</strong></dt>
         <dd>
           {{ personneMorale.telephone || "-" }}
           <DsfrLinkV2
@@ -22,28 +22,35 @@
             as="button"
             icon-name="icon-edit-line"
             @click="startEditTelephone"
-            >modifier
-            <span class="fr-sr-only">le numéro de téléphone</span></DsfrLinkV2
           >
+            Modifier
+            <span class="fr-sr-only"> le numéro de téléphone</span>
+          </DsfrLinkV2>
         </dd>
       </template>
       <template v-else>
         <dd class="full-width">
-          <DsfrInputGroup
-            name="telephone"
-            label="Téléphone"
-            :label-visible="true"
-            :model-value="telephone"
-            :is-valid="telephoneMeta.valid"
-            :error-message="telephoneError"
-            hint="Au format 0X, +33X ou 0033. Exemple : 0612345678"
-            @update:model-value="onTelephoneChange"
-          />
+          <fieldset class="fr-fieldset">
+            <legend class="fr-fieldset__legend">
+              Modifier le numéro de téléphone
+            </legend>
+
+            <DsfrInputGroup
+              name="telephone"
+              label="Téléphone"
+              :label-visible="true"
+              :model-value="telephone"
+              :is-valid="telephoneMeta.valid"
+              :error-message="telephoneError"
+              hint="Au format 0X, +33X ou 0033. Exemple : 0612345678"
+              @update:model-value="onTelephoneChange"
+            />
+          </fieldset>
         </dd>
       </template>
 
       <template v-if="!isEditingEmail">
-        <dt><strong>Email:</strong></dt>
+        <dt><strong>Email :</strong></dt>
         <dd>
           {{ personneMorale.email || "-" }}
           <DsfrLinkV2
@@ -51,26 +58,33 @@
             as="button"
             icon-name="icon-edit-line"
             @click="startEditEmail"
-            >modifier
-            <span class="fr-sr-only">l'adresse email</span></DsfrLinkV2
           >
+            Modifier
+            <span class="fr-sr-only"> l’adresse email</span>
+          </DsfrLinkV2>
         </dd>
       </template>
       <template v-else>
         <dd class="full-width">
-          <DsfrInputGroup
-            name="email"
-            label="Adresse courriel"
-            :label-visible="true"
-            :model-value="email"
-            :is-valid="emailMeta.valid"
-            :error-message="emailError"
-            hint="Adresse courriel de la personne. Exemple: nom@domaine.fr"
-            @update:model-value="onEmailChange"
-          />
+          <fieldset class="fr-fieldset">
+            <legend class="fr-fieldset__legend">
+              Modifier l’adresse email
+            </legend>
+
+            <DsfrInputGroup
+              name="email"
+              label="Adresse courriel"
+              :label-visible="true"
+              :model-value="email"
+              :is-valid="emailMeta.valid"
+              :error-message="emailError"
+              hint="Adresse courriel de la personne. Exemple : nom@domaine.fr"
+              @update:model-value="onEmailChange"
+            />
+          </fieldset>
         </dd>
       </template>
-      <dt><strong>Adresse du siège social:</strong></dt>
+      <dt><strong>Adresse du siège social :</strong></dt>
       <dd>{{ personneMorale.adresse || "-" }}</dd>
     </dl>
 
@@ -83,7 +97,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
 import { TitleWithIcon, DsfrLinkV2, useToaster } from "@vao/shared-ui";

@@ -5,9 +5,18 @@ import { navigateTo, defineNuxtRouteMiddleware } from "#app";
 
 const log = logger("middlewares/check-agrement-readonly-statut");
 
-export default defineNuxtRouteMiddleware(async () => {
+export default defineNuxtRouteMiddleware(async (to) => {
   log.i("IN");
 
+  const paramsAgrementId = to.params?.agrementId;
+  if (paramsAgrementId === undefined) {
+    log.w("No agrementId in route params, back to home");
+    return navigateTo("/");
+  } else {
+    if (paramsAgrementId === "new") {
+      return;
+    }
+  }
   const agrementStore = useAgrementStore();
   const agrementStatutModification = [
     AGREMENT_STATUT.BROUILLON,
