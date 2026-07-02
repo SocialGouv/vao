@@ -326,30 +326,37 @@ export const AgrementService = {
         const siret =
           organisme.personneMorale?.siret ?? organisme.personnePhysique?.siret;
 
-        try {
-          const etablissement = await insee.getEtablissement(siret);
-          if (!etablissement) {
-            throw new AppError(
-              "problème de retour de l'insee Etablissement non trouvé.",
-              {
-                statusCode: 400,
-              },
-            );
-          }
-          const inseeCode = String(
-            etablissement.adresseEtablissement.codeCommuneEtablissement,
+        if (!siret) {
+          throw new AppError(
+            "SIRET introuvable pour l'organisme, impossible de déterminer la région d'obtention.",
+            { statusCode: 422 },
           );
-          const codeRegionObtention =
-            await getFichesTerritoireForRegionByInseeCode({
-              inseeCode,
-            });
-          agrement.regionObtention = codeRegionObtention.terCode;
+        }
+
+        let etablissement;
+        try {
+          etablissement = await insee.getEtablissement(siret);
         } catch (error) {
-          throw new AppError("Erreur de retour de l'insee.", {
+          throw new AppError("Erreur lors de l'appel à l'API INSEE.", {
             cause: error,
-            statusCode: 400,
+            statusCode: 502,
           });
         }
+
+        if (!etablissement) {
+          throw new AppError(
+            "Établissement non trouvé dans l'INSEE pour le SIRET fourni.",
+            { statusCode: 400 },
+          );
+        }
+        const inseeCode = String(
+          etablissement.adresseEtablissement.codeCommuneEtablissement,
+        );
+        const codeRegionObtention =
+          await getFichesTerritoireForRegionByInseeCode({
+            inseeCode,
+          });
+        agrement.regionObtention = codeRegionObtention.terCode;
       }
 
       agrementId = await AgrementsRepository.create({

@@ -9,7 +9,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   log.i("IN");
 
   const paramsAgrementId = to.params?.agrementId;
-  if (paramsAgrementId === undefined) {
+  if (!paramsAgrementId) {
     log.w("No agrementId in route params, back to home");
     return navigateTo("/");
   } else {
