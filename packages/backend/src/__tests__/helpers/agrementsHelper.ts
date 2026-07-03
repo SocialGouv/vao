@@ -22,6 +22,24 @@ export const createAgrement = async ({
   return agrementId;
 };
 
+export const updateAgrementRegionObtention = async (
+  agrementId: number,
+  regionObtention: string | null,
+) => {
+  const agrement = await AgrementService.getById({
+    agrementId,
+    withDetails: true,
+  });
+  if (!agrement) {
+    throw new Error(`Agrement with id ${agrementId} not found`);
+  }
+  const updatedAgrement = {
+    ...agrement,
+    regionObtention,
+  };
+  await AgrementService.save(updatedAgrement, "test-user");
+};
+
 export const getAgrement = async (agrementId: number) => {
   const agrement = await AgrementService.getById({
     agrementId,

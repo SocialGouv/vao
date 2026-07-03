@@ -45,7 +45,7 @@
           >Modifier</DsfrButton
         >
       </DsfrAccordion>
-      <DsfrAccordion>
+      <DsfrAccordion v-if="!props.firstAgrement">
         <template #title>
           Bilan des 4 années précédentes
           <DsfrBadge
@@ -118,6 +118,7 @@ import { useToaster } from "@vao/shared-ui";
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   initOrganisme: { type: Object, required: true },
+  firstAgrement: { type: Boolean, default: false },
   modifiable: { type: Boolean, default: true },
   cdnUrl: { type: String, required: true },
 });

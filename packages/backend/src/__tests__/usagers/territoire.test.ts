@@ -2,7 +2,10 @@ import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import request from "supertest";
 
 import { buildAgrementFixture } from "../fixtures/agrementsFixture";
-import { createAgrement } from "../helpers/agrementsHelper";
+import {
+  createAgrement,
+  updateAgrementRegionObtention,
+} from "../helpers/agrementsHelper";
 import { getFoAppHelper } from "../helpers/appHelper";
 import { createOrganisme } from "../helpers/organismeHelper";
 import { createTerritoire } from "../helpers/territoireHelper";
@@ -59,14 +62,15 @@ describe("GET /territoire/get-by-agrement-region-user", () => {
       organismeId,
       statut: AGREMENT_STATUT.VALIDE,
     });
-    await createAgrement({
+    const agrementId = await createAgrement({
       agrement: {
         ...agrementData,
-        regionObtention: null as unknown as string,
       },
       organismeId,
     });
-
+    // On force la mise à jour de la région d'obtention de l'agrément à null pour simuler le cas où la région d'obtention est manquante
+    // Sinon c'est automatiquement remplie par lors de la création de l'agrément avec l'API Insee
+    await updateAgrementRegionObtention(agrementId, null);
     const response = await request(getFoAppHelper(frontUser)).get(
       `/territoire/get-by-agrement-region-user`,
     );

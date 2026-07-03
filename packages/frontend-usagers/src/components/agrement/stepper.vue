@@ -2,14 +2,26 @@
   <DsfrStepper :steps="steps" :current-step="currentStep + 1" />
 </template>
 
-<script setup>
+<script setup lang="ts">
+const agrementStore = useAgrementStore();
+
 const props = defineProps({
-  step: { type: String, default: agrementMenu.menus[0].id, required: false },
+  step: {
+    type: String,
+    default: "agrement-coordonnees",
+    required: false,
+  },
 });
 
-const steps = agrementMenu.menus.map((o) => o.text);
+const filteredMenus = computed(() =>
+  agrementMenu.menus.filter(
+    (m) => m.id !== "agrement-bilan" || Boolean(!agrementStore.agrementCourant),
+  ),
+);
+
+const steps = computed(() => filteredMenus.value.map((o) => o.text));
 
 const currentStep = computed(() => {
-  return agrementMenu.menus.findIndex((o) => o.id === props.step);
+  return filteredMenus.value.findIndex((o) => o.id === props.step);
 });
 </script>

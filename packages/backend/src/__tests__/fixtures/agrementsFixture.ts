@@ -25,7 +25,7 @@ export async function buildAgrementFixture({
   organismeId: number;
   activiteId?: number;
   statut?: AGREMENT_STATUT;
-  regionObtention?: string;
+  regionObtention?: string | null;
   agrementFiles?: AgrementFilesDto[];
   agrementBilanAnnuel?: AgrementDto["agrementBilanAnnuel"];
   agrementSejours?: AgrementDto["agrementSejours"];

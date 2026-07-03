@@ -36,22 +36,30 @@
             as="button"
             icon-name="icon-edit-line"
             @click="startEditTelephone"
-            >modifier</DsfrLinkV2
           >
+            Modifier
+            <span class="fr-sr-only"> le numéro de téléphone</span>
+          </DsfrLinkV2>
         </dd>
       </template>
       <template v-else>
         <dd class="full-width">
-          <DsfrInputGroup
-            name="telephone"
-            label="Téléphone"
-            :label-visible="true"
-            :model-value="telephone"
-            :is-valid="telephoneMeta.valid"
-            :error-message="telephoneError"
-            hint="Au format 0X, +33X ou 0033. Exemple : 0612345678"
-            @update:model-value="onTelephoneChange"
-          />
+          <fieldset class="fr-fieldset">
+            <legend class="fr-fieldset__legend">
+              Modifier le numéro de téléphone
+            </legend>
+
+            <DsfrInputGroup
+              name="telephone"
+              label="Téléphone"
+              :label-visible="true"
+              :model-value="telephone"
+              :is-valid="telephoneMeta.valid"
+              :error-message="telephoneError"
+              hint="Au format 0X, +33X ou 0033. Exemple : 0612345678"
+              @update:model-value="onTelephoneChange"
+            />
+          </fieldset>
         </dd>
       </template>
 
