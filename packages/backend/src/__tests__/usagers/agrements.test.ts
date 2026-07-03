@@ -14,6 +14,7 @@ import request from "supertest";
 import { AgrementsRepository as AgrementsRepositoryAdmin } from "../../admin/agrements/agrements.repository";
 import { AgrementService as AgrementServiceAdmin } from "../../admin/agrements/agrements.service";
 import * as DocumentService from "../../services/Document";
+import { getEtablissement } from "../../services/Insee";
 import { mailService } from "../../services/mail";
 import { AgrementsRepository } from "../../usagers/agrements/agrements.repository";
 import { AgrementService } from "../../usagers/agrements/agrements.service";
@@ -32,12 +33,18 @@ import { createAdminUser, createUsagersUser } from "../helpers/userHelper";
 jest.mock("../../services/mail", () => ({
   mailService: { send: jest.fn() },
 }));
+jest.mock("../../services/Insee", () => ({
+  getEtablissement: jest.fn(),
+}));
+
+const mockedGetEtablissement = getEtablissement as jest.Mock;
 
 beforeAll(async () => await createTestContainer());
 afterAll(async () => await removeTestContainer());
 
 beforeEach(() => {
   jest.resetAllMocks();
+  mockedGetEtablissement.mockReset();
 });
 afterEach(() => {
   jest.restoreAllMocks();
@@ -164,8 +171,32 @@ describe("POST /agrements", () => {
     expect(response.status).toBe(200);
     expect(response.body).toBeDefined();
   });
+  it("devrait remonter une 200 avec ma region d'obtention", async () => {
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({
+      organisme: { siret: "93828857800017" },
+      userId: frontUser.id,
+    });
 
-  it("devrait remonter une erreur 502 erreur sur l'insee", async () => {
+    mockedGetEtablissement.mockResolvedValue({
+      adresseEtablissement: {
+        codeCommuneEtablissement: "75001",
+      },
+    });
+    // On force agrementBilanAnnuel à []
+    const agrementData = await buildAgrementFixture({
+      agrementBilanAnnuel: [],
+      organismeId,
+      regionObtention: "", // région inexistante
+    });
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send(agrementData);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+  });
+  it("devrait remonter une erreur 400 erreur sur l'insee", async () => {
     const frontUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: frontUser.id });
     // On force agrementBilanAnnuel à []
@@ -178,7 +209,7 @@ describe("POST /agrements", () => {
       .post(`/agrements/`)
       .send(agrementData);
 
-    expect(response.status).toBe(502);
+    expect(response.status).toBe(400);
     expect(response.body).toBeDefined();
   });
   it("devrait créer un agrément sans animation (coverage)", async () => {
