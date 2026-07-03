@@ -187,8 +187,10 @@ describe("POST /agrements", () => {
     const agrementData = await buildAgrementFixture({
       agrementBilanAnnuel: [],
       organismeId,
-      regionObtention: null, // région inexistante (correspond au premier agrément)
     });
+    // région inexistante (correspond au premier agrément)
+    agrementData.regionObtention = null;
+
     const response = await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
       .send(agrementData);
@@ -198,6 +200,31 @@ describe("POST /agrements", () => {
 
     const { agrement } = await getAgrement(response.body.id);
     expect(agrement?.regionObtention).toBe("IDF");
+  });
+
+  it("devrait remonter une erreur 400 avec ma region d'obtention introuvable", async () => {
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({
+      userId: frontUser.id,
+    });
+
+    mockedGetEtablissement.mockResolvedValue({
+      adresseEtablissement: {
+        codeCommuneEtablissement: "00001",
+      },
+    });
+    // On force agrementBilanAnnuel à [] car c'est un premier agréménet, donc pas de bilan annuel
+    const agrementData = await buildAgrementFixture({
+      agrementBilanAnnuel: [],
+      organismeId,
+    });
+    agrementData.regionObtention = null;
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send(agrementData);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toBeDefined();
   });
   it("devrait retourner 400 si aucune région n'est trouvée pour le code INSEE", async () => {
     const frontUser = await createUsagersUser();
