@@ -14,7 +14,7 @@ import request from "supertest";
 import { AgrementsRepository as AgrementsRepositoryAdmin } from "../../admin/agrements/agrements.repository";
 import { AgrementService as AgrementServiceAdmin } from "../../admin/agrements/agrements.service";
 import * as DocumentService from "../../services/Document";
-import { getEtablissement } from "../../services/Insee";
+import insee, { getEtablissement } from "../../services/Insee";
 import { mailService } from "../../services/mail";
 import { AgrementsRepository } from "../../usagers/agrements/agrements.repository";
 import { AgrementService } from "../../usagers/agrements/agrements.service";
@@ -183,11 +183,11 @@ describe("POST /agrements", () => {
         codeCommuneEtablissement: "75001",
       },
     });
-    // On force agrementBilanAnnuel à []
+    // On force agrementBilanAnnuel à [] car c'est un premier agréménet, donc pas de bilan annuel
     const agrementData = await buildAgrementFixture({
       agrementBilanAnnuel: [],
       organismeId,
-      regionObtention: "", // région inexistante
+      regionObtention: null, // région inexistante (correspond au premier agrément)
     });
     const response = await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
@@ -195,8 +195,11 @@ describe("POST /agrements", () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toBeDefined();
+
+    const { agrement } = await getAgrement(response.body.id);
+    expect(agrement?.regionObtention).toBe("IDF");
   });
-  it("devrait remonter une erreur 400 erreur sur l'insee", async () => {
+  it("devrait retourner 400 si aucune région n'est trouvée pour le code INSEE", async () => {
     const frontUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: frontUser.id });
     // On force agrementBilanAnnuel à []
@@ -211,6 +214,59 @@ describe("POST /agrements", () => {
 
     expect(response.status).toBe(400);
     expect(response.body).toBeDefined();
+  });
+  it("devrait retourner 502 si l'API INSEE échoue", async () => {
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
+
+    // Simule une panne API INSEE
+    (insee.getEtablissement as jest.Mock).mockRejectedValue(
+      new Error("INSEE API down"),
+    );
+
+    const agrementData = await buildAgrementFixture({
+      agrementBilanAnnuel: [],
+      organismeId,
+      regionObtention: "",
+    });
+
+    const response = await request(getFoAppHelper(frontUser))
+      .post("/agrements/")
+      .send(agrementData);
+
+    expect(response.status).toBe(502);
+
+    expect(response.body).toBeDefined();
+    expect(response.body.message).toContain(
+      "Erreur lors de l'appel à l'API INSEE",
+    );
+  });
+  it("devrait remonter une 422 si SIRET est absent", async () => {
+    const frontUser = await createUsagersUser();
+
+    // Organisme sans SIRET
+    const organismeId = await createOrganisme({
+      organisme: {
+        siret: null,
+      },
+      userId: frontUser.id,
+    });
+
+    const agrementData = await buildAgrementFixture({
+      agrementBilanAnnuel: [],
+      organismeId,
+      regionObtention: "", // déclenche le calcul INSEE
+    });
+
+    const response = await request(getFoAppHelper(frontUser))
+      .post("/agrements/")
+      .send(agrementData);
+
+    expect(response.status).toBe(422);
+
+    expect(response.body).toMatchObject({
+      message: expect.stringContaining("SIRET introuvable"),
+    });
   });
   it("devrait créer un agrément sans animation (coverage)", async () => {
     const frontUser = await createUsagersUser();

@@ -8,7 +8,7 @@
   </DsfrSideMenu>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
   activeId: { type: String, default: "agrement-coordonnees", required: false },
   firstAgrement: { type: Boolean, default: false, required: false },
@@ -16,7 +16,7 @@ const props = defineProps({
 
 const emit = defineEmits(["select"]);
 
-const menus = [
+const menus = computed(() => [
   {
     id: "agrement-coordonnees",
     text: "Coordonnées à vérifier",
@@ -47,16 +47,16 @@ const menus = [
     text: "Synthèse",
     to: { hash: "#agrement-synthese" },
   },
-];
+]);
 
 const sommaireOptionsToDisplay = computed(() =>
-  menus.map((menu) => ({
+  menus.value.map((menu) => ({
     ...menu,
     active: menu.id === props.activeId,
   })),
 );
 
-function onSelect(idx) {
-  emit("select", menus[idx].id);
+function onSelect(idx: number) {
+  emit("select", menus.value[idx].id);
 }
 </script>

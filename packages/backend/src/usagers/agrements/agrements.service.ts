@@ -350,12 +350,22 @@ export const AgrementService = {
           );
         }
         const inseeCode = String(
-          etablissement.adresseEtablissement.codeCommuneEtablissement,
+          etablissement.adresseEtablissement?.codeCommuneEtablissement,
         );
         const codeRegionObtention =
           await getFichesTerritoireForRegionByInseeCode({
             inseeCode,
           });
+
+        if (!codeRegionObtention) {
+          throw new AppError(
+            `Aucune région trouvée pour inseeCode=${inseeCode}`,
+            {
+              statusCode: 400,
+            },
+          );
+        }
+
         agrement.regionObtention = codeRegionObtention.terCode;
       }
 

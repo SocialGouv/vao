@@ -2,7 +2,7 @@
   <DsfrStepper :steps="steps" :current-step="currentStep + 1" />
 </template>
 
-<script setup>
+<script setup lang="ts">
 const agrementStore = useAgrementStore();
 
 const props = defineProps({
@@ -15,8 +15,7 @@ const props = defineProps({
 
 const filteredMenus = computed(() =>
   agrementMenu.menus.filter(
-    (m) =>
-      m.id !== "agrement-bilan" || Boolean(agrementStore.agrementCourant?.id),
+    (m) => m.id !== "agrement-bilan" || Boolean(!agrementStore.agrementCourant),
   ),
 );
 

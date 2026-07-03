@@ -12,11 +12,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (!paramsAgrementId) {
     log.w("No agrementId in route params, back to home");
     return navigateTo("/");
-  } else {
-    if (paramsAgrementId === "new") {
-      return;
-    }
+  } else if (paramsAgrementId === "new") {
+    return;
   }
+
   const agrementStore = useAgrementStore();
   const agrementStatutModification = [
     AGREMENT_STATUT.BROUILLON,
