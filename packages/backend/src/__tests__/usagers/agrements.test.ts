@@ -164,6 +164,23 @@ describe("POST /agrements", () => {
     expect(response.status).toBe(200);
     expect(response.body).toBeDefined();
   });
+
+  it("devrait remonter une erreur 502 erreur sur l'insee", async () => {
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
+    // On force agrementBilanAnnuel à []
+    const agrementData = await buildAgrementFixture({
+      agrementBilanAnnuel: [],
+      organismeId,
+      regionObtention: "", // région inexistante
+    });
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send(agrementData);
+
+    expect(response.status).toBe(502);
+    expect(response.body).toBeDefined();
+  });
   it("devrait créer un agrément sans animation (coverage)", async () => {
     const frontUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: frontUser.id });
