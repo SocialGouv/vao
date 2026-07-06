@@ -5,6 +5,27 @@
     </div>
     <AgrementAlertRenouvellement> </AgrementAlertRenouvellement>
     <div
+      v-if="agrementStore.agrementCourant && !agrementStore.hasAgrementEnCours"
+      class="fr-alert fr-alert--info fr-mb-3w"
+    >
+      <h2 class="fr-h4">Votre agrément est actif</h2>
+      <p>
+        Votre agrément
+        {{
+          agrementStore.agrementCourant.numero
+            ? `n°${agrementStore.agrementCourant.numero}`
+            : ""
+        }}
+        est valide. Vous pouvez le consulter et suivre son renouvellement.
+      </p>
+      <NuxtLink
+        class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+        to="/mon-agrement"
+      >
+        Consulter mon agrément
+      </NuxtLink>
+    </div>
+    <div
       v-if="!organismeCourant || !organismeCourant.complet"
       class="fr-grid-row fr-grid-row--left"
     >
@@ -40,7 +61,7 @@ import House from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/house.svg";
 import Contract from "@gouvfr/dsfr/dist/artwork/pictograms/document/contract.svg";
 
 definePageMeta({
-  middleware: ["is-connected"],
+  middleware: ["is-connected", "check-first-agrement"],
 });
 
 useHead({
