@@ -38,7 +38,7 @@
     "maplibre-gl": "catalog:",
     "nuxt": "catalog:",
     "nuxt-maplibre": "catalog:",
-    "nuxt-security": "^2.0.0-rc.9",
+    "nuxt-security": "^2.6.0",
     "pinia": "catalog:",
     "query-string": "catalog:",
     "vee-validate": "catalog:",
