@@ -364,7 +364,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/pages/agrement/[[agrementId]].vue
   checksum: 14668bf8e44773f20e9b201b6292db4598a42f3919b2af5be54fdb8b616a5d6b
 - filename: packages/frontend-usagers/src/pages/agrement/bienvenue.vue
-  checksum: 864c92cc3b70c0bca0b903679f0dd4d78c1a9e1455d686fb9937c6eaa3ea155b
+  checksum: 8eccc5ced8eb4ce177e1effa8fdc77c282bfcda15ce886d9c5f2b0e5eac6d1dc
 - filename: packages/frontend-usagers/src/pages/connexion/enregistrement.vue
   checksum: d7f27b7ab97e487d35332e5c3255604ad143319750517f9f722c33f0adbf5e27
 - filename: packages/frontend-usagers/src/pages/connexion/index.vue

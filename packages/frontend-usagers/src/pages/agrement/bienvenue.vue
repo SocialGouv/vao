@@ -27,8 +27,9 @@
             :imgSrc="DocumentAdd"
             :horizontal="true"
             :button-label="'Faire une première demande d’agrément'"
-            @click="onClickPremiereDemande"
+            to="/agrement/new"
           />
+          <!-- //todo: ajouter le lien vers la page agrement-existant -->
           <DsfrTile
             class="fr-mt-4w"
             :title="'J’ai déjà un agrément'"
@@ -37,7 +38,7 @@
             :imgSrc="DocumentSignature"
             :horizontal="true"
             :button-label="'J’ai déjà un agrément'"
-            @click="onClickAgrementExistant"
+            to="#"
           />
         </div>
       </div>
@@ -107,7 +108,7 @@ definePageMeta({
   middleware: [
     "is-connected",
     "check-organisme-is-complet",
-    // "check-no-agrement-existing",
+    "check-no-agrement-existing",
   ],
 });
 
@@ -122,26 +123,6 @@ useHead({
 });
 
 const links = [{ to: "/", text: "Accueil" }, { text: "Demande d'agrément" }];
-
-function onClickPremiereDemande() {
-  log.i("Initialisation d'un brouillon vierge pour première demande");
-  agrementStore.agrementEnTraitement = {
-    statut: AGREMENT_STATUT.BROUILLON,
-    organismeId: organismeStore.organismeCourant?.organismeId ?? null,
-    regionObtention: null,
-  } as AgrementDto;
-  return navigateTo("/agrement/new");
-}
-
-function onClickAgrementExistant() {
-  //todo premier agrement: construire l'url avec le vrai lien permettant de renseigner un agrement existant
-  const organismeId = organismeStore.organismeCourant?.organismeId;
-  if (!organismeId) {
-    log.w("organismeId introuvable, impossible de rediriger");
-    return;
-  }
-  return navigateTo(`/organisme/${organismeId}#agrement`);
-}
 
 onMounted(() => {
   pageHeadingRef.value?.focus();
