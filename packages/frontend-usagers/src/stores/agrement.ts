@@ -26,15 +26,6 @@ const ALLOWED_STATUTS_RENOUVELLEMENT = [
   AGREMENT_STATUT.EN_INSTRUCTION,
   AGREMENT_STATUT.PRIS_EN_CHARGE,
 ];
-
-const STATUTS_AGREMENT_EN_COURS = [
-  AGREMENT_STATUT.BROUILLON,
-  AGREMENT_STATUT.A_COMPLETER,
-  AGREMENT_STATUT.A_CORRIGER,
-  AGREMENT_STATUT.TRANSMIS,
-  AGREMENT_STATUT.EN_INSTRUCTION,
-  AGREMENT_STATUT.PRIS_EN_CHARGE,
-];
 export interface AgrementStoreState {
   agrement: AgrementDto | null;
   agrementCourant: AgrementDto | null;
@@ -89,12 +80,7 @@ export const useAgrementStore = defineStore("agrement", {
       );
     },
     hasAgrementEnCours(state): boolean {
-      if (!state.agrements) return false;
-      return state.agrements.some(
-        (a) =>
-          a.statut !== null &&
-          STATUTS_AGREMENT_EN_COURS.includes(a.statut as AGREMENT_STATUT),
-      );
+      return hasAgrementEnCours(state.agrements);
     },
     hasAgrementValide(state): boolean {
       return state.agrementCourant !== null;
