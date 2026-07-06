@@ -15,7 +15,7 @@ const props = defineProps({
 
 const filteredMenus = computed(() =>
   agrementMenu.menus.filter(
-    (m) => m.id !== "agrement-bilan" || Boolean(!agrementStore.agrementCourant),
+    (m) => m.id !== "agrement-bilan" || Boolean(agrementStore.agrementCourant),
   ),
 );
 
