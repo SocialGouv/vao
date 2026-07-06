@@ -1,6 +1,7 @@
 import { defineNuxtRouteMiddleware, navigateTo } from "#app";
 import { logger } from "#imports";
 import { loadAgrementDetectionState } from "~/composables/useAgrementDetection";
+import { useOrganismeStore } from "~/stores/organisme";
 
 const log = logger("middlewares/check-first-agrement");
 

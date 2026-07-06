@@ -92,15 +92,10 @@
 </template>
 
 <script setup lang="ts">
-import type { AgrementDto } from "@vao/shared-bridge";
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import DocumentAdd from "@gouvfr/dsfr/dist/artwork/pictograms/document/document-add.svg";
 import DocumentSignature from "@gouvfr/dsfr/dist/artwork/pictograms/document/document-signature.svg";
 
-const agrementStore = useAgrementStore();
 const userStore = useUserStore();
-const organismeStore = useOrganismeStore();
-const log = logger("pages/agrement/bienvenue");
 
 const pageHeadingRef = ref<HTMLHeadingElement | null>(null);
 

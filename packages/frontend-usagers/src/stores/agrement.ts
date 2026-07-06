@@ -79,9 +79,15 @@ export const useAgrementStore = defineStore("agrement", {
         this.sixMonthsFromNow,
       );
     },
-    hasAgrementEnCours(state): boolean {
-      return hasAgrementEnCours(state.agrements);
+    hasAgrementRenouvellementEnCours(state): boolean {
+      return hasAgrementRenouvellementEnCours(state.agrements);
     },
+    /**
+     * Indique si l'organisme a un agrément valide.
+     * ⚠️ Précondition : nécessite que `getCurrent()` ait été appelé et résolu au préalable.
+     * Un retour `false` avant cet appel ne signifie pas "aucun agrément valide" mais "donnée non chargée".
+     * Préférer l'utilisation via le composable `useAgrementDetection`, qui garantit le chargement.
+     */
     hasAgrementValide(state): boolean {
       return state.agrementCourant !== null;
     },

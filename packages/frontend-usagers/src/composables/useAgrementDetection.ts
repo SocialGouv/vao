@@ -16,11 +16,12 @@ export async function loadAgrementDetectionState() {
 
   return {
     hasAgrementValide: agrementStore.hasAgrementValide,
-    hasAgrementEnCours: agrementStore.hasAgrementEnCours,
+    hasAgrementRenouvellementEnCours:
+      agrementStore.hasAgrementRenouvellementEnCours,
     hasLegacyAgrement,
     hasAnyAgrement:
       agrementStore.hasAgrementValide ||
-      agrementStore.hasAgrementEnCours ||
+      agrementStore.hasAgrementRenouvellementEnCours ||
       hasLegacyAgrement,
   };
 }

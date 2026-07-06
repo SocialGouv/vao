@@ -9,7 +9,9 @@ export const STATUTS_AGREMENT_EN_COURS = [
   AGREMENT_STATUT.PRIS_EN_CHARGE,
 ];
 
-export function hasAgrementEnCours(agrements: AgrementDto[] | null): boolean {
+export function hasAgrementRenouvellementEnCours(
+  agrements: AgrementDto[] | null,
+): boolean {
   if (!agrements) return false;
   return agrements.some(
     (a) =>

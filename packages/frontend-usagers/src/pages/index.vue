@@ -5,9 +5,13 @@
     </div>
     <AgrementAlertRenouvellement> </AgrementAlertRenouvellement>
     <div
-      v-if="agrementStore.agrementCourant && !agrementStore.hasAgrementEnCours"
+      v-if="
+        agrementStore.agrementCourant &&
+        !agrementStore.hasAgrementRenouvellementEnCours
+      "
       class="fr-alert fr-alert--info fr-mb-3w"
     >
+      <!-- N'afficher que si aucun renouvellement n'est déjà en cours, pour éviter le doublon avec AgrementAlertRenouvellement -->
       <h2 class="fr-h4">Votre agrément est actif</h2>
       <p>
         Votre agrément

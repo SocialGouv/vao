@@ -1,29 +1,29 @@
 import { AGREMENT_STATUT, type AgrementDto } from "@vao/shared-bridge";
 import { describe, it, expect } from "vitest";
-import { hasAgrementEnCours } from "./agrementStatus";
+import { hasAgrementRenouvellementEnCours } from "./agrementStatus";
 
-describe("hasAgrementEnCours", () => {
+describe("hasAgrementRenouvellementEnCours", () => {
   it("returns false when agrements is null", () => {
-    expect(hasAgrementEnCours(null)).toBe(false);
+    expect(hasAgrementRenouvellementEnCours(null)).toBe(false);
   });
 
   it("returns false when there are no agrements", () => {
-    expect(hasAgrementEnCours([])).toBe(false);
+    expect(hasAgrementRenouvellementEnCours([])).toBe(false);
   });
 
   it("returns true when an agrement is BROUILLON", () => {
     const agrements = [{ statut: AGREMENT_STATUT.BROUILLON }] as AgrementDto[];
-    expect(hasAgrementEnCours(agrements)).toBe(true);
+    expect(hasAgrementRenouvellementEnCours(agrements)).toBe(true);
   });
 
   it("returns false when the only agrement is REFUSE", () => {
     const agrements = [{ statut: AGREMENT_STATUT.REFUSE }] as AgrementDto[];
-    expect(hasAgrementEnCours(agrements)).toBe(false);
+    expect(hasAgrementRenouvellementEnCours(agrements)).toBe(false);
   });
 
   it("returns false when the only agrement is VALIDE", () => {
     const agrements = [{ statut: AGREMENT_STATUT.VALIDE }] as AgrementDto[];
-    expect(hasAgrementEnCours(agrements)).toBe(false);
+    expect(hasAgrementRenouvellementEnCours(agrements)).toBe(false);
   });
 
   it("returns true when at least one agrement is en cours among several", () => {
@@ -31,6 +31,6 @@ describe("hasAgrementEnCours", () => {
       { statut: AGREMENT_STATUT.REFUSE },
       { statut: AGREMENT_STATUT.A_CORRIGER },
     ] as AgrementDto[];
-    expect(hasAgrementEnCours(agrements)).toBe(true);
+    expect(hasAgrementRenouvellementEnCours(agrements)).toBe(true);
   });
 });
