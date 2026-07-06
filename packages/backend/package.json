@@ -44,7 +44,7 @@
     "pdfmake": "^0.2.10",
     "pg": "catalog:",
     "pg-format": "~1.0.4",
-    "proj4": "^2.15.0",
+    "proj4": "^2.20.9",
     "ufo": "^1.5.4",
     "yup": "catalog:"
   },
