@@ -34,7 +34,7 @@
     "dayjs": "catalog:",
     "debug": "catalog:",
     "express": "~4.21.0",
-    "file-type": "^19.6.0",
+    "file-type": "^22.0.1",
     "form-data": "^4.0.1",
     "helmet": "~8.0.0",
     "jsonwebtoken": "^9.0.2",
