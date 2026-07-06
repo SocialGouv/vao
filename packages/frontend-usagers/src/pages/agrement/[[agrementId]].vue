@@ -115,7 +115,11 @@ import type {
   AgrementFilesDto,
   FileKey,
 } from "@vao/shared-bridge";
-import { AGREMENT_STATUT, FILE_CATEGORY_CONFIG } from "@vao/shared-bridge";
+import {
+  AGREMENT_TYPE_DEPOT,
+  AGREMENT_STATUT,
+  FILE_CATEGORY_CONFIG,
+} from "@vao/shared-bridge";
 import {
   useToaster,
   handleDocumentUploadError,
@@ -204,6 +208,9 @@ async function updateOrCreate(formValues: AgrementFormValues) {
   const updatedData: AgrementFormValues = { ...formValues };
   try {
     let agrementEnTraitement = agrementStore.agrementEnTraitement;
+    const typeDepot = agrementStore.agrementCourant
+      ? AGREMENT_TYPE_DEPOT.RENOUVELLEMENT
+      : AGREMENT_TYPE_DEPOT.PREMIER;
 
     if (!agrementEnTraitement) {
       agrementEnTraitement = {
@@ -294,6 +301,7 @@ async function updateOrCreate(formValues: AgrementFormValues) {
     await agrementStore.postAgrement({
       agrement: newAgrement,
       organismeId,
+      typeDepot,
     });
     // On recharge l'agrément en cours pour récupérer les données mises à jour (notamment la région d'obtention)
     // Idéalement, il faudrait que le backend renvoie l'agrément mis à jour directement dans la réponse de postAgrement, mais pour l'instant on fait un getEnRenouvellement pour récupérer les données mises à jour.

@@ -4,6 +4,7 @@ import type {
   ActiviteDto,
   AgrementHistoryItem,
   AgrementMessage,
+  AGREMENT_TYPE_DEPOT,
 } from "@vao/shared-bridge";
 import {
   AGREMENT_STATUT,
@@ -174,9 +175,11 @@ export const useAgrementStore = defineStore("agrement", {
     async postAgrement({
       agrement,
       organismeId,
+      typeDepot,
     }: {
       agrement: Partial<AgrementDto>;
       organismeId: number;
+      typeDepot: AGREMENT_TYPE_DEPOT;
     }): Promise<number | null> {
       log.i("updateAgrement - IN", { agrement });
       const agrementToSend: AgrementDto = {
@@ -239,8 +242,10 @@ export const useAgrementStore = defineStore("agrement", {
         file: agrement.file ?? null,
       };
 
-      const agrementId: number | null =
-        await AgrementService.postAgrement(agrementToSend);
+      const agrementId: number | null = await AgrementService.postAgrement(
+        agrementToSend,
+        typeDepot,
+      );
 
       this.agrementEnTraitement = {
         ...agrementToSend,

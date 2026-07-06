@@ -3,6 +3,7 @@ import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   AGREMENT_SVA_TIMER_STATUT,
+  AGREMENT_TYPE_DEPOT,
   ERRORS_COMMON,
   FILE_CATEGORY,
   formatFR,
@@ -171,6 +172,32 @@ describe("POST /agrements", () => {
     expect(response.status).toBe(200);
     expect(response.body).toBeDefined();
   });
+  it("devrait retourner 200 et créer un agrément sans bilan annuel", async () => {
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
+    // On force agrementBilanAnnuel à []
+    const agrementData = await buildAgrementFixture({
+      agrementBilanAnnuel: [],
+      organismeId,
+    });
+
+    const responseBrouillon = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send({ ...agrementData, typeDepot: AGREMENT_TYPE_DEPOT.PREMIER });
+
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send({
+        ...agrementData,
+        id: responseBrouillon.body.id,
+        statut: AGREMENT_STATUT.TRANSMIS,
+        typeDepot: AGREMENT_TYPE_DEPOT.PREMIER,
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+  });
+
   it("devrait remonter une 200 avec ma region d'obtention", async () => {
     const frontUser = await createUsagersUser();
     const organismeId = await createOrganisme({

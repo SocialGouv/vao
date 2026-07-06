@@ -4,6 +4,7 @@ import type { BasicRoute, RouteResponseBody, RouteSchema } from "../../..";
 import {
   AGREMENT_STATUT,
   AGREMENT_STATUTS_PERMISSIFS,
+  AGREMENT_TYPE_DEPOT,
 } from "../../../constantes/agrement";
 import { FILE_CATEGORY } from "../../../constantes/file";
 import type { AgrementDto, AgrementFilesDto } from "../../../dto";
@@ -11,22 +12,11 @@ import type { AgrementDto, AgrementFilesDto } from "../../../dto";
 export interface PostAgrementRoute extends BasicRoute {
   method: "POST";
   path: "/agrements/";
-  body: AgrementDto;
+  body: AgrementDto & {
+    typeDepot: AGREMENT_TYPE_DEPOT;
+  };
   response: RouteResponseBody<{ id: number | null }>;
 }
-
-// La validation du fichier PROCVERBAL pour une personne morale est effectuée
-// côté backend car elle dépend du type d'organisme.
-const REQUIRED_FILE_CATEGORIES: FILE_CATEGORY[] = [
-  FILE_CATEGORY.IMMATRICUL,
-  FILE_CATEGORY.ASSURRESP,
-  FILE_CATEGORY.ASSURRAPAT,
-  FILE_CATEGORY.BILANQUALITPERCEPTION,
-  FILE_CATEGORY.BILANQUALITPERSPECTIVE,
-  FILE_CATEGORY.BILANQUALITELEMARQ,
-  FILE_CATEGORY.PROJETSSEJOURSCOMPETENCESEXPERIENCE,
-  FILE_CATEGORY.PROJETSSEJOURSMESURES,
-];
 
 const requiredUnlessBrouillon = (field: yup.AnySchema) =>
   field.when("statut", {
@@ -36,18 +26,31 @@ const requiredUnlessBrouillon = (field: yup.AnySchema) =>
     then: (schema) => schema.required("Champ obligatoire"),
   });
 
+// Exception du nouvel agrément : pas de vérification du bilan annuel
+const requiredUnlessExceptionAndBrouillon = (field: yup.AnySchema) =>
+  field.when(["statut", "typeDepot"], {
+    is: (statut: AGREMENT_STATUT, typeDepot: AGREMENT_TYPE_DEPOT) =>
+      !AGREMENT_STATUTS_PERMISSIFS.has(statut) &&
+      typeDepot === AGREMENT_TYPE_DEPOT.RENOUVELLEMENT,
+
+    otherwise: (schema) => schema.nullable(),
+
+    then: (schema) => schema.required("Champ obligatoire"),
+  });
+
 // NOTE : on ne peut pas passer yup.string().min(20).nullable() directement à
 // requiredUnlessBrouillon pcq les contraintes de chaînage yup sont cumulatives.
 // requiredWithMinCaractersUnlessBrouillon applique .min() uniquement dans la branche `then`,
 // garantissant que la contrainte ne s'active qu'hors BROUILLON et VALIDE.
-const requiredWithMinCaractersUnlessBrouillon = (
+const requiredWithMinAndException = (
   field: yup.StringSchema<string | null | undefined>,
   min: number,
   message: string = `Minimum ${min} caractères.`,
 ) =>
-  field.when("statut", {
-    is: (val: string) =>
-      !AGREMENT_STATUTS_PERMISSIFS.has(val as AGREMENT_STATUT),
+  field.when(["statut", "typeDepot"], {
+    is: (statut: AGREMENT_STATUT, typeDepot: AGREMENT_TYPE_DEPOT) =>
+      !AGREMENT_STATUTS_PERMISSIFS.has(statut) &&
+      typeDepot === AGREMENT_TYPE_DEPOT.RENOUVELLEMENT,
     otherwise: (schema) => schema.nullable(),
     then: (schema) => schema.required("Champ obligatoire").min(min, message),
   });
@@ -78,7 +81,7 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
         )
         .nullable(),
     ),
-    agrementBilanAnnuel: requiredUnlessBrouillon(
+    agrementBilanAnnuel: requiredUnlessExceptionAndBrouillon(
       yup
         .array()
         .of(
@@ -150,9 +153,9 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
         }),
       )
       .nullable()
-      .when("statut", {
-        is: (val: string) =>
-          !AGREMENT_STATUTS_PERMISSIFS.has(val as AGREMENT_STATUT),
+      .when(["statut"], {
+        is: (statut: string) =>
+          !AGREMENT_STATUTS_PERMISSIFS.has(statut as AGREMENT_STATUT),
 
         otherwise: (schema) => schema.nullable(),
 
@@ -164,11 +167,31 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
               });
             }
 
+            const { typeDepot } = this.parent;
+            // La validation du fichier PROCVERBAL pour une personne morale est effectuée
+            // côté backend car elle dépend du type d'organisme.
+
+            const requiredCategories: FILE_CATEGORY[] = [
+              FILE_CATEGORY.IMMATRICUL,
+              FILE_CATEGORY.ASSURRESP,
+              FILE_CATEGORY.ASSURRAPAT,
+              FILE_CATEGORY.PROJETSSEJOURSCOMPETENCESEXPERIENCE,
+              FILE_CATEGORY.PROJETSSEJOURSMESURES,
+            ];
+
+            if (typeDepot === AGREMENT_TYPE_DEPOT.RENOUVELLEMENT) {
+              requiredCategories.push(
+                FILE_CATEGORY.BILANQUALITPERCEPTION,
+                FILE_CATEGORY.BILANQUALITPERSPECTIVE,
+                FILE_CATEGORY.BILANQUALITELEMARQ,
+              );
+            }
+
             const categories = files
               .map((f: Partial<AgrementFilesDto>) => f.category)
               .filter(Boolean);
 
-            const missing = REQUIRED_FILE_CATEGORIES.filter(
+            const missing = requiredCategories.filter(
               (category) => !categories.includes(category),
             );
 
@@ -206,27 +229,29 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
         .nullable(),
     ),
     animationAutre: yup.string().nullable(),
-    bilanAucunChangementEvolution: requiredUnlessBrouillon(
+    bilanAucunChangementEvolution: requiredUnlessExceptionAndBrouillon(
       yup.boolean().nullable(),
     ),
     bilanChangementEvolution: yup.string().nullable(),
     bilanFinancierCommentaire: yup.string().nullable(),
-    bilanFinancierComparatif: requiredWithMinCaractersUnlessBrouillon(
+    bilanFinancierComparatif: requiredWithMinAndException(
       yup.string().nullable(),
       20,
       "Minimum 20 caractères.",
     ),
-    bilanFinancierComptabilite: requiredUnlessBrouillon(
+    bilanFinancierComptabilite: requiredUnlessExceptionAndBrouillon(
       yup.string().nullable(),
     ),
     bilanFinancierRessourcesHumaines: yup.string().nullable(),
-    bilanQualElementsMarquants: requiredUnlessBrouillon(
+    bilanQualElementsMarquants: requiredUnlessExceptionAndBrouillon(
       yup.string().nullable(),
     ),
-    bilanQualPerceptionSensibilite: requiredUnlessBrouillon(
+    bilanQualPerceptionSensibilite: requiredUnlessExceptionAndBrouillon(
       yup.string().nullable(),
     ),
-    bilanQualPerspectiveEvol: requiredUnlessBrouillon(yup.string().nullable()),
+    bilanQualPerspectiveEvol: requiredUnlessExceptionAndBrouillon(
+      yup.string().nullable(),
+    ),
     budgetComplement: yup.string().nullable(),
     budgetGestionPerso: requiredUnlessBrouillon(yup.string().nullable()),
     budgetPaiementSecurise: yup.string().nullable(),
@@ -263,6 +288,7 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
     suiviMedDistribution: requiredUnlessBrouillon(yup.string().nullable()),
     transportAllerRetour: requiredUnlessBrouillon(yup.string().nullable()),
     transportSejour: requiredUnlessBrouillon(yup.string().nullable()),
+    typeDepot: yup.string().nullable(),
     vacanciersNbEnvisage: yup.number().nullable(),
-  }) as yup.ObjectSchema<AgrementDto>,
+  }) as yup.ObjectSchema<AgrementDto & { typeDepot: AGREMENT_TYPE_DEPOT }>,
 };
