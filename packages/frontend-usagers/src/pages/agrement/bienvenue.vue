@@ -6,13 +6,11 @@
         Bienvenue {{ userStore.user?.prenom }} {{ userStore.user?.nom }}
       </h1>
     </div>
-    <p class="fr-mb-4w">
+    <p class="fr-mb-0">
       Cette plateforme vous permet de gérer vos agréments, organiser et déclarer
-      des vacances adaptées.<br />
-      <span class="fr-text--bold"
-        >Pour commencer vous devez avoir votre agrément.</span
-      >
+      des vacances adaptées.
     </p>
+    <p class="fr-text--bold">Pour commencer vous devez avoir votre agrément.</p>
 
     <div class="image-links">
       <div class="travellers-image">
@@ -22,6 +20,7 @@
         <div class="fr-col-12">
           <DsfrTile
             :title="'Faire une première demande d’agrément'"
+            titleTag="h2"
             :description="'Vous n’avez pas encore d’agrément et souhaitez en faire la demande pour organiser des vacances adaptées.'"
             :details="'Durée estimée 30 minutes'"
             :imgSrc="DocumentAdd"
@@ -29,10 +28,11 @@
             :button-label="'Faire une première demande d’agrément'"
             to="/agrement/new"
           />
-          <!-- //todo: ajouter le lien vers la page agrement-existant -->
+          <!-- //todo: renseigner le lien quand la destination de page est connue -->
           <DsfrTile
             class="fr-mt-4w"
             :title="'J’ai déjà un agrément'"
+            titleTag="h2"
             :description="'Vous possédez déjà un agrément valide et souhaitez l\'enregistrer pour accéder  immédiatement aux services.'"
             :details="'Durée estimée 30 minutes'"
             :imgSrc="DocumentSignature"
@@ -43,19 +43,12 @@
         </div>
       </div>
     </div>
-    <section
-      class="pourquoi-agrement fr-mt-6w"
-      aria-labelledby="pourquoi-agrement-titre"
-    >
+    <section class="pourquoi-agrement fr-mt-6w">
       <h2 id="pourquoi-agrement-titre">Pourquoi un agrément ?</h2>
       <ul class="fr-grid-row fr-grid-row--gutters fr-list-reset">
         <li class="fr-col-12 fr-col-md-4">
           <h3 class="fr-mb-1v fr-text--lg">
-            <img
-              src="../../assets/icones/file-shield-2-line.svg"
-              alt=""
-              aria-hidden="true"
-            />
+            <img src="../../assets/icones/file-shield-2-line.svg" alt="" />
             L'agrément est obligatoire
           </h3>
           <p>
@@ -65,23 +58,16 @@
         </li>
         <li class="fr-col-12 fr-col-md-4">
           <h3 class="fr-mb-1v fr-text--lg">
-            <img
-              src="../../assets/icones/history-line.svg"
-              alt=""
-              aria-hidden="true"
-            />Il est valable 5 ans
+            <img src="../../assets/icones/history-line.svg" alt="" />Il est
+            valable 5 ans
           </h3>
-          <p>
-            et doit être renouvelé avant expiration. Lorem ipsum lorem ipsum
-            lorem ipsum
-          </p>
+          <p>et doit être renouvelé avant expiration.</p>
         </li>
         <li class="fr-col-12 fr-col-md-4">
           <h3 class="fr-mb-1v fr-text--lg">
             <img
               src="../../assets/icones/calendar-check-fill.svg"
               alt=""
-              aria-hidden="true"
             />Compter 4 mois minimum
           </h3>
           <p>avant la date du premier séjour.</p>
@@ -128,6 +114,16 @@ onMounted(() => {
 .image-links {
   display: flex;
   align-items: center;
+  margin-top: 2rem;
+}
+.image-links img {
+  max-width: 100%;
+}
+@media (max-width: 768px) {
+  .image-links {
+    flex-flow: column nowrap;
+    row-gap: 1rem;
+  }
 }
 .image-links > div {
   flex: 1;
