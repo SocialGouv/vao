@@ -102,7 +102,12 @@
     <DsfrButton
       class="fr-mb-6v fr-mt-6v"
       :disabled="
-        !(coordonneesValid && projetValid && dossierValid && bilanValid)
+        !(
+          coordonneesValid &&
+          projetValid &&
+          dossierValid &&
+          (bilanValid || props.firstAgrement)
+        )
       "
       @click.prevent="transmitAgrement"
       >Confirmer ma demande d'agrément</DsfrButton
