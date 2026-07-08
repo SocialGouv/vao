@@ -288,7 +288,10 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
     suiviMedDistribution: requiredUnlessBrouillon(yup.string().nullable()),
     transportAllerRetour: requiredUnlessBrouillon(yup.string().nullable()),
     transportSejour: requiredUnlessBrouillon(yup.string().nullable()),
-    typeDepot: yup.string().nullable(),
+    typeDepot: yup
+      .mixed<AGREMENT_TYPE_DEPOT>()
+      .oneOf(Object.values(AGREMENT_TYPE_DEPOT))
+      .required(),
     vacanciersNbEnvisage: yup.number().nullable(),
   }) as yup.ObjectSchema<AgrementDto & { typeDepot: AGREMENT_TYPE_DEPOT }>,
 };

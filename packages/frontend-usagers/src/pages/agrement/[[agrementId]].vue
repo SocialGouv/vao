@@ -63,7 +63,7 @@
             />
           </div>
           <div
-            v-if="hash === 'agrement-bilan'"
+            v-if="hash === 'agrement-bilan' && hasCurrentAgrement"
             id="agrement-bilan"
             :read-only="readOnly"
           >
@@ -208,7 +208,7 @@ async function updateOrCreate(formValues: AgrementFormValues) {
   const updatedData: AgrementFormValues = { ...formValues };
   try {
     let agrementEnTraitement = agrementStore.agrementEnTraitement;
-    const typeDepot = agrementStore.agrementCourant
+    const typeDepot = agrementStore.agrementCourant?.id
       ? AGREMENT_TYPE_DEPOT.RENOUVELLEMENT
       : AGREMENT_TYPE_DEPOT.PREMIER;
 
