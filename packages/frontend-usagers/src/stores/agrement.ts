@@ -84,12 +84,12 @@ export const useAgrementStore = defineStore("agrement", {
     },
     /**
      * Indique si l'organisme a un agrément valide.
-     * ⚠️ Précondition : nécessite que `getCurrent()` ait été appelé et résolu au préalable.
+     * Précondition : nécessite que `getCurrent()` ait été appelé et résolu au préalable.
      * Un retour `false` avant cet appel ne signifie pas "aucun agrément valide" mais "donnée non chargée".
      * Préférer l'utilisation via le composable `useAgrementDetection`, qui garantit le chargement.
      */
     hasAgrementValide(state): boolean {
-      return state.agrementCourant !== null;
+      return state.agrementCourant?.statut === AGREMENT_STATUT.VALIDE;
     },
   },
 
@@ -343,8 +343,13 @@ export const useAgrementStore = defineStore("agrement", {
       log.i("fetchAgrementStatus - IN");
       try {
         const { agrements } = await AgrementService.getListAgrements({});
-        this.agrements = agrements.filter((a) => a.supprime === false);
-        log.i("fetchAgrementStatus - DONE", { count: this.agrements.length });
+        const filtered = agrements.filter((a) => a.supprime === false);
+
+        this.agrements = filtered;
+        this.agrementCourant =
+          filtered.find((a) => a.statut === AGREMENT_STATUT.VALIDE) ?? null;
+
+        log.i("fetchAgrementStatus - DONE", { count: filtered.length });
       } catch (err) {
         log.w("fetchAgrementStatus - DONE with error", err);
         throw err;

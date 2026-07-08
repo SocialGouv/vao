@@ -9,6 +9,9 @@ export default defineNuxtRouteMiddleware(async () => {
   log.i("IN");
   const organismeStore = useOrganismeStore();
   try {
+    if (!organismeStore.organismeCourant) {
+      await organismeStore.setMyOrganisme();
+    }
     const { hasAnyAgrement } = await loadAgrementDetectionState();
     const organismeComplet = Boolean(organismeStore.organismeCourant?.complet);
 
@@ -19,5 +22,6 @@ export default defineNuxtRouteMiddleware(async () => {
     log.i("DONE - reste sur l'accueil");
   } catch (err: unknown) {
     log.w("FAIL", err);
+    return navigateTo("/");
   }
 });

@@ -98,7 +98,7 @@
 
 /* fix pictogramme dans composant DsfrTile pour éviter que le picto soit coupé en hauteur */
 .agrement-bienvenue .fr-tile--download .fr-tile__pictogram,
-.fr-tile--horizontal .fr-tile__pictogram {
+.agrement-bienvenue .fr-tile--horizontal .fr-tile__pictogram {
   height: auto;
 }
 /* ajout icon time dans le detail du composant DsfrTile pour agrement-bienvenue */
