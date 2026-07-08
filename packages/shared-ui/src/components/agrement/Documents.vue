@@ -1,14 +1,20 @@
 <template>
-  <div v-if="dreetsFiles && dreetsFiles.length > 0">
+  <section v-if="dreetsFiles && dreetsFiles.length > 0">
+    <h2 id="dreets-title">Documents de la DREETS</h2>
+    <TableFull no-caption title="" :headers="headers" :data="dreetsFiles" />
+  </section>
+  <section v-if="ovaFiles && ovaFiles.length > 0">
+    <h2 id="ova-title">Documents de l'OVA</h2>
     <TableFull
-      title="Documents de la DREETS"
+      no-caption
+      title="Documents de l'OVA"
       :headers="headers"
-      :data="dreetsFiles"
+      :data="ovaFiles"
     />
-  </div>
-  <div v-if="ovaFiles && ovaFiles.length > 0">
-    <TableFull title="Documents de l'OVA" :headers="headers" :data="ovaFiles" />
-  </div>
+  </section>
+  <section v-if="ovaFiles.length === 0 && dreetsFiles.length === 0">
+    Aucun document joint
+  </section>
 </template>
 
 <script setup lang="ts">

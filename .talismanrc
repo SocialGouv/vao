@@ -337,6 +337,8 @@ fileignoreconfig:
   checksum: 9f97b81400c9543b979e5ee15bb7ebfb4e76c0e7aef020f59e374a5066bd9925
 - filename: packages/frontend-usagers/src/components/agrement/representants.vue
   checksum: 17c287f11e26438a1bccb79d81152c7662283823bc9355a62e4dba851e5f5556
+- filename: packages/frontend-usagers/src/components/agrement/timeLine.vue
+  checksum: 1973f707c0a727e79b7da6b9ccbb4dd8b7df51327f2e01a8f5ff373f7ce5d962
 - filename: packages/frontend-usagers/src/components/customInput.vue
   checksum: ff3d0adca5a28cd4e4c25ed981250d5b8e253f8554ad4ec7280a2b05900faf33
 - filename: packages/frontend-usagers/src/components/demande-sejour/table.vue
