@@ -5,9 +5,6 @@ export async function loadAgrementDetectionState() {
   const agrementStore = useAgrementStore();
   const organismeStore = useOrganismeStore();
 
-  if (!agrementStore.agrementCourant) {
-    await agrementStore.getCurrent();
-  }
   if (agrementStore.agrements === null) {
     await agrementStore.fetchAgrementStatus();
   }
