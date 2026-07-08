@@ -1,7 +1,12 @@
 <template>
   <section v-if="dreetsFiles && dreetsFiles.length > 0">
     <h2 id="dreets-title">Documents de la DREETS</h2>
-    <TableFull no-caption title="" :headers="headers" :data="dreetsFiles" />
+    <TableFull
+      no-caption
+      title="Documents de la DREETS"
+      :headers="headers"
+      :data="dreetsFiles"
+    />
   </section>
   <section v-if="ovaFiles && ovaFiles.length > 0">
     <h2 id="ova-title">Documents de l'OVA</h2>
