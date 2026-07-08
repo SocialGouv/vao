@@ -1,5 +1,6 @@
 import {
   AGREMENT_STATUT,
+  AGREMENT_TYPE_DEPOT,
   AgrementDto,
   AgrementFilesDto,
   AgrementSejoursDto,
@@ -16,6 +17,7 @@ export async function buildAgrementFixture({
   organismeId,
   activiteId = Math.floor(Math.random() * 20) + 1,
   statut = AGREMENT_STATUT.BROUILLON,
+  typeDepot = AGREMENT_TYPE_DEPOT.RENOUVELLEMENT,
   regionObtention = "IDF",
   agrementFiles,
   agrementBilanAnnuel,
@@ -25,12 +27,13 @@ export async function buildAgrementFixture({
   organismeId: number;
   activiteId?: number;
   statut?: AGREMENT_STATUT;
+  typeDepot?: AGREMENT_TYPE_DEPOT;
   regionObtention?: string | null;
   agrementFiles?: AgrementFilesDto[];
   agrementBilanAnnuel?: AgrementDto["agrementBilanAnnuel"];
   agrementSejours?: AgrementDto["agrementSejours"];
   agrementAnimation?: AgrementDto["agrementAnimation"];
-}): Promise<AgrementDto> {
+}): Promise<AgrementDto & { typeDepot: AGREMENT_TYPE_DEPOT }> {
   return {
     accompRespAttestHono: true,
     accompRespCompExp: "Oui",
@@ -158,6 +161,7 @@ export async function buildAgrementFixture({
     suiviMedDistribution: "Oui",
     transportAllerRetour: "Bus",
     transportSejour: "Train",
+    typeDepot,
     updatedAt: new Date(),
     vacanciersNbEnvisage: 10,
   };

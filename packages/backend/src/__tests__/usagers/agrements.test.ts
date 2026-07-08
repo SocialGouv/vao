@@ -377,7 +377,7 @@ describe("POST /agrements", () => {
     const { agrement } = await getAgrement(agrementId);
     const response = await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
-      .send(agrement!);
+      .send({ ...agrement, typeDepot: AGREMENT_TYPE_DEPOT.RENOUVELLEMENT });
 
     expect(response.status).toBe(200);
     expect(response.body).toBeDefined();
