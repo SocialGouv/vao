@@ -23,28 +23,33 @@
               <template #cell-custom:actions="{ row }">
                 <div class="buttons-group">
                   <DsfrButton
-                    icon="ri:arrow-right-s-line"
-                    icon-only
+                    class="fr-icon-arrow-right-s-line"
                     primary
                     no-outline
-                    size="small"
                     type="button"
-                    title="Naviguer"
+                    :title="`Voir l’hébergement ${row.nom}`"
                     :disabled="!props.modifiable"
+                    :aria-label="`Voir l’hébergement ${row.nom}`"
                     @click="editNuitee(row.index)"
-                  />
-
+                  >
+                    <span class="fr-sr-only">
+                      Voir l’hébergement {{ row.nom }}
+                    </span></DsfrButton
+                  >
                   <DsfrButton
                     icon="ri:delete-bin-2-line"
                     icon-only
                     tertiary
                     no-outline
-                    size="small"
                     type="button"
-                    title="Supprimer"
+                    :title="`Supprimer l’hébergement ${row.nom}`"
                     :disabled="!props.modifiable"
                     @click="removeHebergement(row.index)"
-                  />
+                  >
+                    <span class="fr-sr-only">
+                      Supprimer l’hébergement {{ row.nom }}
+                    </span></DsfrButton
+                  >
                 </div>
               </template>
             </DsfrDataTableV2Wrapper>
