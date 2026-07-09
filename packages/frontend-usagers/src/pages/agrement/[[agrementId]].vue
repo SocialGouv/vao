@@ -161,7 +161,7 @@ async function saveAndTransmitAgrement() {
     const stepDemandeTransmise = (() => {
       switch (agrementStore.agrementEnTraitement?.statut) {
         case AGREMENT_STATUT.BROUILLON:
-          return 0;
+          return hasCurrentAgrement.value ? 0 : 3;
 
         case AGREMENT_STATUT.A_COMPLETER:
           return 1;
@@ -185,6 +185,7 @@ async function saveAndTransmitAgrement() {
           ? AGREMENT_STATUT.EN_INSTRUCTION
           : AGREMENT_STATUT.TRANSMIS,
     });
+    await agrementStore.getEnRenouvellement();
     if (success) {
       navigateTo(`/demande-agrement-transmise?step=${stepDemandeTransmise}`);
     } else {

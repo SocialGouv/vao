@@ -1,4 +1,4 @@
-import { formatFR } from "@vao/shared-bridge";
+import { AGREMENT_TYPE_DEPOT, formatFR } from "@vao/shared-bridge";
 
 import { config } from "../../config";
 import * as sendTemplate from "../../helpers/mail";
@@ -240,10 +240,12 @@ export const AgrementMailUsagers = {
     email,
     date,
     regionDreets,
+    typeDepot,
   }: {
     email: string;
     date: string;
     regionDreets: string;
+    typeDepot: AGREMENT_TYPE_DEPOT;
   }) => {
     log.i("sendStatutTransmisMail - In", {
       date,
@@ -258,8 +260,9 @@ export const AgrementMailUsagers = {
     const regionPhrase = !regionDreets
       ? `Votre demande d’agrément a bien été transmise le ${date} à la DREETS compétente.`
       : `Votre demande d’agrément a bien été transmise le ${date} à la DREETS ${regionDreets}.`;
+    const title = `Portail VAO – Confirmation de transmission de votre ${typeDepot === AGREMENT_TYPE_DEPOT.PREMIER ? "première" : ""} demande ${typeDepot === AGREMENT_TYPE_DEPOT.RENOUVELLEMENT ? "de renouvellement" : ""} d’agrément`;
     const html = sendTemplate.getBody(
-      "Portail VAO – Confirmation de transmission de votre demande de renouvellement d’agrément",
+      title,
       [
         {
           p: [
@@ -279,8 +282,7 @@ export const AgrementMailUsagers = {
       from: config.senderEmail,
       html,
       replyTo: config.senderEmail,
-      subject:
-        "Portail VAO – Confirmation de transmission de votre demande de renouvellement d’agrément",
+      subject: title,
       to: email,
     };
     log.d("sendStatutTransmisMail post email", { params });

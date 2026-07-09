@@ -2,10 +2,7 @@ import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import request from "supertest";
 
 import { buildAgrementFixture } from "../fixtures/agrementsFixture";
-import {
-  createAgrement,
-  updateAgrementRegionObtention,
-} from "../helpers/agrementsHelper";
+import { createAgrement } from "../helpers/agrementsHelper";
 import { getFoAppHelper } from "../helpers/appHelper";
 import { createOrganisme } from "../helpers/organismeHelper";
 import { createTerritoire } from "../helpers/territoireHelper";
@@ -45,7 +42,7 @@ describe("GET /territoire/get-by-agrement-region-user", () => {
     expect(response.body.territoire.territoire_id).toEqual(territoireId);
   });
 
-  it("devrait retourner 404 si aucun organisme n'est lié à l'utilisateur", async () => {
+  it("devrait retourner 404 si aucun agrement n'est lié à l'organisme de cet utilisateur", async () => {
     const frontUser = await createUsagersUser();
 
     const response = await request(getFoAppHelper(frontUser)).get(
@@ -53,28 +50,5 @@ describe("GET /territoire/get-by-agrement-region-user", () => {
     );
 
     expect(response.status).toBe(404);
-  });
-
-  it("devrait retourner 422 si la région d'obtention de l'agrément est manquante", async () => {
-    const frontUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: frontUser.id });
-    const agrementData = await buildAgrementFixture({
-      organismeId,
-      statut: AGREMENT_STATUT.VALIDE,
-    });
-    const agrementId = await createAgrement({
-      agrement: {
-        ...agrementData,
-      },
-      organismeId,
-    });
-    // On force la mise à jour de la région d'obtention de l'agrément à null pour simuler le cas où la région d'obtention est manquante
-    // Sinon c'est automatiquement remplie par lors de la création de l'agrément avec l'API Insee
-    await updateAgrementRegionObtention(agrementId, null);
-    const response = await request(getFoAppHelper(frontUser)).get(
-      `/territoire/get-by-agrement-region-user`,
-    );
-
-    expect(response.status).toBe(422);
   });
 });
