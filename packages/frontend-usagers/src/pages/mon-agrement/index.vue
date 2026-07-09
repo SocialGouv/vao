@@ -80,7 +80,11 @@
         :asc="asc"
       >
         <AgrementDocuments
-          :agrement-courant="agrementStore.agrementCourant ?? {}"
+          :agrement-courant="
+            agrementStore.agrementCourant ??
+            agrementStore.agrementEnTraitement ??
+            {}
+          "
           :cdn-url="`${config.public.backendUrl}/documents/`"
         ></AgrementDocuments>
       </DsfrTabContent>

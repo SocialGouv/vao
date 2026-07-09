@@ -1,4 +1,5 @@
 <template>
+  <h2>Messagerie</h2>
   <Chat
     ref="chatRef"
     :messages="genericMessages"

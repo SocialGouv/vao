@@ -6,9 +6,9 @@
         {{ formatFR(created_at) ?? "" }} -
         <span v-if="type_precision"
           >Statut {{ formatLabel(type_precision) ?? "" }}</span
-        ><br />
-        <span v-if="metadata?.commentaire"
-          ><strong>Commentaire : </strong
+        >
+        <span v-if="metadata?.commentaire" class="wrapper"
+          ><span class="fr-text--bold">Commentaire : </span
           >{{ metadata?.commentaire ?? "" }}</span
         >
       </p>
@@ -81,5 +81,8 @@ const typeLabel =
 .entite {
   flex-shrink: 0;
   font-size: 14px;
+}
+.wrapper {
+  display: block;
 }
 </style>
