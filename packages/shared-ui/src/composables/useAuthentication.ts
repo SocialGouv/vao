@@ -4,7 +4,12 @@ import { ERRORS_LOGIN, USER_COMPETENCE_BO } from "@vao/shared-bridge";
 import type { UserDto, TwoFactorErrorCode } from "@vao/shared-bridge";
 import { useToaster } from "../composables/useToaster";
 import createLogger from "../utils/createLogger";
-import { maskEmail, isValidPassword, createAuthState } from "../utils/auth";
+import {
+  maskEmail,
+  createAuthState,
+  getEmailError,
+  getPasswordError,
+} from "../utils/auth";
 
 import type {
   UseAuthenticationReturn,
@@ -102,21 +107,15 @@ export const useAuthentication = (
   const {
     email,
     password,
+    emailError,
+    passwordError,
     displayType,
     openTwoFactor,
     isLoggingIn,
     isVerifying2FA,
     isResendingCode,
+    submitAttempt,
   } = state;
-
-  const canLogin = computed<boolean>(() => {
-    return (
-      email.value !== null &&
-      email.value !== "" &&
-      password.value !== null &&
-      isValidPassword(password.value)
-    );
-  });
 
   const maskedEmail = computed<string>(() => {
     if (!email.value) return "";
@@ -179,8 +178,16 @@ export const useAuthentication = (
   async function login(): Promise<void> {
     log.i("login", { email: email.value });
 
-    if (!canLogin.value) {
-      log.w("login - impossible, formulaire incomplet");
+    submitAttempt.value++;
+
+    emailError.value = getEmailError(email.value);
+    passwordError.value = getPasswordError(password.value);
+
+    if (emailError.value || passwordError.value) {
+      log.w("login - validation échouée", {
+        emailError: emailError.value,
+        passwordError: passwordError.value,
+      });
       return;
     }
 
@@ -395,13 +402,14 @@ export const useAuthentication = (
   return {
     email,
     password,
+    emailError,
+    passwordError,
     displayType,
     openTwoFactor,
     isLoggingIn,
     isVerifying2FA,
     isResendingCode,
-
-    canLogin,
+    submitAttempt,
     maskedEmail,
 
     login,

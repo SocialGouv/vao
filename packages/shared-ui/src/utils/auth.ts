@@ -42,6 +42,8 @@ export function isValidPassword(password: string): boolean {
 
 export function createAuthState(): AuthState {
   return {
+    emailError: ref<string | null>(null),
+    passwordError: ref<string | null>(null),
     email: ref<string>(""),
     password: ref<string>(""),
     displayType: ref<LoginErrorType | null>(null),
@@ -49,6 +51,7 @@ export function createAuthState(): AuthState {
     isLoggingIn: ref<boolean>(false),
     isVerifying2FA: ref<boolean>(false),
     isResendingCode: ref<boolean>(false),
+    submitAttempt: ref<number>(0),
   };
 }
 
@@ -67,4 +70,18 @@ export function otpUnlockAt(
       null
     );
   }
+}
+
+export function getEmailError(email: string): string | null {
+  if (!email)
+    return "Le champ « Identifiant » est vide. Veuillez renseigner votre adresse courriel. Exemple : nom@domaine.fr";
+  if (!isValidEmail(email))
+    return "Le champ « Identifiant » est invalide. Merci de saisir une adresse au format nom@domaine.fr";
+  return null;
+}
+
+export function getPasswordError(password: string): string | null {
+  if (!isValidPassword(password))
+    return "Le champ « Mot de passe » est vide. Veuillez renseigner votre mot de passe.";
+  return null;
 }

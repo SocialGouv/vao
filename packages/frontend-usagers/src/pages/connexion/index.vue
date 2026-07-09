@@ -24,7 +24,7 @@
             <div class="fr-col-12 fr-col-md-9 fr-col-lg-8">
               <h1>Connexion à VAO</h1>
 
-              <form id="login-form" @submit.prevent="login">
+              <form id="login-form" novalidate @submit.prevent="login">
                 <div
                   class="fr-fieldset"
                   aria-labelledby="login-fieldset-legend"
@@ -50,25 +50,29 @@
                   <div class="fr-fieldset__element">
                     <div class="fr-fieldset">
                       <div class="fr-fieldset__element">
-                        <span class="fr-hint-text">
-                          Sauf mention contraire, tous les champs sont
-                          obligatoires.
-                        </span>
-                      </div>
-
-                      <div class="fr-fieldset__element">
-                        <div class="fr-input-group">
-                          <DsfrInput
-                            v-model="email"
-                            autocomplete="email"
-                            type="email"
-                            name="email"
-                            label="Identifiant"
-                            :label-visible="true"
-                            hint="Format attendu : nom@domaine.fr"
-                            required
-                          />
-                        </div>
+                        <DsfrInputGroup
+                          v-model="email"
+                          :error-message="emailError ?? undefined"
+                          label="Identifiant"
+                          :label-visible="true"
+                          hint="Format attendu : nom@domaine.fr"
+                        >
+                          <template
+                            #default="{ isInvalid, isValid, descriptionId }"
+                          >
+                            <DsfrInput
+                              ref="emailInputRef"
+                              v-model="email"
+                              autocomplete="username"
+                              type="email"
+                              name="email"
+                              :is-invalid="isInvalid"
+                              :is-valid="isValid"
+                              :description-id="descriptionId"
+                              required
+                            />
+                          </template>
+                        </DsfrInputGroup>
                       </div>
 
                       <div class="fr-fieldset__element">
@@ -76,11 +80,14 @@
                           <div class="fr-input-wrap">
                             <PasswordInput
                               id="password"
+                              ref="passwordInputRef"
                               v-model="password"
+                              class="password-input"
                               autocomplete="current-password"
                               label="Mot de passe"
                               name="password"
-                              hint="Veuillez saisir votre mot de passe"
+                              hint="Veuillez saisir votre mot de passe. Exemple 3V@cancesAdaptées!"
+                              :error-message="passwordError ?? undefined"
                               required
                             />
                           </div>
@@ -100,10 +107,7 @@
                   <div class="fr-fieldset__element">
                     <ul role="list" class="fr-btns-group">
                       <li role="listitem">
-                        <DsfrButton
-                          type="submit"
-                          :disabled="!canLogin || isLoggingIn"
-                        >
+                        <DsfrButton type="submit" :disabled="isLoggingIn">
                           {{ isLoggingIn ? "Connexion..." : "Se connecter" }}
                         </DsfrButton>
                       </li>
@@ -113,7 +117,7 @@
               </form>
 
               <hr />
-              <h4>Vous n'avez pas de compte ?</h4>
+              <h3>Vous n'avez pas de compte ?</h3>
               <ul role="list" class="fr-btns-group">
                 <li role="listitem">
                   <DsfrButton
@@ -132,6 +136,7 @@
 </template>
 
 <script setup lang="ts">
+import type { DsfrInput, DsfrInputGroup } from "@gouvminint/vue-dsfr";
 import { USER_TARGET } from "@vao/shared-bridge";
 import {
   PasswordInput,
@@ -166,10 +171,12 @@ const {
   password,
   displayType,
   isLoggingIn,
-  canLogin,
   login,
   validateCgu,
   refuseCgu,
+  emailError,
+  passwordError,
+  submitAttempt,
 } = useAuthentication(
   USER_TARGET.FO,
   config.public.backendUrl,
@@ -198,6 +205,25 @@ const currentAlert = computed<{
   }
 
   return null;
+});
+
+const emailInputRef = ref<InstanceType<typeof DsfrInput> | null>(null);
+
+const passwordInputRef = ref<InstanceType<typeof PasswordInput> | null>(null);
+
+async function focusFirstError() {
+  await nextTick();
+  if (emailError.value) {
+    emailInputRef.value?.focus();
+  } else if (passwordError.value) {
+    passwordInputRef.value?.focus();
+  }
+}
+
+watch(submitAttempt, async () => {
+  if (emailError.value || passwordError.value) {
+    await focusFirstError();
+  }
 });
 
 onMounted(() => {

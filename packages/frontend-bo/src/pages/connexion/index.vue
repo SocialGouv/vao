@@ -25,7 +25,7 @@
               <h1>Connexion à VAO</h1>
               <h2>Portail Administration</h2>
 
-              <form id="login-form" @submit.prevent="login">
+              <form id="login-form" novalidate @submit.prevent="login">
                 <div
                   class="fr-fieldset"
                   aria-labelledby="login-fieldset-legend login-fieldset-messages"
@@ -54,25 +54,33 @@
                       aria-labelledby="credentials-messages"
                     >
                       <div class="fr-fieldset__element">
-                        <span class="fr-hint-text">
-                          Sauf mention contraire, tous les champs sont
-                          obligatoires.
-                        </span>
-                      </div>
-
-                      <div class="fr-fieldset__element">
-                        <div class="fr-input-group">
-                          <DsfrInput
-                            v-model="email"
-                            autocomplete="email"
-                            type="text"
-                            name="email"
-                            label="Identifiant"
-                            :label-visible="true"
-                            hint="Format attendu : nom@domaine.fr"
-                            required
-                          />
-                        </div>
+                        <DsfrInputGroup
+                          v-model="email"
+                          autocomplete="username"
+                          type="email"
+                          name="email"
+                          label="Identifiant"
+                          :label-visible="true"
+                          hint="Format attendu : nom@domaine.fr"
+                          :error-message="emailError ?? undefined"
+                          required
+                        >
+                          <template
+                            #default="{ isInvalid, isValid, descriptionId }"
+                          >
+                            <DsfrInput
+                              ref="emailInputRef"
+                              v-model="email"
+                              autocomplete="username"
+                              type="email"
+                              name="email"
+                              :is-invalid="isInvalid"
+                              :is-valid="isValid"
+                              :description-id="descriptionId"
+                              required
+                            />
+                          </template>
+                        </DsfrInputGroup>
                       </div>
 
                       <div class="fr-fieldset__element">
@@ -80,11 +88,14 @@
                           <div class="fr-input-wrap">
                             <PasswordInput
                               id="password"
+                              ref="passwordInputRef"
                               v-model="password"
+                              class="password-input"
                               autocomplete="current-password"
                               label="Mot de passe"
                               name="password"
-                              hint="Veuillez saisir votre mot de passe"
+                              hint="Veuillez saisir votre mot de passe. Exemple 3V@cancesAdaptées!"
+                              :error-message="passwordError ?? undefined"
                               required
                             />
                           </div>
@@ -104,10 +115,7 @@
                   <div class="fr-fieldset__element">
                     <ul role="list" class="fr-btns-group">
                       <li role="listitem">
-                        <DsfrButton
-                          type="submit"
-                          :disabled="!canLogin || isLoggingIn"
-                        >
+                        <DsfrButton type="submit" :disabled="isLoggingIn">
                           {{ isLoggingIn ? "Connexion..." : "Se connecter" }}
                         </DsfrButton>
                       </li>
@@ -126,6 +134,7 @@
 </template>
 
 <script setup lang="ts">
+import type { DsfrInput, DsfrInputGroup } from "@gouvminint/vue-dsfr";
 import { computed } from "vue";
 import { useUserStore } from "@/stores/user";
 import {
@@ -158,12 +167,13 @@ const {
   password,
   displayType,
   isLoggingIn,
-
-  canLogin,
+  passwordError,
+  submitAttempt,
 
   login,
   validateCgu,
   refuseCgu,
+  emailError,
 } = useAuthentication("bo", config.public.backendUrl, userStore, navigateTo);
 
 const displayInfos = apiModel.connectionInfos;
@@ -186,6 +196,25 @@ const currentAlert = computed<{
   }
 
   return null;
+});
+
+const emailInputRef = ref<InstanceType<typeof DsfrInput> | null>(null);
+
+const passwordInputRef = ref<InstanceType<typeof PasswordInput> | null>(null);
+
+async function focusFirstError() {
+  await nextTick();
+  if (emailError.value) {
+    emailInputRef.value?.focus();
+  } else if (passwordError.value) {
+    passwordInputRef.value?.focus();
+  }
+}
+
+watch(submitAttempt, async () => {
+  if (emailError.value || passwordError.value) {
+    await focusFirstError();
+  }
 });
 
 onMounted(() => {
