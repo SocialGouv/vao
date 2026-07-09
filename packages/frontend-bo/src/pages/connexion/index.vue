@@ -134,7 +134,6 @@
 </template>
 
 <script setup lang="ts">
-import type { DsfrInput, DsfrInputGroup } from "@gouvminint/vue-dsfr";
 import { computed } from "vue";
 import { useUserStore } from "@/stores/user";
 import {
@@ -142,6 +141,7 @@ import {
   apiModel,
   CguValidation,
   useAuthentication,
+  useLoginFormFocus,
 } from "@vao/shared-ui";
 
 const log = logger("pages/bo/connexion");
@@ -176,6 +176,12 @@ const {
   emailError,
 } = useAuthentication("bo", config.public.backendUrl, userStore, navigateTo);
 
+const { emailInputRef, passwordInputRef } = useLoginFormFocus(
+  emailError,
+  passwordError,
+  submitAttempt,
+);
+
 const displayInfos = apiModel.connectionInfos;
 
 const currentAlert = computed<{
@@ -196,25 +202,6 @@ const currentAlert = computed<{
   }
 
   return null;
-});
-
-const emailInputRef = ref<InstanceType<typeof DsfrInput> | null>(null);
-
-const passwordInputRef = ref<InstanceType<typeof PasswordInput> | null>(null);
-
-async function focusFirstError() {
-  await nextTick();
-  if (emailError.value) {
-    emailInputRef.value?.focus();
-  } else if (passwordError.value) {
-    passwordInputRef.value?.focus();
-  }
-}
-
-watch(submitAttempt, async () => {
-  if (emailError.value || passwordError.value) {
-    await focusFirstError();
-  }
 });
 
 onMounted(() => {

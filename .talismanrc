@@ -1,5 +1,4 @@
 fileignoreconfig:
-
 - filename: .env.dev.example.env
   checksum: 7750aad06145ec2c279c3e85684a5877bb3f5e67c4d3e40f112ff87f3d6869e6
 - filename: .github/workflows/e2e.yaml
@@ -285,7 +284,7 @@ fileignoreconfig:
 - filename: packages/frontend-bo/src/composables/useAuthentication.ts
   checksum: 810660f58ad352f8275f89ac5f1a899fcfb66d11a3c51637deb478d96c2f86a3
 - filename: packages/frontend-bo/src/pages/connexion/index.vue
-  checksum: 3c59c3cb9a893bea64770b47187d54062092853f2aee0f5f637c916018645f91
+  checksum: bed080bc67d02b13df879a0057a6fe9e1674137b4f4327e4137ae55ab3c4beb0
 - filename: packages/frontend-bo/src/pages/connexion/reset-mot-de-passe.vue
   checksum: f544299c6795c35ca29f1ddd0babb1c840f7c25c72435b3c6b0939e0ea55d120
 - filename: packages/frontend-bo/src/pages/eig/index.vue
@@ -367,7 +366,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/pages/connexion/enregistrement.vue
   checksum: d7f27b7ab97e487d35332e5c3255604ad143319750517f9f722c33f0adbf5e27
 - filename: packages/frontend-usagers/src/pages/connexion/index.vue
-  checksum: ccf7c8dc78003e215ec0021344ddd2d25e61d6b8877af328e2e0a668ae55c2fd
+  checksum: b578bfa54f4ab4a00fd5450c2c2a9d664b4b200bf142df7f19ea874fb2bbbe89
 - filename: packages/frontend-usagers/src/pages/connexion/mot-de-passe-oublie.vue
   checksum: a30047520f10c9428ebb0865e8019baf9799801d99b0a6606eec58154a73c91b
 - filename: packages/frontend-usagers/src/pages/connexion/reset-mot-de-passe.vue
@@ -432,6 +431,8 @@ fileignoreconfig:
   checksum: 1a41578cc15aa2da2b59efa2c378e9ed2552a2912c7d7cd666527e148d4d15f6
 - filename: packages/shared-ui/src/composables/useAuthentication.ts
   checksum: c7ebcf14551cc092d9be53d61d3a5c04b852a0af8dc5b7ebfa9fdd371c030bdd
+- filename: packages/shared-ui/src/composables/useLoginFormFocus.ts
+  checksum: 6eec9f458a0f3b4a816f012be473e2e202b718c239f6a3986eae28463b164985
 - filename: packages/shared-ui/src/composables/useToaster.ts
   checksum: 704ad956e4817e92ca2df2f4cbdf14cc7a39218cdacdfef070dd91c8d1e4c563
 - filename: packages/shared-ui/src/types/Auth.type.ts
@@ -494,6 +495,4 @@ fileignoreconfig:
   checksum: f93c69228f6832f4417ca3e432f481e23a30aa4b6d4c07082da17d2312c0cd52
 - filename: s/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
-  scopeconfig:
-  - scope: node
-    version: "1.0"
+version: "1.0"

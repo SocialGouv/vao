@@ -81,7 +81,7 @@ export function getEmailError(email: string): string | null {
 }
 
 export function getPasswordError(password: string): string | null {
-  if (!isValidPassword(password))
+  if (!isValidPassword(password?.trim()))
     return "Le champ « Mot de passe » est vide. Veuillez renseigner votre mot de passe.";
   return null;
 }
