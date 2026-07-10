@@ -193,7 +193,7 @@ export const AgrementMailAdmin = {
       organismeName,
       siret,
     });
-    const title = `Portail VAO – Nouvelle demande ${typeDepot === AGREMENT_TYPE_DEPOT.RENOUVELLEMENT ? "de renouvellement " : ""}d’agrément reçue`;
+    const title = `Portail VAO – Nouvelle demande ${typeDepot === AGREMENT_TYPE_DEPOT.RENOUVELLEMENT ? "de renouvellement d’agrément reçue" : "de premier agrément reçue"}`;
     const html = sendTemplate.getBody(
       title,
       [

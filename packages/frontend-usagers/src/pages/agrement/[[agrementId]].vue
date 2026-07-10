@@ -185,8 +185,8 @@ async function saveAndTransmitAgrement() {
           ? AGREMENT_STATUT.EN_INSTRUCTION
           : AGREMENT_STATUT.TRANSMIS,
     });
-    await agrementStore.getEnRenouvellement();
     if (success) {
+      await agrementStore.getEnRenouvellement();
       navigateTo(`/demande-agrement-transmise?step=${stepDemandeTransmise}`);
     } else {
       toaster.error({

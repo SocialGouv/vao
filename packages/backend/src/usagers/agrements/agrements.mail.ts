@@ -260,7 +260,7 @@ export const AgrementMailUsagers = {
     const regionPhrase = !regionDreets
       ? `Votre demande d’agrément a bien été transmise le ${date} à la DREETS compétente.`
       : `Votre demande d’agrément a bien été transmise le ${date} à la DREETS ${regionDreets}.`;
-    const title = `Portail VAO – Confirmation de transmission de votre ${typeDepot === AGREMENT_TYPE_DEPOT.PREMIER ? "première " : ""}demande ${typeDepot === AGREMENT_TYPE_DEPOT.RENOUVELLEMENT ? "de renouvellement " : ""}d’agrément`;
+    const title = `Portail VAO – Confirmation de transmission de votre ${typeDepot === AGREMENT_TYPE_DEPOT.PREMIER ? "demande de premier agrément" : "demande de renouvellement d’agrément"}`;
     const html = sendTemplate.getBody(
       title,
       [

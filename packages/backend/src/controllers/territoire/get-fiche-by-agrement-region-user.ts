@@ -28,9 +28,9 @@ export default async function get(
       userId: Number(userId),
     });
     const agrementWithRegion = agrements.filter(
-      (agrement) => agrement.regionObtention !== null,
+      (agrement) => !agrement.regionObtention,
     );
-    if (!agrementWithRegion || agrementWithRegion.length === 0) {
+    if (agrementWithRegion.length === 0) {
       return next(
         new AppError(
           "Aucun agrément avec une région d'obtention n'a été trouvé pour cet utilisateur.",
