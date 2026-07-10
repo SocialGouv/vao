@@ -9,19 +9,16 @@
           <br />Documents importés : taille maximale à 5 Mo, les formats
           supportés sont jpg, png, pdf.
         </p>
-        <p>
+        <p class="text-bold">
           <span
             class="fr-icon-success-fill default-success fr-mr-1w"
             aria-hidden="true"
           ></span>
-          <b>
-            <span class="default-success"
-              >Saisies enregistrées à chaque étape :</span
-            >
-            au clic sur “Suivant”, vos informations sont enregistrées, vous
-            pourrez reprendre plus tard, en retrouvant le lien depuis
-            l’accueil.</b
+          <span class="default-success"
+            >Saisies enregistrées à chaque étape :</span
           >
+          au clic sur “Suivant”, vos informations sont enregistrées, vous
+          pourrez reprendre plus tard, en retrouvant le lien depuis l’accueil.
         </p>
       </div>
     </div>
