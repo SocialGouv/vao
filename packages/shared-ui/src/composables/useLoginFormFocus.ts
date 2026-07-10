@@ -5,8 +5,8 @@ export interface FocusableInput {
 }
 
 export interface UseLoginFormFocusReturn {
-  emailInputRef: Ref<FocusableInput | null>;
-  passwordInputRef: Ref<FocusableInput | null>;
+  emailInputFocusRef: Ref<FocusableInput | null>;
+  passwordInputFocusRef: Ref<FocusableInput | null>;
 }
 
 export function useLoginFormFocus(
@@ -14,15 +14,15 @@ export function useLoginFormFocus(
   passwordError: Ref<string | null>,
   submitAttempt: Ref<number>,
 ): UseLoginFormFocusReturn {
-  const emailInputRef = ref<FocusableInput | null>(null);
-  const passwordInputRef = ref<FocusableInput | null>(null);
+  const emailInputFocusRef = ref<FocusableInput | null>(null);
+  const passwordInputFocusRef = ref<FocusableInput | null>(null);
 
   async function focusFirstError() {
     await nextTick();
     if (emailError.value) {
-      emailInputRef.value?.focus();
+      emailInputFocusRef.value?.focus();
     } else if (passwordError.value) {
-      passwordInputRef.value?.focus();
+      passwordInputFocusRef.value?.focus();
     }
   }
 
@@ -32,5 +32,5 @@ export function useLoginFormFocus(
     }
   });
 
-  return { emailInputRef, passwordInputRef };
+  return { emailInputFocusRef, passwordInputFocusRef };
 }

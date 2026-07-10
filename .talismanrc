@@ -284,7 +284,7 @@ fileignoreconfig:
 - filename: packages/frontend-bo/src/composables/useAuthentication.ts
   checksum: 810660f58ad352f8275f89ac5f1a899fcfb66d11a3c51637deb478d96c2f86a3
 - filename: packages/frontend-bo/src/pages/connexion/index.vue
-  checksum: bed080bc67d02b13df879a0057a6fe9e1674137b4f4327e4137ae55ab3c4beb0
+  checksum: 4849b0a322a7379e5b4b24079b51d9729266adf346c1f86daf8c4392ad6a9192
 - filename: packages/frontend-bo/src/pages/connexion/reset-mot-de-passe.vue
   checksum: f544299c6795c35ca29f1ddd0babb1c840f7c25c72435b3c6b0939e0ea55d120
 - filename: packages/frontend-bo/src/pages/eig/index.vue
@@ -366,7 +366,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/pages/connexion/enregistrement.vue
   checksum: d7f27b7ab97e487d35332e5c3255604ad143319750517f9f722c33f0adbf5e27
 - filename: packages/frontend-usagers/src/pages/connexion/index.vue
-  checksum: b578bfa54f4ab4a00fd5450c2c2a9d664b4b200bf142df7f19ea874fb2bbbe89
+  checksum: 1277421bfedb66f94463109393f316482aeb16ec94867e35b78ebd7975299dc0
 - filename: packages/frontend-usagers/src/pages/connexion/mot-de-passe-oublie.vue
   checksum: a30047520f10c9428ebb0865e8019baf9799801d99b0a6606eec58154a73c91b
 - filename: packages/frontend-usagers/src/pages/connexion/reset-mot-de-passe.vue
@@ -430,9 +430,9 @@ fileignoreconfig:
 - filename: packages/shared-ui/src/composables/index.js
   checksum: 1a41578cc15aa2da2b59efa2c378e9ed2552a2912c7d7cd666527e148d4d15f6
 - filename: packages/shared-ui/src/composables/useAuthentication.ts
-  checksum: c7ebcf14551cc092d9be53d61d3a5c04b852a0af8dc5b7ebfa9fdd371c030bdd
+  checksum: 9a1d049eaa73333f86e53c66eb218b5cf276fb03d2e97241d68be52e4f666397
 - filename: packages/shared-ui/src/composables/useLoginFormFocus.ts
-  checksum: 6eec9f458a0f3b4a816f012be473e2e202b718c239f6a3986eae28463b164985
+  checksum: ddab88fe1181e5629b93d6a6bb18903a2eb8ff6620fbfe8533c43fb731fc4db7
 - filename: packages/shared-ui/src/composables/useToaster.ts
   checksum: 704ad956e4817e92ca2df2f4cbdf14cc7a39218cdacdfef070dd91c8d1e4c563
 - filename: packages/shared-ui/src/types/Auth.type.ts

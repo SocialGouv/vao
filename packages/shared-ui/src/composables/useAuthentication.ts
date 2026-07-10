@@ -1,4 +1,4 @@
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { $fetch } from "ofetch";
 import { ERRORS_LOGIN, USER_COMPETENCE_BO } from "@vao/shared-bridge";
 import type { UserDto, TwoFactorErrorCode } from "@vao/shared-bridge";
@@ -116,6 +116,18 @@ export const useAuthentication = (
     isResendingCode,
     submitAttempt,
   } = state;
+
+  watch(email, () => {
+    if (emailError.value) {
+      emailError.value = null;
+    }
+  });
+
+  watch(password, () => {
+    if (passwordError.value) {
+      passwordError.value = null;
+    }
+  });
 
   const maskedEmail = computed<string>(() => {
     if (!email.value) return "";
