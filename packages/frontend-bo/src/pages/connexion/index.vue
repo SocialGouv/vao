@@ -25,11 +25,8 @@
               <h1>Connexion à VAO</h1>
               <h2>Portail Administration</h2>
 
-              <form id="login-form" @submit.prevent="login">
-                <div
-                  class="fr-fieldset"
-                  aria-labelledby="login-fieldset-legend login-fieldset-messages"
-                >
+              <form id="login-form" novalidate @submit.prevent="login">
+                <fieldset class="fr-fieldset">
                   <legend
                     id="login-fieldset-legend"
                     class="fr-fieldset__legend"
@@ -49,30 +46,37 @@
                   </div>
 
                   <div class="fr-fieldset__element">
-                    <div
-                      class="fr-fieldset"
-                      aria-labelledby="credentials-messages"
-                    >
+                    <div class="fr-fieldset">
                       <div class="fr-fieldset__element">
-                        <span class="fr-hint-text">
+                        <p class="fr-hint-text">
                           Sauf mention contraire, tous les champs sont
                           obligatoires.
-                        </span>
+                        </p>
                       </div>
 
                       <div class="fr-fieldset__element">
-                        <div class="fr-input-group">
-                          <DsfrInput
-                            v-model="email"
-                            autocomplete="email"
-                            type="text"
-                            name="email"
-                            label="Identifiant"
-                            :label-visible="true"
-                            hint="Format attendu : nom@domaine.fr"
-                            required
-                          />
-                        </div>
+                        <DsfrInputGroup
+                          :error-message="emailError ?? undefined"
+                        >
+                          <template
+                            #default="{ isInvalid, isValid, descriptionId }"
+                          >
+                            <DsfrInput
+                              ref="emailInputFocusRef"
+                              v-model="email"
+                              autocomplete="username"
+                              type="email"
+                              name="email"
+                              label="Identifiant"
+                              :label-visible="true"
+                              hint="Format attendu : nom@domaine.fr"
+                              :is-invalid="isInvalid"
+                              :is-valid="isValid"
+                              :description-id="descriptionId"
+                              aria-required="true"
+                            />
+                          </template>
+                        </DsfrInputGroup>
                       </div>
 
                       <div class="fr-fieldset__element">
@@ -80,15 +84,18 @@
                           <div class="fr-input-wrap">
                             <PasswordInput
                               id="password"
+                              ref="passwordInputFocusRef"
                               v-model="password"
+                              class="password-input"
                               autocomplete="current-password"
                               label="Mot de passe"
                               name="password"
-                              hint="Veuillez saisir votre mot de passe"
-                              required
+                              hint="Veuillez saisir votre mot de passe. Exemple: 3V@cancesAdaptées!"
+                              :error-message="passwordError ?? undefined"
+                              aria-required="true"
                             />
                           </div>
-                          <p>
+                          <p class="fr-mt-2v">
                             <NuxtLink
                               class="fr-link"
                               to="/connexion/mot-de-passe-oublie"
@@ -100,23 +107,18 @@
                       </div>
                     </div>
                   </div>
+                </fieldset>
 
-                  <div class="fr-fieldset__element">
-                    <ul role="list" class="fr-btns-group">
-                      <li role="listitem">
-                        <DsfrButton
-                          type="submit"
-                          :disabled="!canLogin || isLoggingIn"
-                        >
-                          {{ isLoggingIn ? "Connexion..." : "Se connecter" }}
-                        </DsfrButton>
-                      </li>
-                    </ul>
+                <div class="fr-fieldset__element">
+                  <div class="fr-btns-group">
+                    <DsfrButton type="submit" :disabled="isLoggingIn">
+                      {{ isLoggingIn ? "Connexion..." : "Se connecter" }}
+                    </DsfrButton>
                   </div>
                 </div>
               </form>
 
-              <hr />
+              <div class="separator fr-mb-4v" />
             </div>
           </div>
         </div>
@@ -133,6 +135,7 @@ import {
   apiModel,
   CguValidation,
   useAuthentication,
+  useLoginFormFocus,
 } from "@vao/shared-ui";
 
 const log = logger("pages/bo/connexion");
@@ -158,13 +161,20 @@ const {
   password,
   displayType,
   isLoggingIn,
-
-  canLogin,
+  passwordError,
+  submitAttempt,
 
   login,
   validateCgu,
   refuseCgu,
+  emailError,
 } = useAuthentication("bo", config.public.backendUrl, userStore, navigateTo);
+
+const { emailInputFocusRef, passwordInputFocusRef } = useLoginFormFocus(
+  emailError,
+  passwordError,
+  submitAttempt,
+);
 
 const displayInfos = apiModel.connectionInfos;
 
