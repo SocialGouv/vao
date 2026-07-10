@@ -28,7 +28,7 @@ export default async function get(
       userId: Number(userId),
     });
     const agrementWithRegion = agrements.filter(
-      (agrement) => !agrement.regionObtention,
+      (agrement) => agrement.regionObtention,
     );
     if (agrementWithRegion.length === 0) {
       return next(

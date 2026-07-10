@@ -417,7 +417,6 @@ export const AgrementsRepository = {
     INNER JOIN front.user_organisme uo ON uo.org_id = agr.organisme_id
     INNER JOIN front.users u ON u.id = uo.use_id
     WHERE u.id = $1
-    ORDER BY agr.updated_at,  agr.created_at
   `;
 
     const params: any[] = [userId];
@@ -426,6 +425,7 @@ export const AgrementsRepository = {
       query += ` AND agr.statut = $2`;
       params.push(statut);
     }
+    query += ` ORDER BY agr.updated_at,  agr.created_at`;
 
     const response = await getPool().query(query, params);
 
