@@ -102,7 +102,7 @@ const dateObtention = computed(() => {
 });
 
 //todo utiliser les vraies valeurs et supprimer les placeholders quand historique sera finalisé avec tout traqué:
-const steps = [
+const steps = computed(() => [
   {
     statut: AGREMENT_STATUT.TRANSMIS,
     libelle: props.firstAgrement
@@ -129,7 +129,7 @@ const steps = [
     temporalite: dateObtention.value,
     entite: "",
   },
-];
+]);
 
 const currentStepIndex = computed(() =>
   statutOrder.indexOf(props.initAgrement?.statut),
