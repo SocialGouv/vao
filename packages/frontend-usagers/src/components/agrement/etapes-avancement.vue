@@ -50,6 +50,7 @@ import { AGREMENT_STATUT, formatFR } from "@vao/shared-bridge";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
+  firstAgrement: { type: Boolean, required: true },
   territoire: { type: Object, required: true },
   user: { type: Object, required: true },
 });
@@ -104,7 +105,9 @@ const dateObtention = computed(() => {
 const steps = [
   {
     statut: AGREMENT_STATUT.TRANSMIS,
-    libelle: "Envoi de la première demande d'agrément",
+    libelle: props.firstAgrement
+      ? "Envoi de la première demande d'agrément"
+      : "Envoi de la demande de renouvellement d'agrément",
     temporalite: dateDepot.value,
     entite: "",
   },

@@ -44,8 +44,9 @@
           :init-agrement="agrementStore?.agrementEnTraitement ?? {}"
           :territoire="territoireStore.territoire ?? {}"
           :user="userStore.user ?? {}"
+          :first-agrement="!agrementStore.agrementCourant"
         />
-        <p class="fr-mt-4v">
+        <p v-if="!agrementStore.agrementCourant" class="fr-mt-4v">
           <b>Déclarer vos séjours</b> 2 mois minimum avant la date de départ
         </p>
         <span
@@ -57,7 +58,7 @@
           <h2 class="fr-mb-0">
             {{
               !agrementStore.agrementCourant
-                ? "Formulaire de demande de premier agrément"
+                ? "Formulaire de la première demande d'agrément"
                 : "Formulaire du renouvellement d’agrément"
             }}
             ({{ agrementAnneeRenouvellement }})
