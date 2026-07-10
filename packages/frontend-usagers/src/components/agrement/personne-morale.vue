@@ -8,13 +8,13 @@
       Personne morale
     </TitleWithIcon>
     <dl class="fr-text--sm fr-pl-0">
-      <dt><strong>Dénomination sociale:</strong></dt>
+      <dt>Dénomination sociale:</dt>
       <dd>{{ personneMorale.raisonSociale || "-" }}</dd>
-      <dt><strong>Statut, forme juridique:</strong></dt>
+      <dt>Statut, forme juridique:</dt>
       <dd>{{ personneMorale.statut || "-" }}</dd>
 
       <template v-if="!isEditingTelephone">
-        <dt><strong>Téléphone :</strong></dt>
+        <dt>Téléphone :</dt>
         <dd>
           {{ personneMorale.telephone || "-" }}
           <DsfrLinkV2
@@ -50,7 +50,7 @@
       </template>
 
       <template v-if="!isEditingEmail">
-        <dt><strong>Email :</strong></dt>
+        <dt>Email :</dt>
         <dd>
           {{ personneMorale.email || "-" }}
           <DsfrLinkV2
@@ -84,7 +84,7 @@
           </fieldset>
         </dd>
       </template>
-      <dt><strong>Adresse du siège social :</strong></dt>
+      <dt>Adresse du siège social :</dt>
       <dd>{{ personneMorale.adresse || "-" }}</dd>
     </dl>
 
@@ -213,6 +213,9 @@ dl {
 }
 dd {
   padding-left: 0;
+}
+dt {
+  font-weight: bold;
 }
 .full-width {
   grid-column: 1 / span 2;
