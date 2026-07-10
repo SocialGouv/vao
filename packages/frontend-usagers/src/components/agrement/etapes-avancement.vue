@@ -50,6 +50,7 @@ import { AGREMENT_STATUT, formatFR } from "@vao/shared-bridge";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
+  firstAgrement: { type: Boolean, required: true },
   territoire: { type: Object, required: true },
   user: { type: Object, required: true },
 });
@@ -101,10 +102,12 @@ const dateObtention = computed(() => {
 });
 
 //todo utiliser les vraies valeurs et supprimer les placeholders quand historique sera finalisé avec tout traqué:
-const steps = [
+const steps = computed(() => [
   {
     statut: AGREMENT_STATUT.TRANSMIS,
-    libelle: "Envoi de la première demande d'agrément",
+    libelle: props.firstAgrement
+      ? "Envoi de la première demande d'agrément"
+      : "Envoi de la demande de renouvellement d'agrément",
     temporalite: dateDepot.value,
     entite: "",
   },
@@ -126,7 +129,7 @@ const steps = [
     temporalite: dateObtention.value,
     entite: "",
   },
-];
+]);
 
 const currentStepIndex = computed(() =>
   statutOrder.indexOf(props.initAgrement?.statut),
