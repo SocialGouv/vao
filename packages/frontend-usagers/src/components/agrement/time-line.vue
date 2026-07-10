@@ -7,14 +7,12 @@
       Validité de l'agrément actuel ({{ titreDuree }})
     </h3>
 
-    <!-- Équivalent texte complet pour les technologies d'assistance -->
     <p class="fr-sr-only">{{ texteAlternatif }}</p>
 
     <div class="agrement-timeline__frise" aria-hidden="true">
-      <!-- Étiquette "jours restants", positionnée au-dessus du curseur -->
       <div
         class="agrement-timeline__badge-zone"
-        :style="{ '--pos': cursorPercentLabel + '%' }"
+        :style="{ '--pos': badgePercent + '%' }"
       >
         <span v-if="!estExpire" class="agrement-timeline__badge">
           {{ joursRestants }} jour{{ joursRestants > 1 ? "s" : "" }} restant{{
@@ -30,7 +28,6 @@
         </span>
       </div>
 
-      <!-- Piste de progression -->
       <div class="agrement-timeline__piste">
         <div class="agrement-timeline__fond"></div>
         <div
@@ -50,7 +47,6 @@
       </div>
     </div>
 
-    <!-- Dates : contenu réel, accessible, non masqué -->
     <dl class="agrement-timeline__dates">
       <div class="agrement-timeline__date agrement-timeline__date--debut">
         <dt class="fr-text--bold">Obtention</dt>
@@ -77,42 +73,22 @@
 
 <script setup lang="ts">
 /**
- * AgrementTimeline.vue
- * -----------------------------------------------------------------------
- * Frise de validité d'un agrément.
+ * TODO:
+ * Utiliser les formatFR() du shared-bridge pour les dates.
+ * Idem pour "Ajouter Mois"
+ * Normaliser les noms de variables
+ * Vérifier/ajuster les couleur au DSFR
  *
- * - Conforme au Système de Design de l'État (DSFR) : utilise les
- *   variables CSS DSFR (couleurs, espacements) avec valeurs de repli si
- *   le CSS DSFR n'est pas chargé globalement.
- * - Conforme RGAA :
- *     - Toute l'information portée par la couleur/la position est
- *       doublée par du texte visible ou un texte masqué visuellement
- *       (classe fr-sr-only) destiné aux technologies d'assistance.
- *     - Les éléments purement décoratifs (barre, curseur, graduations)
- *       sont marqués aria-hidden="true".
- *     - Contraste des textes conforme AA (bleu France sur blanc,
- *       texte gris foncé DSFR par défaut).
- *     - Respecte prefers-reduced-motion (pas d'animation de la barre
- *       pour les utilisateurs qui la désactivent).
- * - La barre de progression bleue avance en fonction de la date du jour
- *   (entre dateObtention et dateExpiration).
- * - Le curseur rond est positionné à une date FIXE : n mois avant la
- *   date d'expiration (2 mois par défaut), indépendamment de la date
- *   du jour.
+ * Appel de la timeline à partir de packages/frontend-usagers/src/components/agrement/etapes-avancement.vue
+ *   <AgrementTimeLine date-obtention="2023-08-01" date-expiration="2028-08-01" />
  */
 
 import { computed } from "vue";
 
 interface Props {
-  /** Date d'obtention de l'agrément (extrémité gauche, fixe) */
   dateObtention: string | Date;
-  /** Date d'expiration de l'agrément (extrémité droite, fixe) */
   dateExpiration: string | Date;
-  /** Nombre de mois avant expiration marquant le début de la période
-   *  de renouvellement (position du curseur rond). */
   moisAvantRenouvellement?: number;
-  /** Libellé de durée affiché dans le titre, ex. "5 ans".
-   *  Calculé automatiquement si non fourni. */
   dureeLabel?: string;
 }
 
@@ -120,6 +96,8 @@ const props = withDefaults(defineProps<Props>(), {
   moisAvantRenouvellement: 2,
   dureeLabel: undefined,
 });
+
+const badgePercent = computed(() => clamp(progressPercent.value, 12, 88));
 
 const MS_PAR_JOUR = 24 * 60 * 60 * 1000;
 
@@ -158,25 +136,20 @@ const dureeTotaleMs = computed(
   () => dExpiration.value.getTime() - dObtention.value.getTime(),
 );
 
-/** Pourcentage de remplissage de la barre bleue : avance chaque jour. */
 const progressPercent = computed(() => {
   if (dureeTotaleMs.value <= 0) return 0;
   const ecouleMs = dAujourdhui.value.getTime() - dObtention.value.getTime();
   return clamp((ecouleMs / dureeTotaleMs.value) * 100, 0, 100);
 });
 
-/** Position fixe du curseur rond (indépendante de la date du jour). */
 const cursorPercent = computed(() => {
   if (dureeTotaleMs.value <= 0) return 0;
   const ms = dDebutRenouvellement.value.getTime() - dObtention.value.getTime();
   return clamp((ms / dureeTotaleMs.value) * 100, 0, 100);
 });
 
-/** Version bornée pour l'étiquette texte du curseur, afin qu'elle ne
- *  déborde jamais du cadre du composant. */
 const cursorPercentLabel = computed(() => clamp(cursorPercent.value, 12, 88));
 
-/** Jours restants avant expiration (0 si déjà expiré). */
 const joursRestants = computed(() => {
   const diffMs = dExpiration.value.getTime() - dAujourdhui.value.getTime();
   return Math.max(0, Math.ceil(diffMs / MS_PAR_JOUR));
@@ -199,7 +172,6 @@ const titreDuree = computed(
     `${dureeAnsCalculee.value} an${dureeAnsCalculee.value > 1 ? "s" : ""}`,
 );
 
-/** Graduations décoratives réparties le long de la barre. */
 const graduations = [0, 16.5, 33, 50, 66.5, 83, 100];
 
 const texteAlternatif = computed(() => {
@@ -217,7 +189,6 @@ const texteAlternatif = computed(() => {
   )}.`;
 });
 </script>
-
 
 <style scoped>
 .agrement-timeline {
@@ -239,7 +210,6 @@ const texteAlternatif = computed(() => {
   color: var(--at-texte);
 }
 
-/* --- Zone de frise --- */
 .agrement-timeline__frise {
   position: relative;
   padding-top: 1.75rem;
@@ -355,8 +325,8 @@ const texteAlternatif = computed(() => {
 .agrement-timeline__date--milieu {
   position: absolute;
   top: 0;
-  left: var(--pos, 50%);
-  transform: translateX(-50%);
+  left: var(--pos, 70%);
+  transform: translateX(-70%);
   align-items: center;
   text-align: center;
 }
@@ -369,7 +339,6 @@ const texteAlternatif = computed(() => {
   color: var(--at-bleu);
 }
 
-/* --- Petits écrans : on repasse les 3 dates en colonne --- */
 @media (max-width: 36rem) {
   .agrement-timeline__dates {
     flex-direction: column;
