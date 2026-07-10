@@ -18,7 +18,7 @@ const messageClass = computed(() =>
   props.errorMessage ? "fr-error-text" : "fr-valid-text",
 );
 const isInvalid = computed(() => !!props.errorMessage);
-const isValid = computed(() => !!props.errorMessage);
+const isValid = computed(() => !!props.validMessage && !props.errorMessage);
 
 const descriptionId = computed(() => props.id + "-description");
 const hidePassword = ref(true);
@@ -100,6 +100,7 @@ defineExpose({ focus });
         'fr-input--valid': isValid,
       }"
       :value="modelValue"
+      :title="togglePasswordLabel"
       :aria-describedby="descriptionId ?? undefined"
       @input="
         $emit('update:modelValue', ($event.target as HTMLInputElement).value)

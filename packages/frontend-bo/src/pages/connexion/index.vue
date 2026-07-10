@@ -48,19 +48,15 @@
                   <div class="fr-fieldset__element">
                     <div class="fr-fieldset">
                       <div class="fr-fieldset__element">
-                        <span class="fr-hint-text">
+                        <p class="fr-hint-text">
                           Sauf mention contraire, tous les champs sont
                           obligatoires.
-                        </span>
+                        </p>
                       </div>
 
                       <div class="fr-fieldset__element">
                         <DsfrInputGroup
-                          v-model="email"
                           :error-message="emailError ?? undefined"
-                          label="Identifiant"
-                          :label-visible="true"
-                          hint="Format attendu : nom@domaine.fr"
                         >
                           <template
                             #default="{ isInvalid, isValid, descriptionId }"
@@ -111,15 +107,15 @@
                       </div>
                     </div>
                   </div>
-
-                  <div class="fr-fieldset__element">
-                    <div class="fr-btns-group">
-                      <DsfrButton type="submit" :disabled="isLoggingIn">
-                        {{ isLoggingIn ? "Connexion..." : "Se connecter" }}
-                      </DsfrButton>
-                    </div>
-                  </div>
                 </fieldset>
+
+                <div class="fr-fieldset__element">
+                  <div class="fr-btns-group">
+                    <DsfrButton type="submit" :disabled="isLoggingIn">
+                      {{ isLoggingIn ? "Connexion..." : "Se connecter" }}
+                    </DsfrButton>
+                  </div>
+                </div>
               </form>
 
               <div class="separator fr-mb-4v" />
