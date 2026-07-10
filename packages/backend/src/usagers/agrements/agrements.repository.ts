@@ -425,6 +425,7 @@ export const AgrementsRepository = {
       query += ` AND agr.statut = $2`;
       params.push(statut);
     }
+    query += ` ORDER BY agr.updated_at,  agr.created_at`;
 
     const response = await getPool().query(query, params);
 

@@ -9,6 +9,7 @@ import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   AGREMENT_SVA_TIMER_STATUT,
+  AGREMENT_TYPE_DEPOT,
   FILE_CATEGORY,
   ORGANISME_TYPE,
 } from "@vao/shared-bridge";
@@ -135,7 +136,10 @@ export const AgrementService = {
       });
     }
   },
-  async save(agrement: AgrementDto, userId: string): Promise<number> {
+  async save(
+    agrement: AgrementDto & { typeDepot: AGREMENT_TYPE_DEPOT },
+    userId: string,
+  ): Promise<number> {
     agrement.dateFinValidite = addYears(agrement?.dateObtention, 5);
     // Validation métier spécifique au type d'organisme.
     // Le schéma partagé ne connaît pas le type d'organisme (personne morale
@@ -285,6 +289,7 @@ export const AgrementService = {
                     email: emailRegion,
                     organismeName,
                     siret,
+                    typeDepot: agrement.typeDepot,
                   })
                 : // Transmission après demande de modification
                   AgrementMailAdmin.sendStatutModificationTransmisRegionMail({
@@ -310,6 +315,7 @@ export const AgrementService = {
                 date,
                 email,
                 regionDreets: nomObtentionRegion,
+                typeDepot: agrement.typeDepot,
               }),
             );
           } catch (e) {

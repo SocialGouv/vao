@@ -1,4 +1,4 @@
-import { OrganismeDto } from "@vao/shared-bridge";
+import { AGREMENT_TYPE_DEPOT, OrganismeDto } from "@vao/shared-bridge";
 
 import { config } from "../../config";
 import * as sendTemplate from "../../helpers/mail";
@@ -177,12 +177,14 @@ export const AgrementMailAdmin = {
     organismeName,
     siret,
     agrementId,
+    typeDepot,
   }: {
     email: string;
     date: string;
     organismeName: string;
     siret: string;
     agrementId: number;
+    typeDepot: AGREMENT_TYPE_DEPOT;
   }) => {
     log.i("sendStatutTransmisRegionMail - In", {
       agrementId,
@@ -191,14 +193,15 @@ export const AgrementMailAdmin = {
       organismeName,
       siret,
     });
+    const title = `Portail VAO – Nouvelle demande ${typeDepot === AGREMENT_TYPE_DEPOT.RENOUVELLEMENT ? "de renouvellement d’agrément reçue" : "de premier agrément reçue"}`;
     const html = sendTemplate.getBody(
-      "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue",
+      title,
       [
         {
           p: [
             "Bonjour,",
             "",
-            "Une demande de renouvellement d’agrément vient d’être transmise par l’organisateur suivant :",
+            `Une demande ${typeDepot === AGREMENT_TYPE_DEPOT.RENOUVELLEMENT ? "de renouvellement " : ""}d’agrément vient d’être transmise par l’organisateur suivant :`,
             "",
             `<strong>Nom de l’organisme</strong> : ${organismeName}`,
             `<strong>Numéro SIRET</strong> : ${siret}`,
@@ -216,8 +219,7 @@ export const AgrementMailAdmin = {
       from: config.senderEmail,
       html,
       replyTo: config.senderEmail,
-      subject:
-        "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue",
+      subject: title,
       to: email,
     };
     log.d("sendStatutTransmisRegionMail post email", { params });
