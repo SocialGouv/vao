@@ -10,7 +10,9 @@
           :role="displayType === 'Success' ? 'status' : 'alert'"
           :title="displayInfos[displayType].title"
           :description="displayInfos[displayType].description"
-          :type="displayInfos[displayType].type"
+          :type="
+            displayInfos[displayType].type === 'success' ? 'success' : 'error'
+          "
           :closeable="false"
         />
       </div>
@@ -64,7 +66,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
   useForgottenPassword,
   useForgottenPasswordFocus,
