@@ -46,6 +46,12 @@ export const AGREMENT_SVA_TIMER_STATUT_OPTIONS = Object.values(
   value: statut,
 }));
 
+const LABELS_TYPE_DEPOT: Record<AGREMENT_TYPE_DEPOT, string> = {
+  EXISTANT: "Agrément actuel",
+  PREMIER: "Première demande d'agrément",
+  RENOUVELLEMENT: "Renouvellement d'agrément",
+};
+
 const LABELS: Record<AGREMENT_STATUT, string> = {
   A_COMPLETER: "À compléter",
   A_CORRIGER: "À corriger",
@@ -62,6 +68,13 @@ export const AGREMENT_STATUT_OPTIONS = Object.values(
 ).map((statut) => ({
   text: LABELS[statut],
   value: statut,
+}));
+
+export const AGREMENT_TYPE_DEPOT_OPTIONS = Object.values(
+  Object.values(AGREMENT_TYPE_DEPOT),
+).map((typeDepot) => ({
+  text: LABELS_TYPE_DEPOT[typeDepot],
+  value: typeDepot,
 }));
 
 export enum ACTIVITE_TYPE {

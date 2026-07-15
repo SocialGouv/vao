@@ -5,6 +5,7 @@ import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   AGREMENT_SVA_TIMER_STATUT,
+  AGREMENT_TYPE_DEPOT,
   AgrementFilesDto,
   FUNCTIONAL_ERRORS,
   FunctionalException,
@@ -358,6 +359,14 @@ export const AgrementService = {
       AGREMENT_STATUT.PRIS_EN_CHARGE,
     ];
     if (allowedStatutsMailDreets.includes(statut)) {
+      const organisme = await serviceOrganismeGetOne({
+        "o.id": agrement.organismeId,
+      });
+
+      const typeDepot = organisme.agrement?.numero
+        ? AGREMENT_TYPE_DEPOT.RENOUVELLEMENT
+        : AGREMENT_TYPE_DEPOT.PREMIER;
+
       const regionDreets = await Region.fetchOne(territoireCode);
       if (!regionDreets) {
         throw new AppError("Échec, une région devrait exister", {
@@ -372,10 +381,6 @@ export const AgrementService = {
         const territoire =
           await TerritoireService.readFicheIdByTerCode(territoireCode);
         if (territoire) {
-          const organisme = await serviceOrganismeGetOne({
-            "o.id": agrement.organismeId,
-          });
-
           const fiche = await TerritoireService.readOne(territoire.id);
           if (fiche?.service_mail) {
             try {
@@ -456,6 +461,7 @@ export const AgrementService = {
                 date: agrement.dateVerifCompleture,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
+                typeDepot,
               });
               break;
             case AGREMENT_STATUT.A_CORRIGER:

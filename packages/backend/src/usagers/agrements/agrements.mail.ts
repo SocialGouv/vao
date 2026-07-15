@@ -58,10 +58,12 @@ export const AgrementMailUsagers = {
     email,
     regionDreets,
     date,
+    typeDepot,
   }: {
     email: string[];
     regionDreets: string | null;
     date: Date | null;
+    typeDepot: AGREMENT_TYPE_DEPOT;
   }) => {
     log.i("sendPrisEnChargeMail - In", { email });
     if (!email) {
@@ -69,17 +71,18 @@ export const AgrementMailUsagers = {
         "Email manquant pour l'envoi du mail de prise en charge de l'agrément",
       );
     }
+    const title = `Portail VAO – Votre dossier de ${typeDepot === AGREMENT_TYPE_DEPOT.PREMIER ? "première demande" : "renouvellement"} est pris en charge par la DREETS`;
     const urlAgrement = config.frontUsagersDomain + "/mon-agrement";
     const regionPhrase = regionDreets
       ? `DREETS ${regionDreets}`
       : "DREETS compétente";
     const html = sendTemplate.getBody(
-      "Portail VAO – Votre dossier de renouvellement d'agrément est pris en charge par la DREETS",
+      title,
       [
         {
           p: [
             "Bonjour,",
-            `Votre demande d'agrément a bien été transmise${date ? ` le ${formatFR(date)}` : ""} à la ${regionPhrase}.`,
+            `Votre demande ${typeDepot === AGREMENT_TYPE_DEPOT.PREMIER ? "première demande " : ""}d'agrément a bien été transmise${date ? ` le ${formatFR(date)}` : ""} à la ${regionPhrase}.`,
             `La ${regionPhrase} vient de prendre en charge votre dossier.`,
             "Vous pouvez suivre l'avancement de votre dossier à tout moment depuis votre espace personnel sur le portail VAO :",
             `<a href='${urlAgrement}'>Consulter le dossier directement dans mon espace personnel</a>`,
@@ -96,8 +99,7 @@ export const AgrementMailUsagers = {
       from: config.senderEmail,
       html,
       replyTo: config.senderEmail,
-      subject:
-        "Portail VAO – Votre dossier de renouvellement d'agrément est pris en charge par la DREETS",
+      subject: title,
       to: email,
     };
     log.d("sendPrisEnChargeMail post email", { params });

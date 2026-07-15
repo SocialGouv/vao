@@ -8,6 +8,11 @@
           Agrément
           {{ agrementCourant?.numero ? ` n° ${agrementCourant.numero}` : "" }}
         </h1>
+        <AgrementTypeDepotBadge
+          v-if="agrementCourant.statut"
+          :type-depot="typeDepot"
+          type="bo"
+        />
         <AgrementStatusBadge
           v-if="agrementCourant.statut"
           :statut="agrementCourant.statut"
@@ -32,7 +37,14 @@
       </div>
       <div v-if="agrementCourant?.dateDepot">
         <dl class="fr-text--lg fr-pl-0">
-          <dt>Date de la demande de renouvellement :</dt>
+          <dt>
+            {{
+              typeDepot === AGREMENT_TYPE_DEPOT.RENOUVELLEMENT
+                ? "Date de la demande de renouvellement"
+                : "Date de la première demande"
+            }}
+            :
+          </dt>
           <dd>
             {{ formatFR(agrementCourant.dateDepot) }}
           </dd>
@@ -107,10 +119,11 @@ import {
   Historique,
   AgrementDocuments,
   AgrementStatusBadge,
+  AgrementTypeDepotBadge,
   useAgrementPageTitle,
 } from "@vao/shared-ui";
 import { useOrganismeStore } from "~/stores/organisme";
-import { formatFR } from "@vao/shared-bridge";
+import { formatFR, AGREMENT_TYPE_DEPOT } from "@vao/shared-bridge";
 
 const TAB_PAGE_TITLES = [
   "Dossier",
@@ -230,6 +243,12 @@ const selectTab = async (idx: Tab) => {
 };
 
 const unreadCount = computed(() => agrementStore.messagesUnreadCount ?? 0);
+
+const typeDepot = computed(() =>
+  organismeStore.organisme?.agrement?.numero
+    ? AGREMENT_TYPE_DEPOT.RENOUVELLEMENT
+    : AGREMENT_TYPE_DEPOT.PREMIER,
+);
 
 const tabTitles = computed(() => [
   {

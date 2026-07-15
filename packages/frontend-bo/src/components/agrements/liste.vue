@@ -64,14 +64,15 @@
     modal-ref="priseEnChargeModal"
     name="prise-en-charge-modal"
     :opened="modalPriseEnChargeOpened"
-    title="Prise en charge du renouvellement d’agrément"
+    :title="`Prise en charge ${typeDemande} d’agrément`"
     :on-close="fermerPriseEnCharge"
     :on-validate="validerPriseEnCharge"
     validation-label="Valider la prise en charge"
   >
     <div>
-      Voulez-vous prendre en charge le renouvellement de l’agrément
-      <strong>{{ agrementAPrendreEnCharge?.numero }}</strong> ?
+      Voulez-vous prendre en charge
+      {{ typeDemande }}
+      d’agrément ?
     </div>
   </ValidationModal>
 </template>
@@ -87,24 +88,17 @@ import {
 } from "@vao/shared-ui";
 
 import type { AgrementDto, OrganismeDto } from "@vao/shared-bridge";
-import { AGREMENT_STATUT, formatFR } from "@vao/shared-bridge";
+import {
+  AGREMENT_TYPE_DEPOT,
+  AGREMENT_STATUT,
+  formatFR,
+} from "@vao/shared-bridge";
 import type { Columns, NestedKeys } from "@vao/shared-ui";
 import { useAgrementStore } from "~/stores/agrement";
 
 export type AgrementWithOrganismeDto = AgrementDto & {
   organisme: OrganismeDto;
 };
-
-type CellSlotProps = {
-  row: AgrementWithOrganismeDto;
-};
-
-defineSlots<{
-  "cell-name": (props: CellSlotProps) => any;
-  "cell-dateDepot": (props: CellSlotProps) => any;
-  "cell-siret": (props: CellSlotProps) => any;
-  "cell-custom:edit": (props: CellSlotProps) => any;
-}>();
 
 const optionType = columnsTable.optionType;
 const agrementStore = useAgrementStore();
@@ -152,6 +146,18 @@ const columns = columnsTable.buildColumns(
 
 const title = computed<string>(
   () => `Liste des Agréments (${agrementStore.agrementsTotal ?? 0})`,
+);
+
+const typeDepot = computed(() =>
+  agrementAPrendreEnCharge.value?.organisme?.agrement?.numero
+    ? AGREMENT_TYPE_DEPOT.RENOUVELLEMENT
+    : AGREMENT_TYPE_DEPOT.PREMIER,
+);
+
+const typeDemande = computed(() =>
+  typeDepot.value === AGREMENT_TYPE_DEPOT.RENOUVELLEMENT
+    ? "le renouvellement"
+    : "la première demande",
 );
 
 const sortableColumns = columns.flatMap((column) =>
