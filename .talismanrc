@@ -285,6 +285,8 @@ fileignoreconfig:
   checksum: 810660f58ad352f8275f89ac5f1a899fcfb66d11a3c51637deb478d96c2f86a3
 - filename: packages/frontend-bo/src/pages/connexion/index.vue
   checksum: 4849b0a322a7379e5b4b24079b51d9729266adf346c1f86daf8c4392ad6a9192
+- filename: packages/frontend-bo/src/pages/connexion/mot-de-passe-oublie.vue
+  checksum: 82da106a5b7ad7b72cc58b18c046d2f9785f4453d1fce9e6567cac4db0dc884b
 - filename: packages/frontend-bo/src/pages/connexion/reset-mot-de-passe.vue
   checksum: f544299c6795c35ca29f1ddd0babb1c840f7c25c72435b3c6b0939e0ea55d120
 - filename: packages/frontend-bo/src/pages/eig/index.vue
@@ -368,7 +370,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/pages/connexion/index.vue
   checksum: 1277421bfedb66f94463109393f316482aeb16ec94867e35b78ebd7975299dc0
 - filename: packages/frontend-usagers/src/pages/connexion/mot-de-passe-oublie.vue
-  checksum: a30047520f10c9428ebb0865e8019baf9799801d99b0a6606eec58154a73c91b
+  checksum: 1ab8fb5c4142d0fd5867d74afcbda3531a58fe3451f1d4f7dc71c8d0002af912
 - filename: packages/frontend-usagers/src/pages/connexion/reset-mot-de-passe.vue
   checksum: 4d8c14f196fb8fa661a90545fca0297d5481334bafbe4a22d12e33a039de4c98
 - filename: packages/frontend-usagers/src/pages/demande-sejour/liste.vue
@@ -431,6 +433,8 @@ fileignoreconfig:
   checksum: 1a41578cc15aa2da2b59efa2c378e9ed2552a2912c7d7cd666527e148d4d15f6
 - filename: packages/shared-ui/src/composables/useAuthentication.ts
   checksum: 9a1d049eaa73333f86e53c66eb218b5cf276fb03d2e97241d68be52e4f666397
+- filename: packages/shared-ui/src/composables/useForgottenPassword.ts
+  checksum: 2349196a28957fefe9f2bfc2707ef1ac1816a157824f7aa3f1e655b6823ab648
 - filename: packages/shared-ui/src/composables/useLoginFormFocus.ts
   checksum: ddab88fe1181e5629b93d6a6bb18903a2eb8ff6620fbfe8533c43fb731fc4db7
 - filename: packages/shared-ui/src/composables/useToaster.ts

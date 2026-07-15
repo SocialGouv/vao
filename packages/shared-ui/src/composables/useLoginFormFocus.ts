@@ -1,6 +1,6 @@
 import { ref, nextTick, watch, type Ref } from "vue";
 
-export interface FocusableInput {
+interface FocusableInput {
   focus: () => void;
 }
 

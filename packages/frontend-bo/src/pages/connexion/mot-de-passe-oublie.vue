@@ -18,28 +18,42 @@
         <div class="fr-col-12 fr-col-md-9 fr-col-lg-9">
           <div class="fr-container fr-mt-5v">
             <div class="fr-grid-row fr-grid-row--center">
-              <form class="fr-col-12">
-                <div class="fr-fieldset">
+              <form
+                class="fr-col-12"
+                novalidate
+                @submit.prevent="askNewPassword"
+              >
+                <fieldset class="fr-fieldset">
+                  <legend class="fr-fieldset__legend fr-sr-only">
+                    Demande de réinitialisation de mot de passe
+                  </legend>
+
                   <div class="fr-fieldset__element fr-col-12">
-                    <div class="fr-input-group">
-                      <DsfrInputGroup
-                        :model-value="email"
-                        type="text"
-                        label="Adresse courriel"
-                        :label-visible="true"
-                        placeholder=""
-                        hint="Veuillez saisir votre adresse courriel. Exemple nom@domaine.fr"
-                        @update:model-value="editMail"
-                      />
-                    </div>
+                    <DsfrInputGroup :error-message="emailError ?? undefined">
+                      <template
+                        #default="{ isInvalid, isValid, descriptionId }"
+                      >
+                        <DsfrInput
+                          ref="emailInputRef"
+                          v-model="email"
+                          autocomplete="username"
+                          type="email"
+                          name="email"
+                          label="Adresse courriel"
+                          :label-visible="true"
+                          hint="Format attendu : nom@domaine.fr"
+                          :is-invalid="isInvalid"
+                          :is-valid="isValid"
+                          :description-id="descriptionId"
+                        />
+                      </template>
+                    </DsfrInputGroup>
                   </div>
-                  <div class="fr-fieldset__element fr-my-5v">
-                    <DsfrButton
-                      :disabled="!isValidEmail"
-                      @click.prevent="askNewPassword"
-                      >Renouveler mon mot de passe</DsfrButton
-                    >
-                  </div>
+                </fieldset>
+                <div class="fr-fieldset__element fr-my-5v">
+                  <DsfrButton type="submit" :disabled="isSubmitting">
+                    Renouveler mon mot de passe
+                  </DsfrButton>
                 </div>
               </form>
             </div>
@@ -51,33 +65,29 @@
 </template>
 
 <script setup>
-const log = logger("pages/connexion/mot-de-passe-oublie");
+import {
+  useForgottenPassword,
+  useForgottenPasswordFocus,
+} from "@vao/shared-ui";
 
 const config = useRuntimeConfig();
 
 const links = [
-  {
-    to: "/",
-    text: "Accueil",
-  },
-  {
-    to: "/connexion",
-    text: "Connexion",
-  },
-  {
-    text: "Mot de passe oublié",
-  },
+  { to: "/", text: "Accueil" },
+  { to: "/connexion", text: "Connexion" },
+  { text: "Mot de passe oublié" },
 ];
 
-const email = ref("");
+const {
+  email,
+  emailError,
+  isSubmitting,
+  submitAttempt,
+  displayType,
+  askNewPassword,
+} = useForgottenPassword("bo", config.public.backendUrl);
 
-const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/;
-
-const isValidEmail = computed(() => {
-  return emailRegex.test(email.value);
-});
-
-const editMail = (v) => (email.value = v);
+const { emailInputRef } = useForgottenPasswordFocus(emailError, submitAttempt);
 
 const displayInfos = {
   Success: {
@@ -93,37 +103,6 @@ const displayInfos = {
     type: "error",
   },
 };
-const displayType = ref(null);
-
-async function askNewPassword() {
-  log.i("askNewPassword", { email: email.value });
-  try {
-    displayType.value = null;
-    await $fetch(
-      config.public.backendUrl + "/bo-authentication/email/forgotten-password",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: { email: email.value },
-      },
-    )
-      .then(() => {
-        log.i("askNewPassword - Done");
-        displayType.value = "Success";
-      })
-      .catch((error) => {
-        log.w("askNewPassword", { error });
-        displayType.value = "UnexpectedError";
-      });
-  } catch (error) {
-    log.w("login", { error });
-    displayType.value = "UnexpectedError";
-  } finally {
-    log.i("finally");
-  }
-}
 </script>
 
 <style lang="scss" scoped></style>
