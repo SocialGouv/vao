@@ -1,11 +1,5 @@
 <template>
-  <DsfrBadge
-    :small="small"
-    :type="badgeType"
-    style="margin-left: 1ex"
-    :label="label"
-    class="pointer"
-  />
+  <DsfrBadge :small="small" :type="badgeType" :label="label" class="fr-ml-1v" />
 </template>
 
 <script setup lang="ts">
@@ -18,11 +12,6 @@ import {
 
 const props = defineProps({
   small: { default: true, type: Boolean },
-  type: {
-    required: true,
-    type: String,
-    validator: (value: string) => ["bo", "fu"].includes(value),
-  },
   typeDepot: {
     default: AGREMENT_TYPE_DEPOT.EXISTANT,
     type: String as () => AGREMENT_TYPE_DEPOT,
@@ -39,31 +28,16 @@ const label = computed(() => {
   );
 });
 
-const caseBo = () => {
+const badgeType = computed(() => {
   switch (props.typeDepot) {
     case AGREMENT_TYPE_DEPOT.PREMIER:
       return "new";
     case AGREMENT_TYPE_DEPOT.RENOUVELLEMENT:
-      return "success";
+      return "info";
     case AGREMENT_TYPE_DEPOT.EXISTANT:
-      return "info";
-    default:
-      return "info";
-  }
-};
-
-const caseFo = () => {
-  switch (props.typeDepot) {
-    case AGREMENT_TYPE_DEPOT.PREMIER:
-      return "new";
-    case AGREMENT_TYPE_DEPOT.RENOUVELLEMENT:
       return "success";
-    case AGREMENT_TYPE_DEPOT.EXISTANT:
-      return "info";
     default:
-      return "info";
+      return "error";
   }
-};
-
-const badgeType = computed(() => (props.type === "bo" ? caseBo() : caseFo()));
+});
 </script>

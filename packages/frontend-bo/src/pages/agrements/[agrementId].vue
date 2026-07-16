@@ -1,7 +1,6 @@
 <template>
   <div class="fr-container">
     <DsfrBreadcrumb :links="links" />
-
     <div v-if="agrementCourant">
       <div class="title-container fr-mb-4v">
         <h1>
@@ -11,7 +10,6 @@
         <AgrementTypeDepotBadge
           v-if="agrementCourant.statut"
           :type-depot="typeDepot"
-          type="bo"
         />
         <AgrementStatusBadge
           v-if="agrementCourant.statut"
