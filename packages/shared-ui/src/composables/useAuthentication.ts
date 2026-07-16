@@ -117,14 +117,14 @@ export const useAuthentication = (
     submitAttempt,
   } = state;
 
-  watch(email, () => {
-    if (emailError.value) {
+  watch(email, (newEmail) => {
+    if (emailError.value && newEmail) {
       emailError.value = null;
     }
   });
 
-  watch(password, () => {
-    if (passwordError.value) {
+  watch(password, (newPassword) => {
+    if (passwordError.value && newPassword) {
       passwordError.value = null;
     }
   });

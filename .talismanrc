@@ -432,7 +432,7 @@ fileignoreconfig:
 - filename: packages/shared-ui/src/composables/index.js
   checksum: 1a41578cc15aa2da2b59efa2c378e9ed2552a2912c7d7cd666527e148d4d15f6
 - filename: packages/shared-ui/src/composables/useAuthentication.ts
-  checksum: 9a1d049eaa73333f86e53c66eb218b5cf276fb03d2e97241d68be52e4f666397
+  checksum: 818077edd9a9415b5d4c00481c733e20e2fb8513f0025296a0a2b8b2c22c8626
 - filename: packages/shared-ui/src/composables/useForgottenPassword.ts
   checksum: 2349196a28957fefe9f2bfc2707ef1ac1816a157824f7aa3f1e655b6823ab648
 - filename: packages/shared-ui/src/composables/useLoginFormFocus.ts

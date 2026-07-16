@@ -1,4 +1,4 @@
-import { ref, watch } from "vue";
+import { ref, watch, type Ref } from "vue";
 import { $fetch } from "ofetch";
 import createLogger from "../utils/createLogger";
 import { buildEmailError } from "../utils/auth";
@@ -58,8 +58,8 @@ export function useForgottenPassword(
   const submitAttempt = ref<number>(0);
   const displayType = ref<ForgottenPasswordDisplayType>(null);
 
-  watch(email, () => {
-    if (emailError.value) {
+  watch(email, (newEmail) => {
+    if (emailError.value && newEmail) {
       emailError.value = null;
     }
   });

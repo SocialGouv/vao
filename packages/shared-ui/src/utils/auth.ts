@@ -86,7 +86,7 @@ export function getEmailError(email: string): string | null {
     empty:
       "Le champ « Adresse courriel » est vide. Veuillez renseigner votre adresse courriel. Exemple : nom@domaine.fr",
     invalid:
-      "Le champ « Identifiant » est invalide. Merci de saisir une adresse au format nom@domaine.fr",
+      "Le champ « Adresse courriel » est invalide. Merci de saisir une adresse au format nom@domaine.fr",
   });
 }
 
