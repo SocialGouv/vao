@@ -6,3 +6,5 @@ export * from "./useToaster";
 export * from "./useAuthentication";
 export * from "./useAgrementPageTitle";
 export * from "./useLoginFormFocus";
+export * from "./useForgottenPassword";
+export * from "./useForgottenPasswordFocus";

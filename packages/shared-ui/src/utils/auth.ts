@@ -72,12 +72,22 @@ export function otpUnlockAt(
   }
 }
 
-export function getEmailError(email: string): string | null {
-  if (!email)
-    return "Le champ « Identifiant » est vide. Veuillez renseigner votre adresse courriel. Exemple : nom@domaine.fr";
-  if (!isValidEmail(email))
-    return "Le champ « Identifiant » est invalide. Merci de saisir une adresse au format nom@domaine.fr";
+export function buildEmailError(
+  email: string,
+  messages: { empty: string; invalid: string },
+): string | null {
+  if (!email) return messages.empty;
+  if (!isValidEmail(email)) return messages.invalid;
   return null;
+}
+
+export function getEmailError(email: string): string | null {
+  return buildEmailError(email, {
+    empty:
+      "Le champ « Adresse courriel » est vide. Veuillez renseigner votre adresse courriel. Exemple : nom@domaine.fr",
+    invalid:
+      "Le champ « Adresse courriel » est invalide. Merci de saisir une adresse au format nom@domaine.fr",
+  });
 }
 
 export function getPasswordError(password: string): string | null {
