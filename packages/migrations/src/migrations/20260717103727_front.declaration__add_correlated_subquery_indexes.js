@@ -36,6 +36,8 @@ exports.up = async function (knex) {
  * @returns { Promise<void> }
  */
 exports.down = async function (knex) {
+  // No wrapping transaction (CONCURRENTLY), so the two DROPs are not atomic;
+  // each is independently idempotent (IF EXISTS) and safe to re-run on partial failure.
   await knex.raw(
     `DROP INDEX CONCURRENTLY IF EXISTS front.demande_sejour_message__declaration_id__index`,
   );
