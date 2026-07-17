@@ -81,9 +81,9 @@
         :asc="asc"
       >
         <AgrementDocuments
-          :agrement-courant="
-            agrementStore.agrementCourant ??
+          :agrement="
             agrementStore.agrementEnTraitement ??
+            agrementStore.agrementCourant ??
             {}
           "
           :cdn-url="`${config.public.backendUrl}/documents/`"
