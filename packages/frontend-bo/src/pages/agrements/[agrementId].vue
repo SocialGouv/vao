@@ -68,6 +68,7 @@
           :init-organisme="organismeStore.organisme ?? {}"
           :init-agrement="agrementStore.agrementCourant ?? {}"
           :cdn-url="`${config.public.backendUrl}/documents/admin`"
+          :first-agrement="typeDepot === AGREMENT_TYPE_DEPOT.PREMIER"
         ></AgrementsDossier>
         <AgrementsActionsStatut
           :cdn-url="`${config.public.backendUrl}/documents/admin`"
