@@ -4,8 +4,8 @@
       <li>
         <button
           class="fr-pagination__link fr-pagination__link--first"
-          :disabled="modelValue === 1"
-          @click="$emit('update:modelValue', 1)"
+          :aria-disabled="modelValue === 1 ? 'true' : undefined"
+          @click="modelValue !== 1 && $emit('update:modelValue', 1)"
         >
           Première page
         </button>
@@ -23,7 +23,7 @@
       <li v-for="page in displayedPages" :key="page">
         <span
           v-if="page === '...'"
-          class="fr-pagination__link"
+          class="fr-pagination__link fr-pagination__link--ellipsis"
           aria-hidden="true"
         >
           …
@@ -59,8 +59,10 @@
         </button>
       </li>
     </ul>
-    Page {{ modelValue }} sur {{ pageCount }}
   </nav>
+  <p aria-live="polite" class="fr-text--sm fr-mt-1w">
+    Résultats par page : 10 - Page {{ modelValue }} sur {{ pageCount }}
+  </p>
 </template>
 
 <script setup lang="ts">
