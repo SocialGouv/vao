@@ -444,9 +444,11 @@ export const AgrementService = {
           switch (statut) {
             case AGREMENT_STATUT.A_COMPLETER:
               mailToSend = AgrementMailUsagers.sendStatutACompleterMail({
+                commentaire,
                 date: agrement.dateDepot,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
+                typeDepot,
               });
               break;
             case AGREMENT_STATUT.EN_INSTRUCTION:
