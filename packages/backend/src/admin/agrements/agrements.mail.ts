@@ -144,8 +144,8 @@ export const AgrementMailAdmin = {
     const isPremiereDemande = typeDepot === AGREMENT_TYPE_DEPOT.PREMIER;
 
     const subject = isPremiereDemande
-      ? "Portail VAO – Nouvelle demande de première demande d’agrément reçue"
-      : "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue";
+      ? "Portail VAO – Nouvelle première demande d'agrément reçue"
+      : "Portail VAO – Nouvelle demande de renouvellement d'agrément reçue";
 
     const introText = isPremiereDemande
       ? `L’OVA <strong>${organismeName}</strong> a renvoyé sa première demande d’agrément après avoir apporté les modifications demandées.`
