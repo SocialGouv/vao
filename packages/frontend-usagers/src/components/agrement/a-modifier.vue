@@ -18,7 +18,7 @@
     </h2>
 
     La DREETS en charge de l'instruction de votre dossier d'agrément vous
-    sollicite pour des compléments d'informations Accédes à votre agrément,
+    sollicite pour des compléments d'informations. Accédez à votre agrément,
     complétez le puis transmettez le à nouveau à votre DREETS qui reprendra
     l'instruction du dossier<br /><br />
     <strong>Commentaire de la DREETS :</strong><br />
