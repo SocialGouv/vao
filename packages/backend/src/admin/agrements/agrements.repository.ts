@@ -243,6 +243,25 @@ export const AgrementsRepository = {
     }
   },
 
+  /**
+   * Insère (ou remplace) le fichier lié à un agrément pour une catégorie donnée.
+   *
+   * Pour les catégories "single-upload" (cf. contrainte unique partielle
+   * `unique_agrement_category_single_upload`), un seul fichier peut être actif à la fois
+   * par (agrement_id, category) — comportement métier voulu : une nouvelle demande de
+   * compléments remplace le fichier précédent de la même catégorie plutôt que de s'y
+   * ajouter (cf. côté usagers, qui fait un delete-then-reinsert complet sur cette même
+   * table pour obtenir le même résultat).
+   *
+   * ON CONFLICT cible l'index unique partiel directement (par colonnes + prédicat WHERE),
+   * et non par nom de contrainte : `unique_agrement_category_single_upload` est un
+   * CREATE UNIQUE INDEX ... WHERE, pas un ADD CONSTRAINT, donc `ON CONFLICT ON CONSTRAINT`
+   * échoue avec "constraint does not exist" même si l'index existe et est actif.
+   *
+   * Le prédicat WHERE ci-dessous doit rester synchronisé avec celui de la migration
+   * qui définit unique_agrement_category_single_upload. Toute évolution de la liste de
+   * catégories single-upload doit être répercutée ici.
+   */
   async insertAgrementFiles(
     client: PoolClient,
     agrementId: number | null | undefined,
@@ -251,7 +270,17 @@ export const AgrementsRepository = {
     if (!file) return;
     await client.query(
       `INSERT INTO front.agrement_files (agrement_id, category, file_uuid)
-       VALUES ($1, $2, $3);`,
+     VALUES ($1, $2, $3)
+     ON CONFLICT (agrement_id, category) WHERE category IN (
+       'AGR_AMODIFIER',
+       'AGR_REFUS',
+       'AGR_PROCVERBAL',
+       'AGR_IMMATRICUL',
+       'AGR_ASSURRESP',
+       'AGR_ASSURRAPAT',
+       'AGR_PROJETSSEJOURSCASIER'
+     )
+     DO UPDATE SET file_uuid = EXCLUDED.file_uuid, updated_at = NOW();`,
       [agrementId, file.category, file.fileUuid],
     );
   },

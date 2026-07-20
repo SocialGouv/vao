@@ -339,7 +339,7 @@ export const AgrementService = {
       typePrecision: statut,
     });
 
-    if (agrement?.commentaire) {
+    if (commentaire) {
       await AgrementService.trackEvent({
         agrementId,
         boUserId: Number(boUserId),
@@ -444,9 +444,11 @@ export const AgrementService = {
           switch (statut) {
             case AGREMENT_STATUT.A_COMPLETER:
               mailToSend = AgrementMailUsagers.sendStatutACompleterMail({
+                commentaire,
                 date: agrement.dateDepot,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
+                typeDepot,
               });
               break;
             case AGREMENT_STATUT.EN_INSTRUCTION:
