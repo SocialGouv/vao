@@ -129,8 +129,8 @@ export const AgrementMailUsagers = {
     const isPremierAgrement = typeDepot === AGREMENT_TYPE_DEPOT.PREMIER;
 
     const title = isPremierAgrement
-      ? "Portail VAO - Demande de compléments d’informations suite à votre première demande d’agrément"
-      : "Portail VAO - Demande de compléments d’informations suite à votre demande de renouvellement d’agrément";
+      ? "Portail VAO – Demande de compléments d'informations suite à votre première demande d'agrément"
+      : "Portail VAO – Demande de compléments d'informations suite à votre demande de renouvellement d'agrément";
 
     const bodyParagraphs = isPremierAgrement
       ? [
