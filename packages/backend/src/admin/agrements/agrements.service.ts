@@ -339,7 +339,7 @@ export const AgrementService = {
       typePrecision: statut,
     });
 
-    if (agrement?.commentaire) {
+    if (commentaire) {
       await AgrementService.trackEvent({
         agrementId,
         boUserId: Number(boUserId),
