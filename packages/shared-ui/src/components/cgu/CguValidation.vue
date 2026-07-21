@@ -26,8 +26,8 @@
       <h2 id="article-1">1. Objet</h2>
 
       <p>
-        Les présentes Conditions Générales d’Utilisation (CGU) ont pour objet de
-        définir les modalités d’accès et d’utilisation des sites
+        MODIFIE Les présentes Conditions Générales d’Utilisation (CGU) ont pour
+        objet de définir les modalités d’accès et d’utilisation des sites
         [vao.social.gouv.fr destiné] aux OVA et [admin-social.gouv.fr] destiné
         aux agents de la DGCS, des DREETS et des DDETS. Ces sites sont dédiés à
         la gestion des Vacances Adaptées Organisées pour les adultes en
