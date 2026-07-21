@@ -134,42 +134,51 @@ export const AgrementMailAdmin = {
     email,
     organismeName,
     agrementId,
+    typeDepot,
   }: {
     email: string;
     organismeName: string;
     agrementId: number;
+    typeDepot: AGREMENT_TYPE_DEPOT;
   }) => {
-    log.i("sendStatutModificationTransmisRegionMail - In", {
-      agrementId,
-      email,
-      organismeName,
-    });
+    const isPremiereDemande = typeDepot === AGREMENT_TYPE_DEPOT.PREMIER;
+
+    const subject = isPremiereDemande
+      ? "Portail VAO – Nouvelle demande de premier agrément reçue"
+      : "Portail VAO – Nouvelle demande de renouvellement d'agrément reçue";
+
+    const introText = isPremiereDemande
+      ? `L’OVA <strong>${organismeName}</strong> a renvoyé sa première demande d’agrément après avoir apporté les modifications demandées.`
+      : `L’OVA <strong>${organismeName}</strong> a renvoyé sa demande de renouvellement d’agrément après avoir apporté les modifications demandées.`;
+
+    const statutLabel = isPremiereDemande
+      ? "1ère demande en cours"
+      : "Transmis";
+
     const html = sendTemplate.getBody(
-      "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue",
+      subject,
       [
         {
           p: [
             "Bonjour,",
-            `L’OVA <strong>${organismeName}</strong> a renvoyé sa demande de renouvellement d’agrément après avoir apporté les modifications demandées.`,
+            introText,
             "Vous pouvez désormais reprendre l’instruction de la demande, accessible via votre espace sur le portail VAO :",
             `<a href='${config.frontBODomain}/agrements/${agrementId}'>Lien direct vers le dossier</a>`,
-            "Le dossier est retourné au statut <strong>« Transmis »</strong> et peut être analysé à partir de l’étape « Vérification et confirmation de la complétude du dossier ».",
+            `Le dossier est retourné au statut <strong>« ${statutLabel} »</strong> et peut être analysé à partir de l’étape « Vérification et confirmation de la complétude du dossier ».`,
           ],
           type: "p",
         },
       ],
       `<br>L’équipe du SI VAO<br><a href='${config.frontBODomain}'>Portail VAO</a>`,
     );
-    const params = {
+
+    return {
       from: config.senderEmail,
       html,
       replyTo: config.senderEmail,
-      subject:
-        "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue",
+      subject,
       to: email,
     };
-    log.d("sendStatutModificationTransmisRegionMail post email", { params });
-    return params;
   },
   sendStatutTransmisRegionMail: ({
     email,
