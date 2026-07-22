@@ -476,6 +476,7 @@ export const AgrementService = {
               mailToSend = AgrementMailUsagers.sendStatutRefuseMail({
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
+                typeDepot,
               });
               break;
             case AGREMENT_STATUT.VALIDE:
