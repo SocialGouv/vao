@@ -245,6 +245,7 @@ export const AgrementMailUsagers = {
       ? [
           "Bonjour,",
           `Suite à l'instruction de votre première demande d'agrément, la DREETS ${regionDreets} vous informe que celle-ci a été refusée.`,
+          "Vous trouverez sur le portail VAO l’arrêté officiel de refus correspondant à cette décision.",
           "Nous vous rappelons que, conformément à la réglementation en vigueur, cette décision est définitive et vous empêche de déclarer de nouveaux séjours adaptés. Cependant, cette décision ne vous empêche pas de vous connecter à votre compte sur le portail VAO.",
           `Pour toute question ou précision concernant ce refus, merci d'utiliser la messagerie intégrée au portail VAO, accessible depuis <a href='${urlAgrement}'>votre page agrément</a>.`,
           "Cordialement.",
