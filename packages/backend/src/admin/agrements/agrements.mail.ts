@@ -12,19 +12,27 @@ export const AgrementMailAdmin = {
     mailDreets,
     Organisme,
     agrementId,
+    typeDepot,
   }: {
     mailDreets: string[];
     Organisme: OrganismeDto;
     agrementId: number;
+    typeDepot: AGREMENT_TYPE_DEPOT;
   }) => {
     const urlAgrement = config.frontBODomain + "/agrements/" + agrementId;
+    const isPremiereDemande = typeDepot === AGREMENT_TYPE_DEPOT.PREMIER;
+    const libelleDossier = isPremiereDemande
+      ? "première demande d’agrément"
+      : "renouvellement d’agrément";
+    const subject = `Portail VAO – Confirmation de complétude du dossier de ${libelleDossier}`;
+
     const html = sendTemplate.getBody(
-      "Portail VAO – Confirmation de complétude du dossier de renouvellement d’agrément",
+      subject,
       [
         {
           p: [
             "Bonjour,",
-            `Vous venez de confirmer la complétude du dossier de renouvellement d’agrément de l’OVA ${Organisme?.typeOrganisme === partOrganisme.PERSONNE_MORALE ? Organisme.personneMorale.raisonSociale : (Organisme?.personnePhysique?.nomUsage ?? Organisme?.personnePhysique?.nomNaissance)}.`,
+            `Vous venez de confirmer la complétude du dossier de ${libelleDossier} de l’OVA ${Organisme?.typeOrganisme === partOrganisme.PERSONNE_MORALE ? Organisme.personneMorale.raisonSociale : (Organisme?.personnePhysique?.nomUsage ?? Organisme?.personnePhysique?.nomNaissance)}.`,
             "À partir de cette date, un délai légal de <strong>2 mois calendaires</strong> est activé pour instruire la demande et rendre une décision expresse.",
             "Sans décision expresse à l’issue de ce délai, la demande sera automatiquement <strong>validée par tacite accord</strong>. La décision implicite d’acceptation du dossier ne court qu'à compter du moment où l’ensemble des pièces sont fournies par l’OVA. En cas de demande de compléments d’information par la DREETS, le délai est donc suspendu.",
             "Un accusé a été adressé automatiquement à l’OVA concerné.",
@@ -41,8 +49,7 @@ export const AgrementMailAdmin = {
       from: config.senderEmail,
       html,
       replyTo: config.senderEmail,
-      subject:
-        "Portail VAO – Confirmation de complétude du dossier de renouvellement d’agrément",
+      subject,
       to: mailDreets,
     };
   },

@@ -68,6 +68,7 @@
           :init-organisme="organismeStore.organisme ?? {}"
           :init-agrement="agrementStore.agrementCourant ?? {}"
           :cdn-url="`${config.public.backendUrl}/documents/admin`"
+          :first-agrement="typeDepot === AGREMENT_TYPE_DEPOT.PREMIER"
         ></AgrementsDossier>
         <AgrementsActionsStatut
           :cdn-url="`${config.public.backendUrl}/documents/admin`"
@@ -191,12 +192,11 @@ useHead({
 });
 
 const links = computed(() => [
+  { to: "/agrements/liste", text: "Agréments" },
   {
-    to: "/agrements/liste",
-    text: "Agréments",
-  },
-  {
-    text: `Agrément n° ${agrementCourant.value?.numero || ""}`,
+    text: agrementCourant.value?.numero
+      ? `Agrément n° ${agrementCourant.value.numero}`
+      : "Agrément",
   },
 ]);
 

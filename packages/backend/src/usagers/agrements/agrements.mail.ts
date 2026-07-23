@@ -12,10 +12,12 @@ export const AgrementMailUsagers = {
     email,
     regionDreets,
     date,
+    typeDepot,
   }: {
     email: string[];
     regionDreets: string;
     date: Date | null;
+    typeDepot: AGREMENT_TYPE_DEPOT;
   }) => {
     log.i("sendCompletudeConfirmedMail - In", { email });
     if (!email) {
@@ -24,22 +26,36 @@ export const AgrementMailUsagers = {
       );
     }
     const urlAgrement = config.frontUsagersDomain + "/mon-agrement";
+    const isPremiereDemande = typeDepot === AGREMENT_TYPE_DEPOT.PREMIER;
+
+    const subject = isPremiereDemande
+      ? "Portail VAO – Confirmation de la complétude de votre dossier de première demande d’agrément"
+      : "Portail VAO – Confirmation de la complétude de votre dossier de renouvellement d’agrément";
+
+    const bodyParagraphs = isPremiereDemande
+      ? [
+          "Bonjour,",
+          `Votre première demande d’agrément a été examinée par la DREETS ${regionDreets}.`,
+          "Nous vous confirmons que votre dossier est désormais complet et que son instruction est engagée.",
+          "Conformément à la réglementation, l’administration dispose d’un délai de <strong>2 mois</strong> pour instruire votre dossier et rendre une décision (ce délai est géré par la DREETS).",
+          "À défaut de décision dans ce délai, votre agrément sera réputé accordé (règle du « silence vaut accord »). La décision implicite d’acceptation du dossier ne court qu'à compter du moment où l’ensemble des pièces sont fournies par l’OVA.",
+          "Vous pouvez suivre l’avancement de votre demande à tout moment depuis votre espace sur le portail VAO :",
+          `<a href='${urlAgrement}'>Consulter le dossier directement dans mon espace personnel</a>`,
+          "Cordialement,",
+        ]
+      : [
+          "Bonjour,",
+          `Vous avez complété votre demande d'agrément${date ? ` le ${formatFR(date)}` : ""}.`,
+          `La DREETS ${regionDreets} a bien reçu les éléments transmis et votre dossier est désormais en cours d'instruction.`,
+          "Vous pouvez suivre l'avancement de votre dossier à tout moment depuis votre espace personnel sur le portail VAO :",
+          `<a href='${urlAgrement}'>Consulter le dossier directement dans mon espace personnel</a>`,
+          "Un email vous sera envoyé à chaque évolution du traitement de votre demande.",
+          "Cordialement.",
+        ];
+
     const html = sendTemplate.getBody(
-      "Portail VAO – Confirmation de la complétude de votre dossier de renouvellement d’agrément",
-      [
-        {
-          p: [
-            "Bonjour,",
-            `Vous avez complété votre demande d'agrément${date ? ` le ${formatFR(date)}` : ""}.`,
-            `La DREETS ${regionDreets} a bien reçu les éléments transmis et votre dossier est désormais en cours d'instruction.`,
-            "Vous pouvez suivre l'avancement de votre dossier à tout moment depuis votre espace personnel sur le portail VAO :",
-            `<a href='${urlAgrement}'>Consulter le dossier directement dans mon espace personnel</a>`,
-            "Un email vous sera envoyé à chaque évolution du traitement de votre demande.",
-            "Cordialement.",
-          ],
-          type: "p",
-        },
-      ],
+      subject,
+      [{ p: bodyParagraphs, type: "p" }],
       `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
       { includeSecurityNotice: true },
     );
@@ -47,8 +63,7 @@ export const AgrementMailUsagers = {
       from: config.senderEmail,
       html,
       replyTo: config.senderEmail,
-      subject:
-        "Portail VAO – Confirmation de la complétude de votre dossier de renouvellement d’agrément",
+      subject,
       to: email,
     };
     log.d("sendCompletudeConfirmedMail post email", { params });

@@ -391,6 +391,7 @@ export const AgrementService = {
                     Organisme: organisme,
                     agrementId,
                     mailDreets: fiche.service_mail,
+                    typeDepot,
                   });
                   break;
                 case AGREMENT_STATUT.A_CORRIGER:
@@ -456,6 +457,7 @@ export const AgrementService = {
                 date: agrement.dateConfirmCompletude,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
+                typeDepot,
               });
               break;
             case AGREMENT_STATUT.PRIS_EN_CHARGE:
