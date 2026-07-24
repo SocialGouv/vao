@@ -1,4 +1,5 @@
 <template>
+  <AgrementTimeLine date-obtention="2023-08-01" date-expiration="2028-08-01" />
   <div>
     <h2 class="fr-mb-0">Etapes d'avancement</h2>
     <p>A chaque étape vous recevez un e-mail sur {{ user.email }}</p>
