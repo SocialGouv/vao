@@ -254,7 +254,7 @@ fileignoreconfig:
 - filename: packages/frontend-bo/src/assets/Download.svg
   checksum: 2845f88f98040035bf7e9434a9bd5fe5cb8d0dd28fd1d765dd9c6a0b440e49f7
 - filename: packages/frontend-bo/src/components/agrements/Coordonnees.vue
-  checksum: fe3c7cdf10cbff661284f2ba3c9a3e42d4e583ad207ca9257d5e8ee8eaa4b5a6
+  checksum: cd5072a1d920ef6934c55a2d3d7ebef4cef348e437d9870b326a6485b6a5c5ef
 - filename: packages/frontend-bo/src/components/agrements/bilan/Hebergements.vue
   checksum: 57875f736c5d66c9cbc17f0e0f107f994e831b854634bb8ca56c6ad75ca579e0
 - filename: packages/frontend-bo/src/components/agrements/bilan/Sejours.vue

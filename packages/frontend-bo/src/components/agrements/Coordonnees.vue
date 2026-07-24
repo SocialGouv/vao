@@ -67,26 +67,25 @@
         <h4 class="fr-text--lg fr-mt-4w">Représentant légal</h4>
 
         <div
-          v-for="(rep, idx) in representants"
-          :key="Number(idx)"
+          v-for="(rep, index) in paginatedRepresentants"
+          :key="rep.id ?? index"
           class="fr-mb-4w"
-          :data-idx="Number(idx)"
         >
-          <template v-if="Number(idx) > 0">
+          <template v-if="pageOffset + Number(index) >= 0">
             <h4 class="fr-text--md fr-mb-1w">
-              Représentant n°{{ Number(idx) + 1 }}
+              Représentant n°{{ pageOffset + Number(index) + 1 }}
             </h4>
           </template>
           <dl class="fr-text--sm fr-pl-0">
-            <dt>Prénom:</dt>
+            <dt>Prénom :</dt>
             <dd>{{ rep.prenom || "-" }}</dd>
-            <dt>Nom:</dt>
+            <dt>Nom :</dt>
             <dd>{{ rep.nom || "-" }}</dd>
-            <dt>Téléphone:</dt>
+            <dt>Téléphone :</dt>
             <dd>{{ rep.telephoneRepresentant || "-" }}</dd>
-            <dt>Email:</dt>
+            <dt>Email :</dt>
             <dd>{{ rep.emailRepresentant || "-" }}</dd>
-            <dt>Adresse du domicile:</dt>
+            <dt>Adresse du domicile :</dt>
             <dd>
               {{
                 rep.adresseDomicile && rep.adresseDomicile.label
@@ -98,6 +97,7 @@
             </dd>
           </dl>
         </div>
+        <UtilsPagination v-model="currentPage" :page-count="pageCount" />
         <div class="separator fr-my-2w"></div>
         <h3 class="fr-text--lg fr-mt-4w">Procès verbal</h3>
         <FileUpload
@@ -129,12 +129,28 @@ import {
   ORGANISME_TYPE,
 } from "@vao/shared-bridge";
 
+import { computed, ref } from "vue";
+
 const props = defineProps({
   valid: { type: Boolean, default: true },
   initAgrement: { type: Object, required: true },
   initOrganisme: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
   cdnUrl: { type: String, required: true },
+});
+
+const perPage = 10;
+const pageOffset = computed(() => (currentPage.value - 1) * perPage);
+const currentPage = ref(1);
+
+const pageCount = computed(() =>
+  Math.ceil(representants.value.length / perPage),
+);
+
+const paginatedRepresentants = computed(() => {
+  const start = (currentPage.value - 1) * perPage;
+
+  return representants.value.slice(start, start + perPage);
 });
 
 const isPersonneMorale = computed(
