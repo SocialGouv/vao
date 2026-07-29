@@ -40,11 +40,16 @@
           : row.organisme?.personnePhysique?.siret
       }}
     </template>
+
+    <template #cell-statut="{ row }">
+      <AgrementStatusBadge v-if="row.statut" :statut="row.statut" type="bo" />
+    </template>
+
     <template #cell-custom:edit="{ row }">
       <DsfrButton
         v-if="row.statut === AGREMENT_STATUT.TRANSMIS"
         label="Voir"
-        primary
+        secondary
         type="button"
         @click="ouvrirPriseEnCharge(row)"
       >
@@ -52,7 +57,7 @@
       <DsfrButton
         v-else
         label="Voir"
-        primary
+        secondary
         type="button"
         @click="router.push(`/agrements/${row.id}`)"
       >
@@ -85,6 +90,7 @@ import {
   columnsTable,
   ValidationModal,
   useToaster,
+  AgrementStatusBadge,
 } from "@vao/shared-ui";
 
 import type { AgrementDto, OrganismeDto } from "@vao/shared-bridge";

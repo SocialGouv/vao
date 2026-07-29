@@ -4,18 +4,57 @@ import {
   FunctionalException,
   translate,
 } from "@vao/shared-bridge";
-import type { NextFunction } from "express";
+import dayjs from "dayjs";
+import type { NextFunction, Response as ExpressResponse } from "express";
 
 import type {
   RouteRequest,
   RouteResponse,
   UserRequest,
 } from "../../types/request";
+import { escapeCsvField } from "../../utils/csv";
 import AppError from "../../utils/error";
 import { logger } from "../../utils/logger";
+import type { AgrementExtractRow } from "./agrements.repository";
 import { AgrementService } from "./agrements.service";
 
 const log = logger(module.filename);
+
+function buildAgrementsCsv(agrements: AgrementExtractRow[]): string {
+  const titles = [
+    "numero",
+    "statut",
+    "date_depot",
+    "date_obtention",
+    "date_fin_validite",
+    "region_obtention",
+    "organisme",
+    "siret",
+  ];
+
+  const rows = agrements.map((agrement) => {
+    const values: Record<string, string> = {
+      date_depot: agrement.dateDepot
+        ? dayjs(agrement.dateDepot).format("YYYY-MM-DD")
+        : "",
+      date_fin_validite: agrement.dateFinValidite
+        ? dayjs(agrement.dateFinValidite).format("YYYY-MM-DD")
+        : "",
+      date_obtention: agrement.dateObtention
+        ? dayjs(agrement.dateObtention).format("YYYY-MM-DD")
+        : "",
+      numero: agrement.numero ?? "",
+      organisme: agrement.organismeName ?? "",
+      region_obtention: agrement.regionObtention ?? "",
+      siret: agrement.organismeSiret ?? "",
+      statut: agrement.statut ?? "",
+    };
+
+    return titles.map((title) => escapeCsvField(values[title] ?? "")).join(";");
+  });
+
+  return [titles.join(";"), ...rows].join("\n");
+}
 
 export const AgrementController = {
   async getAllActivites(
@@ -31,6 +70,34 @@ export const AgrementController = {
     }
   },
 
+  async getExtract(
+    req: RouteRequest<AgrementAdminRoutes["GetExtract"]>,
+    res: ExpressResponse,
+    next: NextFunction,
+  ) {
+    log.i("IN");
+    const regionCode = req.decoded?.territoireCode;
+    if (!regionCode) {
+      return next(
+        new AppError("territoireCode manquant dans le token", {
+          statusCode: 401,
+        }),
+      );
+    }
+    try {
+      const agrements = await AgrementService.getExtract(regionCode);
+      const csv = buildAgrementsCsv(agrements);
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="agrements.csv"',
+      );
+      res.status(200).send(csv);
+    } catch (error) {
+      log.w("DONE with error");
+      next(error);
+    }
+  },
   async getHistory(
     req: RouteRequest<AgrementAdminRoutes["GetHistory"]>,
     res: RouteResponse<AgrementAdminRoutes["GetHistory"]>,
@@ -63,6 +130,7 @@ export const AgrementController = {
       next(error);
     }
   },
+
   async getMessages(
     req: RouteRequest<AgrementAdminRoutes["GetMessages"]>,
     res: RouteResponse<AgrementAdminRoutes["GetMessages"]>,
@@ -100,7 +168,6 @@ export const AgrementController = {
       next(error);
     }
   },
-
   async patchMessages(
     req: RouteRequest<AgrementAdminRoutes["PatchMessages"]>,
     res: RouteResponse<AgrementAdminRoutes["PatchMessages"]>,

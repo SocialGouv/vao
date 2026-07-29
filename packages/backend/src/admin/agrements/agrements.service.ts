@@ -25,6 +25,7 @@ import AppError from "../../utils/error";
 import { logger } from "../../utils/logger";
 import { withTransaction } from "../../utils/pgpool";
 import { AgrementMailAdmin } from "./agrements.mail";
+import type { AgrementExtractRow } from "./agrements.repository";
 import { AgrementsRepository } from "./agrements.repository";
 
 const log = logger(module.filename);
@@ -41,6 +42,12 @@ export const AgrementService = {
     withDetails: boolean;
   }) {
     return await AgrementServiceShared.getById({ agrementId, withDetails });
+  },
+  async getExtract(regionCode: string): Promise<AgrementExtractRow[]> {
+    log.i("getExtract - IN");
+    const agrements = await AgrementsRepository.getExtract(regionCode);
+    log.i("getExtract - DONE");
+    return agrements;
   },
   async getHistory(agrementId: number) {
     const history = await AgrementsRepository.getHistory(agrementId);

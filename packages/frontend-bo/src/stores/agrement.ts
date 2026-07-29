@@ -155,5 +155,16 @@ export const useAgrementStore = defineStore("agrement", {
         throw err;
       }
     },
+    async exportAgrements(): Promise<string> {
+      log.i("exportAgrements - IN");
+      try {
+        const csv = await AgrementService.exportAgrements();
+        log.i("exportAgrements - DONE");
+        return csv;
+      } catch (err) {
+        log.w("exportAgrements - DONE with error", err);
+        throw err;
+      }
+    },
   },
 });

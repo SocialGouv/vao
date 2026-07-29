@@ -16,6 +16,14 @@ router.get(
   AgrementController.getList,
 );
 
+router.get(
+  "/extract",
+  boCheckJWT,
+  requestValidatorMiddleware(AgrementAdminRoutesSchema["GetExtract"]),
+  checkPermissionBOAgrement,
+  AgrementController.getExtract,
+);
+
 router.get("/activites", boCheckJWT, AgrementController.getAllActivites);
 
 router.get(

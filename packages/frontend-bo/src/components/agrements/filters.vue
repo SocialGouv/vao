@@ -69,6 +69,10 @@
 
 <script setup lang="ts">
 import { AGREMENT_STATUT_OPTIONS } from "@vao/shared-bridge";
+import { useToaster } from "@vao/shared-ui";
+
+const agrementStore = useAgrementStore();
+const toaster = useToaster();
 
 const statutOptions = [
   { text: "Tous", value: "%" },
@@ -124,6 +128,14 @@ const statutSync = computed({
 
 const filtersUpdate = () => emit("filters-update");
 const getCsv = async () => {
-  // TODO TICKET 1199
+  try {
+    const csv = await agrementStore.exportAgrements();
+    exportCsv(csv, "agrements.csv");
+  } catch (err) {
+    toaster.error({
+      description: "Erreur lors de l'export CSV.",
+      role: "alert",
+    });
+  }
 };
 </script>

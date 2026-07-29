@@ -29,6 +29,11 @@ import { logger } from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
 
 const log = logger(module.filename);
+
+export type AgrementExtractRow = AgrementDto & {
+  organismeName: string | null;
+  organismeSiret: string | null;
+};
 // ------------------------------------------------------------
 // 🏗️ Repository Admin
 // ------------------------------------------------------------
@@ -139,6 +144,40 @@ export const AgrementsRepository = {
     };
   },
 
+  async getExtract(regionCode: string): Promise<AgrementExtractRow[]> {
+    log.i("getExtract - IN");
+    const query = `
+    SELECT
+      agr.*,
+      pm.siret AS pm_siret,
+      pm.raison_sociale,
+      pp.prenom,
+      pp.nom_usage,
+      pp.nom_naissance,
+      pp.siret AS pp_siret
+    FROM front.agrements agr
+    INNER JOIN front.organismes o ON o.id = agr.organisme_id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
+    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = true
+    WHERE agr.region_obtention = $1
+  `;
+    const response = await getPool().query(query, [regionCode]);
+    const rows: AgrementExtractRow[] = [];
+    for (const row of response.rows) {
+      const agrement = AgrementsMapper.toModel(row as AgrementEntity);
+      rows.push({
+        ...agrement,
+        // Champs organisme extraits directement de la ligne brute (snake_case),
+        // sans dépendre du mapper qui ne connaît pas ces colonnes jointes.
+        organismeName:
+          row.raison_sociale ?? (row.nom_usage || row.nom_naissance) ?? null,
+        organismeSiret: row.pm_siret ?? row.pp_siret ?? null,
+      });
+    }
+    log.i("getExtract - DONE");
+    return rows;
+  },
+
   async getHistory(agrementId: number): Promise<AgrementHistoryItem[]> {
     const client = await getPool().connect();
     try {
@@ -218,6 +257,7 @@ export const AgrementsRepository = {
     const row = response.rows[0] as AgrementSvaTimerEntity;
     return AgrementSvaTimerMapper.toModel(row);
   },
+
   /**
    * Récupère le courriel du user responsable d'un agrément.
    */
@@ -242,7 +282,6 @@ export const AgrementsRepository = {
       client.release();
     }
   },
-
   /**
    * Insère (ou remplace) le fichier lié à un agrément pour une catégorie donnée.
    *
