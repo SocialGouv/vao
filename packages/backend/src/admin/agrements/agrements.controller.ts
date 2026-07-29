@@ -2,7 +2,6 @@ import {
   type AgrementAdminRoutes,
   type AgrementDto,
   FunctionalException,
-  OrganismeDto,
   translate,
 } from "@vao/shared-bridge";
 import dayjs from "dayjs";
@@ -16,13 +15,12 @@ import type {
 import { escapeCsvField } from "../../utils/csv";
 import AppError from "../../utils/error";
 import { logger } from "../../utils/logger";
+import type { AgrementExtractRow } from "./agrements.repository";
 import { AgrementService } from "./agrements.service";
 
 const log = logger(module.filename);
 
-function buildAgrementsCsv(
-  agrements: Array<AgrementDto & { organisme: OrganismeDto }>,
-): string {
+function buildAgrementsCsv(agrements: AgrementExtractRow[]): string {
   const titles = [
     "numero",
     "statut",
@@ -35,18 +33,6 @@ function buildAgrementsCsv(
   ];
 
   const rows = agrements.map((agrement) => {
-    const isPersonneMorale =
-      agrement.organisme.typeOrganisme === "personne_morale";
-
-    const organismeName = isPersonneMorale
-      ? agrement.organisme.personneMorale.raisonSociale
-      : agrement.organisme.personnePhysique.nomUsage ||
-        agrement.organisme.personnePhysique.nomNaissance;
-
-    const siret = isPersonneMorale
-      ? agrement.organisme.personneMorale.siret
-      : agrement.organisme.personnePhysique.siret;
-
     const values: Record<string, string> = {
       date_depot: agrement.dateDepot
         ? dayjs(agrement.dateDepot).format("YYYY-MM-DD")
@@ -58,9 +44,9 @@ function buildAgrementsCsv(
         ? dayjs(agrement.dateObtention).format("YYYY-MM-DD")
         : "",
       numero: agrement.numero ?? "",
-      organisme: organismeName ?? "",
+      organisme: agrement.organismeName ?? "",
       region_obtention: agrement.regionObtention ?? "",
-      siret: siret ?? "",
+      siret: agrement.organismeSiret ?? "",
       statut: agrement.statut ?? "",
     };
 
@@ -93,7 +79,7 @@ export const AgrementController = {
     next: NextFunction,
   ) {
     log.i("IN");
-    const regionCode = req.decoded?.territoireCode ?? "";
+    const regionCode = String(req.decoded?.territoireCode);
     try {
       const agrements = await AgrementService.getExtract(regionCode);
       const csv = buildAgrementsCsv(agrements);

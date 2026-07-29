@@ -29,6 +29,11 @@ import { logger } from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
 
 const log = logger(module.filename);
+
+export type AgrementExtractRow = AgrementDto & {
+  organismeName: string | null;
+  organismeSiret: string | null;
+};
 // ------------------------------------------------------------
 // 🏗️ Repository Admin
 // ------------------------------------------------------------
@@ -139,16 +144,17 @@ export const AgrementsRepository = {
     };
   },
 
-  async getExtract(regionCode: string): Promise<AgrementDto[]> {
+  async getExtract(regionCode: string): Promise<AgrementExtractRow[]> {
     log.i("getExtract - IN");
     const query = `
     SELECT
       agr.*,
-      pm.siret,
+      pm.siret AS pm_siret,
       pm.raison_sociale,
       pp.prenom,
       pp.nom_usage,
-      pp.siret
+      pp.nom_naissance,
+      pp.siret AS pp_siret
     FROM front.agrements agr
     INNER JOIN front.organismes o ON o.id = agr.organisme_id
     LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
@@ -156,12 +162,20 @@ export const AgrementsRepository = {
     WHERE agr.region_obtention = $1
   `;
     const response = await getPool().query(query, [regionCode]);
-    const agrements: AgrementDto[] = [];
+    const rows: AgrementExtractRow[] = [];
     for (const row of response.rows) {
-      agrements.push(AgrementsMapper.toModel(row as AgrementEntity));
+      const agrement = AgrementsMapper.toModel(row as AgrementEntity);
+      rows.push({
+        ...agrement,
+        // Champs organisme extraits directement de la ligne brute (snake_case),
+        // sans dépendre du mapper qui ne connaît pas ces colonnes jointes.
+        organismeName:
+          row.raison_sociale ?? (row.nom_usage || row.nom_naissance) ?? null,
+        organismeSiret: row.pm_siret ?? row.pp_siret ?? null,
+      });
     }
     log.i("getExtract - DONE");
-    return agrements;
+    return rows;
   },
 
   async getHistory(agrementId: number): Promise<AgrementHistoryItem[]> {

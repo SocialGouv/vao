@@ -25,6 +25,7 @@ import AppError from "../../utils/error";
 import { logger } from "../../utils/logger";
 import { withTransaction } from "../../utils/pgpool";
 import { AgrementMailAdmin } from "./agrements.mail";
+import type { AgrementExtractRow } from "./agrements.repository";
 import { AgrementsRepository } from "./agrements.repository";
 
 const log = logger(module.filename);
@@ -42,25 +43,11 @@ export const AgrementService = {
   }) {
     return await AgrementServiceShared.getById({ agrementId, withDetails });
   },
-  async getExtract(regionCode: string) {
+  async getExtract(regionCode: string): Promise<AgrementExtractRow[]> {
     log.i("getExtract - IN");
     const agrements = await AgrementsRepository.getExtract(regionCode);
-    if (!agrements || agrements.length === 0) {
-      return [];
-    }
-    let agrementsWithOrganisme = await Promise.all(
-      agrements.map(async (agrement) => {
-        const organisme: OrganismeDto = await serviceOrganismeGetOne({
-          "o.id": agrement.organismeId,
-        });
-        return { ...agrement, organisme };
-      }),
-    );
-    agrementsWithOrganisme = agrementsWithOrganisme.filter(
-      (agrement) => agrement.organisme,
-    );
     log.i("getExtract - DONE");
-    return agrementsWithOrganisme;
+    return agrements;
   },
   async getHistory(agrementId: number) {
     const history = await AgrementsRepository.getHistory(agrementId);
