@@ -139,6 +139,31 @@ export const AgrementsRepository = {
     };
   },
 
+  async getExtract(regionCode: string): Promise<AgrementDto[]> {
+    log.i("getExtract - IN");
+    const query = `
+    SELECT
+      agr.*,
+      pm.siret,
+      pm.raison_sociale,
+      pp.prenom,
+      pp.nom_usage,
+      pp.siret
+    FROM front.agrements agr
+    INNER JOIN front.organismes o ON o.id = agr.organisme_id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
+    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = true
+    WHERE agr.region_obtention = $1
+  `;
+    const response = await getPool().query(query, [regionCode]);
+    const agrements: AgrementDto[] = [];
+    for (const row of response.rows) {
+      agrements.push(AgrementsMapper.toModel(row as AgrementEntity));
+    }
+    log.i("getExtract - DONE");
+    return agrements;
+  },
+
   async getHistory(agrementId: number): Promise<AgrementHistoryItem[]> {
     const client = await getPool().connect();
     try {
@@ -218,6 +243,7 @@ export const AgrementsRepository = {
     const row = response.rows[0] as AgrementSvaTimerEntity;
     return AgrementSvaTimerMapper.toModel(row);
   },
+
   /**
    * Récupère le courriel du user responsable d'un agrément.
    */
@@ -242,7 +268,6 @@ export const AgrementsRepository = {
       client.release();
     }
   },
-
   /**
    * Insère (ou remplace) le fichier lié à un agrément pour une catégorie donnée.
    *

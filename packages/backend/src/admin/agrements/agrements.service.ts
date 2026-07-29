@@ -42,6 +42,26 @@ export const AgrementService = {
   }) {
     return await AgrementServiceShared.getById({ agrementId, withDetails });
   },
+  async getExtract(regionCode: string) {
+    log.i("getExtract - IN");
+    const agrements = await AgrementsRepository.getExtract(regionCode);
+    if (!agrements || agrements.length === 0) {
+      return [];
+    }
+    let agrementsWithOrganisme = await Promise.all(
+      agrements.map(async (agrement) => {
+        const organisme: OrganismeDto = await serviceOrganismeGetOne({
+          "o.id": agrement.organismeId,
+        });
+        return { ...agrement, organisme };
+      }),
+    );
+    agrementsWithOrganisme = agrementsWithOrganisme.filter(
+      (agrement) => agrement.organisme,
+    );
+    log.i("getExtract - DONE");
+    return agrementsWithOrganisme;
+  },
   async getHistory(agrementId: number) {
     const history = await AgrementsRepository.getHistory(agrementId);
     return history;

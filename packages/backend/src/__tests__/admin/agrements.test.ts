@@ -824,3 +824,126 @@ describe("Messagerie d'agrément", () => {
     expect(patchResponse.status).toBe(404);
   });
 });
+
+describe("GET /admin/agrements/extract", () => {
+  it("devrait exporter un agrément personne morale avec toutes les colonnes renseignées", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({
+      organisme: { raisonSociale: "SARL TEST EXTRACT" },
+      typeOrganisme: partOrganisme.PERSONNE_MORALE,
+      userId: authUser.id,
+    });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      regionObtention: "IDF",
+      statut: AGREMENT_STATUT.VALIDE,
+    });
+    agrementData.numero = "AGR.TEST.EXTRACT.001";
+    agrementData.dateObtention = new Date("2024-01-15");
+    agrementData.dateFinValidite = new Date("2029-01-15");
+    await createAgrement({
+      agrement: agrementData,
+      organismeId,
+      userId: authUser.id,
+    });
+
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const response = await request(getBoAppHelper(authUserBo)).get(
+      `/admin/agrements/extract`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers["content-type"]).toContain("text/csv");
+    expect(response.headers["content-disposition"]).toContain("attachment");
+
+    const lines = response.text.trim().split("\n");
+    expect(lines[0]).toBe(
+      "numero;statut;date_depot;date_obtention;date_fin_validite;region_obtention;organisme;siret",
+    );
+    const row = lines.find((line) => line.includes("AGR.TEST.EXTRACT.001"));
+    expect(row).toBeDefined();
+    expect(row).toContain("VALIDE");
+    expect(row).toContain("2024-01-15");
+    expect(row).toContain("2029-01-15");
+    expect(row).toContain("IDF");
+    expect(row).toContain("SARL TEST EXTRACT");
+  });
+
+  it("devrait résoudre le nom d'une personne physique via nomUsage", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({
+      organisme: { nomNaissance: "Durand", nomUsage: "Dupont" },
+      userId: authUser.id,
+      // typeOrganisme par défaut = PERSONNE_PHYSIQUE
+    });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      regionObtention: "IDF",
+    });
+    agrementData.numero = "AGR.TEST.PHYSIQUE.001";
+    await createAgrement({
+      agrement: agrementData,
+      organismeId,
+      userId: authUser.id,
+    });
+
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const response = await request(getBoAppHelper(authUserBo)).get(
+      `/admin/agrements/extract`,
+    );
+
+    const lines = response.text.trim().split("\n");
+    const row = lines.find((line) => line.includes("AGR.TEST.PHYSIQUE.001"));
+    expect(row).toContain("Dupont");
+  });
+
+  it("devrait retourner un CSV ne contenant que l'en-tête si aucun agrément dans la région", async () => {
+    authUserBo = await createAdminUser({ territoireCode: "PACA" });
+
+    const response = await request(getBoAppHelper(authUserBo)).get(
+      `/admin/agrements/extract`,
+    );
+
+    expect(response.status).toBe(200);
+    const lines = response.text.trim().split("\n");
+    expect(lines.length).toBe(1);
+    expect(lines[0]).toBe(
+      "numero;statut;date_depot;date_obtention;date_fin_validite;region_obtention;organisme;siret",
+    );
+  });
+
+  it("ne devrait pas inclure les agréments d'une autre région", async () => {
+    authUser = await createUsagersUser();
+    const organismeIdA = await createOrganisme({ userId: authUser.id });
+    const agrementA = await buildAgrementFixture({
+      organismeId: organismeIdA,
+      regionObtention: "PACA",
+    });
+    await createAgrement({
+      agrement: { ...agrementA, numero: "AGR.REGION.A.001" },
+      organismeId: organismeIdA,
+      userId: authUser.id,
+    });
+
+    authUser2 = await createUsagersUser();
+    const organismeIdB = await createOrganisme({ userId: authUser2.id });
+    const agrementB = await buildAgrementFixture({
+      organismeId: organismeIdB,
+      regionObtention: "IDF",
+    });
+    await createAgrement({
+      agrement: { ...agrementB, numero: "AGR.REGION.B.001" },
+      organismeId: organismeIdB,
+      userId: authUser2.id,
+    });
+
+    authUserBo = await createAdminUser({ territoireCode: "PACA" });
+    const response = await request(getBoAppHelper(authUserBo)).get(
+      `/admin/agrements/extract`,
+    );
+
+    const lines = response.text.trim().split("\n");
+    expect(lines.some((l) => l.includes("AGR.REGION.A.001"))).toBe(true);
+    expect(lines.some((l) => l.includes("AGR.REGION.B.001"))).toBe(false);
+  });
+});
