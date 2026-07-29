@@ -912,6 +912,15 @@ describe("GET /admin/agrements/extract", () => {
     );
   });
 
+  it("devrait retourner 401 si le territoireCode est absent du token", async () => {
+    const userSansTerritoire = { id: 1 }; // pas de territoireCode
+    const response = await request(getBoAppHelper(userSansTerritoire)).get(
+      `/admin/agrements/extract`,
+    );
+
+    expect(response.status).toBe(401);
+  });
+
   it("ne devrait pas inclure les agréments d'une autre région", async () => {
     authUser = await createUsagersUser();
     const organismeIdA = await createOrganisme({ userId: authUser.id });

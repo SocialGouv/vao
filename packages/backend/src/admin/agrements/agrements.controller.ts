@@ -72,14 +72,18 @@ export const AgrementController = {
 
   async getExtract(
     req: RouteRequest<AgrementAdminRoutes["GetExtract"]>,
-    // Cette route sort un CSV brut (pas du JSON), donc `res` sort volontairement
-    // du typage RouteResponse<...> (pensé pour .json()) au profit du type Response
-    // brut d'Express, qui autorise .send() avec un body string.
     res: ExpressResponse,
     next: NextFunction,
   ) {
     log.i("IN");
-    const regionCode = String(req.decoded?.territoireCode);
+    const regionCode = req.decoded?.territoireCode;
+    if (!regionCode) {
+      return next(
+        new AppError("territoireCode manquant dans le token", {
+          statusCode: 401,
+        }),
+      );
+    }
     try {
       const agrements = await AgrementService.getExtract(regionCode);
       const csv = buildAgrementsCsv(agrements);

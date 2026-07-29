@@ -19,6 +19,7 @@ export interface BasicRoute {
   response:
     | RouteResponseBody<Record<string, any>>
     | RouteResponseBody<Record<string, any>[]>
+    | string
     | void;
   method: "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
 }
