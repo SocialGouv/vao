@@ -208,7 +208,11 @@ const informationsLocauxSchema = (isBrouillon = false) => ({
   visiteLocauxAt: yup
     .date("Vous devez saisir une date valide au format JJ/MM/AAAA")
     .typeError("date invalide")
-    .max(new Date(), "La date doit être inférieure à la date du jour.")
+    .test(
+      "max-today",
+      "La date doit être inférieure à la date du jour.",
+      (value) => !value || value <= new Date(),
+    )
     .nullable(),
 });
 
