@@ -210,7 +210,7 @@ const informationsLocauxSchema = (isBrouillon = false) => ({
     .typeError("date invalide")
     .test(
       "max-today",
-      "La date doit être inférieure à la date du jour.",
+      "La date doit être inférieure ou égale à la date du jour.",
       (value) => !value || value <= new Date(),
     )
     .nullable(),
