@@ -71,9 +71,9 @@
           :key="rep.id ?? index"
           class="fr-mb-4w"
         >
-          <template v-if="pageOffset + Number(index) >= 0">
+          <template v-if="offset + Number(index) >= 0">
             <h4 class="fr-text--md fr-mb-1w">
-              Représentant n°{{ pageOffset + Number(index) + 1 }}
+              Représentant n°{{ offset + Number(index) + 1 }}
             </h4>
           </template>
           <dl class="fr-text--sm fr-pl-0">
@@ -97,7 +97,11 @@
             </dd>
           </dl>
         </div>
-        <UtilsPagination v-model="currentPage" :page-count="pageCount" />
+        <DsfrPaginationV2
+          v-model:offset="offset"
+          v-model:limit="limit"
+          :total="representants.length"
+        />
         <div class="separator fr-my-2w"></div>
         <h3 class="fr-text--lg fr-mt-4w">Procès verbal</h3>
         <FileUpload
@@ -122,6 +126,7 @@ import {
   TitleWithIcon,
   DisplayLabel,
   AgrementDisplayInput,
+  DsfrPaginationV2,
 } from "@vao/shared-ui";
 import {
   getFileByCategory,
@@ -139,18 +144,13 @@ const props = defineProps({
   cdnUrl: { type: String, required: true },
 });
 
-const perPage = 10;
-const pageOffset = computed(() => (currentPage.value - 1) * perPage);
-const currentPage = ref(1);
-
-const pageCount = computed(() =>
-  Math.ceil(representants.value.length / perPage),
-);
+const offset = ref(0);
+const limit = ref(10);
 
 const paginatedRepresentants = computed(() => {
-  const start = (currentPage.value - 1) * perPage;
+  const start = offset.value;
 
-  return representants.value.slice(start, start + perPage);
+  return representants.value.slice(start, start + limit.value);
 });
 
 const isPersonneMorale = computed(

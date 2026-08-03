@@ -3,13 +3,14 @@
     <DsfrDataTableV2Wrapper
       v-model:limit="limit"
       v-model:offset="offset"
+      table-title="Liste des séjours prévus"
       :columns="columns"
       :data="paginatedData"
       :total="sejours.length"
       row-id="nomHebergement"
     >
       <template #cell-mois="{ row }">
-        {{ row.mois ? parseIntToMonthFR(row.mois) : "" }}
+        {{ row.mois ? parseIntToMonthFR(row.mois) : "" }}s
       </template>
 
       <template #cell-adresse="{ row }">

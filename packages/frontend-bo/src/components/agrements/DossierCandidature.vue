@@ -20,7 +20,7 @@
       v-model="filesMotivation"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
-      label="Vous avez la possibilité de joindre des documents relatifs aux informations d’ordre sanitaire (optionnel)"
+      label="Document(s) relatif(s) aux informations d’ordre sanitaire (optionnel)"
     />
   </div>
 
@@ -46,7 +46,11 @@
   <div class="fr-fieldset__element">
     <div class="fr-col-12">
       <DisplayLabel
-        :value="formatFR(props.initAgrement?.dateObtentionCertificat)"
+        :value="
+          props.initAgrement?.dateObtentionCertificat
+            ? formatFR(props.initAgrement?.dateObtentionCertificat)
+            : 'Date Invalide'
+        "
         :input="AgrementDisplayInput.AgrementInput['dateObtentionCertificat']"
       />
     </div>
