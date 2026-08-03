@@ -54,6 +54,12 @@ const AgrementService = {
     })();
     return history;
   },
+  exportAgrements: async () => {
+    return await $fetchBackend<string>("/admin/agrements/extract", {
+      credentials: "include",
+      method: "GET",
+    });
+  },
   postMessage: async (agrementId: string, message: string) => {
     await buildRequest<AgrementAdminRoutes["PostMessage"]>({
       path: "/admin/agrements/{agrementId}/message",

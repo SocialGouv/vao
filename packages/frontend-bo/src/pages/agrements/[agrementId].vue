@@ -83,7 +83,7 @@
       >
         <div class="tab-scroll">
           <AgrementDocuments
-            :agrement-courant="agrementStore.agrementCourant ?? {}"
+            :agrement="agrementStore.agrementCourant ?? {}"
             :cdn-url="`${config.public.backendUrl}/documents/admin`"
           ></AgrementDocuments>
         </div>
@@ -192,12 +192,11 @@ useHead({
 });
 
 const links = computed(() => [
+  { to: "/agrements/liste", text: "Agréments" },
   {
-    to: "/agrements/liste",
-    text: "Agréments",
-  },
-  {
-    text: `Agrément n° ${agrementCourant.value?.numero || ""}`,
+    text: agrementCourant.value?.numero
+      ? `Agrément n° ${agrementCourant.value.numero}`
+      : "Agrément",
   },
 ]);
 

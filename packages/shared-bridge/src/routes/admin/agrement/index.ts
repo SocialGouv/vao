@@ -1,5 +1,6 @@
-/* eslint-disable import/no-unresolved */
 import type { GetAllActivitesRoute } from "./getAllActivites";
+import type { GetExtractRoute } from "./getExtract";
+import { GetExtractRouteSchema } from "./getExtract";
 //import { GetAllActivitesRouteSchema } from "./getAllActivites";
 import type { GetHistoryRoute } from "./getHistory";
 import { GetHistoryRouteSchema } from "./getHistory";
@@ -25,9 +26,11 @@ export type AgrementAdminRoutes = {
   PostMessage: PostMessageRoute;
   GetMessages: GetMessagesRoute;
   PatchMessages: PatchMessagesRoute;
+  GetExtract: GetExtractRoute;
 };
 
 export const AgrementAdminRoutesSchema = {
+  GetExtract: GetExtractRouteSchema,
   //  GetAllActivites: GetAllActivitesRouteSchema,
   GetHistory: GetHistoryRouteSchema,
   GetList: GetListRouteSchema,

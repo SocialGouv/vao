@@ -296,6 +296,7 @@ export const AgrementService = {
                     agrementId,
                     email: emailRegion,
                     organismeName,
+                    typeDepot: agrement.typeDepot,
                   });
               await mailService.send(mailToSend);
             }

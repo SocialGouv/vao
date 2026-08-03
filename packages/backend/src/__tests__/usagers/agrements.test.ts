@@ -784,6 +784,15 @@ describe("POST /agrements", () => {
         id: agrementId,
         statut: AGREMENT_STATUT.TRANSMIS,
       });
+    const calls = (mailService.send as jest.Mock).mock.calls;
+    const mailToRegion = calls[3]; // mail région après renvoi post-A_COMPLETER
+    expect(mailToRegion[0].subject).toBe(
+      "Portail VAO – Nouvelle demande de renouvellement d'agrément reçue",
+    );
+    expect(mailToRegion[0].html).toContain(
+      "après avoir apporté les modifications demandées",
+    );
+    expect(mailToRegion[0].html).toContain("Transmis");
     expect(responseCorrection.status).toBe(200);
     expect(responseCorrection.body.id).toBe(agrementId);
     expect(mailService.send).toHaveBeenCalledTimes(5);
@@ -799,6 +808,69 @@ describe("POST /agrements", () => {
     expect(aModifierEvent?.usager_user).toBeDefined();
     const { agrement } = await getAgrement(agrementId);
     expect(agrement?.statut).toBe(AGREMENT_STATUT.TRANSMIS);
+  });
+
+  it("devrait envoyer le mail 'première demande' à la région après renvoi suite à demande de complément", async () => {
+    const usagerUser = await createUsagersUser();
+    // Ici on répond aux conditions de mise à jour backOffice
+    const adminUser = await createAdminUser();
+    await createTerritoire({ territoireCode: "IDF" });
+    const organismeId = await createOrganisme({ userId: usagerUser.id });
+    await createTerritoire({
+      territoire: { service_mail: "region-idf@example.com" },
+      territoireCode: "IDF",
+    });
+
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    const response = await request(getFoAppHelper(usagerUser))
+      .post(`/agrements/`)
+      .send({
+        ...agrementData,
+        id: agrementId,
+        statut: AGREMENT_STATUT.TRANSMIS,
+        typeDepot: AGREMENT_TYPE_DEPOT.PREMIER,
+      });
+
+    expect(mailService.send).toHaveBeenCalledTimes(2);
+    expect(response.status).toBe(200);
+    expect(response.body.id).toBe(agrementId);
+
+    // Mise à jour côté Admin pour demande de complétion du dossier
+    await AgrementServiceAdmin.updateStatut({
+      agrementId,
+      boUserId: String(adminUser.id),
+      commentaire:
+        "Dossier à compléter car il manque des éléments pour pouvoir le traiter",
+      statut: AGREMENT_STATUT.A_COMPLETER,
+      territoireCode: agrementData.regionObtention!,
+    });
+    expect(mailService.send).toHaveBeenCalledTimes(3);
+
+    // Transmission de l'agrément au Service après complétude
+    await request(getFoAppHelper(usagerUser))
+      .post(`/agrements/`)
+      .send({
+        ...agrementData,
+        id: agrementId,
+        statut: AGREMENT_STATUT.TRANSMIS,
+        typeDepot: AGREMENT_TYPE_DEPOT.PREMIER,
+      });
+    const calls = (mailService.send as jest.Mock).mock.calls;
+    const mailToRegion = calls[3];
+    expect(mailToRegion[0].subject).toBe(
+      "Portail VAO – Nouvelle demande de premier agrément reçue",
+    );
+    expect(mailToRegion[0].html).toContain(
+      "après avoir apporté les modifications demandées",
+    );
+    expect(mailToRegion[0].html).toContain("1ère demande en cours");
   });
 
   it("devrait changer le statut en agrement EN_INSTRUCTION après demande de correction", async () => {

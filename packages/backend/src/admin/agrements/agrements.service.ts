@@ -25,6 +25,7 @@ import AppError from "../../utils/error";
 import { logger } from "../../utils/logger";
 import { withTransaction } from "../../utils/pgpool";
 import { AgrementMailAdmin } from "./agrements.mail";
+import type { AgrementExtractRow } from "./agrements.repository";
 import { AgrementsRepository } from "./agrements.repository";
 
 const log = logger(module.filename);
@@ -41,6 +42,12 @@ export const AgrementService = {
     withDetails: boolean;
   }) {
     return await AgrementServiceShared.getById({ agrementId, withDetails });
+  },
+  async getExtract(regionCode: string): Promise<AgrementExtractRow[]> {
+    log.i("getExtract - IN");
+    const agrements = await AgrementsRepository.getExtract(regionCode);
+    log.i("getExtract - DONE");
+    return agrements;
   },
   async getHistory(agrementId: number) {
     const history = await AgrementsRepository.getHistory(agrementId);
@@ -339,7 +346,7 @@ export const AgrementService = {
       typePrecision: statut,
     });
 
-    if (agrement?.commentaire) {
+    if (commentaire) {
       await AgrementService.trackEvent({
         agrementId,
         boUserId: Number(boUserId),
@@ -391,6 +398,7 @@ export const AgrementService = {
                     Organisme: organisme,
                     agrementId,
                     mailDreets: fiche.service_mail,
+                    typeDepot,
                   });
                   break;
                 case AGREMENT_STATUT.A_CORRIGER:
@@ -444,9 +452,11 @@ export const AgrementService = {
           switch (statut) {
             case AGREMENT_STATUT.A_COMPLETER:
               mailToSend = AgrementMailUsagers.sendStatutACompleterMail({
+                commentaire,
                 date: agrement.dateDepot,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
+                typeDepot,
               });
               break;
             case AGREMENT_STATUT.EN_INSTRUCTION:
@@ -454,6 +464,7 @@ export const AgrementService = {
                 date: agrement.dateConfirmCompletude,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
+                typeDepot,
               });
               break;
             case AGREMENT_STATUT.PRIS_EN_CHARGE:
@@ -474,6 +485,7 @@ export const AgrementService = {
               mailToSend = AgrementMailUsagers.sendStatutRefuseMail({
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
+                typeDepot,
               });
               break;
             case AGREMENT_STATUT.VALIDE:
