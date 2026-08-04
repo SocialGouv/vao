@@ -7,6 +7,21 @@ import { pool } from "../db";
 import { UpdateAndNotifySvaRow } from "./updateAndNotifySva.type";
 
 export const UpdateAndNotifySvaRepository = {
+  selectAgrementsActifOrganisme: async ({
+    id,
+  }: {
+    id: number;
+  }): Promise<{ id: number; statut: AGREMENT_STATUT }[]> => {
+    const query = `
+      SELECT id, statut
+        FROM front.agrements
+        WHERE organisme_id = $1
+        AND statut = '${AGREMENT_STATUT.VALIDE}'
+        AND supprime = false
+    `;
+    const response = await pool.query(query, [id]);
+    return response.rows;
+  },
   selectSvaToNotify: async (): Promise<UpdateAndNotifySvaRow[]> => {
     const querySelectTempsCumuleSva = `
 
@@ -40,6 +55,7 @@ export const UpdateAndNotifySvaRepository = {
         t.agrement_id,
         a.date_confirm_completude,
         a.date_depot,
+        a.organisme_id,
         (t.mail_delay_21d_at IS NULL AND cf.jours_restants <= 21) AS to_notify,
         (cf.jours_restants <= 0) AS to_passed_finished,
         a.region_obtention,
