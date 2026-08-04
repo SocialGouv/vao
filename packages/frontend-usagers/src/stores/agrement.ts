@@ -4,6 +4,7 @@ import type {
   ActiviteDto,
   AgrementHistoryItem,
   AgrementMessage,
+  AGREMENT_TYPE_DEPOT,
 } from "@vao/shared-bridge";
 import {
   AGREMENT_STATUT,
@@ -29,6 +30,7 @@ export interface AgrementStoreState {
   agrement: AgrementDto | null;
   agrementCourant: AgrementDto | null;
   agrementEnTraitement: AgrementDto | null;
+  agrements: AgrementDto[] | null;
   activites: ActiviteDto[];
   history: AgrementHistoryItem[] | null;
   messages: AgrementMessage[] | null;
@@ -45,6 +47,7 @@ export const useAgrementStore = defineStore("agrement", {
     history: null,
     messages: null,
     messagesTotal: null,
+    agrements: null,
   }),
   getters: {
     expiryDate: (state): Date | null => {
@@ -75,6 +78,18 @@ export const useAgrementStore = defineStore("agrement", {
         addDays(new Date(), 121),
         this.sixMonthsFromNow,
       );
+    },
+    hasAgrementRenouvellementEnCours(state): boolean {
+      return hasAgrementRenouvellementEnCours(state.agrements);
+    },
+    /**
+     * Indique si l'organisme a un agrément valide.
+     * Précondition : nécessite que `getCurrent()` ait été appelé et résolu au préalable.
+     * Un retour `false` avant cet appel ne signifie pas "aucun agrément valide" mais "donnée non chargée".
+     * Préférer l'utilisation via le composable `useAgrementDetection`, qui garantit le chargement.
+     */
+    hasAgrementValide(state): boolean {
+      return state.agrementCourant?.statut === AGREMENT_STATUT.VALIDE;
     },
   },
 
@@ -174,9 +189,11 @@ export const useAgrementStore = defineStore("agrement", {
     async postAgrement({
       agrement,
       organismeId,
+      typeDepot,
     }: {
       agrement: Partial<AgrementDto>;
       organismeId: number;
+      typeDepot: AGREMENT_TYPE_DEPOT;
     }): Promise<number | null> {
       log.i("updateAgrement - IN", { agrement });
       const agrementToSend: AgrementDto = {
@@ -239,8 +256,10 @@ export const useAgrementStore = defineStore("agrement", {
         file: agrement.file ?? null,
       };
 
-      const agrementId: number | null =
-        await AgrementService.postAgrement(agrementToSend);
+      const agrementId: number | null = await AgrementService.postAgrement(
+        agrementToSend,
+        typeDepot,
+      );
 
       this.agrementEnTraitement = {
         ...agrementToSend,
@@ -318,6 +337,22 @@ export const useAgrementStore = defineStore("agrement", {
         this.agrementEnTraitement = null;
         log.w("getEnTraitementById - FAIL", { agrementId, err });
         return false;
+      }
+    },
+    async fetchAgrementStatus(): Promise<void> {
+      log.i("fetchAgrementStatus - IN");
+      try {
+        const { agrements } = await AgrementService.getListAgrements({});
+        const filtered = agrements.filter((a) => a.supprime === false);
+
+        this.agrements = filtered;
+        this.agrementCourant =
+          filtered.find((a) => a.statut === AGREMENT_STATUT.VALIDE) ?? null;
+
+        log.i("fetchAgrementStatus - DONE", { count: filtered.length });
+      } catch (err) {
+        log.w("fetchAgrementStatus - DONE with error", err);
+        throw err;
       }
     },
   },

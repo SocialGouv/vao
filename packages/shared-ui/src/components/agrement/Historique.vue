@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Historique</h1>
+    <h2>Historique</h2>
     <ol class="cards">
       <li v-for="entry in history" :key="entry.id">
         <AgrementEtapeHistorique :entry="entry" />

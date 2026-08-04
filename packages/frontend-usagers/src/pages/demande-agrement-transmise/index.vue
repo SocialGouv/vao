@@ -51,7 +51,7 @@ const rawStep = route.query.step;
 const step = Array.isArray(rawStep) ? Number(rawStep[0]) : Number(rawStep ?? 0);
 
 onMounted(() => {
-  if (![0, 1, 2].includes(step)) {
+  if (![0, 1, 2, 3].includes(step)) {
     throw new Error("Invalid step query parameter");
   }
 });
@@ -59,12 +59,13 @@ onMounted(() => {
 const title = computed(() => {
   const typeDemande =
     {
-      0: "renouvellement d’agrément",
-      1: "compléments d’information",
-      2: "correction",
+      0: "de renouvellement d’agrément",
+      1: "de compléments d’information",
+      2: "de correction",
+      3: "d'agrément",
     }[step] ?? "";
 
-  return `Demande de ${typeDemande} soumise avec succès`;
+  return `Demande ${typeDemande} soumise avec succès`;
 });
 const userStore = useUserStore();
 

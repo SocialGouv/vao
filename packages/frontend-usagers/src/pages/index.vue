@@ -1,9 +1,34 @@
 <template>
   <div class="fr-container">
     <div class="fr-grid-row fr-py-5w">
-      <h1>Bienvenue {{ userStore.user.prenom }} {{ userStore.user.nom }}</h1>
+      <h1>Bienvenue {{ userStore.user?.prenom }} {{ userStore.user?.nom }}</h1>
     </div>
     <AgrementAlertRenouvellement> </AgrementAlertRenouvellement>
+    <div
+      v-if="
+        agrementStore.agrementCourant &&
+        !agrementStore.hasAgrementRenouvellementEnCours
+      "
+      class="fr-alert fr-alert--info fr-mb-3w"
+    >
+      <!-- N'afficher que si aucun renouvellement n'est déjà en cours, pour éviter le doublon avec AgrementAlertRenouvellement -->
+      <h2 class="fr-h4">Votre agrément est actif</h2>
+      <p>
+        Votre agrément
+        {{
+          agrementStore.agrementCourant.numero
+            ? `n°${agrementStore.agrementCourant.numero}`
+            : ""
+        }}
+        est valide. Vous pouvez le consulter et suivre son renouvellement.
+      </p>
+      <NuxtLink
+        class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+        to="/mon-agrement"
+      >
+        Consulter mon agrément
+      </NuxtLink>
+    </div>
     <div
       v-if="!organismeCourant || !organismeCourant.complet"
       class="fr-grid-row fr-grid-row--left"
@@ -32,15 +57,32 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { CardsNumber } from "@vao/shared-ui";
 import { FeatureFlagName } from "@vao/shared-bridge";
 import NationalIdentityCard from "@gouvfr/dsfr/dist/artwork/pictograms/document/national-identity-card.svg";
 import House from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/house.svg";
 import Contract from "@gouvfr/dsfr/dist/artwork/pictograms/document/contract.svg";
 
+interface DemandeSejourStats {
+  countBrouillon?: number;
+  countDeclarationAcompleter?: number;
+  countDeclarationEnInstruction?: number;
+  countDeclarationFinalisee?: number;
+  countSejourEnCours?: number;
+  countTerminee?: number;
+}
+
+type Tile = {
+  title: string;
+  to: string | { path: string; hash: string };
+  imgSrc: string;
+  titleTag: string;
+  description: string;
+};
+
 definePageMeta({
-  middleware: ["is-connected"],
+  middleware: ["is-connected", "check-first-agrement"],
 });
 
 useHead({
@@ -48,8 +90,17 @@ useHead({
   meta: [{ name: "description", content: "Page d'accueil." }],
 });
 
+onMounted(async () => {
+  if (agrementStore.agrements === null) {
+    await agrementStore.fetchAgrementStatus();
+  }
+});
+
 const userStore = useUserStore();
-const demandeSejourStore = useDemandeSejourStore();
+const demandeSejourStore = useDemandeSejourStore() as {
+  stats: DemandeSejourStats | null;
+  getStats: () => Promise<any>;
+};
 const organismeStore = useOrganismeStore();
 const agrementStore = useAgrementStore();
 
@@ -97,7 +148,7 @@ const bottomCards = computed(() => [
 const libelleMessageAccueil =
   "Afin de profiter de toutes les fonctionnalités de ce site, nous vous invitons à renseigner votre fiche organisateur";
 
-const tiles = computed(() => [
+const tiles = computed<Tile[]>(() => [
   {
     title: "Organisateur",
     to: organismeStore.organismeCourant
@@ -112,9 +163,14 @@ const tiles = computed(() => [
     ? [
         {
           title: "Agrément",
-          to: organismeStore.agrement
-            ? `/agrement/${agrementStore.agrement?.id}`
-            : "/agrement/",
+          to:
+            agrementStore.agrementCourant &&
+            organismeStore.organismeCourant?.organismeId
+              ? {
+                  path: `/organisme/${String(organismeStore.organismeCourant.organismeId)}`,
+                  hash: "#agrement",
+                }
+              : "/organisme/",
           imgSrc: NationalIdentityCard,
           titleTag: "h2",
           description:
@@ -153,7 +209,7 @@ const onClickRenouvellement = async () => {
 };
 
 onMounted(() => {
-  document.querySelector("header").focus();
+  document.querySelector("header")?.focus();
 });
 </script>
 

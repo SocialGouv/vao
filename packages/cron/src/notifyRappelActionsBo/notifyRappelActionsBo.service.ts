@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/node";
-import { DEMANDE_SEJOUR_STATUTS } from "@vao/shared-bridge";
+import { DEMANDE_SEJOUR_STATUTS, STATUS_USER_FRONT } from "@vao/shared-bridge";
 import { pool } from "../db";
 import { insertCron } from "../cron/cron.service";
 import { sendEmails } from "./notifyRappelActionsBo.email";
@@ -77,8 +77,7 @@ const queryRappelDSFUsager = () =>
       STRING_AGG(use.mail, ';') AS mail,
       ((ds.responsable_sejour::jsonb)->>'email')::text as mailresp,
       STRING_AGG(use.mail, ';') || ';' || ((ds.responsable_sejour::jsonb)->>'email')::text as mails,`,
-    additionalJoins:
-      "INNER JOIN front.user_organisme uso ON uso.org_id = ds.organisme_id INNER JOIN front.users use ON use.id = uso.use_id",
+    additionalJoins: `INNER JOIN front.user_organisme uso ON uso.org_id = ds.organisme_id INNER JOIN front.users use ON use.id = uso.use_id AND use.status_code = '${STATUS_USER_FRONT.VALIDATED}' AND use.deleted = false`,
     additionalGroupBy: "ds.organisme_id,mailresp,",
     additionalOrderBy: "",
   });

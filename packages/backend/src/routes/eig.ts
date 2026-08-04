@@ -1,5 +1,6 @@
 import {
   EigAdminRoutesSchema,
+  EigUsagersRoutesSchema,
   TRACKING_ACTIONS,
   TRACKING_USER_TYPE,
 } from "@vao/shared-bridge";
@@ -27,7 +28,12 @@ const boCheckRoleDS = boCheckRole([
   "DemandeSejour_Ecriture",
 ]);
 
-router.get("/me", checkJWT, eigController.getMe);
+router.get(
+  "/me",
+  checkJWT,
+  requestValidatorMiddleware(EigUsagersRoutesSchema["Get"]),
+  eigController.getMe,
+);
 router.get(
   "/admin/ds/:declarationId",
   boCheckJWT,

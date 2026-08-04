@@ -1,3 +1,4 @@
+import AgrementTypeDepotBadge from "./agrement/AgrementTypeDepotBadge.vue";
 import AgrementStatusBadge from "./agrement/AgrementStatusBadge.vue";
 import AgrementDocuments from "./agrement/Documents.vue";
 import CguValidation from "./cgu/CguValidation.vue";
@@ -44,6 +45,7 @@ import EtapeHistorique from "./agrement/EtapeHistorique.vue";
 import MultiFilesUpload from "./MultiFilesUpload.vue";
 import VerificationOtp from "./auth/verification-otp.vue";
 export {
+  AgrementTypeDepotBadge,
   AgrementStatusBadge,
   AgrementDocuments,
   CguValidation,

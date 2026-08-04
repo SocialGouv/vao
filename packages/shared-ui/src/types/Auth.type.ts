@@ -38,6 +38,8 @@ export type LoginErrorType =
   | "UnexpectedError";
 
 export interface AuthState {
+  emailError: Ref<string | null>;
+  passwordError: Ref<string | null>;
   email: Ref<string>;
   password: Ref<string>;
   displayType: Ref<LoginErrorType | null>;
@@ -45,6 +47,7 @@ export interface AuthState {
   isLoggingIn: Ref<boolean>;
   isVerifying2FA: Ref<boolean>;
   isResendingCode: Ref<boolean>;
+  submitAttempt: Ref<number>;
 }
 
 export interface ApiEndpoints {
@@ -55,6 +58,8 @@ export interface ApiEndpoints {
 }
 
 export interface UseAuthenticationReturn {
+  emailError: Ref<string | null>;
+  passwordError: Ref<string | null>;
   email: Ref<string>;
   password: Ref<string>;
   displayType: Ref<LoginErrorType | null>;
@@ -62,8 +67,8 @@ export interface UseAuthenticationReturn {
   isLoggingIn: Ref<boolean>;
   isVerifying2FA: Ref<boolean>;
   isResendingCode: Ref<boolean>;
+  submitAttempt: Ref<number>;
 
-  canLogin: ComputedRef<boolean>;
   maskedEmail: ComputedRef<string>;
 
   login: () => Promise<void>;

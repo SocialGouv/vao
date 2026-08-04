@@ -1,13 +1,12 @@
 import type {
-  OrganismeDto,
   TerritoireDto,
   TerritoireUsagersRoutes,
 } from "@vao/shared-bridge";
 import type { NextFunction } from "express";
 
-import OrganismeService from "../../services/Organisme";
 import TerritoireService from "../../services/Territoire";
 import type { RouteRequest, RouteResponse } from "../../types/request";
+import { AgrementService } from "../../usagers/agrements/agrements.service";
 import AppError from "../../utils/error";
 import { logger } from "../../utils/logger";
 
@@ -20,31 +19,32 @@ export default async function get(
   next: NextFunction,
 ) {
   log.i("IN");
+  const userId = req.decoded!.id;
   try {
-    const organisme: OrganismeDto | null = await OrganismeService.getOne({
-      use_id: req.decoded!.id,
+    // On recherche la région dans la liste des agréments quel que soit le statut
+    // On modifie la manière de rechercher car dans la cas d'un premier agrément
+    // l'organisme n'a pas d'agrément et donc pas de région d'obtention
+    const agrements = await AgrementService.getList({
+      userId: Number(userId),
     });
-    if (!organisme) {
-      return next(
-        new AppError("Paramètre manquant territoireCode", {
-          statusCode: 404,
-        }),
-      );
-    }
-    if (!organisme.agrement?.regionObtention) {
+    const agrementWithRegion = agrements.filter(
+      (agrement) => agrement.regionObtention,
+    );
+    if (agrementWithRegion.length === 0) {
       return next(
         new AppError(
-          "Erreur lors de la récupération de la région d'obtention de l'agrément",
+          "Aucun agrément avec une région d'obtention n'a été trouvé pour cet utilisateur.",
           {
-            statusCode: 422,
+            statusCode: 404,
           },
         ),
       );
     }
 
-    const result: TerritoireDto = await TerritoireService.readFicheIdByTerCode(
-      organisme.agrement.regionObtention,
-    );
+    const regionAgrement = agrementWithRegion[0]?.regionObtention;
+
+    const result: TerritoireDto =
+      await TerritoireService.readFicheIdByTerCode(regionAgrement);
 
     const ficheTerritoire: TerritoireDto | null =
       await TerritoireService.readOne(result.id);

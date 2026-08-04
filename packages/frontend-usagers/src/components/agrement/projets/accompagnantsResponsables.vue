@@ -163,7 +163,7 @@ const validationSchema = yup.object({
       .string()
       .min(
         20,
-        "Veuillez saisir une description pour les mesures envisagées au cas où des accompagnants supplémentaires devraient être recrutés en urgence. Minimum 20 caractères.",
+        "Veuillez saisir une description pour les compétences et expériences des accompagnants. Minimum 20 caractères.",
       )
       .nullable(),
   ),

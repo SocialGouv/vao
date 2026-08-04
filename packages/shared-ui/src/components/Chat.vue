@@ -22,6 +22,10 @@
       </DsfrAlert>
     </div>
     <div class="answer">
+      <label for="chat-textarea" class="fr-label fr-mb-2v">Votre message</label>
+      <span class="fr-hint-text">
+        (maximum {{ MAX_MESSAGE_LENGTH }} caractères)</span
+      >
       <div class="fr-input-group answer__form">
         <DsfrButton
           v-if="props.cdnUrl"
@@ -35,16 +39,19 @@
           class="answer__form__attachment"
           @click="isModalOpen = true"
         />
+
         <textarea
+          id="chat-textarea"
           v-model="message"
+          hint="hey"
           class="fr-input answer__form__textare"
           name="textarea"
           :maxlength="MAX_MESSAGE_LENGTH"
           @keydown.enter.exact="sendMessage"
-        ></textarea>
+        />
         <DsfrButton
-          label="Envoyer message"
-          title="Envoyer message"
+          label="Envoyer un message"
+          title="Envoyer un message"
           :icon="isLoading ? 'fr-icon-refresh-line' : 'fr-icon-send-plane-fill'"
           icon-only
           tertiary1
@@ -156,6 +163,7 @@ defineExpose({
   &__form {
     position: relative;
     display: flex;
+    align-items: flex-end;
     margin-bottom: 0;
     &__textare {
       flex: 1;
@@ -169,7 +177,7 @@ defineExpose({
       transform: translate(0, -50%);
     }
     &__send {
-      margin: auto 0.5rem;
+      margin-left: 0.5rem;
 
       &--is-loading {
         &::before {

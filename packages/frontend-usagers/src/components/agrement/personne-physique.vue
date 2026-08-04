@@ -8,27 +8,17 @@
       Personne physique
     </TitleWithIcon>
     <dl>
-      <dt>
-        <strong>Prénom: </strong>
-      </dt>
+      <dt>Prénom:</dt>
       <dd>{{ personnePhysique.prenom || "-" }}</dd>
-      <dt>
-        <strong>Nom de naissance: </strong>
-      </dt>
+      <dt>Nom de naissance:</dt>
       <dd>{{ personnePhysique.nomNaissance || "-" }}</dd>
-      <dt>
-        <strong>Nom d'usage: </strong>
-      </dt>
+      <dt>Nom d'usage:</dt>
       <dd>{{ personnePhysique.nomUsage || "-" }}</dd>
-      <dt>
-        <strong>Profession: </strong>
-      </dt>
+      <dt>Profession:</dt>
       <dd>{{ personnePhysique.profession || "-" }}</dd>
 
       <template v-if="!isEditingTelephone">
-        <dt>
-          <strong>Téléphone: </strong>
-        </dt>
+        <dt>Téléphone:</dt>
         <dd>
           {{ personnePhysique.telephone || "-" }}
           <DsfrLinkV2
@@ -36,32 +26,36 @@
             as="button"
             icon-name="icon-edit-line"
             @click="startEditTelephone"
-            >modifier</DsfrLinkV2
           >
+            Modifier
+            <span class="fr-sr-only"> le numéro de téléphone</span>
+          </DsfrLinkV2>
         </dd>
       </template>
       <template v-else>
         <dd class="full-width">
-          <DsfrInputGroup
-            name="telephone"
-            label="Téléphone"
-            :label-visible="true"
-            :model-value="telephone"
-            :is-valid="telephoneMeta.valid"
-            :error-message="telephoneError"
-            hint="Au format 0X, +33X ou 0033. Exemple : 0612345678"
-            @update:model-value="onTelephoneChange"
-          />
+          <fieldset class="fr-fieldset">
+            <legend class="fr-fieldset__legend">
+              Modifier le numéro de téléphone
+            </legend>
+
+            <DsfrInputGroup
+              name="telephone"
+              label="Téléphone"
+              :label-visible="true"
+              :model-value="telephone"
+              :is-valid="telephoneMeta.valid"
+              :error-message="telephoneError"
+              hint="Au format 0X, +33X ou 0033. Exemple : 0612345678"
+              @update:model-value="onTelephoneChange"
+            />
+          </fieldset>
         </dd>
       </template>
 
-      <dt>
-        <strong>Adresse du siège de ses activité: </strong>
-      </dt>
+      <dt>Adresse du siège de ses activité:</dt>
       <dd>{{ personnePhysique.adresseDomicile.label || "-" }}</dd>
-      <dt>
-        <strong>Adresse de ses activités: </strong>
-      </dt>
+      <dt>Adresse de ses activités:</dt>
       <dd>{{ personnePhysique.adresseSiege.label || "-" }}</dd>
     </dl>
   </div>
@@ -174,6 +168,9 @@ dl {
 }
 dd {
   padding-left: 0;
+}
+dt {
+  font-weight: bold;
 }
 .full-width {
   grid-column: 1 / span 2;

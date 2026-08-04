@@ -2,6 +2,7 @@ import type {
   AgrementDto,
   AgrementUsagersRoutes,
   AGREMENT_STATUT,
+  AGREMENT_TYPE_DEPOT,
 } from "@vao/shared-bridge";
 import { buildRequest } from "~/utils/fetchBackend";
 
@@ -34,11 +35,14 @@ const AgrementService = {
     })();
     return { agrements };
   },
-  postAgrement: async (agrement: AgrementDto) => {
+  postAgrement: async (
+    agrement: AgrementDto,
+    typeDepot: AGREMENT_TYPE_DEPOT,
+  ) => {
     const { id } = await buildRequest<AgrementUsagersRoutes["PostAgrement"]>({
       path: "/agrements/",
       method: "POST",
-      body: agrement,
+      body: { ...agrement, typeDepot },
     })();
     return id;
   },

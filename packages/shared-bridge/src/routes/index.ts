@@ -19,6 +19,7 @@ export interface BasicRoute {
   response:
     | RouteResponseBody<Record<string, any>>
     | RouteResponseBody<Record<string, any>[]>
+    | string
     | void;
   method: "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
 }
@@ -44,14 +45,22 @@ export type { EigAdminRoutes } from "./admin/eig";
 export { EigAdminRoutesSchema } from "./admin/eig";
 export type { HebergementAdminRoutes } from "./admin/hebergement";
 export { HebergementAdminRoutesSchema } from "./admin/hebergement";
+export type { OrganismeAdminRoutes } from "./admin/organisme";
+export { OrganismeAdminRoutesSchema } from "./admin/organisme";
+export type { SejourAdminRoutes } from "./admin/sejour";
+export { SejourAdminRoutesSchema } from "./admin/sejour";
 export type { UserAdminRoutes } from "./admin/users";
 export { UserAdminRoutesSchema } from "./admin/users";
 export type { AgrementUsagersRoutes } from "./usagers/agrement";
 export { AgrementUsagersRoutesSchema } from "./usagers/agrement";
 export type { DocumentUsagersRoutes } from "./usagers/document";
 export { DocumentUsagersRoutesSchema } from "./usagers/document";
+export type { EigUsagersRoutes } from "./usagers/eig";
+export { EigUsagersRoutesSchema } from "./usagers/eig";
 export type { HebergementUsagersRoutes } from "./usagers/hebergement";
 export { HebergementUsagersRoutesSchema } from "./usagers/hebergement";
+export type { SejourUsagersRoutes } from "./usagers/sejour";
+export { SejourUsagersRoutesSchema } from "./usagers/sejour";
 export type { SiretRoutes } from "./usagers/siret";
 export { SiretRoutesSchema } from "./usagers/siret";
 export type { TerritoireUsagersRoutes } from "./usagers/territoire";

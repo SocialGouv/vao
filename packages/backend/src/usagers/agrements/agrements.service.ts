@@ -9,6 +9,7 @@ import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   AGREMENT_SVA_TIMER_STATUT,
+  AGREMENT_TYPE_DEPOT,
   FILE_CATEGORY,
   ORGANISME_TYPE,
 } from "@vao/shared-bridge";
@@ -16,9 +17,12 @@ import { PoolClient } from "pg";
 
 import { AgrementMailAdmin } from "../../admin/agrements/agrements.mail";
 import Region from "../../services/geo/Region";
+import insee from "../../services/Insee";
 import { mailService } from "../../services/mail";
 import Organisme from "../../services/Organisme";
-import TerritoireService from "../../services/Territoire";
+import TerritoireService, {
+  getFichesTerritoireForRegionByInseeCode,
+} from "../../services/Territoire";
 import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
 import { AgrementServiceShared } from "../../shared/agrements/agrements.service";
 import AppError from "../../utils/error";
@@ -132,7 +136,10 @@ export const AgrementService = {
       });
     }
   },
-  async save(agrement: AgrementDto, userId: string): Promise<number> {
+  async save(
+    agrement: AgrementDto & { typeDepot: AGREMENT_TYPE_DEPOT },
+    userId: string,
+  ): Promise<number> {
     agrement.dateFinValidite = addYears(agrement?.dateObtention, 5);
     // Validation métier spécifique au type d'organisme.
     // Le schéma partagé ne connaît pas le type d'organisme (personne morale
@@ -282,12 +289,14 @@ export const AgrementService = {
                     email: emailRegion,
                     organismeName,
                     siret,
+                    typeDepot: agrement.typeDepot,
                   })
                 : // Transmission après demande de modification
                   AgrementMailAdmin.sendStatutModificationTransmisRegionMail({
                     agrementId,
                     email: emailRegion,
                     organismeName,
+                    typeDepot: agrement.typeDepot,
                   });
               await mailService.send(mailToSend);
             }
@@ -307,6 +316,7 @@ export const AgrementService = {
                 date,
                 email,
                 regionDreets: nomObtentionRegion,
+                typeDepot: agrement.typeDepot,
               }),
             );
           } catch (e) {
@@ -316,6 +326,56 @@ export const AgrementService = {
       }
       log.d("updated meta values - DONE", { agrementId });
     } else {
+      // Pour la création d'un nouvel agrément,
+      // si c'est le premier agrément, on ne connait pas la région d'obtention,
+      // Il faut donc la récupérer à partir de l'insee de l'adresse de la personne morale ou physique.
+      if (!agrement.regionObtention) {
+        const siret =
+          organisme.personneMorale?.siret ?? organisme.personnePhysique?.siret;
+
+        if (!siret) {
+          throw new AppError(
+            "SIRET introuvable pour l'organisme, impossible de déterminer la région d'obtention.",
+            { statusCode: 422 },
+          );
+        }
+
+        let etablissement;
+        try {
+          etablissement = await insee.getEtablissement(siret);
+        } catch (error) {
+          throw new AppError("Erreur lors de l'appel à l'API INSEE.", {
+            cause: error,
+            statusCode: 502,
+          });
+        }
+
+        if (!etablissement) {
+          throw new AppError(
+            "Établissement non trouvé dans l'INSEE pour le SIRET fourni.",
+            { statusCode: 400 },
+          );
+        }
+        const inseeCode = String(
+          etablissement.adresseEtablissement?.codeCommuneEtablissement,
+        );
+        const codeRegionObtention =
+          await getFichesTerritoireForRegionByInseeCode({
+            inseeCode,
+          });
+
+        if (!codeRegionObtention) {
+          throw new AppError(
+            `Aucune région trouvée pour inseeCode=${inseeCode}`,
+            {
+              statusCode: 400,
+            },
+          );
+        }
+
+        agrement.regionObtention = codeRegionObtention.terCode;
+      }
+
       agrementId = await AgrementsRepository.create({
         agrement,
       });

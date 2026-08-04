@@ -42,7 +42,7 @@ describe("GET /territoire/get-by-agrement-region-user", () => {
     expect(response.body.territoire.territoire_id).toEqual(territoireId);
   });
 
-  it("devrait retourner 404 si aucun organisme n'est lié à l'utilisateur", async () => {
+  it("devrait retourner 404 si aucun agrement n'est lié à l'organisme de cet utilisateur", async () => {
     const frontUser = await createUsagersUser();
 
     const response = await request(getFoAppHelper(frontUser)).get(
@@ -50,27 +50,5 @@ describe("GET /territoire/get-by-agrement-region-user", () => {
     );
 
     expect(response.status).toBe(404);
-  });
-
-  it("devrait retourner 422 si la région d'obtention de l'agrément est manquante", async () => {
-    const frontUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: frontUser.id });
-    const agrementData = await buildAgrementFixture({
-      organismeId,
-      statut: AGREMENT_STATUT.VALIDE,
-    });
-    await createAgrement({
-      agrement: {
-        ...agrementData,
-        regionObtention: null as unknown as string,
-      },
-      organismeId,
-    });
-
-    const response = await request(getFoAppHelper(frontUser)).get(
-      `/territoire/get-by-agrement-region-user`,
-    );
-
-    expect(response.status).toBe(422);
   });
 });

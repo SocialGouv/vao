@@ -1,11 +1,5 @@
 <template>
-  <DsfrBadge
-    :small="small"
-    :type="badgeType"
-    style="margin-left: 1ex"
-    :label="label"
-    class="pointer"
-  />
+  <DsfrBadge :small="small" :type="badgeType" :label="label" class="fr-ml-1v" />
 </template>
 
 <script setup lang="ts">

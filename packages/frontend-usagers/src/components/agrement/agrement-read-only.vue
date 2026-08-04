@@ -16,7 +16,10 @@
         :cdn-url="cdnUrl"
       />
     </DsfrAccordion>
-    <DsfrAccordion title="Bilan des 4 années précédentes">
+    <DsfrAccordion
+      v-if="!props.firstAgrement"
+      title="Bilan des 4 années précédentes"
+    >
       <AgrementBilan
         :init-agrement="props.initAgrement ?? {}"
         :modifiable="false"
@@ -37,6 +40,7 @@
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   initOrganisme: { type: Object, required: true },
+  firstAgrement: { type: Boolean, default: false },
   modifiable: { type: Boolean, default: true },
   cdnUrl: { type: String, required: true },
 });

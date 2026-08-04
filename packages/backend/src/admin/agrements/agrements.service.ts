@@ -5,6 +5,7 @@ import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   AGREMENT_SVA_TIMER_STATUT,
+  AGREMENT_TYPE_DEPOT,
   AgrementFilesDto,
   FUNCTIONAL_ERRORS,
   FunctionalException,
@@ -24,6 +25,7 @@ import AppError from "../../utils/error";
 import { logger } from "../../utils/logger";
 import { withTransaction } from "../../utils/pgpool";
 import { AgrementMailAdmin } from "./agrements.mail";
+import type { AgrementExtractRow } from "./agrements.repository";
 import { AgrementsRepository } from "./agrements.repository";
 
 const log = logger(module.filename);
@@ -40,6 +42,12 @@ export const AgrementService = {
     withDetails: boolean;
   }) {
     return await AgrementServiceShared.getById({ agrementId, withDetails });
+  },
+  async getExtract(regionCode: string): Promise<AgrementExtractRow[]> {
+    log.i("getExtract - IN");
+    const agrements = await AgrementsRepository.getExtract(regionCode);
+    log.i("getExtract - DONE");
+    return agrements;
   },
   async getHistory(agrementId: number) {
     const history = await AgrementsRepository.getHistory(agrementId);
@@ -338,7 +346,7 @@ export const AgrementService = {
       typePrecision: statut,
     });
 
-    if (agrement?.commentaire) {
+    if (commentaire) {
       await AgrementService.trackEvent({
         agrementId,
         boUserId: Number(boUserId),
@@ -358,6 +366,14 @@ export const AgrementService = {
       AGREMENT_STATUT.PRIS_EN_CHARGE,
     ];
     if (allowedStatutsMailDreets.includes(statut)) {
+      const organisme = await serviceOrganismeGetOne({
+        "o.id": agrement.organismeId,
+      });
+
+      const typeDepot = organisme.agrement?.numero
+        ? AGREMENT_TYPE_DEPOT.RENOUVELLEMENT
+        : AGREMENT_TYPE_DEPOT.PREMIER;
+
       const regionDreets = await Region.fetchOne(territoireCode);
       if (!regionDreets) {
         throw new AppError("Échec, une région devrait exister", {
@@ -372,10 +388,6 @@ export const AgrementService = {
         const territoire =
           await TerritoireService.readFicheIdByTerCode(territoireCode);
         if (territoire) {
-          const organisme = await serviceOrganismeGetOne({
-            "o.id": agrement.organismeId,
-          });
-
           const fiche = await TerritoireService.readOne(territoire.id);
           if (fiche?.service_mail) {
             try {
@@ -386,6 +398,7 @@ export const AgrementService = {
                     Organisme: organisme,
                     agrementId,
                     mailDreets: fiche.service_mail,
+                    typeDepot,
                   });
                   break;
                 case AGREMENT_STATUT.A_CORRIGER:
@@ -440,26 +453,30 @@ export const AgrementService = {
             case AGREMENT_STATUT.A_COMPLETER:
               mailToSend = AgrementMailUsagers.sendStatutACompleterMail({
                 commentaire,
+                date: agrement.dateDepot,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
+                typeDepot,
               });
               break;
             case AGREMENT_STATUT.EN_INSTRUCTION:
               mailToSend = AgrementMailUsagers.sendCompletudeConfirmedMail({
+                date: agrement.dateConfirmCompletude,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
+                typeDepot,
               });
               break;
             case AGREMENT_STATUT.PRIS_EN_CHARGE:
               mailToSend = AgrementMailUsagers.sendPrisEnChargeMail({
-                date: agrement.dateVerifCompleture!,
+                date: agrement.dateVerifCompleture,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
+                typeDepot,
               });
               break;
             case AGREMENT_STATUT.A_CORRIGER:
               mailToSend = AgrementMailUsagers.sendStatutACorrigerMail({
-                commentaire,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
               });
@@ -468,6 +485,7 @@ export const AgrementService = {
               mailToSend = AgrementMailUsagers.sendStatutRefuseMail({
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
+                typeDepot,
               });
               break;
             case AGREMENT_STATUT.VALIDE:

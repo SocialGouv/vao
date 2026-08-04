@@ -237,6 +237,7 @@ const closeRefusModal = () => {
 
 async function refused({ commentaire }: { commentaire: string }) {
   if (!utilisateurSelectionne.value) {
+    console.error("No user selected for refusal");
     return;
   }
 
@@ -245,10 +246,28 @@ async function refused({ commentaire }: { commentaire: string }) {
     motif: commentaire,
   } as Partial<UserDto>;
 
-  await userStore.updateUserStatus(utilisateurSelectionne.value.id, params);
-  userStore.fetchUsersOrganisme(query);
-  utilisateurSelectionne.value = null;
-  showRefusModal.value = false;
+  try {
+    await userStore.updateUserStatus(
+      utilisateurSelectionne.value.userId,
+      params,
+    );
+    toaster.success({
+      titleTag: "h2",
+      description:
+        "La demande de création de compte a été refusée. L'utilisateur va recevoir un mail pour le prévenir.",
+    });
+    userStore.fetchUsersOrganisme(query);
+  } catch (err) {
+    toaster.error({
+      titleTag: "h2",
+      description: "Erreur lors de la mise à jour du status de l'utilisateur.",
+      role: "alert",
+    });
+    throw err;
+  } finally {
+    utilisateurSelectionne.value = null;
+    showRefusModal.value = false;
+  }
 }
 
 function openCompte(userId: string) {

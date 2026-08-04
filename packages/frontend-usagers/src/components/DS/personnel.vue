@@ -118,7 +118,7 @@
             <DsfrCheckbox
               v-model="personnesAttestation"
               name="attestation"
-              label="Je certifie sur l'honneur avoir vérifié que les personnes ci-dessus n’ont pas fait l’objet d’une condamnation inscrite au bulletin n°3 du casier judiciaire"
+              label="Je certifie sur l'honneur avoir vérifié que les personnes ci-dessus n’ont pas fait l’objet d’une condamnation inscrite au bulletin n°3 du casier judiciaire français"
               :small="true"
               :disabled="!isModifiable"
               @update:model-value="true"

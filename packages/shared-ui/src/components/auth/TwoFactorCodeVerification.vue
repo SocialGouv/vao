@@ -1,9 +1,9 @@
 <template>
   <div class="two-factor-verification">
-    <h1 id="otp-title" class="fr-h4">
+    <h2 id="otp-title" class="fr-h4">
       <span aria-hidden="true" class="fr-icon-lock-line fr-pr-1v"></span>
       Vérification sécurisée
-    </h1>
+    </h2>
     <template v-if="isLocked">
       <DsfrAlert
         role="alert"

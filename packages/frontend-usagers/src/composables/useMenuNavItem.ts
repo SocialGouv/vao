@@ -48,13 +48,9 @@ export const useMenuNavItems = () => {
           ] &&
           (organismeStore.organismeCourant?.typeOrganisme ===
             "personne_physique" ||
-            agrementStore?.agrementCourant)
-            ? [
-                {
-                  text: "Mon agrément",
-                  to: "/mon-agrement",
-                },
-              ]
+            agrementStore?.agrementCourant ||
+            agrementStore?.agrementEnTraitement)
+            ? [{ text: "Mon agrément", to: "/mon-agrement" }]
             : []),
         ],
       },

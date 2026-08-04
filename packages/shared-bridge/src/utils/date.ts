@@ -114,6 +114,11 @@ export const isValidFrShort = (date?: string | null): boolean => {
   return dayjs(date, "DD/MM/YYYY", true).isValid();
 };
 
+export const isValidIsoShort = (date?: string | null): boolean => {
+  if (!date) return false;
+  return dayjs(date, "YYYY-MM-DD", true).isValid();
+};
+
 export const parseFrShort = (date?: string | null): dayjs.Dayjs | undefined => {
   if (!date) return undefined;
   const parsed = dayjs(date, "DD/MM/YYYY", true);

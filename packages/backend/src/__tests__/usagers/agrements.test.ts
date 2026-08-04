@@ -3,6 +3,7 @@ import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   AGREMENT_SVA_TIMER_STATUT,
+  AGREMENT_TYPE_DEPOT,
   ERRORS_COMMON,
   FILE_CATEGORY,
   formatFR,
@@ -14,6 +15,7 @@ import request from "supertest";
 import { AgrementsRepository as AgrementsRepositoryAdmin } from "../../admin/agrements/agrements.repository";
 import { AgrementService as AgrementServiceAdmin } from "../../admin/agrements/agrements.service";
 import * as DocumentService from "../../services/Document";
+import insee, { getEtablissement } from "../../services/Insee";
 import { mailService } from "../../services/mail";
 import { AgrementsRepository } from "../../usagers/agrements/agrements.repository";
 import { AgrementService } from "../../usagers/agrements/agrements.service";
@@ -32,12 +34,18 @@ import { createAdminUser, createUsagersUser } from "../helpers/userHelper";
 jest.mock("../../services/mail", () => ({
   mailService: { send: jest.fn() },
 }));
+jest.mock("../../services/Insee", () => ({
+  getEtablissement: jest.fn(),
+}));
+
+const mockedGetEtablissement = getEtablissement as jest.Mock;
 
 beforeAll(async () => await createTestContainer());
 afterAll(async () => await removeTestContainer());
 
 beforeEach(() => {
   jest.resetAllMocks();
+  mockedGetEtablissement.mockReset();
 });
 afterEach(() => {
   jest.restoreAllMocks();
@@ -164,6 +172,156 @@ describe("POST /agrements", () => {
     expect(response.status).toBe(200);
     expect(response.body).toBeDefined();
   });
+  it("devrait retourner 200 et créer un agrément sans bilan annuel", async () => {
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
+    // On force agrementBilanAnnuel à []
+    const agrementData = await buildAgrementFixture({
+      agrementBilanAnnuel: [],
+      organismeId,
+    });
+
+    const responseBrouillon = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send({ ...agrementData, typeDepot: AGREMENT_TYPE_DEPOT.PREMIER });
+
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send({
+        ...agrementData,
+        id: responseBrouillon.body.id,
+        statut: AGREMENT_STATUT.TRANSMIS,
+        typeDepot: AGREMENT_TYPE_DEPOT.PREMIER,
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+  });
+
+  it("devrait remonter une 200 avec ma region d'obtention", async () => {
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({
+      organisme: { siret: "93828857800017" },
+      userId: frontUser.id,
+    });
+
+    mockedGetEtablissement.mockResolvedValue({
+      adresseEtablissement: {
+        codeCommuneEtablissement: "75001",
+      },
+    });
+    // On force agrementBilanAnnuel à [] car c'est un premier agréménet, donc pas de bilan annuel
+    const agrementData = await buildAgrementFixture({
+      agrementBilanAnnuel: [],
+      organismeId,
+    });
+    // région inexistante (correspond au premier agrément)
+    agrementData.regionObtention = null;
+
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send(agrementData);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+
+    const { agrement } = await getAgrement(response.body.id);
+    expect(agrement?.regionObtention).toBe("IDF");
+  });
+
+  it("devrait remonter une erreur 400 avec ma region d'obtention introuvable", async () => {
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({
+      userId: frontUser.id,
+    });
+
+    mockedGetEtablissement.mockResolvedValue({
+      adresseEtablissement: {
+        codeCommuneEtablissement: "00001",
+      },
+    });
+    // On force agrementBilanAnnuel à [] car c'est un premier agréménet, donc pas de bilan annuel
+    const agrementData = await buildAgrementFixture({
+      agrementBilanAnnuel: [],
+      organismeId,
+    });
+    agrementData.regionObtention = null;
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send(agrementData);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toBeDefined();
+  });
+  it("devrait retourner 400 si aucune région n'est trouvée pour le code INSEE", async () => {
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
+    // On force agrementBilanAnnuel à []
+    const agrementData = await buildAgrementFixture({
+      agrementBilanAnnuel: [],
+      organismeId,
+      regionObtention: "", // région inexistante
+    });
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send(agrementData);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toBeDefined();
+  });
+  it("devrait retourner 502 si l'API INSEE échoue", async () => {
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
+
+    // Simule une panne API INSEE
+    (insee.getEtablissement as jest.Mock).mockRejectedValue(
+      new Error("INSEE API down"),
+    );
+
+    const agrementData = await buildAgrementFixture({
+      agrementBilanAnnuel: [],
+      organismeId,
+      regionObtention: "",
+    });
+
+    const response = await request(getFoAppHelper(frontUser))
+      .post("/agrements/")
+      .send(agrementData);
+
+    expect(response.status).toBe(502);
+
+    expect(response.body).toBeDefined();
+    expect(response.body.message).toContain(
+      "Erreur lors de l'appel à l'API INSEE",
+    );
+  });
+  it("devrait remonter une 422 si SIRET est absent", async () => {
+    const frontUser = await createUsagersUser();
+
+    // Organisme sans SIRET
+    const organismeId = await createOrganisme({
+      organisme: {
+        siret: null,
+      },
+      userId: frontUser.id,
+    });
+
+    const agrementData = await buildAgrementFixture({
+      agrementBilanAnnuel: [],
+      organismeId,
+      regionObtention: "", // déclenche le calcul INSEE
+    });
+
+    const response = await request(getFoAppHelper(frontUser))
+      .post("/agrements/")
+      .send(agrementData);
+
+    expect(response.status).toBe(422);
+
+    expect(response.body).toMatchObject({
+      message: expect.stringContaining("SIRET introuvable"),
+    });
+  });
   it("devrait créer un agrément sans animation (coverage)", async () => {
     const frontUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: frontUser.id });
@@ -219,7 +377,7 @@ describe("POST /agrements", () => {
     const { agrement } = await getAgrement(agrementId);
     const response = await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
-      .send(agrement!);
+      .send({ ...agrement, typeDepot: AGREMENT_TYPE_DEPOT.RENOUVELLEMENT });
 
     expect(response.status).toBe(200);
     expect(response.body).toBeDefined();
@@ -626,6 +784,15 @@ describe("POST /agrements", () => {
         id: agrementId,
         statut: AGREMENT_STATUT.TRANSMIS,
       });
+    const calls = (mailService.send as jest.Mock).mock.calls;
+    const mailToRegion = calls[3]; // mail région après renvoi post-A_COMPLETER
+    expect(mailToRegion[0].subject).toBe(
+      "Portail VAO – Nouvelle demande de renouvellement d'agrément reçue",
+    );
+    expect(mailToRegion[0].html).toContain(
+      "après avoir apporté les modifications demandées",
+    );
+    expect(mailToRegion[0].html).toContain("Transmis");
     expect(responseCorrection.status).toBe(200);
     expect(responseCorrection.body.id).toBe(agrementId);
     expect(mailService.send).toHaveBeenCalledTimes(5);
@@ -641,6 +808,69 @@ describe("POST /agrements", () => {
     expect(aModifierEvent?.usager_user).toBeDefined();
     const { agrement } = await getAgrement(agrementId);
     expect(agrement?.statut).toBe(AGREMENT_STATUT.TRANSMIS);
+  });
+
+  it("devrait envoyer le mail 'première demande' à la région après renvoi suite à demande de complément", async () => {
+    const usagerUser = await createUsagersUser();
+    // Ici on répond aux conditions de mise à jour backOffice
+    const adminUser = await createAdminUser();
+    await createTerritoire({ territoireCode: "IDF" });
+    const organismeId = await createOrganisme({ userId: usagerUser.id });
+    await createTerritoire({
+      territoire: { service_mail: "region-idf@example.com" },
+      territoireCode: "IDF",
+    });
+
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    const response = await request(getFoAppHelper(usagerUser))
+      .post(`/agrements/`)
+      .send({
+        ...agrementData,
+        id: agrementId,
+        statut: AGREMENT_STATUT.TRANSMIS,
+        typeDepot: AGREMENT_TYPE_DEPOT.PREMIER,
+      });
+
+    expect(mailService.send).toHaveBeenCalledTimes(2);
+    expect(response.status).toBe(200);
+    expect(response.body.id).toBe(agrementId);
+
+    // Mise à jour côté Admin pour demande de complétion du dossier
+    await AgrementServiceAdmin.updateStatut({
+      agrementId,
+      boUserId: String(adminUser.id),
+      commentaire:
+        "Dossier à compléter car il manque des éléments pour pouvoir le traiter",
+      statut: AGREMENT_STATUT.A_COMPLETER,
+      territoireCode: agrementData.regionObtention!,
+    });
+    expect(mailService.send).toHaveBeenCalledTimes(3);
+
+    // Transmission de l'agrément au Service après complétude
+    await request(getFoAppHelper(usagerUser))
+      .post(`/agrements/`)
+      .send({
+        ...agrementData,
+        id: agrementId,
+        statut: AGREMENT_STATUT.TRANSMIS,
+        typeDepot: AGREMENT_TYPE_DEPOT.PREMIER,
+      });
+    const calls = (mailService.send as jest.Mock).mock.calls;
+    const mailToRegion = calls[3];
+    expect(mailToRegion[0].subject).toBe(
+      "Portail VAO – Nouvelle demande de premier agrément reçue",
+    );
+    expect(mailToRegion[0].html).toContain(
+      "après avoir apporté les modifications demandées",
+    );
+    expect(mailToRegion[0].html).toContain("1ère demande en cours");
   });
 
   it("devrait changer le statut en agrement EN_INSTRUCTION après demande de correction", async () => {

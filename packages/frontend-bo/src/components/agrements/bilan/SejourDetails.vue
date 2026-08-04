@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h2 class="fr-text fr-text--lg fr-text--bold">
+    <h3 class="fr-text fr-text--lg fr-text--bold">
       Informations sur les vacanciers
-    </h2>
+    </h3>
     <DisplayLabel
       :value="props.bilanAnnuel?.nbGlobalVacanciers"
       :input="

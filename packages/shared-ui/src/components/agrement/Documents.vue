@@ -1,14 +1,25 @@
 <template>
-  <div v-if="dreetsFiles && dreetsFiles.length > 0">
+  <section v-if="dreetsFiles && dreetsFiles.length > 0">
+    <h2 id="dreets-title">Documents de la DREETS</h2>
     <TableFull
+      no-caption
       title="Documents de la DREETS"
       :headers="headers"
       :data="dreetsFiles"
     />
-  </div>
-  <div v-if="ovaFiles && ovaFiles.length > 0">
-    <TableFull title="Documents de l'OVA" :headers="headers" :data="ovaFiles" />
-  </div>
+  </section>
+  <section v-if="ovaFiles && ovaFiles.length > 0">
+    <h2 id="ova-title">Documents de l'OVA</h2>
+    <TableFull
+      no-caption
+      title="Documents de l'OVA"
+      :headers="headers"
+      :data="ovaFiles"
+    />
+  </section>
+  <section v-if="ovaFiles.length === 0 && dreetsFiles.length === 0">
+    Aucun document joint
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -22,20 +33,20 @@ import {
 } from "@vao/shared-bridge";
 
 const props = defineProps({
-  agrementCourant: { type: Object, required: true },
+  agrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
 });
 
 const dreetsFiles = computed(
   () =>
-    props.agrementCourant?.agrementFiles?.filter(
+    props.agrement?.agrementFiles?.filter(
       (agrementFile: DocumentDto) => agrementFile.userId === null,
     ) ?? [],
 );
 
 const ovaFiles = computed(
   () =>
-    props.agrementCourant?.agrementFiles?.filter(
+    props.agrement?.agrementFiles?.filter(
       (agrementFile: DocumentDto) => agrementFile.userId !== null,
     ) ?? [],
 );

@@ -45,7 +45,7 @@
           >Modifier</DsfrButton
         >
       </DsfrAccordion>
-      <DsfrAccordion>
+      <DsfrAccordion v-if="!props.firstAgrement">
         <template #title>
           Bilan des 4 années précédentes
           <DsfrBadge
@@ -102,7 +102,12 @@
     <DsfrButton
       class="fr-mb-6v fr-mt-6v"
       :disabled="
-        !(coordonneesValid && projetValid && dossierValid && bilanValid)
+        !(
+          coordonneesValid &&
+          projetValid &&
+          dossierValid &&
+          (bilanValid || props.firstAgrement)
+        )
       "
       @click.prevent="transmitAgrement"
       >Confirmer ma demande d'agrément</DsfrButton
@@ -118,6 +123,7 @@ import { useToaster } from "@vao/shared-ui";
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   initOrganisme: { type: Object, required: true },
+  firstAgrement: { type: Boolean, default: false },
   modifiable: { type: Boolean, default: true },
   cdnUrl: { type: String, required: true },
 });

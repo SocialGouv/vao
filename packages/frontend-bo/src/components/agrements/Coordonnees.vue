@@ -12,8 +12,12 @@
         <dl>
           <dt>Prénom:</dt>
           <dd>{{ props.initOrganisme?.personnePhysique.prenom || "-" }}</dd>
-          <dt>Nom:</dt>
+          <dt>Nom d'usage:</dt>
           <dd>{{ props.initOrganisme?.personnePhysique.nom || "-" }}</dd>
+          <dt>Nom de naissance:</dt>
+          <dd>
+            {{ props.initOrganisme?.personnePhysique.nomNaissance || "-" }}
+          </dd>
           <dt>Profession:</dt>
           <dd>{{ props.initOrganisme?.personnePhysique.profession || "-" }}</dd>
           <dt>Téléphone:</dt>

@@ -3,33 +3,33 @@
     <div class="fr-grid-row">
       <div class="fr-pb-3w fr-col-12">
         <DsfrBreadcrumb :links="links" />
-        <h1>Renouvellement d’agrément</h1>
+        <h1 ref="pageHeadingRef" tabindex="-1">{{ pageTitle }}</h1>
         <p class="fr-mb-2w">
           Sauf mention contraire, tous les champs sont obligatoires.
           <br />Documents importés : taille maximale à 5 Mo, les formats
           supportés sont jpg, png, pdf.
         </p>
-
-        <p>
+        <p class="text-bold">
           <span
             class="fr-icon-success-fill default-success fr-mr-1w"
             aria-hidden="true"
           ></span>
-          <b>
-            <span class="default-success"
-              >Saisies enregistrées à chaque étape :</span
-            >
-            au clic sur “Suivant”, vos informations sont enregistrées, vous
-            pourrez reprendre plus tard, en retrouvant le lien depuis
-            l’accueil.</b
+          <span class="default-success"
+            >Saisies enregistrées à chaque étape :</span
           >
+          au clic sur “Suivant”, vos informations sont enregistrées, vous
+          pourrez reprendre plus tard, en retrouvant le lien depuis l’accueil.
         </p>
       </div>
     </div>
     <div class="fr-grid-row">
       <div class="fr-col-xs-12 fr-col-md-3">
         <!-- todo -->
-        <AgrementMenuAgrement :active-id="hash" @select="hash = $event" />
+        <AgrementMenuAgrement
+          :active-id="hash"
+          :first-agrement="!agrementStore.agrementCourant"
+          @select="hash = $event"
+        />
       </div>
 
       <div class="fr-col-xs-12 fr-col-md-9">
@@ -60,7 +60,7 @@
             />
           </div>
           <div
-            v-if="hash === 'agrement-bilan'"
+            v-if="hash === 'agrement-bilan' && hasCurrentAgrement"
             id="agrement-bilan"
             :read-only="readOnly"
           >
@@ -94,6 +94,7 @@
               class="fr-my-2w"
               :init-organisme="organismeStore.organismeCourant ?? {}"
               :init-agrement="agrementStore.agrementEnTraitement ?? {}"
+              :first-agrement="!agrementStore.agrementCourant"
               :modifiable="false"
               :cdn-url="`${config.public.backendUrl}/documents/`"
               @update="saveAndTransmitAgrement"
@@ -111,7 +112,11 @@ import type {
   AgrementFilesDto,
   FileKey,
 } from "@vao/shared-bridge";
-import { AGREMENT_STATUT, FILE_CATEGORY_CONFIG } from "@vao/shared-bridge";
+import {
+  AGREMENT_TYPE_DEPOT,
+  AGREMENT_STATUT,
+  FILE_CATEGORY_CONFIG,
+} from "@vao/shared-bridge";
 import {
   useToaster,
   handleDocumentUploadError,
@@ -130,18 +135,30 @@ const config = useRuntimeConfig();
 const log = logger("components/agrement/[[agrementId]].vue");
 const readOnly = false;
 
+const pageHeadingRef = ref<HTMLHeadingElement | null>(null);
+
 type AgrementFormValues = Partial<AgrementDto> & {
   [K in FileKey]?: any;
 };
 
 const canModify = true;
 
+const hasCurrentAgrement = computed(() =>
+  Boolean(agrementStore.agrementCourant?.id),
+);
+
+const pageTitle = computed(() =>
+  hasCurrentAgrement.value
+    ? "Renouvellement d'agrément"
+    : "Première demande d'agrément",
+);
+
 async function saveAndTransmitAgrement() {
   try {
     const stepDemandeTransmise = (() => {
       switch (agrementStore.agrementEnTraitement?.statut) {
         case AGREMENT_STATUT.BROUILLON:
-          return 0;
+          return hasCurrentAgrement.value ? 0 : 3;
 
         case AGREMENT_STATUT.A_COMPLETER:
           return 1;
@@ -166,6 +183,7 @@ async function saveAndTransmitAgrement() {
           : AGREMENT_STATUT.TRANSMIS,
     });
     if (success) {
+      await agrementStore.getEnRenouvellement();
       navigateTo(`/demande-agrement-transmise?step=${stepDemandeTransmise}`);
     } else {
       toaster.error({
@@ -186,16 +204,19 @@ async function saveAndTransmitAgrement() {
 
 async function updateOrCreate(formValues: AgrementFormValues) {
   const updatedData: AgrementFormValues = { ...formValues };
-
   try {
-    const agrementEnTraitement = agrementStore.agrementEnTraitement;
+    let agrementEnTraitement = agrementStore.agrementEnTraitement;
+    const typeDepot = agrementStore.agrementCourant?.id
+      ? AGREMENT_TYPE_DEPOT.RENOUVELLEMENT
+      : AGREMENT_TYPE_DEPOT.PREMIER;
+
     if (!agrementEnTraitement) {
-      toaster.error({
-        titleTag: "h2",
-        title: "Erreur",
-        description: "Impossible d'enregistrer l'agrément : données absentes.",
-      });
-      return;
+      agrementEnTraitement = {
+        id: null,
+        organismeId: organismeStore.organismeCourant?.organismeId ?? null,
+        statut: AGREMENT_STATUT.BROUILLON,
+      } as AgrementDto;
+      agrementStore.agrementEnTraitement = agrementEnTraitement;
     }
 
     updatedData.agrementFiles = [];
@@ -278,13 +299,17 @@ async function updateOrCreate(formValues: AgrementFormValues) {
     await agrementStore.postAgrement({
       agrement: newAgrement,
       organismeId,
+      typeDepot,
     });
+    // On recharge l'agrément en cours pour récupérer les données mises à jour (notamment la région d'obtention)
+    // Idéalement, il faudrait que le backend renvoie l'agrément mis à jour directement dans la réponse de postAgrement, mais pour l'instant on fait un getEnRenouvellement pour récupérer les données mises à jour.
+    await agrementStore.getEnRenouvellement();
 
     toaster.success({
       titleTag: "h2",
       description: "Données enregistrées avec succès !",
     });
-    nextHash();
+    await nextHash();
     return true;
   } catch (error) {
     toaster.error({
@@ -377,43 +402,56 @@ definePageMeta({
   ],
 });
 
-const links = [
+const links = computed(() => [
   {
     to: "/",
     text: "Accueil",
   },
   {
     to: "/agrement",
-    text: "Renouvellement d'agrément",
+    text: pageTitle.value,
   },
-];
+]);
 
-useHead({
-  title:
-    "Renouvellement d'agrément - Coordonnées à vérifier | Vacances Adaptées Organisées",
+useHead(() => ({
+  title: `${pageTitle.value} - Coordonnées à vérifier | Vacances Adaptées Organisées`,
   meta: [
     {
       name: "description",
-      content: "Parcours de renouvellement d'agrément.",
+      content:
+        pageTitle.value === "Renouvellement d'agrément"
+          ? "Parcours de renouvellement d'agrément."
+          : "Parcours de première demande d'agrément.",
     },
   ],
-});
+}));
 
-function previousHash() {
-  const index = sommaireOptions.value.findIndex((o) => o === hash.value);
-  return navigateTo({ hash: "#" + sommaireOptions.value[index - 1] });
-}
-
-function nextHash() {
+async function nextHash() {
   const index = sommaireOptions.value.findIndex((o) => o === hash.value);
   const id = agrementStore.agrementEnTraitement?.id ?? "";
-  return navigateTo({
+  await navigateTo({
     path: `/agrement/${id}`,
     hash: "#" + sommaireOptions.value[index + 1],
   });
+  await nextTick();
+  pageHeadingRef.value?.focus();
 }
 
-const sommaireOptions = computed(() => agrementMenu.menus.map((m) => m.id));
+async function previousHash() {
+  const index = sommaireOptions.value.findIndex((o) => o === hash.value);
+  await navigateTo({ hash: "#" + sommaireOptions.value[index - 1] });
+  await nextTick();
+  pageHeadingRef.value?.focus();
+}
+
+const sommaireOptions = computed(() =>
+  agrementMenu.menus
+    .filter(
+      (m) =>
+        m.id !== "agrement-bilan" || Boolean(agrementStore.agrementCourant?.id),
+    )
+    .map((m) => m.id),
+);
 
 const titles = computed(() => agrementMenu.titles());
 </script>

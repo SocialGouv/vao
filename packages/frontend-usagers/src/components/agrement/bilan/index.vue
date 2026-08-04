@@ -43,6 +43,7 @@
 import { ref } from "vue";
 import type { Ref } from "vue";
 import { useToaster } from "@vao/shared-ui";
+import { AGREMENT_STATUTS_PERMISSIFS } from "@vao/shared-bridge";
 
 interface FormulaireItem {
   ref: Ref<any>;
@@ -171,7 +172,10 @@ const handleSuivant = async () => {
     await validateAllForms(forms);
   validationErrors.value = formsErrors;
 
-  if (allFormsAreValid || props.initAgrement.statut === "BROUILLON") {
+  if (
+    allFormsAreValid ||
+    AGREMENT_STATUTS_PERMISSIFS.has(props.initAgrement.statut)
+  ) {
     const transformedData = buildTransformedData(formsData);
 
     if (props.onUpdate) {

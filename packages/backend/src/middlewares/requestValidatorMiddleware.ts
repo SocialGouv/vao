@@ -93,7 +93,7 @@ export function requestQueryValidator<T>(
       const parsedQuery = Object.entries(query).reduce((acc, [key, value]) => {
         if (
           typeof value === "string" &&
-          (/^\{".*"\}$/.test(value) || /^\[.*\]$/.test(value))
+          (/^\{.*\}$/.test(value) || /^\[.*\]$/.test(value))
         ) {
           try {
             return { ...acc, [key]: JSON.parse(value) };

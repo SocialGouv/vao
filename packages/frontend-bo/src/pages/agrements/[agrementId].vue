@@ -1,13 +1,16 @@
 <template>
   <div class="fr-container">
     <DsfrBreadcrumb :links="links" />
-
     <div v-if="agrementCourant">
       <div class="title-container fr-mb-4v">
         <h1>
           Agrément
           {{ agrementCourant?.numero ? ` n° ${agrementCourant.numero}` : "" }}
         </h1>
+        <AgrementTypeDepotBadge
+          v-if="agrementCourant.statut"
+          :type-depot="typeDepot"
+        />
         <AgrementStatusBadge
           v-if="agrementCourant.statut"
           :statut="agrementCourant.statut"
@@ -32,7 +35,14 @@
       </div>
       <div v-if="agrementCourant?.dateDepot">
         <dl class="fr-text--lg fr-pl-0">
-          <dt>Date de la demande de renouvellement :</dt>
+          <dt>
+            {{
+              typeDepot === AGREMENT_TYPE_DEPOT.RENOUVELLEMENT
+                ? "Date de la demande de renouvellement"
+                : "Date de la première demande"
+            }}
+            :
+          </dt>
           <dd>
             {{ formatFR(agrementCourant.dateDepot) }}
           </dd>
@@ -58,6 +68,7 @@
           :init-organisme="organismeStore.organisme ?? {}"
           :init-agrement="agrementStore.agrementCourant ?? {}"
           :cdn-url="`${config.public.backendUrl}/documents/admin`"
+          :first-agrement="typeDepot === AGREMENT_TYPE_DEPOT.PREMIER"
         ></AgrementsDossier>
         <AgrementsActionsStatut
           :cdn-url="`${config.public.backendUrl}/documents/admin`"
@@ -72,7 +83,7 @@
       >
         <div class="tab-scroll">
           <AgrementDocuments
-            :agrement-courant="agrementStore.agrementCourant ?? {}"
+            :agrement="agrementStore.agrementCourant ?? {}"
             :cdn-url="`${config.public.backendUrl}/documents/admin`"
           ></AgrementDocuments>
         </div>
@@ -107,9 +118,18 @@ import {
   Historique,
   AgrementDocuments,
   AgrementStatusBadge,
+  AgrementTypeDepotBadge,
+  useAgrementPageTitle,
 } from "@vao/shared-ui";
 import { useOrganismeStore } from "~/stores/organisme";
-import { formatFR } from "@vao/shared-bridge";
+import { formatFR, AGREMENT_TYPE_DEPOT } from "@vao/shared-bridge";
+
+const TAB_PAGE_TITLES = [
+  "Dossier",
+  "Documents",
+  "Historique",
+  "Messagerie",
+] as const;
 
 const organismeStore = useOrganismeStore();
 
@@ -172,12 +192,11 @@ useHead({
 });
 
 const links = computed(() => [
+  { to: "/agrements/liste", text: "Agréments" },
   {
-    to: "/agrements/liste",
-    text: "Agréments",
-  },
-  {
-    text: `Agrément n° ${agrementCourant.value?.numero || ""}`,
+    text: agrementCourant.value?.numero
+      ? `Agrément n° ${agrementCourant.value.numero}`
+      : "Agrément",
   },
 ]);
 
@@ -190,6 +209,14 @@ const initialSelectedIndex =
 
 const selectedTabIndex = ref(initialSelectedIndex);
 const config = useRuntimeConfig();
+
+useAgrementPageTitle({
+  agrementNumero: computed(() => agrementCourant.value?.numero),
+  agrementLabel: "Mon agrément",
+  appSuffix: "Portail Administration | VAO",
+  selectedTabIndex,
+  tabPageTitles: TAB_PAGE_TITLES,
+});
 
 const asc = ref(true);
 
@@ -214,6 +241,12 @@ const selectTab = async (idx: Tab) => {
 };
 
 const unreadCount = computed(() => agrementStore.messagesUnreadCount ?? 0);
+
+const typeDepot = computed(() =>
+  organismeStore.organisme?.agrement?.numero
+    ? AGREMENT_TYPE_DEPOT.RENOUVELLEMENT
+    : AGREMENT_TYPE_DEPOT.PREMIER,
+);
 
 const tabTitles = computed(() => [
   {

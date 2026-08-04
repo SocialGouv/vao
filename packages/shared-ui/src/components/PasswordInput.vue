@@ -1,4 +1,5 @@
-<script setup>
+<script setup lang="ts">
+import { computed, ref } from "vue";
 const props = defineProps({
   id: { type: String, required: true },
   hint: { type: String, default: "" },
@@ -6,8 +7,8 @@ const props = defineProps({
   labelClass: { type: String, default: "" },
   modelValue: { type: String, default: "" },
   wrapperClass: { type: String, default: "" },
-  errorMessage: undefined,
-  validMessage: undefined,
+  errorMessage: { type: String, default: undefined },
+  validMessage: { type: String, default: undefined },
 });
 
 defineEmits(["update:modelValue"]);
@@ -17,11 +18,12 @@ const messageClass = computed(() =>
   props.errorMessage ? "fr-error-text" : "fr-valid-text",
 );
 const isInvalid = computed(() => !!props.errorMessage);
-const isValid = computed(() => !!props.errorMessage);
+const isValid = computed(() => !!props.validMessage && !props.errorMessage);
 
 const descriptionId = computed(() => props.id + "-description");
 const hidePassword = ref(true);
 const liveMessage = ref("");
+const __input = ref<HTMLInputElement | null>(null);
 const type = computed(() =>
   hidePassword.value === true ? "password" : "text",
 );
@@ -35,12 +37,17 @@ const togglePasswordLabel = computed(() =>
 
 const finalLabelClass = computed(() => ["fr-label", props.labelClass]);
 
+function focus() {
+  __input.value?.focus();
+}
+
 function togglePasswordType() {
   hidePassword.value = !hidePassword.value;
   liveMessage.value = hidePassword.value
     ? "Mot de passe maintenant masqué"
     : "Mot de passe maintenant affiché";
 }
+defineExpose({ focus });
 </script>
 
 <template>
@@ -85,6 +92,7 @@ function togglePasswordType() {
     <input
       :id="id"
       v-bind="$attrs"
+      ref="__input"
       :type="type"
       class="fr-input"
       :class="{
@@ -92,8 +100,11 @@ function togglePasswordType() {
         'fr-input--valid': isValid,
       }"
       :value="modelValue"
-      :aria-describedby="descriptionId || null"
-      @input="$emit('update:modelValue', $event.target.value)"
+      :title="togglePasswordLabel"
+      :aria-describedby="descriptionId ?? undefined"
+      @input="
+        $emit('update:modelValue', ($event.target as HTMLInputElement).value)
+      "
     />
 
     <div v-if="message" class="fr-messages-group">

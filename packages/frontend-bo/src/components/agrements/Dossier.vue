@@ -19,7 +19,7 @@
         />
       </DsfrAccordion>
 
-      <DsfrAccordion title-tag="h2">
+      <DsfrAccordion v-if="!props.firstAgrement" title-tag="h2">
         <template #title> Bilan des 4 années précédentes </template>
         <AgrementsBilan
           :init-agrement="props.initAgrement ?? {}"
@@ -44,6 +44,7 @@ import { ref } from "vue";
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   initOrganisme: { type: Object, required: true },
+  firstAgrement: { type: Boolean, default: false },
   modifiable: { type: Boolean, default: true },
   cdnUrl: { type: String, required: true },
 });

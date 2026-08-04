@@ -1,24 +1,28 @@
 <template>
   <div class="fr-container">
     <DsfrBreadcrumb :links="links" />
-    <div class="fr-grid-row fr-py-5w">
-      <h1>
-        Mon agrément: {{ agrementStore.agrementEnTraitement?.numero }}
-        <AgrementStatusBadge
-          :statut="
-            agrementStore?.agrementEnTraitement?.statut ??
-            AGREMENT_STATUT.BROUILLON
-          "
-          type="fu"
-        />
-        <DsfrBadge
-          v-if="agrementStore.isExpiryMedium || agrementStore.isExpirySoon"
-          type="warning"
-          :small="true"
-          style="margin-left: 1ex"
-          label="A RENOUVELLER"
-        />
+    <div class="title fr-py-5w">
+      <h1 class="fr-mr-4v">
+        Mon agrément{{
+          agrementStore.agrementEnTraitement?.numero
+            ? `: ${agrementStore.agrementEnTraitement.numero}`
+            : ""
+        }}
       </h1>
+      <AgrementStatusBadge
+        :statut="
+          agrementStore?.agrementEnTraitement?.statut ??
+          AGREMENT_STATUT.BROUILLON
+        "
+        type="fu"
+      />
+      <DsfrBadge
+        v-if="agrementStore.isExpiryMedium || agrementStore.isExpirySoon"
+        type="warning"
+        :small="true"
+        style="margin-left: 1ex"
+        label="A RENOUVELLER"
+      />
     </div>
     <DsfrTabs
       v-model="selectedTabIndex"
@@ -40,8 +44,9 @@
           :init-agrement="agrementStore?.agrementEnTraitement ?? {}"
           :territoire="territoireStore.territoire ?? {}"
           :user="userStore.user ?? {}"
+          :first-agrement="!agrementStore.agrementCourant"
         />
-        <p class="fr-mt-4v">
+        <p v-if="!agrementStore.agrementCourant" class="fr-mt-4v">
           <b>Déclarer vos séjours</b> 2 mois minimum avant la date de départ
         </p>
         <span
@@ -51,14 +56,18 @@
           "
         >
           <h2 class="fr-mb-0">
-            Formulaire du renouvellement d’agrément ({{
-              agrementAnneeRenouvellement
-            }})
+            {{
+              !agrementStore.agrementCourant
+                ? "Formulaire de la première demande d'agrément"
+                : "Formulaire du renouvellement d’agrément"
+            }}
+            ({{ agrementAnneeRenouvellement }})
           </h2>
           <AgrementReadOnly
             class="fr-my-2w"
             :init-organisme="organismeStore.organismeCourant ?? {}"
             :init-agrement="agrementStore.agrementEnTraitement ?? {}"
+            :first-agrement="!agrementStore.agrementCourant"
             :modifiable="false"
             :cdn-url="`${config.public.backendUrl}/documents/`"
           />
@@ -72,7 +81,11 @@
         :asc="asc"
       >
         <AgrementDocuments
-          :agrement-courant="agrementStore.agrementCourant ?? {}"
+          :agrement="
+            agrementStore.agrementEnTraitement ??
+            agrementStore.agrementCourant ??
+            {}
+          "
           :cdn-url="`${config.public.backendUrl}/documents/`"
         ></AgrementDocuments>
       </DsfrTabContent>
@@ -108,9 +121,17 @@ import {
   AgrementStatusBadge,
   Historique,
   AgrementDocuments,
+  useAgrementPageTitle,
 } from "@vao/shared-ui";
 
 import { nextTick } from "vue";
+
+const TAB_PAGE_TITLES = [
+  "Dossier",
+  "Documents joints",
+  "Historique",
+  "Messagerie",
+] as const;
 
 const agrementStore = useAgrementStore();
 const territoireStore = useTerritoireStore();
@@ -174,15 +195,6 @@ const agrementAnneeRenouvellement = computed(() => {
     : "Non déposé";
 });
 
-useHead({
-  title: "Détail de mon agrément | Vacances Adaptées Organisées",
-  meta: [
-    {
-      name: "description",
-      content: "Page de description d'une déclaration de séjour.",
-    },
-  ],
-});
 const links = [
   {
     to: "/",
@@ -201,6 +213,14 @@ const initialSelectedIndex =
   typeof queryIndex === "string" ? parseInt(queryIndex, 10) : 0;
 
 const selectedTabIndex = ref(initialSelectedIndex);
+
+useAgrementPageTitle({
+  agrementNumero: computed(() => agrementStore.agrementEnTraitement?.numero),
+  agrementLabel: "Mon agrément",
+  appSuffix: "Vacances Adaptées Organisées",
+  selectedTabIndex,
+  tabPageTitles: TAB_PAGE_TITLES,
+});
 
 const asc = ref(true);
 
@@ -316,5 +336,9 @@ onMounted(async () => {
 
 .fr-tabs__panel {
   height: auto !important;
+}
+.title {
+  display: flex;
+  align-items: center;
 }
 </style>
