@@ -16,10 +16,10 @@ export const UpdateAndNotifySvaRepository = {
       SELECT id, statut
         FROM front.agrements
         WHERE organisme_id = $1
-        AND statut = '${AGREMENT_STATUT.VALIDE}'
+        AND statut = $2
         AND supprime = false
     `;
-    const response = await pool.query(query, [id]);
+    const response = await pool.query(query, [id, AGREMENT_STATUT.VALIDE]);
     return response.rows;
   },
   selectSvaToNotify: async (): Promise<UpdateAndNotifySvaRow[]> => {
