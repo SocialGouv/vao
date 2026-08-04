@@ -407,6 +407,7 @@ export const AgrementService = {
                     agrementId,
                     commentaire,
                     mailDreets: fiche.service_mail,
+                    typeDepot,
                   });
                   break;
                 case AGREMENT_STATUT.VALIDE:
@@ -479,6 +480,7 @@ export const AgrementService = {
               mailToSend = AgrementMailUsagers.sendStatutACorrigerMail({
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
+                typeDepot,
               });
               break;
             case AGREMENT_STATUT.REFUSE:
