@@ -416,6 +416,7 @@ export const AgrementService = {
                     agrementId,
                     mailDreets: fiche.service_mail,
                     numeroAgrement: agrement.numero!,
+                    typeDepot,
                   });
                   break;
                 default:
@@ -497,6 +498,7 @@ export const AgrementService = {
                 email: mailsOVA,
                 numeroAgrement: agrement.numero!,
                 regionDreets: regionDreets.text,
+                typeDepot,
               });
               break;
             default:

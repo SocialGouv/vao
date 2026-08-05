@@ -258,11 +258,13 @@ export const AgrementMailAdmin = {
     Organisme,
     numeroAgrement,
     agrementId,
+    typeDepot,
   }: {
     mailDreets: string[];
     Organisme: OrganismeDto;
     numeroAgrement: string;
     agrementId: number;
+    typeDepot: AGREMENT_TYPE_DEPOT;
   }) => {
     const urlAgrement = config.frontBODomain + "/agrements/" + agrementId;
     const html = sendTemplate.getBody(
@@ -271,9 +273,13 @@ export const AgrementMailAdmin = {
         {
           p: [
             "Bonjour,",
-            `Vous avez validé la demande de renouvellement d’agrément N°${numeroAgrement} de l’OVA ${Organisme.typeOrganisme === partOrganisme.PERSONNE_MORALE ? Organisme.personneMorale.raisonSociale : (Organisme.personnePhysique?.nomUsage ?? Organisme.personnePhysique?.nomNaissance)}.`,
+            `Vous avez validé la ${
+              typeDepot === AGREMENT_TYPE_DEPOT.PREMIER
+                ? "première demande"
+                : "demande de renouvellement"
+            } d’agrément N°${numeroAgrement} de l’OVA ${Organisme.typeOrganisme === partOrganisme.PERSONNE_MORALE ? Organisme.personneMorale.raisonSociale : (Organisme.personnePhysique?.nomUsage ?? Organisme.personnePhysique?.nomNaissance)}.`,
             "L’arrêté officiel fourni a bien été enregistré et transmis à l’organisateur.",
-            "Le statut du dossier est désormais : <strong>Agrément renouvelé.</strong>.",
+            `Le statut du dossier est désormais : <strong>Agrément ${typeDepot === AGREMENT_TYPE_DEPOT.PREMIER ? "Actif" : "renouvelé"}.</strong>.`,
             "Consultez l’historique du dossier :",
             `<a href="${urlAgrement}">${urlAgrement}</a>`,
           ],
