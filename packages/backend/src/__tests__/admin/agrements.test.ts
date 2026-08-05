@@ -351,7 +351,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     expect(responseACorriger.status).toBe(200);
 
     expect(responseACorriger.body.success).toBe(true);
-    expect(sendSpy).toHaveBeenCalledTimes(4); // BO + usager
+    expect(sendSpy).toHaveBeenCalledTimes(4);
   });
 
   // STATUT A_CORRIGER / PREMIERE AGREMENT
@@ -425,7 +425,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     expect(responseACorriger.status).toBe(200);
 
     expect(responseACorriger.body.success).toBe(true);
-    expect(sendSpy).toHaveBeenCalledTimes(4); // BO + usager
+    expect(sendSpy).toHaveBeenCalledTimes(4);
   });
 
   // STATUT A_CORRIGER / PP / PREMIERE AGREMENT
@@ -501,7 +501,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     });
     expect(svaTimerACorriger?.createdAt).toBeDefined();
     expect(responseACorriger.body.success).toBe(true);
-    expect(sendSpy).toHaveBeenCalledTimes(4); // BO + usager
+    expect(sendSpy).toHaveBeenCalledTimes(4);
     // Vérifier que l'événement a bien été historisé
     const historyACorriger = await AgrementService.getHistory(agrementId);
     const aCorrigerEvent = historyACorriger.find(
@@ -603,7 +603,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     });
     expect(svaTimerACorriger?.createdAt).toBeDefined();
     expect(responseACorriger.body.success).toBe(true);
-    expect(sendSpy).toHaveBeenCalledTimes(4); // BO + usager
+    expect(sendSpy).toHaveBeenCalledTimes(4);
     // Vérifier que l'événement a bien été historisé
     const historyACorriger = await AgrementService.getHistory(agrementId);
     const aCorrigerEvent = historyACorriger.find(
@@ -708,7 +708,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     expect(responseAgrementValide.status).toBe(200);
 
     expect(responseAgrementValide.body.success).toBe(true);
-    expect(sendSpy).toHaveBeenCalledTimes(4); // BO + usager
+    expect(sendSpy).toHaveBeenCalledTimes(4);
     const svaTimer = await AgrementsRepository.getSvaTimerByStatut({
       agrementId,
       statut: AGREMENT_SVA_TIMER_STATUT.STOPPED,
@@ -769,7 +769,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     expect(responseAgrementValide.status).toBe(200);
 
     expect(responseAgrementValide.body.success).toBe(true);
-    expect(sendSpy).toHaveBeenCalledTimes(4); // BO + usager
+    expect(sendSpy).toHaveBeenCalledTimes(4);
     const svaTimer = await AgrementsRepository.getSvaTimerByStatut({
       agrementId,
       statut: AGREMENT_SVA_TIMER_STATUT.STOPPED,
