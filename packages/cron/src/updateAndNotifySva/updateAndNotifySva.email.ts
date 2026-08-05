@@ -12,15 +12,16 @@ export const MailSva = {
     sendNotificationDelay21Days: ({
       to,
       svaToNotify,
+      firstAgrement,
     }: {
       to: string;
       svaToNotify: UpdateAndNotifySvaRow;
+      firstAgrement: boolean;
     }) => {
-      const subject =
-        "Portail VAO - Rappel : Instruction du dossier de renouvellement d’agrément en attente de décision";
+      const subject = `Portail VAO - Rappel : Instruction du dossier de ${firstAgrement ? "première demande" : "renouvellement"} d’agrément en attente de décision`;
       const body = `
         <p>Bonjour,</p>
-        <p>Le dossier de renouvellement d’agrément de l’OVA ${svaToNotify.organisme_nom} est en attente de décision.</p>
+        <p>Le dossier de ${firstAgrement ? "première demande" : "renouvellement"} d’agrément de l’OVA ${svaToNotify.organisme_nom} est en attente de décision.</p>
         <p>Le délai légal de <strong>2 mois calendaires</strong> prendra fin le ${formatFR(svaToNotify.date_fin_previsionnelle)}.<br />
         Il reste ${svaToNotify.jours_restants} jours pour instruire et finaliser le traitement de ce dossier.</p>
         <p>⚠️ Sans décision expresse avant cette date, le dossier sera automatiquement validé par tacite accord.<br />
@@ -41,15 +42,16 @@ export const MailSva = {
     sendNotificationSvaTacite: ({
       to,
       svaToNotify,
+      firstAgrement,
     }: {
       to: string;
       svaToNotify: UpdateAndNotifySvaRow;
+      firstAgrement: boolean;
     }) => {
-      const subject =
-        "Portail VAO - Validation tacite du dossier de renouvellement d’agrément";
+      const subject = `Portail VAO - Validation tacite du dossier de ${firstAgrement ? "première demande" : "renouvellement"} d’agrément`;
       const body = `
         <p>Bonjour,</p>
-        <p>Le dossier de renouvellement d’agrément de l’OVA ${svaToNotify.organisme_nom} a atteint le terme du délai légal de <strong>2 mois calendaires</strong> sans décision expresse.</p>
+        <p>Le dossier de ${firstAgrement ? "première demande" : "renouvellement"} d’agrément de l’OVA ${svaToNotify.organisme_nom} a atteint le terme du délai légal de <strong>2 mois calendaires</strong> sans décision expresse.</p>
         <p>L’agrément est désormais considéré comme <strong>renouvelé tacitement</strong> à compter du ${formatFR(svaToNotify.date_fin_previsionnelle)}.</p>
         <p>Un email de notification a été adressé automatiquement à l’OVA.</p>
         <p>Vous devez dès à présent :</p>
@@ -75,19 +77,20 @@ export const MailSva = {
       to,
       territoire,
       svaToNotify,
+      firstAgrement,
     }: {
       to: string[];
       territoire: FicheTerritoire;
       svaToNotify: UpdateAndNotifySvaRow;
+      firstAgrement: boolean;
     }) => {
-      const subject =
-        "Portail VAO - Validation tacite du dossier de renouvellement d’agrément";
+      const subject = `Portail VAO - Validation tacite du dossier de ${firstAgrement ? "première demande" : "renouvellement"} d’agrément`;
       const body = `
         <p>Bonjour,</p>
-        <p>Vous avez sollicité, via le portail VAO en date du ${formatFR(svaToNotify.date_depot)}, une demande d’agrément pour l’organisation de séjours de « vacances adaptées organisées</p>
+        <p>Vous avez sollicité, via le portail VAO en date du ${formatFR(svaToNotify.date_depot)}, une ${firstAgrement ? "première demande" : "demande"} d’agrément pour l’organisation de séjours de « vacances adaptées organisées</p>
         <p>La DREETS a accusé réception de votre dossier complet le ${formatFR(svaToNotify.date_confirm_completude)}. A défaut de réception d’une décision expresse dans un délai de 2 mois calendaires suivant la date de l’accusé réception de votre demande complète, à savoir le ${formatFR(svaToNotify.date_fin_previsionnelle)}, l’agrément « Vacances adaptées organisées » est réputé accepté tacitement.</p>
 
-        <p>Par conséquent, le renouvellement d’agrément est délivré à ${svaToNotify.organisme_nom} ${svaToNotify?.organisme_adresse ?? ""} pour l’organisation de séjours de vacances adaptées organisées. </p>
+        <p>Par conséquent, ${firstAgrement ? "la première demande" : "le renouvellement"} d’agrément est délivré à ${svaToNotify.organisme_nom} ${svaToNotify?.organisme_adresse ?? ""} pour l’organisation de séjours de vacances adaptées organisées. </p>
 
         <p>Il vous appartiendra, à compter de cette même date, de solliciter auprès de la DREETS ${territoire.label}, une attestation de cette décision implicite d'acceptation.</p>
 
