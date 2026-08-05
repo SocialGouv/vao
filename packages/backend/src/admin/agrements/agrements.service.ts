@@ -239,21 +239,19 @@ export const AgrementService = {
       log.w("Agrement non trouvé", agrementId);
       throw new FunctionalException(FUNCTIONAL_ERRORS.AGREMENT_NOT_FOUND);
     }
-    /**
-      Chargement et test du numéro d'agrément avant mise à jour
-      Afin de traiter le cas de la validation.
-      Si on charge après la mise à jour,
-      alors le numéro d'agrément sera présent
-      cela fausse le test de présence d'un agrément.
-    */
-    const organisme = await serviceOrganismeGetOne({
-      "o.id": agrement.organismeId,
-    });
 
-    const typeDepot = organisme.agrement?.numero
+    const { result: existingAgrements } =
+      await AgrementsRepository.getByOrganismeId({
+        organismeId: agrement.organismeId!,
+      });
+    const hasExistingValide = existingAgrements.some(
+      (agrement) =>
+        agrement.statut === AGREMENT_STATUT.VALIDE &&
+        agrement.id !== agrementId,
+    );
+    const typeDepot = hasExistingValide
       ? AGREMENT_TYPE_DEPOT.RENOUVELLEMENT
       : AGREMENT_TYPE_DEPOT.PREMIER;
-
     if (
       [
         AGREMENT_STATUT.A_COMPLETER,
@@ -380,6 +378,9 @@ export const AgrementService = {
       AGREMENT_STATUT.PRIS_EN_CHARGE,
     ];
     if (allowedStatutsMailDreets.includes(statut)) {
+      const organisme = await serviceOrganismeGetOne({
+        "o.id": agrement.organismeId,
+      });
       const regionDreets = await Region.fetchOne(territoireCode);
       if (!regionDreets) {
         throw new AppError("Échec, une région devrait exister", {

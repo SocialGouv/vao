@@ -70,6 +70,7 @@ export const AgrementsRepository = {
         agr.*
       FROM front.agrements agr
       WHERE agr.organisme_id = $1
+      AND agr.supprime = false
     `;
     const response = await getPool().query(query(), [organismeId]);
     const agrements = [];
@@ -116,6 +117,7 @@ export const AgrementsRepository = {
       LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
       LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = true
       WHERE agr.region_obtention = $1
+      AND agr.supprime = false
     `;
 
     const paginatedQuery = processQuery(
