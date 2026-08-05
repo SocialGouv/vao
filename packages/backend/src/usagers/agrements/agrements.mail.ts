@@ -358,12 +358,14 @@ export const AgrementMailUsagers = {
     numeroAgrement,
     dateObtention,
     dateFinValidite,
+    typeDepot,
   }: {
     email: string[];
     regionDreets: string;
     numeroAgrement: string;
     dateObtention: Date;
     dateFinValidite: Date;
+    typeDepot: AGREMENT_TYPE_DEPOT;
   }) => {
     log.i("sendStatutValideMail - In", { email });
     if (!email) {
@@ -379,7 +381,11 @@ export const AgrementMailUsagers = {
           p: [
             "Bonjour,",
             `La DREETS ${regionDreets} a terminé l'instruction de votre demande d'agrément.`,
-            `Nous avons le plaisir de vous informer que votre demande d'agrément a été validée sous le N°${numeroAgrement}.`,
+            `Nous avons le plaisir de vous informer que votre ${
+              typeDepot === AGREMENT_TYPE_DEPOT.PREMIER
+                ? "première demande"
+                : "demande"
+            } d'agrément a été validée sous le N°${numeroAgrement}.`,
             `Votre agrément est valable à partir du ${formatFR(dateObtention)} et jusqu'au ${formatFR(dateFinValidite)}.`,
             "Vous pouvez consulter votre agrément depuis votre espace personnel sur le portail VAO :",
             `<a href='${urlAgrement}'>Consulter le dossier directement dans mon espace personnel</a>`,
