@@ -244,9 +244,7 @@ export const AgrementService = {
       organismeId: agrement.organismeId!,
     });
     const hasExistingValide = agrements.some(
-      (agrement) =>
-        agrement.statut === AGREMENT_STATUT.VALIDE &&
-        agrement.id !== agrementId,
+      (agr) => agr.statut === AGREMENT_STATUT.VALIDE && agr.id !== agrementId,
     );
     const typeDepot = hasExistingValide
       ? AGREMENT_TYPE_DEPOT.RENOUVELLEMENT
