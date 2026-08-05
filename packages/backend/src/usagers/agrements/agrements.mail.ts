@@ -197,9 +197,11 @@ export const AgrementMailUsagers = {
   sendStatutACorrigerMail: ({
     email,
     regionDreets,
+    typeDepot,
   }: {
     email: string[];
     regionDreets: string;
+    typeDepot: AGREMENT_TYPE_DEPOT;
   }) => {
     log.i("sendStatutACorrigerMail - In", { email });
     if (!email) {
@@ -208,13 +210,17 @@ export const AgrementMailUsagers = {
       );
     }
     const urlAgrement = config.frontUsagersDomain + "/mon-agrement";
+    const isPremierAgrement = typeDepot === AGREMENT_TYPE_DEPOT.PREMIER;
+    const title = isPremierAgrement
+      ? "Portail VAO – Demande de correction sur votre dossier de première demande d'agrément"
+      : "Portail VAO – Demande de correction sur votre dossier de renouvellement d'agrément";
     const html = sendTemplate.getBody(
-      "Portail VAO - Demande de correction sur votre dossier de renouvellement d'agrément",
+      title,
       [
         {
           p: [
             "Bonjour,",
-            `Dans le cadre de l'instruction de votre demande d'agrément, la DREETS ${regionDreets} a identifié des éléments nécessitant une correction ou des précisions complémentaires.`,
+            `Dans le cadre de l'instruction de votre ${isPremierAgrement ? "première demande" : "demande"} d'agrément, la DREETS ${regionDreets} a identifié des éléments nécessitant une correction ou des précisions complémentaires.`,
             "Nous vous invitons à consulter le détail des corrections demandées depuis votre espace personnel sur le portail VAO :",
             `<a href='${urlAgrement}'>Consulter le dossier directement dans mon espace personnel</a>`,
             "Une fois les corrections effectuées, votre dossier reprendra son instruction.",
@@ -230,8 +236,7 @@ export const AgrementMailUsagers = {
       from: config.senderEmail,
       html,
       replyTo: config.senderEmail,
-      subject:
-        "Portail VAO - Demande de correction sur votre dossier de renouvellement d'agrément",
+      subject: title,
       to: email,
     };
     log.d("sendStatutACorrigerMail post email", { params });

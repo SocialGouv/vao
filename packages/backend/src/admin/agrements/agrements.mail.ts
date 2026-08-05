@@ -58,15 +58,22 @@ export const AgrementMailAdmin = {
     Organisme,
     agrementId,
     commentaire,
+    typeDepot,
   }: {
     mailDreets: string[];
     Organisme: OrganismeDto;
     agrementId: number;
     commentaire: string | undefined;
+    typeDepot: AGREMENT_TYPE_DEPOT;
   }) => {
     const urlAgrement = config.frontBODomain + "/agrements/" + agrementId;
+    const title =
+      typeDepot === AGREMENT_TYPE_DEPOT.PREMIER
+        ? "Portail VAO – Demande de compléments d'informations suite à votre première demande d'agrément"
+        : "Portail VAO – Demande de compléments d'informations suite à votre demande de renouvellement d'agrément";
+
     const html = sendTemplate.getBody(
-      "Portail VAO - Demande de compléments d’informations suite à votre demande de renouvellement d’agrément",
+      title,
       [
         {
           p: [
@@ -89,8 +96,7 @@ export const AgrementMailAdmin = {
       from: config.senderEmail,
       html,
       replyTo: config.senderEmail,
-      subject:
-        "Portail VAO - Demande de compléments d’informations suite à votre demande de renouvellement d’agrément",
+      subject: title,
       to: mailDreets,
     };
   },
@@ -98,23 +104,30 @@ export const AgrementMailAdmin = {
     email,
     organismeName,
     agrementId,
+    typeDepot,
   }: {
     email: string;
     organismeName: string;
     agrementId: number;
+    typeDepot: AGREMENT_TYPE_DEPOT;
   }) => {
     log.i("sendStatutCorrectionRegionMail - In", {
       agrementId,
       email,
       organismeName,
+      typeDepot,
     });
+    const isPremierAgrement = typeDepot === AGREMENT_TYPE_DEPOT.PREMIER;
+    const title = isPremierAgrement
+      ? "Portail VAO – Nouvelle demande de première demande d’agrément reçue"
+      : "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue";
     const html = sendTemplate.getBody(
-      "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue",
+      title,
       [
         {
           p: [
             "Bonjour,",
-            `L’OVA <strong>${organismeName}</strong> a renvoyé sa demande de renouvellement d’agrément après avoir apporté les corrections demandées.`,
+            `L’OVA <strong>${organismeName}</strong> a renvoyé sa ${isPremierAgrement ? "première demande" : "demande de renouvellement"} d’agrément après avoir apporté les corrections demandées.`,
             "Vous pouvez désormais reprendre l’instruction de la demande, accessible via votre espace sur le portail VAO :",
             `<a href='${config.frontBODomain}/agrements/${agrementId}'>Lien direct vers le dossier</a>`,
             "Le dossier est retourné au statut <strong>« Complétude confirmée »</strong> et peut être à nouveau examiné.",
@@ -129,8 +142,7 @@ export const AgrementMailAdmin = {
       from: config.senderEmail,
       html,
       replyTo: config.senderEmail,
-      subject:
-        "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue",
+      subject: title,
       to: email,
     };
     log.d("sendStatutCorrectionRegionMail post email", { params });
