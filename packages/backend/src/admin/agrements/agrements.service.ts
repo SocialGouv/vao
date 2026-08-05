@@ -240,11 +240,10 @@ export const AgrementService = {
       throw new FunctionalException(FUNCTIONAL_ERRORS.AGREMENT_NOT_FOUND);
     }
 
-    const { result: existingAgrements } =
-      await AgrementsRepository.getByOrganismeId({
-        organismeId: agrement.organismeId!,
-      });
-    const hasExistingValide = existingAgrements.some(
+    const { result: agrements } = await AgrementsRepository.getByOrganismeId({
+      organismeId: agrement.organismeId!,
+    });
+    const hasExistingValide = agrements.some(
       (agrement) =>
         agrement.statut === AGREMENT_STATUT.VALIDE &&
         agrement.id !== agrementId,
@@ -292,10 +291,6 @@ export const AgrementService = {
 
         // On change le statut de l'agrément en validé, on considère que l'agrément est désormais actif,
         // On désactive les autres agréments actifs de l'organisme pour n'avoir qu'un seul agrément actif par organisme
-        const { result: agrements } =
-          await AgrementsRepository.getByOrganismeId({
-            organismeId: agrement.organismeId!,
-          });
         const activeAgrements = agrements.filter(
           (a) => a.statut === AGREMENT_STATUT.VALIDE,
         );
