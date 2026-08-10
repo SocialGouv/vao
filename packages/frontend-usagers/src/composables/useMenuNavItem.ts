@@ -5,7 +5,7 @@ import {
   useAgrementStore,
 } from "#imports";
 import { ROLES as userRolesRef } from "../helpers/users";
-import { FeatureFlagName } from "@vao/shared-bridge";
+import { FeatureFlagName, AGREMENT_STATUT } from "@vao/shared-bridge";
 
 export const useMenuNavItems = () => {
   const userStore = useUserStore();
@@ -54,7 +54,7 @@ export const useMenuNavItems = () => {
             : []),
         ],
       },
-      ...(organismeStore.organismeCourant?.complet
+      ...(agrementStore.agrementCourant?.statut === AGREMENT_STATUT.VALIDE
         ? [
             {
               title: "Déclaration de séjour",
