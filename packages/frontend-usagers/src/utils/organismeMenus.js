@@ -12,10 +12,6 @@ const menus = (isSiege) => [
       ]
     : []),
   {
-    id: "agrement",
-    text: "Agrément",
-  },
-  {
     id: "protocole-transport",
     text: "Informations sur le transport",
   },
@@ -48,10 +44,6 @@ const titles = (isSiege) => {
         titleStart +
         `étape ${getCurrentStepNumber(isSiege, "etablissement-secondaires")} sur ${stepNumber} | etablissements`,
     }),
-    "#agrement":
-      titleStart +
-      `étape ${getCurrentStepNumber(isSiege, "agrement")} sur ${stepNumber} | Agrément` +
-      titleEnd,
     "#protocole-transport":
       titleStart +
       `étape ${getCurrentStepNumber(isSiege, "protocole-transport")} sur ${stepNumber} | Informations sur le transport` +

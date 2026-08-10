@@ -33,19 +33,6 @@
               @next="nextHash"
             />
           </div>
-          <div id="agrement">
-            <OrganismeAgrement
-              v-if="hash === 'agrement'"
-              :init-agrement="organismeStore.organismeCourant.agrement ?? {}"
-              :modifiable="isPorteurAgrement"
-              :is-downloading="apiStatus.isDownloading"
-              :message="apiStatus.message"
-              :cdn-url="`${config.public.backendUrl}/documents/`"
-              @previous="previousHash"
-              @next="nextHash"
-              @update="updateOrCreateAgrement"
-            ></OrganismeAgrement>
-          </div>
           <div id="protocole-transport">
             <ProtocoleTransport
               v-if="hash === 'protocole-transport'"
@@ -285,68 +272,6 @@ async function updateOrCreate(organismeData, type) {
       titleTag: "h2",
       description:
         "Une erreur est survenue lors de la sauvegarde de la fiche organisateur",
-      role: "alert",
-    });
-  } finally {
-    resetApiStatut();
-  }
-}
-
-async function updateOrCreateAgrement(agrementData, type) {
-  log.i("updateOrCreateAgrement - IN", { agrementData, type });
-  setApiStatut("Creation de l'agrément en cours");
-  if (agrementData.file) {
-    log.d("updateOrCreateAgrement - look at agrementData.file");
-    const file = unref(agrementData.file);
-    if (!file.uuid) {
-      try {
-        const uuid = await UploadFile(type, file);
-        agrementData.file = {
-          uuid,
-          name: file.name,
-          createdAt: new Date(),
-        };
-      } catch (error) {
-        if (error.response.status === 413) {
-          resetApiStatut();
-          return toaster.error({
-            titleTag: "h2",
-            description: `Le fichier ${file.name} dépasse la taille maximale autorisée`,
-            role: "alert",
-          });
-        }
-        if (error.response.status === 415) {
-          return toaster.error({
-            description: `Le fichier ${file.name} n'est pas au format PDF`,
-            role: "alert",
-          });
-        }
-        log.w(error);
-        return toaster.error({
-          description: `Une erreur est survenue lors du dépôt du document ${file.name}`,
-          role: "alert",
-        });
-      }
-    }
-  }
-
-  try {
-    const url = "/agrements";
-    await $fetchBackend(url, {
-      method: "POST",
-      credentials: "include",
-      body: { ...agrementData, organismeId: organismeId.value },
-    });
-
-    toaster.success({ titleTag: "h2", description: `Agrément sauvegardé` });
-    log.d(`agrement mis à jour`);
-
-    return await nextHash();
-  } catch (error) {
-    log.w("Creation/modification d'agrement : ", { error });
-    return toaster.error({
-      titleTag: "h2",
-      description: `Une erreur est survenue lors de la mise à jour des informations de l'agrément`,
       role: "alert",
     });
   } finally {

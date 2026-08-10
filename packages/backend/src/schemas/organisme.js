@@ -252,17 +252,7 @@ const agrementSchema = (regions) => ({
     .required(),
 });
 
-const schema = (regions) => ({
-  agrement: yup.object().when(["typeOrganisme", "personneMorale.siegeSocial"], {
-    is: (typeOrganisme, siegeSocial) => {
-      return typeOrganisme === "personne_physique" || siegeSocial === true;
-    },
-    otherwise: (schema) => schema.shape(agrementSchema(regions)).nullable(),
-    then: (schema) =>
-      schema
-        .shape(agrementSchema(regions))
-        .required("Aucune information renseignée"),
-  }),
+const schema = () => ({
   organismeId: yup.number().required(),
   personneMorale: yup
     .object()

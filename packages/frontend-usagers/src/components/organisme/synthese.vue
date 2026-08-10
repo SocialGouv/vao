@@ -52,22 +52,6 @@
             :init-organisme="organismeStore.organismeCourant"
           />
         </DsfrAccordion>
-        <DsfrAccordion :id="accordionId('agrement')">
-          <template #title>
-            <span>Agrément &nbsp;</span>
-            <DsfrBadge
-              :label="agrement.label"
-              :small="true"
-              :type="agrement.type"
-            />
-          </template>
-          <OrganismeAgrement
-            :init-agrement="organismeStore?.organismeCourant?.agrement ?? {}"
-            :modifiable="false"
-            :cdn-url="`${config.public.backendUrl}/documents/`"
-            :show-buttons="false"
-          />
-        </DsfrAccordion>
         <DsfrAccordion :id="accordionId('protocole-transport')">
           <template #title>
             <span>Informations sur le transport &nbsp;</span>
@@ -171,9 +155,6 @@ const emit = defineEmits<{
 
 const config = useRuntimeConfig();
 const organismeStore = useOrganismeStore();
-const regionStore = useRegionStore();
-
-regionStore.fetch();
 
 const tabs = organismeMenus.menus(organismeStore.isSiegeSocial);
 const expandeIndex = ref(-1);
@@ -182,9 +163,7 @@ const accordionId = (accordionId: string): string =>
   String(tabs.findIndex((t) => t.id === accordionId) + 1);
 
 const initialValues = { ...(organismeStore.organismeCourant ?? {}) };
-const validationSchema = computed(() =>
-  yup.object(organisme.schema(regionStore.regions)),
-);
+const validationSchema = computed(() => yup.object(organisme.schema()));
 
 const success: BadgeStatus = {
   label: "complet",
