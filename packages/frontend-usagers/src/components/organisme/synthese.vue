@@ -197,12 +197,6 @@ const etablissementsSecondaires = computed<BadgeStatus>(() =>
     : failure,
 );
 
-const agrement = computed<BadgeStatus>(() =>
-  !Object.keys(errors.value).find((k) => k.includes("agrement"))
-    ? success
-    : failure,
-);
-
 const protocoleTransport = computed<BadgeStatus>(() =>
   !Object.keys(errors.value).find((k) => k.includes("protocoleTransport"))
     ? success
