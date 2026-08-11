@@ -20,10 +20,10 @@
         <div class="fr-col-12">
           <DsfrTile
             :title="'Faire une première demande d’agrément'"
-            titleTag="h2"
+            title-tag="h2"
             :description="'Vous n’avez pas encore d’agrément et souhaitez en faire la demande pour organiser des vacances adaptées.'"
             :details="'Durée estimée 30 minutes'"
-            :imgSrc="DocumentAdd"
+            :img-src="DocumentAdd"
             :horizontal="true"
             :button-label="'Faire une première demande d’agrément'"
             to="/agrement/new"
@@ -32,13 +32,13 @@
           <DsfrTile
             class="fr-mt-4w"
             :title="'J’ai déjà un agrément'"
-            titleTag="h2"
+            title-tag="h2"
             :description="'Vous possédez déjà un agrément valide et souhaitez l\'enregistrer pour accéder  immédiatement aux services.'"
-            :details="'Durée estimée 30 minutes'"
-            :imgSrc="DocumentSignature"
+            :details="'Durée estimée 2 minutes'"
+            :img-src="DocumentSignature"
             :horizontal="true"
             :button-label="'J’ai déjà un agrément'"
-            to="#"
+            to="/agrement/existing"
           />
         </div>
       </div>
