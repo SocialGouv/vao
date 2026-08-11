@@ -181,7 +181,7 @@ const tiles = computed<Tile[]>(() => [
                       : "/agrement/new",
                   hash: "#agrement-coordonnees",
                 }
-              : "/agrement/",
+              : "/mon-agrement/",
           imgSrc: NationalIdentityCard,
           titleTag: "h2",
           description:
