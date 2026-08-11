@@ -49,7 +49,12 @@
         </div>
       </DsfrHighlight>
     </div>
-    <div v-if="organismeCourant && organismeCourant.complet">
+    <div
+      v-if="
+        agrementStore.agrementCourant &&
+        agrementStore.agrementCourant.statut === AGREMENT_STATUT.VALIDE
+      "
+    >
       <cards-number :values="topcards" />
       <cards-number :values="bottomCards" />
     </div>
@@ -59,7 +64,7 @@
 
 <script setup lang="ts">
 import { CardsNumber } from "@vao/shared-ui";
-import { FeatureFlagName } from "@vao/shared-bridge";
+import { FeatureFlagName, AGREMENT_STATUT } from "@vao/shared-bridge";
 import NationalIdentityCard from "@gouvfr/dsfr/dist/artwork/pictograms/document/national-identity-card.svg";
 import House from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/house.svg";
 import Contract from "@gouvfr/dsfr/dist/artwork/pictograms/document/contract.svg";
@@ -159,18 +164,24 @@ const tiles = computed<Tile[]>(() => [
     description:
       "Cette page vous permet de renseigner les informations sur l'organisme.",
   },
-  ...(userStore.user?.featureFlags?.[FeatureFlagName.RENOUVELLEMENT_AGREMENT]
+  ...(userStore.user?.featureFlags?.[FeatureFlagName.RENOUVELLEMENT_AGREMENT] &&
+  organismeStore.organismeCourant?.complet
     ? [
         {
           title: "Agrément",
           to:
-            agrementStore.agrementCourant &&
-            organismeStore.organismeCourant?.organismeId
+            agrementStore.agrementEnTraitement &&
+            agrementStore.agrementEnTraitement?.statut ===
+              AGREMENT_STATUT.BROUILLON
               ? {
-                  path: `/organisme/${String(organismeStore.organismeCourant.organismeId)}`,
-                  hash: "#agrement",
+                  path:
+                    agrementStore.agrementCourant?.statut ===
+                    AGREMENT_STATUT.VALIDE
+                      ? `/agrement/${agrementStore.agrementEnTraitement?.id}`
+                      : "/agrement/new",
+                  hash: "#agrement-coordonnees",
                 }
-              : "/organisme/",
+              : "/agrement/",
           imgSrc: NationalIdentityCard,
           titleTag: "h2",
           description:
@@ -178,7 +189,8 @@ const tiles = computed<Tile[]>(() => [
         },
       ]
     : []),
-  ...(organismeStore.organismeCourant && organismeStore.organismeCourant.complet
+
+  ...(agrementStore.agrementCourant?.statut === AGREMENT_STATUT.VALIDE
     ? [
         {
           title: "Hébergements",
@@ -198,15 +210,6 @@ const tiles = computed<Tile[]>(() => [
       ]
     : []),
 ]);
-
-const onClickRenouvellement = async () => {
-  await agrementStore.getEnRenouvellement();
-  if (agrementStore.agrementEnTraitement) {
-    return navigateTo(`/agrement/${agrementStore.agrementEnTraitement.id}`);
-  } else {
-    return navigateTo("/agrement/");
-  }
-};
 
 onMounted(() => {
   document.querySelector("header")?.focus();

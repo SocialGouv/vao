@@ -46,6 +46,7 @@ export const useMenuNavItems = () => {
           ...(userStore.user?.featureFlags?.[
             FeatureFlagName.RENOUVELLEMENT_AGREMENT
           ] &&
+          organismeStore.organismeCourant?.complet &&
           (organismeStore.organismeCourant?.typeOrganisme ===
             "personne_physique" ||
             agrementStore?.agrementCourant ||
