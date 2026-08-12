@@ -172,7 +172,7 @@ test.describe.serial(testName, () => {
 
     const { demandes } = await apiGet<{
       demandes: Sejour[];
-    }>("/sejour?limit=10&offset=0&sortBy=createdAt&sortDirection=DESC", page);
+    }>("/sejour?limit=10&offset=0&sortBy=dateDebut&sortDirection=DESC", page);
 
     const trasnmise = demandes.find(
       (demande) => demande.statut === "TRANSMISE",
@@ -198,6 +198,7 @@ test.describe.serial(testName, () => {
       })
       .first()
       .click();
+
     await expect(
       page.getByText(agentDepartement75Paris.username, { exact: true }).first(),
     ).toBeVisible();
