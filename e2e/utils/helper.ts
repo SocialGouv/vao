@@ -72,7 +72,6 @@ async function fillOtpCode(page: Page, otpCode: string) {
     await page
       .getByRole("textbox", { name: `Chiffre ${index + 1} sur` })
       .fill(otpCode[index]);
-    //await page.locator(`#code-input-${index}`).fill(otpCode[index]);
   }
 
   await page.getByRole("button", { name: "Valider" }).click();

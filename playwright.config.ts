@@ -27,13 +27,13 @@ export default defineConfig({
     trace: process.env.CI ? "retain-on-failure" : "on-first-retry",
     screenshot: "only-on-failure",
     video: process.env.CI ? "retain-on-failure" : "off",
-    actionTimeout: process.env.CI ? 60_000 : 60_000,
-    navigationTimeout: process.env.CI ? 60_000 : 60_000,
+    actionTimeout: process.env.CI ? 25_000 : 15_000,
+    navigationTimeout: process.env.CI ? 25_000 : 15_000,
   },
   globalSetup: require.resolve("./e2e/global.setup.ts"),
-  timeout: process.env.CI ? 60_000 : 60_000,
+  timeout: process.env.CI ? 60_000 : 30_000,
   expect: {
-    timeout: process.env.CI ? 60_000 : 60_000,
+    timeout: process.env.CI ? 15_000 : 10_000,
   },
 
   /* Configure projects for major browsers */

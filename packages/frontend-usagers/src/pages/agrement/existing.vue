@@ -34,17 +34,21 @@ const pageHeadingRef = ref<HTMLHeadingElement | null>(null);
 
 const links = [{ to: "/", text: "Accueil" }, { text: "Créer mon agrément" }];
 
-const initialAgrement = computed(() => ({
+const initialAgrement = {
   numero: null,
   dateObtention: null,
   regionObtention: null,
   file: null,
   statut: "VALIDE",
   id: null,
-}));
+};
 
 definePageMeta({
-  middleware: ["is-connected", "check-organisme-is-complet"],
+  middleware: [
+    "is-connected",
+    "check-organisme-is-complet",
+    "check-no-agrement-existing",
+  ],
 });
 
 useHead({
