@@ -89,6 +89,7 @@
 
 <script setup>
 import { fileUtils, useToaster } from "@vao/shared-ui";
+import { AGREMENT_TYPE_DEPOT } from "@vao/shared-bridge";
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 const route = useRoute();
 const toaster = useToaster();
@@ -335,7 +336,11 @@ async function updateOrCreateAgrement(agrementData, type) {
     await $fetchBackend(url, {
       method: "POST",
       credentials: "include",
-      body: { ...agrementData, organismeId: organismeId.value },
+      body: {
+        ...agrementData,
+        typeDepot: AGREMENT_TYPE_DEPOT.EXISTANT,
+        organismeId: organismeId.value,
+      },
     });
 
     toaster.success({ titleTag: "h2", description: `Agrément sauvegardé` });
