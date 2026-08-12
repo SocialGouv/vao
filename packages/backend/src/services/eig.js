@@ -280,7 +280,7 @@ const query = {
             FROM FRONT.PERSONNE_MORALE pmsc
             WHERE pmsc.current = TRUE AND pmsc.siege_social = true
               AND pmsc.organisme_id IN (
-                SELECT org_id FROM from.user_organisme WHERE use_id = $1
+                SELECT org_id FROM front.user_organisme WHERE use_id = $1
               )
             )
           )
