@@ -13,12 +13,12 @@
     />
   </div>
   <div class="border fr-p-4v">
-    <p class="fr-my-2w fr-text--lg fr-text--bold">
+    <h4 class="fr-my-2w fr-text--lg fr-text--bold">
       Compétences et expériences des accompagnants prévus par lieu de vacances,
       notamment pour ce qui concerne l’encadrement de certaines activités
       sportives. Ou expériences du responsable du déroulement du séjour sur le
       lieu de vacances.
-    </p>
+    </h4>
     <div class="fr-my-2w">
       <div class="fr-col-12">
         <DisplayLabel
@@ -39,10 +39,10 @@
     </div>
   </div>
   <div class="border fr-p-4v fr-mt-6v">
-    <p class="fr-fr-my-2w fr-text--lg fr-text--bold">
-      Mesures envisagées au cas où des accompagnants supplémentaires devraient
-      être recrutés en urgence
-    </p>
+    <h4 class="fr-my-2w fr-text--lg fr-text--bold">
+      Mesures envisagées au cas où des accompagnants supplémentaires devraient
+      être recrutés en urgence
+    </h4>
     <div class="fr-fr-my-2w">
       <DisplayLabel
         :value="props.initAgrement.accompRespRecruteUrg"
