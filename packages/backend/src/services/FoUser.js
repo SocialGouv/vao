@@ -69,8 +69,8 @@ const query = {
         u.created_at AS "dateCreation",
         u.lastconnection_at AS "lastConnectionAt",
         coalesce(u.siret, pp.siret, pm.siret) AS "siret",
-        CASE 
-          WHEN NULLIF(pp.id, 0) IS NOT NULL THEN 
+        CASE
+          WHEN NULLIF(pp.id, 0) IS NOT NULL THEN
             true
           ELSE
             (
@@ -79,20 +79,20 @@ const query = {
                 WHERE pm3.siret = COALESCE(u.siret, pm.siret)
                 AND pm3."current" = true
                 LIMIT 1
-              )            
+              )
         END AS "siegeSocial",
-        CASE 
-          WHEN NULLIF(pp.id, 0) IS NOT NULL THEN 
+        CASE
+          WHEN NULLIF(pp.id, 0) IS NOT NULL THEN
             pp.adresse_siege_label
-          ELSE 
+          ELSE
           (
-            SELECT pm4.adresse 
+            SELECT pm4.adresse
               FROM front.personne_morale pm4
               WHERE pm4.siret = COALESCE(u.siret, pm.siret)
               AND pm4."current" = true
             UNION
-		        SELECT '- ' || eta.code_postal || ' ' || eta.commune 
-              FROM front.opm_etablissements eta 
+		        SELECT '- ' || eta.code_postal || ' ' || eta.commune
+              FROM front.opm_etablissements eta
               WHERE eta.siret = COALESCE(u.siret, pm.siret)
             LIMIT 1
           )
@@ -101,31 +101,40 @@ const query = {
         LEFT JOIN front.user_organisme uo ON uo.use_id = u.id
         LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id AND pm."current" = true
         LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id AND pp."current" = true
-      WHERE (uo.org_id = ANY ($1) OR 
+      WHERE (uo.org_id = ANY ($1) OR
         substr(u.siret,1,9) IN (
-          SELECT siren 
-          FROM front.personne_morale pm2 
-          WHERE pm2.siren = substr(u.siret,1,9) 
-          AND pm2.organisme_id = ANY ($1) 
+          SELECT siren
+          FROM front.personne_morale pm2
+          WHERE pm2.siren = substr(u.siret,1,9)
+          AND pm2.organisme_id = ANY ($1)
           AND pm2."current" = true))
       ) AS r
       WHERE 1=1
     `,
   getByToValidateByBo: `
-    SELECT
-      u.id AS "userId",
-      u.mail AS email,
-      u.nom AS nom,
-      u.prenom AS prenom,
-      u.telephone AS telephone,
-      u.status_code AS statut,
-      u.siret AS siret,
-      u.created_at AS "dateCreation",
-      u.lastconnection_at as "lastConnectionAt"
-    FROM front.users AS u
-    WHERE u.ter_code = $1
-    AND u.status_code = 'NEED_SIRET_VALIDATION'
-    AND u.siret not in (SELECT opme.siret FROM front.opm_etablissements opme WHERE opme.siret = u.siret)
+	    SELECT
+	      u.id AS "userId",
+	      u.mail AS email,
+	      u.nom AS nom,
+	      u.prenom AS prenom,
+	      u.telephone AS telephone,
+	      u.status_code AS statut,
+	      u.siret AS siret,
+	      u.created_at AS "dateCreation",
+	      u.lastconnection_at as "lastConnectionAt"
+	    FROM front.users AS u
+	    WHERE u.ter_code = $1
+	    AND u.status_code = 'NEED_SIRET_VALIDATION'
+	    -- Il existe un compte valide sur même établissement pour siège social ou établissement secondaire
+	    AND u.siret not in (SELECT pm.siret FROM front.personne_morale pm
+	    	inner join front.user_organisme uo ON uo.org_id = pm.organisme_id
+	    	inner join front.users uv ON uo.use_id = uv.id AND uv.status_code = 'VALIDATED' AND (uv.deleted = false OR uv.deleted = null)
+	    	where pm.siret = u.siret  AND pm.current = true)
+	    -- Il existe un compte sur siege social pour l'établissement secondaire
+	    AND substr(u.siret,1,9) not in (SELECT pm.siren FROM front.personne_morale pm
+	    	inner join front.user_organisme uo ON uo.org_id = pm.organisme_id
+	    	inner join front.users uv ON uo.use_id = uv.id AND uv.status_code = 'VALIDATED' AND (uv.deleted = false OR uv.deleted = null)
+	    	where pm.siren = substr(u.siret,1,9) AND pm.siege_social = true AND pm.current = true)
   `,
 
   getIsLastUserOrganisme: `
@@ -133,11 +142,11 @@ const query = {
     FROM front.users u
     INNER JOIN front.user_organisme uo ON uo.use_id = u.id
     WHERE uo.org_id= (
-        SELECT org_id 
-        FROM front.user_organisme 
+        SELECT org_id
+        FROM front.user_organisme
         WHERE use_id = $1
     )
-    AND u.status_code = 'VALIDATED';  
+    AND u.status_code = 'VALIDATED';
   `,
 
   // uc : User connected  / uu : User recherché
@@ -145,18 +154,18 @@ const query = {
   // l'utilisateur connecté doit être un utilisateur de l'organisme principal
   // l'utilisateur recherché doit être un utilisateur de l'organisme principal ou un utilisateur de l'organisme secondaire
   getIsUserSameOrganismeOtherUser: `
-    SELECT 
+    SELECT
       SUM(total_count) AS count
     FROM (
         SELECT count(*) AS total_count
-        FROM front.user_organisme uco 
+        FROM front.user_organisme uco
         INNER JOIN front.personne_morale ucpm ON ucpm.organisme_id = uco.org_id AND siege_social = true AND ucpm.current = TRUE
         INNER JOIN front.personne_morale uupm ON uupm.siren = ucpm.siren AND uupm.current = TRUE
         INNER JOIN front.user_organisme uuo ON uuo.org_id = uupm.organisme_id
         WHERE uco.use_id = $1 AND uuo.use_id = $2
       UNION ALL
         SELECT count(*) AS total_count
-        FROM front.user_organisme uco 
+        FROM front.user_organisme uco
         INNER JOIN front.personne_morale ucpm ON ucpm.organisme_id = uco.org_id AND siege_social = true AND ucpm.current = TRUE
         INNER JOIN front.users uu ON ucpm.siren = substr(uu.siret,1,9)
         WHERE uco.use_id = $1 AND uu.id = $2
@@ -212,8 +221,8 @@ const query = {
           WHERE ur.use_id = u.id
         ) AS "roles",
       o.type_organisme AS "typeOrganisme",
-      CASE 
-        WHEN o.type_organisme = 'personne_morale' THEN pm.siege_social 
+      CASE
+        WHEN o.type_organisme = 'personne_morale' THEN pm.siege_social
         ELSE true
       END AS "siegeSocial",
       u.cgu_accepted as "cguAccepted"
