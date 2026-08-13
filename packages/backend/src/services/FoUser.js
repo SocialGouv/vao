@@ -112,7 +112,6 @@ const query = {
       WHERE 1=1
     `,
   getByToValidateByBo: `
-
 	    SELECT
 	      u.id AS "userId",
 	      u.mail AS email,
@@ -126,20 +125,15 @@ const query = {
 	    FROM front.users AS u
 	    WHERE u.ter_code = $1
 	    AND u.status_code = 'NEED_SIRET_VALIDATION'
-	    -- Il existe un compte valide sur siege social pour le siege social
+	    -- Il existe un compte valide sur même établissement pour siège social ou établissement secondaire
 	    AND u.siret not in (SELECT pm.siret FROM front.personne_morale pm
 	    	inner join front.user_organisme uo ON uo.org_id = pm.organisme_id
-	    	inner join front.users uv ON uo.use_id = uv.id AND uv.status_code = 'VALIDATED' AND uv.deleted = false
-	    	where pm.siret = u.siret AND pm.siege_social = true AND pm.current = true)
-	   -- Il existe un compte sur d'établissement secondaire pour établissement secondaire
-	   AND u.siret not in (SELECT pm.siret FROM front.personne_morale pm
-	    	inner join front.user_organisme uo ON uo.org_id = pm.organisme_id
-	    	inner join front.users uv ON uo.use_id = uv.id AND uv.status_code = 'VALIDATED' AND uv.deleted = false
-	    	where pm.siret = u.siret AND pm.siege_social = false AND pm.current = true)
+	    	inner join front.users uv ON uo.use_id = uv.id AND uv.status_code = 'VALIDATED' AND (uv.deleted = false OR uv.deleted = null)
+	    	where pm.siret = u.siret  AND pm.current = true)
 	    -- Il existe un compte sur siege social pour l'établissement secondaire
 	    AND substr(u.siret,1,9) not in (SELECT pm.siren FROM front.personne_morale pm
 	    	inner join front.user_organisme uo ON uo.org_id = pm.organisme_id
-	    	inner join front.users uv ON uo.use_id = uv.id AND uv.status_code = 'VALIDATED' AND uv.deleted = false
+	    	inner join front.users uv ON uo.use_id = uv.id AND uv.status_code = 'VALIDATED' AND (uv.deleted = false OR uv.deleted = null)
 	    	where pm.siren = substr(u.siret,1,9) AND pm.siege_social = true AND pm.current = true)
   `,
 
