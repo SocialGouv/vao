@@ -32,7 +32,10 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import {
+  AGREMENT_STATUTS_PERMISSIFS,
+  AGREMENT_STATUT,
+} from "@vao/shared-bridge";
 import { useToaster } from "@vao/shared-ui";
 import displayInput from "../../../utils/display-input";
 import { onMounted } from "vue";
@@ -51,6 +54,7 @@ const ageRangeOptions = [
   { label: "plus de 59 ans", value: "59_et_plus", name: "trancheAge" },
 ];
 const validationSchema = yup.object({
+  statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)),
   trancheAge: requiredUnlessBrouillon(
     yup.array().min(1, "Veuillez sélectionner au moins une tranche d’âge."),
   ),
@@ -81,10 +85,13 @@ const {
 const validateTranchesAge = async () => {
   const result = await validate();
 
+  // Show toaster only when the statut is not permissive (i.e. when
+  // required fields are expected). Previously the condition checked
+  // equality with BROUILLON which was inverted versus intent.
   if (
     !result.valid &&
     trancheAgeErrorMessage.value &&
-    props.statut === AGREMENT_STATUT.BROUILLON
+    !AGREMENT_STATUTS_PERMISSIFS.has(props.statut as AGREMENT_STATUT)
   ) {
     toaster.error({
       description: trancheAgeErrorMessage.value,

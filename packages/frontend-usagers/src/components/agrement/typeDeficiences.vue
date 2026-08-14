@@ -18,7 +18,7 @@
     </div>
     <UtilsDisplayInput
       v-else
-      legend="displayInput.AgrementBilanAnnuelInput['typeHandicap'].label"
+      :legend="displayInput.AgrementBilanAnnuelInput['typeHandicap'].label"
       :input="displayInput.AgrementBilanAnnuelInput['typeHandicap']"
       :value="typeDeficiencesField"
       :error-message="typeDeficiencesErrorMessage"
@@ -34,7 +34,10 @@ import * as yup from "yup";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import displayInput from "../../utils/display-input";
 import { useToaster } from "@vao/shared-ui";
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import {
+  AGREMENT_STATUT,
+  AGREMENT_STATUTS_PERMISSIFS,
+} from "@vao/shared-bridge";
 const props = defineProps({
   statut: { type: String, required: true },
   typeDeficiences: { type: Array, default: () => [] },
@@ -53,6 +56,7 @@ const handicapOptions = [
 ];
 
 const validationSchema = yup.object({
+  statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)),
   typeDeficiences: requiredUnlessBrouillon(
     yup.array().min(1, "Veuillez sélectionner au moins un type de déficience."),
   ),
@@ -69,10 +73,8 @@ const { validate } = useForm({
   validateOnMount: true,
 });
 
-onMounted(() => {
-  // ensure validation runs on mount in case validateOnMount is ineffective
-  validate();
-});
+// avoid double validation: `validateOnMount: true` already triggers validation
+// on mount. Do not call `validate()` manually here.
 
 const {
   value: typeDeficiencesField,
@@ -82,10 +84,11 @@ const {
 
 const validateTypeDeficiences = async () => {
   const result = await validate();
+  // Show toaster only when statut is not permissive
   if (
     !result.valid &&
     typeDeficiencesErrorMessage.value &&
-    props.statut === AGREMENT_STATUT.BROUILLON
+    !AGREMENT_STATUTS_PERMISSIFS.has(props.statut as AGREMENT_STATUT)
   ) {
     toaster.error({
       description: typeDeficiencesErrorMessage.value,

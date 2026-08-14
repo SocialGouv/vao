@@ -220,10 +220,12 @@ const validateForm = async () => {
     const tranchesAgeValidation =
       await tranchesAgeRef.value?.validateTranchesAge();
 
+    // Always capture the current value returned by the child component
+    // even when the validation fails, so we don't silently overwrite
+    // user data with an empty array.
+    trancheAgeValue = tranchesAgeValidation?.value || [];
     if (!tranchesAgeValidation?.valid) {
       formValid = false;
-    } else {
-      trancheAgeValue = tranchesAgeValidation.value;
     }
   } else {
     trancheAgeValue = tranchesAgeRef.value?.getCurrentValue() || [];
@@ -234,10 +236,12 @@ const validateForm = async () => {
     const typeDeficiencesValidation =
       await typeDeficiencesRef.value?.validateTypeDeficiences();
 
+    // Always capture the current value returned by the child component
+    // even when the validation fails, so we don't silently overwrite
+    // user data with an empty array.
+    typeDeficiencesValue = typeDeficiencesValidation?.value || [];
     if (!typeDeficiencesValidation?.valid) {
       formValid = false;
-    } else {
-      typeDeficiencesValue = typeDeficiencesValidation.value;
     }
   } else {
     typeDeficiencesValue = typeDeficiencesRef.value?.getCurrentValue() || [];
