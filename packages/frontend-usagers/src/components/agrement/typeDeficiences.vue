@@ -4,7 +4,7 @@
       <DsfrCheckboxSet
         v-model="typeDeficiencesField"
         name="typeDeficiences"
-        legend="Type de handicaps"
+        :legend="displayInput.AgrementBilanAnnuelInput['typeHandicap'].label"
         hint="Vous pouvez sélectionner une ou plusieurs options."
         :options="handicapOptions"
         :inline="true"
@@ -18,7 +18,8 @@
     </div>
     <UtilsDisplayInput
       v-else
-      :input="displayInput.AgrementBilanAnnuelInput.typeHandicap"
+      legend="displayInput.AgrementBilanAnnuelInput['typeHandicap'].label"
+      :input="displayInput.AgrementBilanAnnuelInput['typeHandicap']"
       :value="typeDeficiencesField"
       :error-message="typeDeficiencesErrorMessage"
       :is-valid="typeDeficiencesMeta.valid"
@@ -28,6 +29,7 @@
 
 <script setup lang="ts">
 import { useField, useForm } from "vee-validate";
+import { onMounted } from "vue";
 import * as yup from "yup";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import displayInput from "../../utils/display-input";
@@ -51,14 +53,9 @@ const handicapOptions = [
 ];
 
 const validationSchema = yup.object({
-  typeDeficiences:
-    props.statut === AGREMENT_STATUT.BROUILLON
-      ? yup.array().notRequired().nullable()
-      : requiredUnlessBrouillon(
-          yup
-            .array()
-            .min(1, "Veuillez sélectionner au moins un type de déficience."),
-        ),
+  typeDeficiences: requiredUnlessBrouillon(
+    yup.array().min(1, "Veuillez sélectionner au moins un type de déficience."),
+  ),
 });
 
 const initialValues = {
@@ -69,6 +66,12 @@ const initialValues = {
 const { validate } = useForm({
   validationSchema,
   initialValues,
+  validateOnMount: true,
+});
+
+onMounted(() => {
+  // ensure validation runs on mount in case validateOnMount is ineffective
+  validate();
 });
 
 const {
@@ -79,7 +82,11 @@ const {
 
 const validateTypeDeficiences = async () => {
   const result = await validate();
-  if (!result.valid && typeDeficiencesErrorMessage.value) {
+  if (
+    !result.valid &&
+    typeDeficiencesErrorMessage.value &&
+    props.statut === AGREMENT_STATUT.BROUILLON
+  ) {
     toaster.error({
       description: typeDeficiencesErrorMessage.value,
     });

@@ -4,7 +4,7 @@
       v-if="props.modifiable"
       :model-value="trancheAgeField"
       name="trancheAge"
-      legend="Tranches d’âge"
+      :legend="displayInput.AgrementBilanAnnuelInput['trancheAge'].label"
       hint="Vous pouvez sélectionner une ou plusieurs options."
       :options="ageRangeOptions"
       :inline="true"
@@ -13,14 +13,17 @@
       @update:model-value="onTrancheAgeChange"
     >
       <template #legend>
-        <span class="fr-text--bold">Tranches d’âge</span>
+        <span class="fr-text--bold">{{
+          displayInput.AgrementBilanAnnuelInput["trancheAge"].label
+        }}</span>
       </template>
     </DsfrCheckboxSet>
     <UtilsDisplayInput
       v-else
-      :input="displayInput.AgrementBilanAnnuelInput.trancheAge"
+      :input="displayInput.AgrementBilanAnnuelInput['trancheAge']"
       :value="trancheAgeField"
       :error-message="trancheAgeErrorMessage"
+      :is-valid="trancheAgeMeta.valid"
     />
   </div>
 </template>
@@ -32,6 +35,7 @@ import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import { useToaster } from "@vao/shared-ui";
 import displayInput from "../../../utils/display-input";
+import { onMounted } from "vue";
 
 const props = defineProps({
   trancheAge: { type: Array, default: () => [] },
@@ -47,14 +51,9 @@ const ageRangeOptions = [
   { label: "plus de 59 ans", value: "59_et_plus", name: "trancheAge" },
 ];
 const validationSchema = yup.object({
-  trancheAge:
-    props.statut === AGREMENT_STATUT.BROUILLON
-      ? yup.array().notRequired().nullable()
-      : requiredUnlessBrouillon(
-          yup
-            .array()
-            .min(1, "Veuillez sélectionner au moins une tranche d’âge."),
-        ),
+  trancheAge: requiredUnlessBrouillon(
+    yup.array().min(1, "Veuillez sélectionner au moins une tranche d’âge."),
+  ),
 });
 
 const initialValues = {
@@ -65,11 +64,16 @@ const initialValues = {
 const { validate } = useForm({
   validationSchema,
   initialValues,
-  validateOnMount: false,
+  validateOnMount: true,
 });
 
+onMounted(() => {
+  // ensure validation runs on mount in case validateOnMount is ineffective
+  validate();
+});
 const {
   value: trancheAgeField,
+  meta: trancheAgeMeta,
   errorMessage: trancheAgeErrorMessage,
   handleChange: onTrancheAgeChange,
 } = useField("trancheAge");
@@ -77,7 +81,11 @@ const {
 const validateTranchesAge = async () => {
   const result = await validate();
 
-  if (!result.valid && trancheAgeErrorMessage.value) {
+  if (
+    !result.valid &&
+    trancheAgeErrorMessage.value &&
+    props.statut === AGREMENT_STATUT.BROUILLON
+  ) {
     toaster.error({
       description: trancheAgeErrorMessage.value,
     });
