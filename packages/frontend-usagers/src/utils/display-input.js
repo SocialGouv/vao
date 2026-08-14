@@ -15,6 +15,39 @@ const ouiNon = {
   false: "Non",
   true: "Oui",
 };
+// Shared options and helper factories to avoid duplication
+const AGE_RANGE_OPTIONS = [
+  { label: "de 18 à 39 ans", value: "18_39", name: "trancheAge" },
+  { label: "de 40 à 59 ans", value: "40_59", name: "trancheAge" },
+  { label: "plus de 59 ans", value: "59_et_plus", name: "trancheAge" },
+];
+
+const HANDICAP_OPTIONS = [
+  { label: "Sensoriel", value: "auditif", name: "typeHandicap" },
+  { label: "Visuel", value: "visuel", name: "typeHandicap" },
+  { label: "Cognitif", value: "cognitif", name: "typeHandicap" },
+  { label: "Mental/Psychique", value: "mental", name: "typeHandicap" },
+  { label: "Moteur", value: "moteur", name: "typeHandicap" },
+  { label: "Polyhandicap", value: "polyhandicap", name: "typeHandicap" },
+];
+
+const text = (label) => ({ inputType: InputTypes.TEXT, label });
+const number = (label) => ({ inputType: InputTypes.NUMBER, label });
+const toFormat = (label, formatter) => ({
+  inputType: InputTypes.TO_FORMAT,
+  label,
+  formatter,
+});
+const radio = (label, options) => ({
+  inputType: InputTypes.RADIO,
+  label,
+  options,
+});
+const multi = (label, options) => ({
+  inputType: InputTypes.MULTISELECT,
+  label,
+  options,
+});
 const IUser = {
   email: {
     inputType: InputTypes.TEXT,
@@ -261,14 +294,8 @@ const IVacancier = {
     inputType: InputTypes.NUMBER,
     label: "Homme",
   },
-  trancheAge: {
-    inputType: InputTypes.MULTISELECT,
-    label: "Tranches d'âge",
-  },
-  typeDeficiences: {
-    inputType: InputTypes.MULTISELECT,
-    label: "Type de déficiences",
-  },
+  trancheAge: multi("Tranches d'âge", AGE_RANGE_OPTIONS),
+  typeDeficiences: multi("Type de déficiences", HANDICAP_OPTIONS),
   precisionDeficiences: {
     inputType: InputTypes.TEXT,
     label: "Précisez",
@@ -762,25 +789,10 @@ const AgrementBilanAnnuelInput = {
     label: "Nombre de femmes",
   },
   trancheAge: {
-    inputType: InputTypes.MULTISELECT,
-    label: "Tranches d’âge",
-    options: [
-      { label: "de 18 à 39 ans", value: "18_39", name: "trancheAge" },
-      { label: "de 40 à 59 ans", value: "40_59", name: "trancheAge" },
-      { label: "plus de 59 ans", value: "59_et_plus", name: "trancheAge" },
-    ],
+    ...multi("Tranches d’âge", AGE_RANGE_OPTIONS),
   },
   typeHandicap: {
-    inputType: InputTypes.MULTISELECT,
-    label: "Type de handicaps",
-    options: [
-      { label: "Sensoriel", value: "auditif", name: "typeHandicap" },
-      { label: "Visuel", value: "visuel", name: "typeHandicap" },
-      { label: "Cognitif", value: "cognitif", name: "typeHandicap" },
-      { label: "Mental/Psychique", value: "mental", name: "typeHandicap" },
-      { label: "Moteur", value: "moteur", name: "typeHandicap" },
-      { label: "Polyhandicap", value: "polyhandicap", name: "typeHandicap" },
-    ],
+    ...multi("Type de handicaps", HANDICAP_OPTIONS),
   },
 };
 
