@@ -220,10 +220,12 @@ const validateForm = async () => {
     const tranchesAgeValidation =
       await tranchesAgeRef.value?.validateTranchesAge();
 
+    // Always capture the current value returned by the child component
+    // even when the validation fails, so we don't silently overwrite
+    // user data with an empty array.
+    trancheAgeValue = tranchesAgeValidation?.value || [];
     if (!tranchesAgeValidation?.valid) {
       formValid = false;
-    } else {
-      trancheAgeValue = tranchesAgeValidation.value;
     }
   } else {
     trancheAgeValue = tranchesAgeRef.value?.getCurrentValue() || [];
@@ -234,10 +236,12 @@ const validateForm = async () => {
     const typeDeficiencesValidation =
       await typeDeficiencesRef.value?.validateTypeDeficiences();
 
+    // Always capture the current value returned by the child component
+    // even when the validation fails, so we don't silently overwrite
+    // user data with an empty array.
+    typeDeficiencesValue = typeDeficiencesValidation?.value || [];
     if (!typeDeficiencesValidation?.valid) {
       formValid = false;
-    } else {
-      typeDeficiencesValue = typeDeficiencesValidation.value;
     }
   } else {
     typeDeficiencesValue = typeDeficiencesRef.value?.getCurrentValue() || [];
@@ -251,12 +255,17 @@ const validateForm = async () => {
   }
 
   if (!formValid) {
-    return toaster.error({
+    toaster.error({
       titleTag: "h2",
       description: `La partie séjour ${props.year} contient des erreurs. Veuillez les corriger avant de continuer.`,
     });
   }
-
+  // Renvoyer systématiquement les données du formulaire lorsque
+  // `handleSubmit` a produit un résultat, même si les validations
+  // internes (tranches/type/hebergements) ont échoué. On ajoute un
+  // flag `valid` pour que l'appelant puisse décider de l'effet (afficher
+  // un badge Incomplet) tout en conservant les données pour sauvegarde
+  // si le statut de l'agrément est permissif.
   if (result) {
     const data = { ...result };
     delete data.statut;
@@ -268,10 +277,11 @@ const validateForm = async () => {
       trancheAge: trancheAgeValue,
       typeHandicap: typeDeficiencesValue,
       bilanHebergement: hebergements,
+      valid: formValid,
     };
   }
 
-  return result;
+  return false;
 };
 
 defineExpose({
