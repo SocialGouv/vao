@@ -164,28 +164,6 @@ test.describe.serial(testName, () => {
     await page.getByRole("button", { name: "Suivant" }).click();
 
     // ETAPES 2
-    await expectToast(page, "Fiche organisateur créée");
-    await page
-      .getByRole("textbox", { name: "Numéro d'agrément “Vacances" })
-      .click();
-    await page
-      .getByRole("textbox", { name: "Numéro d'agrément “Vacances" })
-      .press("CapsLock");
-    await page
-      .getByRole("textbox", { name: "Numéro d'agrément “Vacances" })
-      .fill("AGR-001-2026-003");
-    await page
-      .getByRole("textbox", { name: "Date d'obtention de l'agré" })
-      .fill("2025-02-02");
-    await page.getByLabel("Région d’obtention de l’agré").selectOption("IDF");
-
-    await addInputFile(page, "Ajouter une copie de votre", getAgrementFile());
-    await addInputFile(page, "Si vous souhaitez remplacer", getAgrementFile());
-
-    await page.getByRole("button", { name: "Suivant" }).click();
-    await expectToast(page, "Agrément sauvegardé");
-
-    // ETAPES 3
     await page.getByText("Le transport vers le lieu de").click();
     await page.getByText("Train").click();
     await page.getByText("Autobus, car").click();
@@ -213,7 +191,7 @@ test.describe.serial(testName, () => {
     );
     await page.getByRole("button", { name: "Suivant" }).click();
 
-    // ETAPES 4
+    // ETAPES 3
     await page.getByLabel("Des dispositions d’ordre").getByText("Non").click();
     await page.getByText("Une personne formée aux").click();
     await page
@@ -317,5 +295,27 @@ test.describe.serial(testName, () => {
     await page.getByRole("button", { name: "Suivant" }).click();
     await page.getByRole("button", { name: "Finaliser la fiche" }).click();
     await expect(page.getByText("Fiche organisateur finalisée")).toBeVisible();
+
+    // CREATION AGREMENT
+    await page.getByRole("link", { name: "J’ai déjà un agrément" }).click();
+    await page
+      .getByRole("textbox", { name: "Numéro d'agrément “Vacances" })
+      .click();
+    await page
+      .getByRole("textbox", { name: "Numéro d'agrément “Vacances" })
+      .press("CapsLock");
+    await page
+      .getByRole("textbox", { name: "Numéro d'agrément “Vacances" })
+      .fill("AGR-001-2026-003");
+    await page
+      .getByRole("textbox", { name: "Date d'obtention de l'agré" })
+      .fill("2025-02-02");
+    await page.getByLabel("Région d’obtention de l’agré").selectOption("IDF");
+
+    await addInputFile(page, "Ajouter une copie de votre", getAgrementFile());
+    await addInputFile(page, "Si vous souhaitez remplacer", getAgrementFile());
+
+    await page.getByRole("button", { name: "Valider" }).click();
+    await expectToast(page, "Agrément créé avec succès");
   });
 });

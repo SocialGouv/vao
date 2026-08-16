@@ -240,6 +240,15 @@ export const AgrementService = {
       throw new FunctionalException(FUNCTIONAL_ERRORS.AGREMENT_NOT_FOUND);
     }
 
+    const { result: agrements } = await AgrementsRepository.getByOrganismeId({
+      organismeId: agrement.organismeId!,
+    });
+    const hasExistingValide = agrements.some(
+      (agr) => agr.statut === AGREMENT_STATUT.VALIDE && agr.id !== agrementId,
+    );
+    const typeDepot = hasExistingValide
+      ? AGREMENT_TYPE_DEPOT.RENOUVELLEMENT
+      : AGREMENT_TYPE_DEPOT.PREMIER;
     if (
       [
         AGREMENT_STATUT.A_COMPLETER,
@@ -280,10 +289,6 @@ export const AgrementService = {
 
         // On change le statut de l'agrément en validé, on considère que l'agrément est désormais actif,
         // On désactive les autres agréments actifs de l'organisme pour n'avoir qu'un seul agrément actif par organisme
-        const { result: agrements } =
-          await AgrementsRepository.getByOrganismeId({
-            organismeId: agrement.organismeId!,
-          });
         const activeAgrements = agrements.filter(
           (a) => a.statut === AGREMENT_STATUT.VALIDE,
         );
@@ -369,11 +374,6 @@ export const AgrementService = {
       const organisme = await serviceOrganismeGetOne({
         "o.id": agrement.organismeId,
       });
-
-      const typeDepot = organisme.agrement?.numero
-        ? AGREMENT_TYPE_DEPOT.RENOUVELLEMENT
-        : AGREMENT_TYPE_DEPOT.PREMIER;
-
       const regionDreets = await Region.fetchOne(territoireCode);
       if (!regionDreets) {
         throw new AppError("Échec, une région devrait exister", {
@@ -407,6 +407,7 @@ export const AgrementService = {
                     agrementId,
                     commentaire,
                     mailDreets: fiche.service_mail,
+                    typeDepot,
                   });
                   break;
                 case AGREMENT_STATUT.VALIDE:
@@ -415,6 +416,7 @@ export const AgrementService = {
                     agrementId,
                     mailDreets: fiche.service_mail,
                     numeroAgrement: agrement.numero!,
+                    typeDepot,
                   });
                   break;
                 default:
@@ -479,6 +481,7 @@ export const AgrementService = {
               mailToSend = AgrementMailUsagers.sendStatutACorrigerMail({
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
+                typeDepot,
               });
               break;
             case AGREMENT_STATUT.REFUSE:
@@ -495,6 +498,7 @@ export const AgrementService = {
                 email: mailsOVA,
                 numeroAgrement: agrement.numero!,
                 regionDreets: regionDreets.text,
+                typeDepot,
               });
               break;
             default:

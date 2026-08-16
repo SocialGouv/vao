@@ -87,7 +87,13 @@ const headers = [
         target: "_blank",
         rel: "noopener noreferrer",
         class: "fr-icon-file-download-fill",
-        "aria-label": "Télécharger le fichier - nouvel onglet",
+        children: [
+          {
+            component: "span",
+            class: "fr-sr-only",
+            text: " - nouvel onglet",
+          },
+        ],
       };
     },
   },

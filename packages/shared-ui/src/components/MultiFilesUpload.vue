@@ -1,27 +1,42 @@
 <template>
   <div class="fr-fieldset__element">
-    <p v-if="rows.length > 0">
-      <DsfrTable
-        title="Fichier(s) téléversé(s)"
-        :headers="headers"
-        :rows="rows"
-      />
-    </p>
-    <p v-else class="fr-mb-4v fr-icon-file-line fr-text--sm">
-      Aucun fichier téléversé
-    </p>
-    <div class="fr-input-group">
-      <DsfrFileUpload
-        v-if="modifiable"
-        v-bind="$attrs"
-        @change="onFileInputChange"
-      />
+    <div v-if="!props.modifiable">
+      <dl class="fr-text--sm fr-pl-0">
+        <dt v-if="label">{{ label }}</dt>
+        <dd>
+          <DsfrTable
+            v-if="rows.length > 0"
+            title="Fichier(s) téléversé(s)"
+            :headers="headers"
+            :rows="rows"
+          />
+          <p v-else class="fr-mb-4v fr-icon-file-line fr-text--sm">
+            Aucun fichier téléversé
+          </p>
+          <p v-if="hint" class="fr-hint-text">
+            {{ hint }}
+          </p>
+        </dd>
+      </dl>
+    </div>
+    <div v-else class="fr-input-group">
+      <p v-if="rows.length > 0">
+        <DsfrTable
+          title="Fichier(s) téléversé(s)"
+          :headers="headers"
+          :rows="rows"
+        />
+      </p>
+      <p v-else class="fr-mb-4v fr-icon-file-line fr-text--sm">
+        Aucun fichier téléversé
+      </p>
+      <DsfrFileUpload v-bind="$attrs" @change="onFileInputChange" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, useAttrs } from "vue";
 import type { PropType } from "vue";
 import type { UploadedFile } from "@vao/shared-bridge";
 
@@ -31,6 +46,12 @@ const props = defineProps({
   modifiable: { type: Boolean, default: true },
   cdnUrl: { type: String, required: true },
 });
+
+const attrs = useAttrs();
+const label = computed(() =>
+  typeof attrs.label === "string" ? attrs.label : "",
+);
+const hint = computed(() => (typeof attrs.hint === "string" ? attrs.hint : ""));
 
 const headers: string[] = ["Fichier", "Date de création", "Actions"];
 

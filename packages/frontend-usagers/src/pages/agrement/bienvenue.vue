@@ -10,36 +10,51 @@
       Cette plateforme vous permet de gérer vos agréments, organiser et déclarer
       des vacances adaptées.
     </p>
-    <p class="fr-text--bold">Pour commencer vous devez avoir votre agrément.</p>
+    <div
+      v-if="
+        organismeStore.organismeCourant?.typeOrganisme === 'personne_morale' &&
+        !organismeStore.organismeCourant?.personneMorale?.porteurAgrement
+      "
+      class="fr-mb-3w"
+    >
+      <p class="fr-text--bold">
+        Votre organisme principal n'a pas d'agrément de déclaré.
+      </p>
+    </div>
+    <div v-else>
+      <p class="fr-text--bold">
+        Pour commencer vous devez avoir votre agrément.
+      </p>
 
-    <div class="image-links">
-      <div class="travellers-image">
-        <img src="../../assets/illustration-travellers.svg" alt="" />
-      </div>
-      <div class="fr-grid-col fr-grid-row--gutters">
-        <div class="fr-col-12">
-          <DsfrTile
-            :title="'Faire une première demande d’agrément'"
-            titleTag="h2"
-            :description="'Vous n’avez pas encore d’agrément et souhaitez en faire la demande pour organiser des vacances adaptées.'"
-            :details="'Durée estimée 30 minutes'"
-            :imgSrc="DocumentAdd"
-            :horizontal="true"
-            :button-label="'Faire une première demande d’agrément'"
-            to="/agrement/new"
-          />
-          <!-- //todo: renseigner le lien quand la destination de page est connue -->
-          <DsfrTile
-            class="fr-mt-4w"
-            :title="'J’ai déjà un agrément'"
-            titleTag="h2"
-            :description="'Vous possédez déjà un agrément valide et souhaitez l\'enregistrer pour accéder  immédiatement aux services.'"
-            :details="'Durée estimée 30 minutes'"
-            :imgSrc="DocumentSignature"
-            :horizontal="true"
-            :button-label="'J’ai déjà un agrément'"
-            to="#"
-          />
+      <div class="image-links">
+        <div class="travellers-image">
+          <img src="../../assets/illustration-travellers.svg" alt="" />
+        </div>
+        <div class="fr-grid-col fr-grid-row--gutters">
+          <div class="fr-col-12">
+            <DsfrTile
+              :title="'Faire une première demande d’agrément'"
+              title-tag="h2"
+              :description="'Vous n’avez pas encore d’agrément et souhaitez en faire la demande pour organiser des vacances adaptées.'"
+              :details="'Durée estimée 30 minutes'"
+              :img-src="DocumentAdd"
+              :horizontal="true"
+              :button-label="'Faire une première demande d’agrément'"
+              to="/agrement/new"
+            />
+            <!-- //todo: renseigner le lien quand la destination de page est connue -->
+            <DsfrTile
+              class="fr-mt-4w"
+              :title="'J’ai déjà un agrément'"
+              title-tag="h2"
+              :description="'Vous possédez déjà un agrément valide et souhaitez l\'enregistrer pour accéder  immédiatement aux services.'"
+              :details="'Durée estimée 2 minutes'"
+              :img-src="DocumentSignature"
+              :horizontal="true"
+              :button-label="'J’ai déjà un agrément'"
+              to="/agrement/existing"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -82,6 +97,7 @@ import DocumentAdd from "@gouvfr/dsfr/dist/artwork/pictograms/document/document-
 import DocumentSignature from "@gouvfr/dsfr/dist/artwork/pictograms/document/document-signature.svg";
 
 const userStore = useUserStore();
+const organismeStore = useOrganismeStore();
 
 const pageHeadingRef = ref<HTMLHeadingElement | null>(null);
 

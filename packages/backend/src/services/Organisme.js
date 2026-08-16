@@ -1,7 +1,6 @@
 const { AGREMENT_STATUT } = require("@vao/shared-bridge");
 
 const yup = require("yup");
-const Regions = require("./geo/Region");
 
 const AppError = require("../utils/error").default;
 const ValidationAppError = require("../utils/validation-error").default;
@@ -535,7 +534,6 @@ module.exports.link = async (userId, organismeId) => {
 
 module.exports.update = async (type, parametre, organismeId, userId) => {
   log.i("update - IN", { type });
-  const regions = await Regions.fetch();
   const client = await getPool().connect();
   try {
     await client.query("BEGIN");
@@ -551,7 +549,7 @@ module.exports.update = async (type, parametre, organismeId, userId) => {
           etablissements: etablissementsSecondaires,
         };
         const complet =
-          await Organisme.schema(regions).personneMorale.isValid(parametre);
+          await Organisme.schema().personneMorale.isValid(parametre);
         await client.query(query.updatePersonne, [
           organismeId,
           type,
@@ -579,7 +577,7 @@ module.exports.update = async (type, parametre, organismeId, userId) => {
       }
       case partOrganisme.PERSONNE_PHYSIQUE: {
         const complet =
-          await Organisme.schema(regions).personnePhysique.isValid(parametre);
+          await Organisme.schema().personnePhysique.isValid(parametre);
         await client.query(query.updatePersonne, [
           organismeId,
           type,
@@ -604,7 +602,7 @@ module.exports.update = async (type, parametre, organismeId, userId) => {
           etablissements: parametre.etablissements,
         };
         const complet =
-          await Organisme.schema(regions).personneMorale.isValid(parametre);
+          await Organisme.schema().personneMorale.isValid(parametre);
 
         client.query(query.updatePersonneMorale, [
           organismeId,
@@ -620,7 +618,7 @@ module.exports.update = async (type, parametre, organismeId, userId) => {
       }
       case partOrganisme.PROTOCOLE_TRANSPORT: {
         const complet =
-          await Organisme.schema(regions).protocoleTransport.isValid(parametre);
+          await Organisme.schema().protocoleTransport.isValid(parametre);
         await client.query(query.updateTransport, [
           organismeId,
           parametre,
@@ -631,7 +629,7 @@ module.exports.update = async (type, parametre, organismeId, userId) => {
       }
       case partOrganisme.PROTOCOLE_SANITAIRE: {
         const complet =
-          await Organisme.schema(regions).protocoleSanitaire.isValid(parametre);
+          await Organisme.schema().protocoleSanitaire.isValid(parametre);
         await client.query(query.updateSanitaire, [
           organismeId,
           parametre,
@@ -658,9 +656,8 @@ module.exports.update = async (type, parametre, organismeId, userId) => {
 
 module.exports.finalize = async (userId) => {
   log.i("finalize - IN", { userId });
-  const regions = await Regions.fetch();
 
-  const organismeSchema = Organisme.schema(regions);
+  const organismeSchema = Organisme.schema();
 
   const criterias = {
     "uo.use_id": userId,
