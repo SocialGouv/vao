@@ -4,7 +4,7 @@
       <DsfrCheckboxSet
         v-model="typeDeficiencesField"
         name="typeDeficiences"
-        legend="Type de handicaps"
+        :legend="displayInput.AgrementBilanAnnuelInput['typeHandicap'].label"
         hint="Vous pouvez sélectionner une ou plusieurs options."
         :options="handicapOptions"
         :inline="true"
@@ -18,7 +18,8 @@
     </div>
     <UtilsDisplayInput
       v-else
-      :input="displayInput.AgrementBilanAnnuelInput.typeHandicap"
+      :legend="displayInput.AgrementBilanAnnuelInput['typeHandicap'].label"
+      :input="displayInput.AgrementBilanAnnuelInput['typeHandicap']"
       :value="typeDeficiencesField"
       :error-message="typeDeficiencesErrorMessage"
       :is-valid="typeDeficiencesMeta.valid"
@@ -28,11 +29,15 @@
 
 <script setup lang="ts">
 import { useField, useForm } from "vee-validate";
+import { onMounted } from "vue";
 import * as yup from "yup";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import displayInput from "../../utils/display-input";
 import { useToaster } from "@vao/shared-ui";
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import {
+  AGREMENT_STATUT,
+  AGREMENT_STATUTS_PERMISSIFS,
+} from "@vao/shared-bridge";
 const props = defineProps({
   statut: { type: String, required: true },
   typeDeficiences: { type: Array, default: () => [] },
@@ -51,14 +56,10 @@ const handicapOptions = [
 ];
 
 const validationSchema = yup.object({
-  typeDeficiences:
-    props.statut === AGREMENT_STATUT.BROUILLON
-      ? yup.array().notRequired().nullable()
-      : requiredUnlessBrouillon(
-          yup
-            .array()
-            .min(1, "Veuillez sélectionner au moins un type de déficience."),
-        ),
+  statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)),
+  typeDeficiences: requiredUnlessBrouillon(
+    yup.array().min(1, "Veuillez sélectionner au moins un type de déficience."),
+  ),
 });
 
 const initialValues = {
@@ -69,7 +70,11 @@ const initialValues = {
 const { validate } = useForm({
   validationSchema,
   initialValues,
+  validateOnMount: true,
 });
+
+// avoid double validation: `validateOnMount: true` already triggers validation
+// on mount. Do not call `validate()` manually here.
 
 const {
   value: typeDeficiencesField,
@@ -79,7 +84,12 @@ const {
 
 const validateTypeDeficiences = async () => {
   const result = await validate();
-  if (!result.valid && typeDeficiencesErrorMessage.value) {
+  // Show toaster only when statut is not permissive
+  if (
+    !result.valid &&
+    typeDeficiencesErrorMessage.value &&
+    !AGREMENT_STATUTS_PERMISSIFS.has(props.statut as AGREMENT_STATUT)
+  ) {
     toaster.error({
       description: typeDeficiencesErrorMessage.value,
     });

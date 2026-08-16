@@ -128,9 +128,16 @@ async function validateAllYears() {
   for (const ref of sejourDetailsRefs.value) {
     if (ref && ref.validateForm) {
       const result = await ref.validateForm();
-      if (!result || result === false) {
+      if (!result) {
+        // la validation VeeValidate a échoué ou le composant n'a pas renvoyé de données
         allValid = false;
       } else if (result?.annee) {
+        // si la validation interne (tranches/type/hebergements) a échoué,
+        // le composant renvoie toujours ses données avec `valid: false`.
+        if (result.valid === false) {
+          allValid = false;
+        }
+
         if (!result.bilanHebergement || result.bilanHebergement.length === 0) {
           yearsInvalid.push(result.annee);
         }

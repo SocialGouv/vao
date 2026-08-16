@@ -76,6 +76,7 @@
 
 <script setup>
 import { fileUtils, useToaster } from "@vao/shared-ui";
+import { AGREMENT_TYPE_DEPOT } from "@vao/shared-bridge";
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 const route = useRoute();
 const toaster = useToaster();
