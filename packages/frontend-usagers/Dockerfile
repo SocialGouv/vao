@@ -26,17 +26,20 @@ COPY packages/shared-ui/package.json packages/shared-ui/
 COPY packages/frontend-usagers/package.json packages/frontend-usagers/
 RUN pnpm install --frozen-lockfile
 
-# these variables are needed at build time because we produce a *static* app
+# Static app: these values are read by `nuxt generate` at build time.
+# Defaults are __SENTINEL__ placeholders, substituted at container start by
+# docker/runtime-env.sh (build-once: one image serves every environment).
+# Passing real values via --build-arg (legacy pipelines) still bakes them as before.
 ARG NUXT_PUBLIC_APP_VERSION=development
-ARG NUXT_PUBLIC_BACKEND_URL
-ARG NUXT_PUBLIC_ENVIRONMENT
-ARG NUXT_PUBLIC_MATOMO_ENABLED
-ARG NUXT_PUBLIC_MATOMO_HOST
-ARG NUXT_PUBLIC_MATOMO_SITE_ID
-ARG NUXT_PUBLIC_SENTRY_DSN
+ARG NUXT_PUBLIC_BACKEND_URL=__NUXT_PUBLIC_BACKEND_URL__
+ARG NUXT_PUBLIC_ENVIRONMENT=__NUXT_PUBLIC_ENVIRONMENT__
+ARG NUXT_PUBLIC_MATOMO_ENABLED=__NUXT_PUBLIC_MATOMO_ENABLED__
+ARG NUXT_PUBLIC_MATOMO_HOST=__NUXT_PUBLIC_MATOMO_HOST__
+ARG NUXT_PUBLIC_MATOMO_SITE_ID=__NUXT_PUBLIC_MATOMO_SITE_ID__
+ARG NUXT_PUBLIC_SENTRY_DSN=__NUXT_PUBLIC_SENTRY_DSN__
 ARG NUXT_PUBLIC_SENTRY_RELEASE
-ARG NUXT_PUBLIC_SENTRY_ENABLED
-ARG NUXT_PUBLIC_API_MAP_TILER
+ARG NUXT_PUBLIC_SENTRY_ENABLED=__NUXT_PUBLIC_SENTRY_ENABLED__
+ARG NUXT_PUBLIC_API_MAP_TILER=__NUXT_PUBLIC_API_MAP_TILER__
 ARG SENTRY_ORG
 ARG SENTRY_PROJECT
 ARG SENTRY_URL
@@ -69,3 +72,8 @@ RUN --mount=type=secret,id=sentry_auth_token \
 FROM ghcr.io/socialgouv/docker/nginx4spa:8.2.4
 
 COPY --from=builder --chown=101:101 /app/packages/frontend-usagers/.output/public /usr/share/nginx/html
+# Substitute __NUXT_PUBLIC_X__ sentinels with container env values, then start nginx.
+# (nginx4spa's own entrypoint does not run /docker-entrypoint.d, hence the wrapper.)
+COPY --chmod=755 docker/runtime-env.sh /runtime-env.sh
+ENTRYPOINT ["/runtime-env.sh"]
+CMD ["nginx", "-g", "daemon off;"]
