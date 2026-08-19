@@ -75,6 +75,7 @@
           type="number"
           label="nombre de jours"
           min="1"
+          step="1"
           :model-value="nbJours"
           :label-visible="true"
           :is-valid="nbJoursMeta.valid"
