@@ -18,6 +18,7 @@
       :key="`${hebergement.agrBilanAnnuelId}-${hebergement.agrBilanAnnuelId}-${index}`"
       :hebergement="hebergement"
       :statut="props.statut || AGREMENT_STATUT.BROUILLON"
+      :modifiable="props.modifiable"
       @update="
         (updatedHebergement) =>
           handleHebergementUpdate(index, updatedHebergement)
@@ -73,6 +74,7 @@
           name="nbJours"
           type="number"
           label="nombre de jours"
+          min="1"
           :model-value="nbJours"
           :label-visible="true"
           :is-valid="nbJoursMeta.valid"
@@ -196,7 +198,12 @@ function handleHebergementDelete(index: number): void {
 const validationSchema = yup.object({
   nomHebergement: yup.string().required("Champ obligatoire"),
   adresse: yup.string().required("L'adresse est obligatoire"),
-  nbJours: yup.number().required("Champ obligatoire"),
+  nbJours: yup
+    .number()
+    .typeError("Merci de saisir un nombre valide.")
+    .integer("Le nombre de jours doit être un nombre entier.")
+    .min(1, "Le nombre de jours doit être supérieur à 0.")
+    .required("Champ obligatoire"),
   periode: yup
     .array()
     .of(yup.string())
