@@ -260,7 +260,7 @@ fileignoreconfig:
 - filename: packages/external-api/types/environment.d.ts
   checksum: c6f377ce06ef7a890bb880f9f001da7f7e25dfb778ff637b6944fc10195b0222
 - filename: docker/runtime-env.sh
-  checksum: 8e94f5afaebba393fa0ad87049a677b0fb58fe914b7d353dff02545f3e84e924
+  checksum: 1075bb22cb9ac39832fe50e48afdb6bae1c61f94a6e6b9beecda6f7d355dac3b
 - filename: packages/frontend-bo/Dockerfile
   checksum: 0f60db0c4c8448206529f8483644c684f5126eb17661b81aaf0545bbf21836a2
 - filename: packages/frontend-bo/src/assets/Download.svg
