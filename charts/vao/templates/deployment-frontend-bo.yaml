@@ -49,6 +49,14 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.frontendBo.resources | nindent 12 }}
+          env:
+            # Build-once : l'image porte des sentinelles __NUXT_PUBLIC_X__, substituées au
+            # démarrage par docker/runtime-env.sh. Sans effet sur une image aux valeurs
+            # déjà cuites (--build-arg) : aucune sentinelle à remplacer.
+            {{- range $key, $value := .Values.frontendBo.env }}
+            - name: {{ $key }}
+              value: {{ tpl $value $ | quote }}
+            {{- end }}
           lifecycle:
             postStart:
               exec:

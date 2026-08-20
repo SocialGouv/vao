@@ -194,6 +194,11 @@ frontendUsagers:
     package: frontend-usagers
   host: ""
   containerPort: 8080
+  # Config runtime du front (build-once). Rendues avec `tpl` -> peuvent référencer
+  # global.host, donc l'API suit l'env sans surcharge par-instance.
+  # Sans effet tant que l'image est buildée avec des --build-arg (valeurs déjà cuites).
+  env:
+    NUXT_PUBLIC_BACKEND_URL: "https://api-{{ .Values.global.host }}"
   resources:
     requests:
       cpu: 50m
@@ -240,6 +245,9 @@ frontendBo:
     package: frontend-bo
   host: ""
   containerPort: 8080
+  # Cf. frontendUsagers.env (build-once) — l'API suit l'env via global.host.
+  env:
+    NUXT_PUBLIC_BACKEND_URL: "https://api-{{ .Values.global.host }}"
   resources:
     requests:
       cpu: 50m
