@@ -7,8 +7,9 @@
 #             + allowlist inbound côté gitops) -> commit + render côté gitops.
 # Déploiement : Atlas v2 (zone dev) via ArgoCD synchronisant vao-gitops (branche rendered).
 #
-# ⚠ Frontends Nuxt STATIQUES : NUXT_PUBLIC_* figés au build => les images frontends
-#   sont propres à la preprod (refactor runtimeConfig nécessaire pour build-once).
+# Frontends Nuxt statiques en BUILD-ONCE : le Dockerfile laisse les valeurs propres à l'env
+#   en sentinelles `__NUXT_PUBLIC_X__`, substituées au démarrage du conteneur depuis les `env`
+#   posées par le chart => une seule image sert tous les envs (cf. docker/runtime-env.sh).
 # Aucune variable CI/CD secrète requise côté app (DinD + trigger par CI_JOB_TOKEN).
 # ============================================================================
 
@@ -24,8 +25,6 @@ variables:
   CHART_DIR: charts/vao
   # Version immuable par-commit : héritée par publish-chart ET par le trigger de déploiement.
   CHART_VERSION: "0.0.0-sha.${CI_COMMIT_SHORT_SHA}"
-  # Host backend preprod (Atlas) — figé au build des frontends (Nuxt statique).
-  PREPROD_BACKEND_URL: "https://api-vao-preprod.env-01ktvpxqrkny0sxv6qysgj95rt.dev.atlas-prod.public-cloud.social.gouv.fr"
 
 stages:
   - build
@@ -69,13 +68,14 @@ build-frontends:
     BUILD_IMAGE: "$CI_REGISTRY_IMAGE/$COMPONENT"
     BUILD_DOCKERFILE: "packages/$COMPONENT/Dockerfile"
     BUILD_TAGS: "sha-$CI_COMMIT_SHA"
+    # Build-once : les valeurs SPÉCIFIQUES À L'ENV (backend url, environment, matomo, sentry) ne
+    # sont plus passées ici — le Dockerfile les laisse en sentinelles `__NUXT_PUBLIC_X__`, que
+    # l'entrypoint substitue au démarrage depuis les `env` posées par le chart. Un --build-arg
+    # les recuirait dans l'image (comportement legacy) et neutraliserait l'injection runtime.
+    # Ne restent ici que les valeurs identiques pour TOUS les envs.
     # NUXT_PUBLIC_API_MAP_TILER : clé publique front (déjà en clair dans le workflow GitHub).
     BUILD_ARGS: |
-      NUXT_PUBLIC_BACKEND_URL=$PREPROD_BACKEND_URL
-      NUXT_PUBLIC_ENVIRONMENT=preprod-atlas
       NUXT_PUBLIC_APP_VERSION=sha-$CI_COMMIT_SHORT_SHA
-      NUXT_PUBLIC_SENTRY_ENABLED=false
-      NUXT_PUBLIC_MATOMO_ENABLED=false
       NUXT_PUBLIC_API_MAP_TILER=g9IvoA8h0Ow8I9szhdzW
   rules: *build-rules
 

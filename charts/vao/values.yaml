@@ -196,9 +196,17 @@ frontendUsagers:
   containerPort: 8080
   # Config runtime du front (build-once). Rendues avec `tpl` -> peuvent référencer
   # global.host, donc l'API suit l'env sans surcharge par-instance.
-  # Sans effet tant que l'image est buildée avec des --build-arg (valeurs déjà cuites).
+  # ⚠ Doit couvrir TOUTES les sentinelles laissées par le Dockerfile : une sentinelle sans
+  # variable correspondante resterait littérale (`__NUXT_PUBLIC_X__`) dans les pages servies.
+  # Sans effet sur une image buildée avec des --build-arg (valeurs déjà cuites).
   env:
     NUXT_PUBLIC_BACKEND_URL: "https://api-{{ .Values.global.host }}"
+    NUXT_PUBLIC_ENVIRONMENT: "atlas"
+    NUXT_PUBLIC_MATOMO_ENABLED: "false"
+    NUXT_PUBLIC_MATOMO_HOST: ""
+    NUXT_PUBLIC_MATOMO_SITE_ID: ""
+    NUXT_PUBLIC_SENTRY_DSN: ""
+    NUXT_PUBLIC_SENTRY_ENABLED: "false"
   resources:
     requests:
       cpu: 50m
@@ -245,9 +253,15 @@ frontendBo:
     package: frontend-bo
   host: ""
   containerPort: 8080
-  # Cf. frontendUsagers.env (build-once) — l'API suit l'env via global.host.
+  # Cf. frontendUsagers.env (build-once) — même jeu de clés, l'API suit l'env via global.host.
   env:
     NUXT_PUBLIC_BACKEND_URL: "https://api-{{ .Values.global.host }}"
+    NUXT_PUBLIC_ENVIRONMENT: "atlas"
+    NUXT_PUBLIC_MATOMO_ENABLED: "false"
+    NUXT_PUBLIC_MATOMO_HOST: ""
+    NUXT_PUBLIC_MATOMO_SITE_ID: ""
+    NUXT_PUBLIC_SENTRY_DSN: ""
+    NUXT_PUBLIC_SENTRY_ENABLED: "false"
   resources:
     requests:
       cpu: 50m
