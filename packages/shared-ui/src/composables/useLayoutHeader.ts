@@ -5,10 +5,12 @@ export function useLayoutHeader({
   logoutUrl,
   accountPath,
   userStore,
+  additionalStoresToReset = [],
 }: {
   logoutUrl: string;
   accountPath: string;
   userStore: any;
+  additionalStoresToReset?: { $reset: () => void }[];
 }) {
   const isConnected = computed<boolean>(() => userStore.isConnected);
   const user = computed(() => userStore.user);
@@ -17,7 +19,10 @@ export function useLayoutHeader({
     apiUrl: logoutUrl,
     getUserId: (user: any) => user?.id,
     user,
-    resetUserStore: () => userStore.$reset(),
+    resetUserStore: () => {
+      userStore.$reset();
+      additionalStoresToReset.forEach((store) => store.$reset());
+    },
   });
 
   const quickLinks = useQuickLinks({

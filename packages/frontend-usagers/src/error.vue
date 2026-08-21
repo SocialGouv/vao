@@ -11,11 +11,14 @@ const props = defineProps({
 const navItems = useMenuNavItems();
 const userStore = useUserStore();
 const config = useRuntimeConfig();
+const organismeStore = useOrganismeStore();
+const agrementStore = useAgrementStore();
 
 const { quickLinks, homeTo } = useLayoutHeader({
   logoutUrl: "/authentication/disconnect",
   accountPath: "/mon-compte",
   userStore,
+  additionalStoresToReset: [organismeStore, agrementStore],
 });
 </script>
 
