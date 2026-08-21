@@ -18,6 +18,7 @@ const { quickLinks, homeTo } = useLayoutHeader({
   logoutUrl: "/authentication/disconnect",
   accountPath: "/mon-compte",
   userStore,
+  additionalStoresToReset: [organismeStore, agrementStore],
 });
 
 watchEffect(async () => {
