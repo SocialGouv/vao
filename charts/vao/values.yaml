@@ -194,11 +194,14 @@ frontendUsagers:
     package: frontend-usagers
   host: ""
   containerPort: 8080
-  # Config runtime du front (build-once). Rendues avec `tpl` -> peuvent référencer
-  # global.host, donc l'API suit l'env sans surcharge par-instance.
-  # ⚠ Doit couvrir TOUTES les sentinelles laissées par le Dockerfile : une sentinelle sans
-  # variable correspondante resterait littérale (`__NUXT_PUBLIC_X__`) dans les pages servies.
-  # Sans effet sur une image buildée avec des --build-arg (valeurs déjà cuites).
+  # Configuration du frontend, appliquée au démarrage du conteneur (build-once) : ces
+  # variables remplacent les marqueurs `__NUXT_PUBLIC_X__` écrits dans les pages pendant
+  # le build (cf. packages/frontend-usagers/Dockerfile et docker/runtime-env.sh).
+  # Les valeurs passent par `tpl`, elles peuvent donc référencer global.host : l'URL de
+  # l'API suit automatiquement l'environnement, sans réglage à écrire par instance.
+  # ⚠ Cette liste doit couvrir TOUS les marqueurs du Dockerfile : un marqueur sans variable
+  # correspondante resterait affiché tel quel (`__NUXT_PUBLIC_X__`) dans les pages servies.
+  # Sans effet si l'image a été construite avec des --build-arg (valeurs figées au build).
   env:
     NUXT_PUBLIC_BACKEND_URL: "https://api-{{ .Values.global.host }}"
     NUXT_PUBLIC_ENVIRONMENT: "atlas"
@@ -253,7 +256,7 @@ frontendBo:
     package: frontend-bo
   host: ""
   containerPort: 8080
-  # Cf. frontendUsagers.env (build-once) — même jeu de clés, l'API suit l'env via global.host.
+  # Cf. frontendUsagers.env : même jeu de clés, l'URL de l'API suit l'environnement via global.host.
   env:
     NUXT_PUBLIC_BACKEND_URL: "https://api-{{ .Values.global.host }}"
     NUXT_PUBLIC_ENVIRONMENT: "atlas"

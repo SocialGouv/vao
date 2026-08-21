@@ -7,9 +7,10 @@
 #             + allowlist inbound côté gitops) -> commit + render côté gitops.
 # Déploiement : Atlas v2 (zone dev) via ArgoCD synchronisant vao-gitops (branche rendered).
 #
-# Frontends Nuxt statiques en BUILD-ONCE : le Dockerfile laisse les valeurs propres à l'env
-#   en sentinelles `__NUXT_PUBLIC_X__`, substituées au démarrage du conteneur depuis les `env`
-#   posées par le chart => une seule image sert tous les envs (cf. docker/runtime-env.sh).
+# Frontends Nuxt statiques, principe "build-once" : le Dockerfile écrit des marqueurs
+#   `__NUXT_PUBLIC_X__` à la place des valeurs propres à un environnement ; ils sont remplacés
+#   au démarrage du conteneur par les variables posées par le chart (docker/runtime-env.sh),
+#   ce qui permet à une même image de servir tous les environnements.
 # Aucune variable CI/CD secrète requise côté app (DinD + trigger par CI_JOB_TOKEN).
 # ============================================================================
 
@@ -68,11 +69,11 @@ build-frontends:
     BUILD_IMAGE: "$CI_REGISTRY_IMAGE/$COMPONENT"
     BUILD_DOCKERFILE: "packages/$COMPONENT/Dockerfile"
     BUILD_TAGS: "sha-$CI_COMMIT_SHA"
-    # Build-once : les valeurs SPÉCIFIQUES À L'ENV (backend url, environment, matomo, sentry) ne
-    # sont plus passées ici — le Dockerfile les laisse en sentinelles `__NUXT_PUBLIC_X__`, que
-    # l'entrypoint substitue au démarrage depuis les `env` posées par le chart. Un --build-arg
-    # les recuirait dans l'image (comportement legacy) et neutraliserait l'injection runtime.
-    # Ne restent ici que les valeurs identiques pour TOUS les envs.
+    # Les valeurs qui dépendent de l'environnement (URL du backend, nom d'environnement,
+    # Matomo, Sentry) ne sont volontairement PAS passées ici : le Dockerfile écrit des
+    # marqueurs à leur place, remplacés au démarrage du conteneur par les variables du
+    # déploiement. Les repasser en --build-arg les figerait dans l'image et annulerait ce
+    # mécanisme. Ne restent donc ici que les valeurs identiques pour tous les environnements.
     # NUXT_PUBLIC_API_MAP_TILER : clé publique front (déjà en clair dans le workflow GitHub).
     BUILD_ARGS: |
       NUXT_PUBLIC_APP_VERSION=sha-$CI_COMMIT_SHORT_SHA

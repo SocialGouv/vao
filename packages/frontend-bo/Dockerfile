@@ -26,10 +26,12 @@ COPY packages/shared-ui/package.json packages/shared-ui/
 COPY packages/frontend-bo/package.json packages/frontend-bo/
 RUN pnpm install --frozen-lockfile
 
-# Static app: these values are read by `nuxt generate` at build time.
-# Defaults are __SENTINEL__ placeholders, substituted at container start by
-# docker/runtime-env.sh (build-once: one image serves every environment).
-# Passing real values via --build-arg (legacy pipelines) still bakes them as before.
+# Application statique : `nuxt generate` lit ces valeurs pendant le build et les écrit
+# dans les pages produites. Par défaut on y écrit des MARQUEURS `__NUXT_PUBLIC_X__`, que
+# docker/runtime-env.sh remplace au démarrage du conteneur par les variables du
+# déploiement : une seule image sert ainsi tous les environnements (build-once).
+# Passer une vraie valeur en --build-arg (pipelines GitHub/Fabrique) reste possible :
+# elle est alors figée dans l'image comme avant, et rien n'est remplacé au démarrage.
 ARG NUXT_PUBLIC_APP_VERSION=development
 ARG NUXT_PUBLIC_BACKEND_URL=__NUXT_PUBLIC_BACKEND_URL__
 ARG NUXT_PUBLIC_ENVIRONMENT=__NUXT_PUBLIC_ENVIRONMENT__
@@ -71,8 +73,8 @@ RUN --mount=type=secret,id=sentry_auth_token \
 FROM ghcr.io/socialgouv/docker/nginx4spa:8.2.4
 
 COPY --from=builder --chown=101:101 /app/packages/frontend-bo/.output/public /usr/share/nginx/html
-# Substitute __NUXT_PUBLIC_X__ sentinels with container env values, then start nginx.
-# (nginx4spa's own entrypoint does not run /docker-entrypoint.d, hence the wrapper.)
+# Remplace les marqueurs __NUXT_PUBLIC_X__ par les variables du déploiement, puis lance
+# nginx. Wrapper nécessaire : l'entrypoint de nginx4spa n'exécute pas /docker-entrypoint.d.
 COPY --chmod=755 docker/runtime-env.sh /runtime-env.sh
 ENTRYPOINT ["/runtime-env.sh"]
 CMD ["nginx", "-g", "daemon off;"]
