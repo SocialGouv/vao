@@ -180,7 +180,10 @@ const representantSchema = yup.object({
     yup.string().required("Le nom est requis. Exemple: Dupont"),
   ),
   fonction: requiredUnlessBrouillon(
-    yup.string().required("La fonction est requise. Exemple: Président"),
+    yup
+      .string()
+      .matches(/^[^\d]*$/, "La fonction ne doit pas contenir de chiffres")
+      .required("La fonction est requise. Exemple: Président"),
   ),
 });
 

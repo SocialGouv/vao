@@ -1,12 +1,9 @@
 <template>
-  <fieldset class="fr-mt-8v no-border">
-    <legend>
-      <h3 class="fr-text--lead">
-        <span class="fr-icon-bank-card-fill" aria-hidden="true"></span>
-        Bilan financier sur les 4 dernières années
-      </h3>
-    </legend>
-
+  <h3 id="bilan-financier-dernieres-annee" class="fr-text--lead">
+    <span class="fr-icon-bank-card-fill" aria-hidden="true"></span>
+    Bilan financier sur les 4 dernières années
+  </h3>
+  <fieldset class="no-border" aria-labelledby="bilan-financier-dernieres-annee">
     <div class="fr-mt-8v">
       <div class="fr-fieldset__element">
         <div class="fr-col-12">

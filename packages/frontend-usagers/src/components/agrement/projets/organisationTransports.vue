@@ -1,12 +1,9 @@
 <template>
-  <fieldset class="no-border">
-    <legend>
-      <h3 class="fr-text--lead">
-        <span class="fr-icon-bus-fill" aria-hidden="true"></span>
-        Organisation des transports prévus
-      </h3>
-    </legend>
-
+  <h3 id="organisation-transports" class="fr-text--lead">
+    <span class="fr-icon-bus-fill" aria-hidden="true"></span>
+    Organisation des transports prévus
+  </h3>
+  <fieldset class="no-border" aria-labelledby="organisation-transports">
     <div class="fr-col-12">
       <DsfrInputGroup
         v-if="props.modifiable"

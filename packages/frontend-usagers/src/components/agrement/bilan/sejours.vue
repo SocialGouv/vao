@@ -1,11 +1,9 @@
 <template>
-  <fieldset class="fr-mt-8v no-border">
-    <legend>
-      <h3 class="fr-text--lead">
-        <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
-        Séjours (par années)
-      </h3>
-    </legend>
+  <h3 id="sejours-par-annee" class="fr-text--lead">
+    <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
+    Séjours (par années)
+  </h3>
+  <fieldset class="no-border" aria-labelledby="sejours-par-annees">
     <p class="light-decisions-text-text-default-info fr-text--xs">
       <span class="fr-icon-info-fill" aria-hidden="true"></span>
       Ces informations ont été automatiquement remplies à partir de vos

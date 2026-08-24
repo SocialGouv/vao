@@ -1,11 +1,9 @@
 <template>
-  <fieldset class="no-border">
-    <legend>
-      <h3 class="fr-text--lead">
-        <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
-        Changement ou évolution
-      </h3>
-    </legend>
+  <h3 id="changement-evolution-title" class="fr-text--lead">
+    <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
+    Changement ou évolution
+  </h3>
+  <fieldset class="no-border" aria-labelledby="changement-evolution-title">
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup

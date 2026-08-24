@@ -1,12 +1,9 @@
 <template>
-  <fieldset class="no-border">
-    <legend>
-      <h3 class="fr-text--lead">
-        <span class="fr-icon-award-fill" aria-hidden="true"></span>
-        Motivations
-      </h3>
-    </legend>
-
+  <h3 id="motivations" class="fr-text--lead">
+    <span class="fr-icon-award-fill" aria-hidden="true"></span>
+    Motivations
+  </h3>
+  <fieldset class="no-border" aria-labelledby="motivations">
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup
@@ -40,13 +37,11 @@
       />
     </div>
   </fieldset>
-  <fieldset class="fr-mt-8v no-border">
-    <legend>
-      <h3 class="fr-text--lead">
-        <span class="fr-icon-briefcase-fill" aria-hidden="true"></span>
-        Immatriculation
-      </h3>
-    </legend>
+  <h3 id="immatriculations" class="fr-text--lead">
+    <span class="fr-icon-briefcase-fill" aria-hidden="true"></span>
+    Immatriculation
+  </h3>
+  <fieldset class="no-border" aria-labelledby="immatriculations">
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <FileUpload
@@ -104,13 +99,11 @@
     </div>
   </fieldset>
 
-  <fieldset class="fr-mt-8v no-border">
-    <legend>
-      <h3 class="fr-text--lead">
-        <span class="fr-icon-file-text-fill" aria-hidden="true"></span>
-        Attestations
-      </h3>
-    </legend>
+  <h3 id="attestations" class="fr-text--lead">
+    <span class="fr-icon-file-text-fill" aria-hidden="true"></span>
+    Attestations
+  </h3>
+  <fieldset class="no-border" aria-labelledby="attestations">
     <div class="fr-fieldset__element">
       <FileUpload
         :model-value="fileAttestationsRespCivile"
