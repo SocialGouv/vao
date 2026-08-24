@@ -1,8 +1,10 @@
 <template>
   <fieldset class="no-border">
-    <legend class="fr-fieldset__legend fr-text--lead">
-      <span class="fr-icon-check-line" aria-hidden="true"></span>
-      Casier judiciaire
+    <legend>
+      <h3 class="fr-text--lead">
+        <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
+        Casier judiciaire
+      </h3>
     </legend>
 
     <DsfrCheckbox

@@ -1,8 +1,10 @@
 <template>
   <fieldset class="fr-mt-8v no-border">
-    <legend class="fr-fieldset__legend fr-text--lead">
-      <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
-      Séjours (par années)
+    <legend>
+      <h3 class="fr-text--lead">
+        <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
+        Séjours (par années)
+      </h3>
     </legend>
     <p class="light-decisions-text-text-default-info fr-text--xs">
       <span class="fr-icon-info-fill" aria-hidden="true"></span>

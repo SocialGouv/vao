@@ -1,10 +1,11 @@
 <template>
   <fieldset class="no-border fr-py-0v">
-    <legend class="fr-fieldset__legend fr-text--lead">
-      <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
-      Animation et activités prévues
+    <legend>
+      <h3 class="fr-text--lead">
+        <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
+        Animation et activités prévues
+      </h3>
     </legend>
-
     <div class="flex flex-col">
       <div>
         <DsfrMultiselect
