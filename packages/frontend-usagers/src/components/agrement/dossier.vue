@@ -2,7 +2,7 @@
   <fieldset class="no-border">
     <legend>
       <h3 class="fr-text--lead">
-        <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
+        <span class="fr-icon-award-fill" aria-hidden="true"></span>
         Motivations
       </h3>
     </legend>
@@ -43,7 +43,7 @@
   <fieldset class="fr-mt-8v no-border">
     <legend>
       <h3 class="fr-text--lead">
-        <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
+        <span class="fr-icon-briefcase-fill" aria-hidden="true"></span>
         Immatriculation
       </h3>
     </legend>
@@ -107,7 +107,7 @@
   <fieldset class="fr-mt-8v no-border">
     <legend>
       <h3 class="fr-text--lead">
-        <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
+        <span class="fr-icon-file-text-fill" aria-hidden="true"></span>
         Attestations
       </h3>
     </legend>

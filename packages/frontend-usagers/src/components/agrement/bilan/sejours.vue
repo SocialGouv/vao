@@ -2,7 +2,7 @@
   <fieldset class="fr-mt-8v no-border">
     <legend>
       <h3 class="fr-text--lead">
-        <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
+        <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
         Séjours (par années)
       </h3>
     </legend>

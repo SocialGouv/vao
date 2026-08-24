@@ -2,7 +2,7 @@
   <fieldset class="no-border">
     <legend>
       <h3 class="fr-text--lead">
-        <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
+        <span class="fr-icon-bus-fill" aria-hidden="true"></span>
         Organisation des transports prévus
       </h3>
     </legend>

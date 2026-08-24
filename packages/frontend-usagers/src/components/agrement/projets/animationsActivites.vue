@@ -2,7 +2,7 @@
   <fieldset class="no-border fr-py-0v">
     <legend>
       <h3 class="fr-text--lead">
-        <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
+        <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
         Animation et activités prévues
       </h3>
     </legend>

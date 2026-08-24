@@ -2,7 +2,7 @@
   <fieldset class="fr-mt-8v no-border">
     <legend>
       <h3 class="fr-text--lead">
-        <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
+        <span class="fr-icon-bank-card-fill" aria-hidden="true"></span>
         Bilan financier sur les 4 dernières années
       </h3>
     </legend>

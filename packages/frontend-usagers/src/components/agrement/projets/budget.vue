@@ -2,7 +2,7 @@
   <fieldset class="no-border">
     <legend>
       <h3 class="fr-text--lead">
-        <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
+        <span class="fr-icon-bank-card-fill" aria-hidden="true"></span>
         Budget des personnes prévu
       </h3>
     </legend>
