@@ -1,8 +1,12 @@
 <template>
   <fieldset class="no-border">
-    <legend class="fr-fieldset__legend fr-text--lead">
-      <span class="fr-icon-award-fill" aria-hidden="true"></span>Motivations
+    <legend>
+      <h3 class="fr-text--lead">
+        <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
+        Motivations
+      </h3>
     </legend>
+
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup
@@ -37,9 +41,11 @@
     </div>
   </fieldset>
   <fieldset class="fr-mt-8v no-border">
-    <legend class="fr-fieldset__legend fr-text--lead">
-      <span class="fr-icon-briefcase-fill" aria-hidden="true"></span
-      >Immatriculation
+    <legend>
+      <h3 class="fr-text--lead">
+        <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
+        Immatriculation
+      </h3>
     </legend>
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
@@ -99,9 +105,11 @@
   </fieldset>
 
   <fieldset class="fr-mt-8v no-border">
-    <legend class="fr-fieldset__legend fr-text--lead">
-      <span class="fr-icon-file-text-fill" aria-hidden="true"></span
-      >Attestations
+    <legend>
+      <h3 class="fr-text--lead">
+        <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
+        Attestations
+      </h3>
     </legend>
     <div class="fr-fieldset__element">
       <FileUpload
