@@ -123,9 +123,15 @@ export const useAgrementStore = defineStore("agrement", {
         }
       } else {
         try {
-          const { agrement } = await AgrementService.get(
-            organismeCourant?.agrement?.id as number,
-          );
+          const agrementId = organismeCourant.agrement?.id;
+          if (!agrementId) {
+            log.w("getCurrent - secondary organisme has no agrement id", {
+              organismeCourant,
+            });
+            this.agrementCourant = null;
+            return;
+          }
+          const { agrement } = await AgrementService.get(agrementId);
           if (agrement) {
             this.agrementCourant = agrement;
           }
