@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import type {
   AgrementDto,
   ActiviteDto,
+  OrganismeDto,
   AgrementHistoryItem,
   AgrementMessage,
   AGREMENT_TYPE_DEPOT,
@@ -94,28 +95,44 @@ export const useAgrementStore = defineStore("agrement", {
   },
 
   actions: {
-    async getCurrent(): Promise<void> {
+    async getCurrent(organismeCourant: OrganismeDto): Promise<void> {
       log.i("getCurrent - IN");
-
-      try {
-        const { agrements } = await AgrementService.getListAgrements({
-          statut: AGREMENT_STATUT.VALIDE,
-        });
-        const filtered = agrements.filter(
-          (agrement) => agrement.supprime === false,
-        );
-        if (!filtered || filtered.length === 0) {
-          this.agrementCourant = null;
-        } else {
-          const { agrement: agrementDetail } = await AgrementService.get(
-            filtered[0].id!,
+      if (
+        organismeCourant?.typeOrganisme === "personne_physique" ||
+        organismeCourant?.personneMorale?.porteurAgrement === true
+      ) {
+        try {
+          const { agrements } = await AgrementService.getListAgrements({
+            statut: AGREMENT_STATUT.VALIDE,
+          });
+          const filtered = agrements.filter(
+            (agrement) => agrement.supprime === false,
           );
+          if (!filtered || filtered.length === 0) {
+            this.agrementCourant = null;
+          } else {
+            const { agrement: agrementDetail } = await AgrementService.get(
+              filtered[0].id!,
+            );
 
-          this.agrementCourant = agrementDetail;
+            this.agrementCourant = agrementDetail;
+          }
+        } catch (err) {
+          log.w("getCurrent - DONE with error", err);
+          throw err;
         }
-      } catch (err) {
-        log.w("getCurrent - DONE with error", err);
-        throw err;
+      } else {
+        try {
+          const { agrement } = await AgrementService.get(
+            organismeCourant?.agrement?.id as number,
+          );
+          if (agrement) {
+            this.agrementCourant = agrement;
+          }
+        } catch (err: unknown) {
+          log.w("getCurrent - DONE with error", err);
+          throw err;
+        }
       }
     },
     async getEnRenouvellement(): Promise<void> {

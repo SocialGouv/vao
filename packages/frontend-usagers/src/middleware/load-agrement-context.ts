@@ -1,6 +1,7 @@
 import { defineNuxtRouteMiddleware, navigateTo } from "#app";
 import { logger } from "#imports";
 import { useAgrementStore } from "~/stores/agrement";
+import { useOrganismeStore } from "~/stores/organisme";
 
 const log = logger("middlewares/load-agrement-context");
 
@@ -8,10 +9,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
   log.i("IN");
 
   const agrementStore = useAgrementStore();
-
+  const organismeStore = useOrganismeStore();
   try {
     if (!agrementStore.agrementCourant) {
-      await agrementStore.getCurrent();
+      const organismeCourant = organismeStore.organismeCourant;
+      if (organismeCourant) {
+        await agrementStore.getCurrent(organismeCourant);
+      }
     }
 
     const { agrementId: agrementIdParam } = to.params;
