@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import type {
   AgrementDto,
   ActiviteDto,
+  OrganismeDto,
   AgrementHistoryItem,
   AgrementMessage,
   AGREMENT_TYPE_DEPOT,
@@ -94,26 +95,54 @@ export const useAgrementStore = defineStore("agrement", {
   },
 
   actions: {
-    async getCurrent(): Promise<void> {
+    async getCurrent(organismeCourant: OrganismeDto | null): Promise<void> {
       log.i("getCurrent - IN");
-
+      if (!organismeCourant) {
+        log.w("getCurrent - no organismeCourant provided");
+        this.agrementCourant = null;
+        return;
+      }
       try {
-        const { agrements } = await AgrementService.getListAgrements({
-          statut: AGREMENT_STATUT.VALIDE,
-        });
-        const filtered = agrements.filter(
-          (agrement) => agrement.supprime === false,
-        );
-        if (!filtered || filtered.length === 0) {
-          this.agrementCourant = null;
-        } else {
-          const { agrement: agrementDetail } = await AgrementService.get(
-            filtered[0].id!,
+        if (
+          organismeCourant.typeOrganisme === "personne_physique" ||
+          organismeCourant?.personneMorale?.porteurAgrement === true
+        ) {
+          const { agrements } = await AgrementService.getListAgrements({
+            statut: AGREMENT_STATUT.VALIDE,
+          });
+          const filtered = agrements.filter(
+            (agrement) => agrement.supprime === false,
           );
+          if (!filtered || filtered.length === 0) {
+            this.agrementCourant = null;
+          } else {
+            const { agrement: agrementDetail } = await AgrementService.get(
+              filtered[0].id!,
+            );
 
-          this.agrementCourant = agrementDetail;
+            this.agrementCourant = agrementDetail;
+          }
+        } else {
+          const agrementId = organismeCourant.agrement?.id;
+          if (!agrementId) {
+            log.w("getCurrent - secondary organisme has no agrement id", {
+              organismeCourant,
+            });
+            this.agrementCourant = null;
+            return;
+          }
+          const { agrement } = await AgrementService.get(Number(agrementId));
+          if (agrement) {
+            this.agrementCourant = agrement;
+          } else {
+            log.w("getCurrent - agrement not found for secondary organisme", {
+              organismeCourant,
+            });
+            this.agrementCourant = null;
+          }
         }
       } catch (err) {
+        this.agrementCourant = null;
         log.w("getCurrent - DONE with error", err);
         throw err;
       }

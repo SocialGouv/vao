@@ -28,7 +28,7 @@ watchEffect(async () => {
     !agrementStore.agrementCourant
   ) {
     try {
-      await agrementStore.getCurrent();
+      await agrementStore.getCurrent(organismeStore.organismeCourant);
     } catch (e) {
       toaster.error({
         titleTag: "h2",
