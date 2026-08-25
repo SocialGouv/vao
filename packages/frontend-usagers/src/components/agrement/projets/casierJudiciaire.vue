@@ -1,7 +1,7 @@
 <template>
   <h3 id="casier-judiciaire" class="fr-text--lead">
     <span class="fr-icon-check-line" aria-hidden="true"></span>
-    Changement ou évolution
+    Casier judiciaire
   </h3>
   <fieldset class="no-border" aria-labelledby="casier-judiciaire">
     <DsfrCheckbox
