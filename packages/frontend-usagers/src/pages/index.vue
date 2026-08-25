@@ -6,6 +6,7 @@
     <AgrementAlertRenouvellement> </AgrementAlertRenouvellement>
     <div
       v-if="
+        organismeStore.organismeCourant?.complet &&
         agrementStore.agrementCourant &&
         !agrementStore.hasAgrementRenouvellementEnCours
       "
@@ -51,6 +52,7 @@
     </div>
     <div
       v-if="
+        organismeStore.organismeCourant?.complet &&
         agrementStore.agrementCourant &&
         agrementStore.agrementCourant.statut === AGREMENT_STATUT.VALIDE
       "
@@ -175,8 +177,9 @@ const tiles = computed<Tile[]>(() => [
               AGREMENT_STATUT.BROUILLON
               ? {
                   path:
+                    organismeStore.organismeCourant?.complet &&
                     agrementStore.agrementCourant?.statut ===
-                    AGREMENT_STATUT.VALIDE
+                      AGREMENT_STATUT.VALIDE
                       ? `/agrement/${agrementStore.agrementEnTraitement?.id}`
                       : "/agrement/new",
                   hash: "#agrement-coordonnees",
@@ -190,7 +193,8 @@ const tiles = computed<Tile[]>(() => [
       ]
     : []),
 
-  ...(agrementStore.agrementCourant?.statut === AGREMENT_STATUT.VALIDE
+  ...(organismeStore.organismeCourant?.complet &&
+  agrementStore.agrementCourant?.statut === AGREMENT_STATUT.VALIDE
     ? [
         {
           title: "Hébergements",

@@ -55,7 +55,8 @@ export const useMenuNavItems = () => {
             : []),
         ],
       },
-      ...(agrementStore.agrementCourant?.statut === AGREMENT_STATUT.VALIDE
+      ...(organismeStore.organismeCourant?.complet &&
+      agrementStore.agrementCourant?.statut === AGREMENT_STATUT.VALIDE
         ? [
             {
               title: "Déclaration de séjour",
