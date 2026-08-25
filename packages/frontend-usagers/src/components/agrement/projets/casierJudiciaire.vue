@@ -1,10 +1,9 @@
 <template>
-  <fieldset class="no-border">
-    <legend class="fr-fieldset__legend fr-text--lead">
-      <span class="fr-icon-check-line" aria-hidden="true"></span>
-      Casier judiciaire
-    </legend>
-
+  <h3 id="casier-judiciaire" class="fr-text--lead">
+    <span class="fr-icon-check-line" aria-hidden="true"></span>
+    Casier judiciaire
+  </h3>
+  <fieldset class="no-border" aria-labelledby="casier-judiciaire">
     <DsfrCheckbox
       v-model="accompRespAttestHono"
       name="accompRespAttestHono"
