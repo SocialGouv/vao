@@ -104,7 +104,7 @@ export const useAgrementStore = defineStore("agrement", {
       }
       try {
         if (
-          organismeCourant?.typeOrganisme === "personne_physique" ||
+          organismeCourant.typeOrganisme === "personne_physique" ||
           organismeCourant?.personneMorale?.porteurAgrement === true
         ) {
           const { agrements } = await AgrementService.getListAgrements({
@@ -134,6 +134,11 @@ export const useAgrementStore = defineStore("agrement", {
           const { agrement } = await AgrementService.get(Number(agrementId));
           if (agrement) {
             this.agrementCourant = agrement;
+          } else {
+            log.w("getCurrent - agrement not found for secondary organisme", {
+              organismeCourant,
+            });
+            this.agrementCourant = null;
           }
         }
       } catch (err) {
