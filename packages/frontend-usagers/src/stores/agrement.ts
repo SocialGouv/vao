@@ -95,13 +95,18 @@ export const useAgrementStore = defineStore("agrement", {
   },
 
   actions: {
-    async getCurrent(organismeCourant: OrganismeDto): Promise<void> {
+    async getCurrent(organismeCourant: OrganismeDto | null): Promise<void> {
       log.i("getCurrent - IN");
-      if (
-        organismeCourant?.typeOrganisme === "personne_physique" ||
-        organismeCourant?.personneMorale?.porteurAgrement === true
-      ) {
-        try {
+      if (!organismeCourant) {
+        log.w("getCurrent - no organismeCourant provided");
+        this.agrementCourant = null;
+        return;
+      }
+      try {
+        if (
+          organismeCourant?.typeOrganisme === "personne_physique" ||
+          organismeCourant?.personneMorale?.porteurAgrement === true
+        ) {
           const { agrements } = await AgrementService.getListAgrements({
             statut: AGREMENT_STATUT.VALIDE,
           });
@@ -117,12 +122,7 @@ export const useAgrementStore = defineStore("agrement", {
 
             this.agrementCourant = agrementDetail;
           }
-        } catch (err) {
-          log.w("getCurrent - DONE with error", err);
-          throw err;
-        }
-      } else {
-        try {
+        } else {
           const agrementId = organismeCourant.agrement?.id;
           if (!agrementId) {
             log.w("getCurrent - secondary organisme has no agrement id", {
@@ -131,14 +131,15 @@ export const useAgrementStore = defineStore("agrement", {
             this.agrementCourant = null;
             return;
           }
-          const { agrement } = await AgrementService.get(agrementId);
+          const { agrement } = await AgrementService.get(Number(agrementId));
           if (agrement) {
             this.agrementCourant = agrement;
           }
-        } catch (err: unknown) {
-          log.w("getCurrent - DONE with error", err);
-          throw err;
         }
+      } catch (err) {
+        this.agrementCourant = null;
+        log.w("getCurrent - DONE with error", err);
+        throw err;
       }
     },
     async getEnRenouvellement(): Promise<void> {
