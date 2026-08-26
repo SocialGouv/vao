@@ -43,13 +43,18 @@ import type { AgrementDto } from "@vao/shared-bridge";
 import { formatFR, FeatureFlagName, AGREMENT_STATUT } from "@vao/shared-bridge";
 const agrementStore = useAgrementStore();
 const userStore = useUserStore();
+const organismeStore = useOrganismeStore();
 
 onMounted(async () => {
-  await agrementStore.getEnRenouvellement();
+  if (!organismeStore.organismeCourant) {
+    await organismeStore.setMyOrganisme();
+  }
+  await agrementStore.getEnRenouvellement(organismeStore.organismeCourant);
 });
 
 const displayRenouvellement = computed(
   () =>
+    organismeStore.isPorteurAgrement &&
     (agrementStore.isExpiryMedium || agrementStore.isExpirySoon) &&
     agrementStore.agrementEnTraitement &&
     [AGREMENT_STATUT.BROUILLON, AGREMENT_STATUT.VALIDE].includes(
@@ -58,7 +63,8 @@ const displayRenouvellement = computed(
 );
 
 const onClickRenouvellement = async () => {
-  await agrementStore.getEnRenouvellement();
+  await agrementStore.getEnRenouvellement(organismeStore.organismeCourant);
+
   if (
     agrementStore.agrementEnTraitement?.statut === AGREMENT_STATUT.BROUILLON
   ) {

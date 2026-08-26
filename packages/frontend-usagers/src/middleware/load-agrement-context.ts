@@ -1,6 +1,7 @@
 import { defineNuxtRouteMiddleware, navigateTo } from "#app";
 import { logger } from "#imports";
 import { useAgrementStore } from "~/stores/agrement";
+import { useOrganismeStore } from "~/stores/organisme";
 
 const log = logger("middlewares/load-agrement-context");
 
@@ -8,8 +9,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
   log.i("IN");
 
   const agrementStore = useAgrementStore();
+  const organismeStore = useOrganismeStore();
 
   try {
+    if (!organismeStore.organismeCourant) {
+      await organismeStore.setMyOrganisme();
+    }
+
     if (!agrementStore.agrementCourant) {
       await agrementStore.getCurrent();
     }
@@ -34,8 +40,16 @@ export default defineNuxtRouteMiddleware(async (to) => {
       return;
     }
 
+    if (!organismeStore.isPorteurAgrement) {
+      log.w(
+        "Organisme non porteur de l'agrement, renouvellement non autorisé, redirect home",
+        { organismeId: organismeStore.organismeCourant?.id },
+      );
+      return navigateTo("/");
+    }
+
     if (!agrementStore.agrementEnTraitement) {
-      await agrementStore.getEnRenouvellement();
+      await agrementStore.getEnRenouvellement(organismeStore.organismeCourant);
     }
 
     log.i("DONE without route agrementId");

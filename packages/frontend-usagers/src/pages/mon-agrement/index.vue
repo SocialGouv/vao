@@ -150,9 +150,12 @@ definePageMeta({
 
 onMounted(async () => {
   log.i("Mounted");
+  if (!organismeStore.organismeCourant) {
+    await organismeStore.setMyOrganisme();
+  }
   await territoireStore.fetchFicheByAgrementRegionUser();
   if (!agrementStore.agrementEnTraitement) {
-    await agrementStore.getEnRenouvellement();
+    await agrementStore.getEnRenouvellement(organismeStore.organismeCourant);
   }
   const agrementId = agrementStore.agrementEnTraitement?.id;
   if (!agrementId) {

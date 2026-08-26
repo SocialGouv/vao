@@ -5,6 +5,7 @@ import type {
   AgrementHistoryItem,
   AgrementMessage,
   AGREMENT_TYPE_DEPOT,
+  OrganismeDto,
 } from "@vao/shared-bridge";
 import {
   AGREMENT_STATUT,
@@ -118,8 +119,27 @@ export const useAgrementStore = defineStore("agrement", {
         throw err;
       }
     },
-    async getEnRenouvellement(): Promise<void> {
+    async getEnRenouvellement(
+      organismeCourant: OrganismeDto | null,
+    ): Promise<void> {
       log.i("getEnRenouvellement - IN");
+      if (
+        !organismeCourant ||
+        !(
+          organismeCourant.typeOrganisme === "personne_physique" ||
+          organismeCourant.personneMorale?.porteurAgrement === true
+        )
+      ) {
+        log.w(
+          "getEnRenouvellement - organisme non porteur de l'agrement, renouvellement non autorisé",
+          {
+            organismeId: organismeCourant?.id,
+          },
+        );
+        this.agrementEnTraitement = null;
+        return;
+      }
+
       try {
         const { agrements }: { agrements: AgrementDto[] | [] } =
           await AgrementService.getListAgrements({});
