@@ -403,6 +403,8 @@ fileignoreconfig:
   checksum: ce0b678503f6342414ed759fa31ac460060d1efd1daadffb3d7be0bfa049858c
 - filename: packages/migrations/src/migrations/20241210150854_create_api_keys_table.js
   checksum: 2fdccc406cc543d7ddbf91331b524ab24d9f170466ea2fd4555a43d2dfb2f5d6
+- filename: packages/migrations/src/migrations/20260927113215_add_site_unite_hebergement.js
+  checksum: 0494c6b29f243694722affe35c6d828c39a214366209219eef6498e36bdb73ad
 - filename: packages/migrations/src/scripts/migrate-files-to-s3.js
   checksum: 0c60a5a9f3321ab3c36025bdeb35663395586d5bca3d21984fdbe5997b46c6eb
 - filename: packages/migrations/src/scripts/reset-s3.js
