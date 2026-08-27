@@ -125,6 +125,13 @@ export const useAgrementStore = defineStore("agrement", {
       organismeCourant: OrganismeDto | null,
     ): Promise<void> {
       log.i("getEnRenouvellement - IN");
+      if (!organismeCourant) {
+        log.w(
+          "getEnRenouvellement - organismeCourant non renseigné, impossible de déterminer la compétence de renouvellement",
+        );
+        this.agrementEnTraitement = null;
+        return;
+      }
       if (!isOrganismePorteurAgrement(organismeCourant)) {
         log.w(
           "getEnRenouvellement - organisme non porteur de l'agrement, renouvellement non autorisé",
