@@ -199,15 +199,6 @@ const tiles = computed<Tile[]>(() => [
     : []),
 ]);
 
-const onClickRenouvellement = async () => {
-  await agrementStore.getEnRenouvellement();
-  if (agrementStore.agrementEnTraitement) {
-    return navigateTo(`/agrement/${agrementStore.agrementEnTraitement.id}`);
-  } else {
-    return navigateTo("/agrement/");
-  }
-};
-
 onMounted(() => {
   document.querySelector("header")?.focus();
 });

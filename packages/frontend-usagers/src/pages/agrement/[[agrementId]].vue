@@ -183,7 +183,6 @@ async function saveAndTransmitAgrement() {
           : AGREMENT_STATUT.TRANSMIS,
     });
     if (success) {
-      await agrementStore.getEnRenouvellement();
       navigateTo(`/demande-agrement-transmise?step=${stepDemandeTransmise}`);
     } else {
       toaster.error({
@@ -301,9 +300,12 @@ async function updateOrCreate(formValues: AgrementFormValues) {
       organismeId,
       typeDepot,
     });
+    if (!organismeStore.organismeCourant) {
+      await organismeStore.setMyOrganisme();
+    }
     // On recharge l'agrément en cours pour récupérer les données mises à jour (notamment la région d'obtention)
     // Idéalement, il faudrait que le backend renvoie l'agrément mis à jour directement dans la réponse de postAgrement, mais pour l'instant on fait un getEnRenouvellement pour récupérer les données mises à jour.
-    await agrementStore.getEnRenouvellement();
+    await agrementStore.getEnRenouvellement(organismeStore.organismeCourant);
 
     toaster.success({
       titleTag: "h2",
