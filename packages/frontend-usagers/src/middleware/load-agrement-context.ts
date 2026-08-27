@@ -17,6 +17,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     }
 
     if (!agrementStore.agrementCourant) {
+      // getCurrent nécessite désormais organismeCourant en paramètre
       await agrementStore.getCurrent();
     }
 
@@ -40,7 +41,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
       return;
     }
 
-    if (!organismeStore.isPorteurAgrement) {
+    // le check "porteur" ne s'applique qu'au RENOUVELLEMENT
+    // (un agrément courant existe déjà). Il ne doit pas bloquer le premier agrément.
+    const isRenouvellementFlow = Boolean(agrementStore.agrementCourant?.id);
+
+    if (isRenouvellementFlow && !organismeStore.isPorteurAgrement) {
       log.w(
         "Organisme non porteur de l'agrement, renouvellement non autorisé, redirect home",
         { organismeId: organismeStore.organismeCourant?.id },
