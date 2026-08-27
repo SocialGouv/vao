@@ -183,10 +183,6 @@ async function saveAndTransmitAgrement() {
           : AGREMENT_STATUT.TRANSMIS,
     });
     if (success) {
-      if (!organismeStore.organismeCourant) {
-        await organismeStore.setMyOrganisme();
-      }
-      await agrementStore.getEnRenouvellement(organismeStore.organismeCourant);
       navigateTo(`/demande-agrement-transmise?step=${stepDemandeTransmise}`);
     } else {
       toaster.error({

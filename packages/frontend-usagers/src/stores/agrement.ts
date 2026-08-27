@@ -14,6 +14,8 @@ import {
   isBetweenDates,
   addDays,
 } from "@vao/shared-bridge";
+import { isOrganismePorteurAgrement } from "../utils/isPorteurAgrement";
+
 import { AgrementService } from "~/services/agrementService";
 
 const log = logger("stores/agrement");
@@ -151,13 +153,7 @@ export const useAgrementStore = defineStore("agrement", {
       organismeCourant: OrganismeDto | null,
     ): Promise<void> {
       log.i("getEnRenouvellement - IN");
-      if (
-        !organismeCourant ||
-        !(
-          organismeCourant.typeOrganisme === "personne_physique" ||
-          organismeCourant.personneMorale?.porteurAgrement === true
-        )
-      ) {
+      if (!isOrganismePorteurAgrement(organismeCourant)) {
         log.w(
           "getEnRenouvellement - organisme non porteur de l'agrement, renouvellement non autorisé",
           {

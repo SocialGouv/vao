@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { $fetchBackend, logger } from "#imports";
 import type { OrganismeDto, UserDto } from "@vao/shared-bridge";
+import { isOrganismePorteurAgrement } from "../utils/isPorteurAgrement";
 
 interface OrganismeStoreState {
   organismes: OrganismeDto[];
@@ -22,8 +23,7 @@ export const useOrganismeStore = defineStore("organismes", {
       state.organismeCourant.typeOrganisme === "personne_morale" &&
       state.organismeCourant.personneMorale.siegeSocial,
     isPorteurAgrement: (state) =>
-      state.organismeCourant?.typeOrganisme === "personne_physique" ||
-      state.organismeCourant?.personneMorale?.porteurAgrement === true,
+      isOrganismePorteurAgrement(state.organismeCourant),
   },
   actions: {
     async fetchOrganismes() {
