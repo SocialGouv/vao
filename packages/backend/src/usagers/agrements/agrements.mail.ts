@@ -256,23 +256,18 @@ export const AgrementMailUsagers = {
 
     const isPremierAgrement = typeDepot === AGREMENT_TYPE_DEPOT.PREMIER;
 
-    const paragraphs = isPremierAgrement
-      ? [
-          "Bonjour,",
-          `Suite à l'instruction de votre première demande d'agrément, la DREETS ${regionDreets} vous informe que celle-ci a été refusée.`,
-          "Vous trouverez sur le portail VAO l’arrêté officiel de refus correspondant à cette décision.",
-          "Nous vous rappelons que, conformément à la réglementation en vigueur, cette décision est définitive et vous empêche de déclarer de nouveaux séjours adaptés. Cependant, cette décision ne vous empêche pas de vous connecter à votre compte sur le portail VAO.",
-          `Pour toute question ou précision concernant ce refus, merci d'utiliser la messagerie intégrée au portail VAO, accessible depuis <a href='${urlAgrement}'>votre page agrément</a>.`,
-          "Cordialement.",
-        ]
-      : [
-          "Bonjour,",
-          `La DREETS ${regionDreets} a terminé l'instruction de votre demande d'agrément.`,
-          "Après examen de votre dossier, votre demande d'agrément a été refusée.",
-          "Vous pouvez consulter le détail de cette décision depuis votre espace personnel sur le portail VAO :",
-          `<a href='${urlAgrement}'>Consulter le dossier directement dans mon espace personnel</a>`,
-          "Cordialement.",
-        ];
+    const introSentence = isPremierAgrement
+      ? `Suite à l'instruction de votre première demande d'agrément, la DREETS ${regionDreets} vous informe que celle-ci a été refusée.`
+      : `Suite à l'instruction de votre demande de renouvellement d'agrément, la DREETS ${regionDreets} vous informe que celle-ci a été refusée.`;
+
+    const paragraphs = [
+      "Bonjour,",
+      introSentence,
+      "Vous trouverez sur le portail VAO l'arrêté officiel de refus correspondant à cette décision.",
+      "Nous vous rappelons que, conformément à la réglementation en vigueur, cette décision est définitive et vous empêche de déclarer de nouveaux séjours adaptés. Cependant, cette décision ne vous empêche pas de vous connecter à votre compte sur le portail VAO.",
+      `Pour toute question ou précision concernant ce refus, merci d'utiliser la messagerie intégrée au portail VAO, accessible depuis <a href='${urlAgrement}'>votre page agrément</a>.`,
+      "Cordialement.",
+    ];
 
     const html = sendTemplate.getBody(
       "Portail VAO - Refus de votre agrément",
