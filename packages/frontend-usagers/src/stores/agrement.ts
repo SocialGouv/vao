@@ -2,10 +2,10 @@ import { defineStore } from "pinia";
 import type {
   AgrementDto,
   ActiviteDto,
-  OrganismeDto,
   AgrementHistoryItem,
   AgrementMessage,
   AGREMENT_TYPE_DEPOT,
+  OrganismeDto,
 } from "@vao/shared-bridge";
 import {
   AGREMENT_STATUT,
@@ -14,6 +14,8 @@ import {
   isBetweenDates,
   addDays,
 } from "@vao/shared-bridge";
+import { isOrganismePorteurAgrement } from "../utils/isPorteurAgrement";
+
 import { AgrementService } from "~/services/agrementService";
 
 const log = logger("stores/agrement");
@@ -147,8 +149,28 @@ export const useAgrementStore = defineStore("agrement", {
         throw err;
       }
     },
-    async getEnRenouvellement(): Promise<void> {
+    async getEnRenouvellement(
+      organismeCourant: OrganismeDto | null,
+    ): Promise<void> {
       log.i("getEnRenouvellement - IN");
+      if (!organismeCourant) {
+        log.w(
+          "getEnRenouvellement - organismeCourant non renseigné, impossible de déterminer la compétence de renouvellement",
+        );
+        this.agrementEnTraitement = null;
+        return;
+      }
+      if (!isOrganismePorteurAgrement(organismeCourant)) {
+        log.w(
+          "getEnRenouvellement - organisme non porteur de l'agrement, renouvellement non autorisé",
+          {
+            organismeId: organismeCourant?.id,
+          },
+        );
+        this.agrementEnTraitement = null;
+        return;
+      }
+
       try {
         const { agrements }: { agrements: AgrementDto[] | [] } =
           await AgrementService.getListAgrements({});
