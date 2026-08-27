@@ -11,6 +11,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const agrementStore = useAgrementStore();
   const organismeStore = useOrganismeStore();
   try {
+    if (!organismeStore.organismeCourant) {
+      await organismeStore.setMyOrganisme();
+    }
+
     if (!agrementStore.agrementCourant) {
       const organismeCourant = organismeStore.organismeCourant;
       if (organismeCourant) {
@@ -38,8 +42,16 @@ export default defineNuxtRouteMiddleware(async (to) => {
       return;
     }
 
+    if (!organismeStore.isPorteurAgrement) {
+      log.w(
+        "Organisme non porteur de l'agrement, renouvellement non autorisé, redirect home",
+        { organismeId: organismeStore.organismeCourant?.id },
+      );
+      return navigateTo("/");
+    }
+
     if (!agrementStore.agrementEnTraitement) {
-      await agrementStore.getEnRenouvellement();
+      await agrementStore.getEnRenouvellement(organismeStore.organismeCourant);
     }
 
     log.i("DONE without route agrementId");
