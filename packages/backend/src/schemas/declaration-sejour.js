@@ -2,7 +2,7 @@ const yup = require("yup");
 const dayjs = require("dayjs");
 
 const { logger } = require("../utils/logger");
-
+const Regions = require("../services/geo/Region");
 const hebergementUtils = require("./hebergement");
 const informationsVacanciersSchema = require("./parts/informations-vacanciers");
 const projetSejourSchema = require("./parts/projet-sejour");
@@ -11,6 +11,7 @@ const protocoleSanitaireSchema = require("./parts/protocoleSanitaire");
 const personne = require("./parts/personne.js");
 const prestataire = require("./parts/prestataire.js");
 const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
+const Organisme = require("../schemas/organisme");
 
 const log = logger(module.filename);
 
@@ -249,7 +250,8 @@ const hebergementSchema = (dateDebut, dateFin) => ({
   sejourItinerant: yup.boolean().required(),
 });
 
-const schema = (dateDebut, dateFin, statut) => {
+const schema = async (dateDebut, dateFin, statut) => {
+  const regions = await Regions.fetch();
   return {
     ...baseSchema,
     attestation: yup.object(attestationSchema),
@@ -258,6 +260,7 @@ const schema = (dateDebut, dateFin, statut) => {
     informationsSanitaires: yup.object(protocoleSanitaireSchema()),
     informationsTransport: yup.object(protocoleTransportSchema()),
     informationsVacanciers: yup.object(informationsVacanciersSchema()),
+    organisme: yup.object(Organisme.schema(regions)),
     projetSejour: yup.object(projetSejourSchema()),
   };
 };

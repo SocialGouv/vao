@@ -34,7 +34,7 @@ const expectedStates = [
 module.exports = async function post(req, res, next) {
   const { declarationId } = req.params;
   const { id: userId } = req.decoded;
-  const { attestation } = req.body;
+  const { attestation, organisme } = req.body;
   log.i("IN", { declarationId });
 
   try {
@@ -84,11 +84,14 @@ module.exports = async function post(req, res, next) {
   try {
     log.i("finalize - before validation", { declaration });
     declaration = await yup
-      .object(DeclarationSejourSchema(dateDebut, dateFin, statut))
-      .validate(declaration, {
-        abortEarly: false,
-        stripUnknown: true,
-      });
+      .object(await DeclarationSejourSchema(dateDebut, dateFin, statut))
+      .validate(
+        { ...declaration, organisme },
+        {
+          abortEarly: false,
+          stripUnknown: true,
+        },
+      );
 
     log.i("finalize - after validation", { declaration });
     log.d(declaration.informationsPersonnel);
@@ -128,7 +131,10 @@ module.exports = async function post(req, res, next) {
   ) {
     log.d("Déclaration à 8 jours");
     try {
-      await DemandeSejour.finalize8jours(declarationId, declaration);
+      await DemandeSejour.finalize8jours(declarationId, {
+        ...declaration,
+        organisme,
+      });
     } catch (error) {
       log.w(error);
       if (config.sentry.enabled) {
@@ -254,7 +260,10 @@ module.exports = async function post(req, res, next) {
         declarationId,
         departementSuivi,
         idFonctionnelle,
-        declaration,
+        {
+          ...declaration,
+          organisme,
+        },
       );
     } catch (error) {
       log.w(error);
