@@ -1,5 +1,8 @@
 <template>
   <div>
+    <p v-if="props.showRequiredFieldsMessage" class="fr-hint-text">
+      Tous les champs sont obligatoires.
+    </p>
     <label class="fr-label"> {{ description }} </label>
     <div v-if="props.haveCommentaire" class="fr-fieldset">
       <div class="fr-fieldset__element">
@@ -67,7 +70,6 @@
           id="ValidationDemandeComplement"
           primary
           :label="validButton"
-          :disabled="!enableValidationButton"
           @click.prevent="validateForm"
         >
         </DsfrButton>
@@ -97,6 +99,7 @@ const props = defineProps<{
   haveRequiredFile: boolean;
   haveAgrementNumber?: boolean;
   validButton: string;
+  showRequiredFieldsMessage?: boolean;
 }>();
 
 const labelFileUpload = computed(() =>
@@ -120,14 +123,18 @@ const validationSchema = computed(() =>
     commentaire: props.haveCommentaire
       ? yup
           .string()
-          .min(20, "Il est impératif de fournir un commentaire")
-          .required("Il est impératif de fournir un commentaire")
+          .min(5, 'Le champ "Numéro d’agrément" est vide. Veuillez le remplir.')
+          .required(
+            'Le champ "Numéro d’agrément" est vide. Veuillez le remplir.',
+          )
       : yup.string().notRequired(),
     numeroAgrement: props.haveAgrementNumber
       ? yup
           .string()
-          .min(5, "Il est impératif de fournir le numéro d'agrément")
-          .required("Il est impératif de fournir le numéro d'agrément")
+          .min(5, 'Le champ "Numéro d’agrément" est vide. Veuillez le remplir.')
+          .required(
+            'Le champ "Numéro d’agrément" est vide. Veuillez le remplir.',
+          )
       : yup.string().notRequired(),
   }),
 );
