@@ -131,10 +131,7 @@ module.exports = async function post(req, res, next) {
   ) {
     log.d("Déclaration à 8 jours");
     try {
-      await DemandeSejour.finalize8jours(declarationId, {
-        ...declaration,
-        organisme,
-      });
+      await DemandeSejour.finalize8jours(declarationId, declaration);
     } catch (error) {
       log.w(error);
       if (config.sentry.enabled) {
