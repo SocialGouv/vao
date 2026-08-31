@@ -1,3 +1,17 @@
+/**
+ * Force target="_blank" + rel="noopener noreferrer" sur tous les liens <a>
+ * qui n'ont pas déjà d'attribut target explicite.
+ *
+ */
+function withSafeLinkTargets(html: string): string {
+  return html.replace(/<a\b([^>]*)>/gi, (match, attrs) => {
+    if (/\btarget\s*=/i.test(attrs)) {
+      return match;
+    }
+    return `<a${attrs} target="_blank" rel="noopener noreferrer">`;
+  });
+}
+
 export const getBody = (
   titre: string,
   content: any[],
@@ -248,5 +262,5 @@ export const getBody = (
     </body>
   </html>
   `;
-  return corpsMail;
+  return withSafeLinkTargets(corpsMail);
 };
