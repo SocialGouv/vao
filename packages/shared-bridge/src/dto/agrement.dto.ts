@@ -83,6 +83,7 @@ export interface AgrementFilesDto {
   category: FILE_CATEGORY;
   fileUuid: string | null;
   uuid?: string | null;
+  name?: string | null;
 }
 
 export interface AgrementSejoursDto {

@@ -1,4 +1,5 @@
 import { DEMANDE_SEJOUR_STATUTS } from "@vao/shared-bridge";
+import dayjs from "dayjs";
 
 import { getPool } from "../../utils/pgpool";
 
@@ -125,32 +126,76 @@ const buildPersonnel8j = () => ({
 });
 
 const buildAgrementDeposeFixture = () => ({
-  dateObtention: "2020-01-15",
+  dateObtention: dayjs().subtract(1, "year").format("YYYY-MM-DD"),
   file: { name: "arrete-agrement.pdf" },
   numero: "AGR-TEST-001",
   regionObtention: "IDF",
 });
 
+const buildOrganismeDeposeBase = () => ({
+  organismeId: 1,
+  protocoleSanitaire: {
+    accordCabinetMedical: false,
+    conservationMedicamentThermosensible: false,
+    constitutionEquipe: [],
+    dispositionsSpecifiques: false,
+    ficheSuiviMedicaments: false,
+    gestionBudgetPersonnel: "aucune_gestion",
+    individualisationMedicaments: false,
+    preparationPilluliers: "jamais",
+    prescriptionMedicaleJointe: false,
+    protocoleAccident: false,
+    protocoleCanicule: false,
+    protocoleEvacuation: false,
+    protocoleModificationTraitement: false,
+    protocoleReorientation: false,
+    responsableAdministrationMedicament: [],
+    stockageMedicamentSecurise: false,
+    troussePharmacie: false,
+  },
+  protocoleTransport: {
+    deplacementDurantSejour: false,
+    responsableTransportLieuSejour: ["hebergement"],
+    vehiculesAdaptes: false,
+  },
+});
+
+const buildResponsableSejourDepose = () => ({
+  adresse: { label: "1 rue de la Paix 75001 Paris" },
+  email: "responsable@organisme-test.fr",
+  fonction: "Responsable",
+  nom: "Martin",
+  prenom: "Claire",
+  telephone: "0102030405",
+});
+
 export const buildOrganismePersonneMoralePorteurForDepose = () => ({
+  ...buildOrganismeDeposeBase(),
   agrement: buildAgrementDeposeFixture(),
   personneMorale: {
     adresse: "10 rue de la Paix 75002 Paris",
     email: "contact@organisme-test.fr",
+    etablissements: [],
     nomCommercial: "Nom commercial test",
+    pays: "France",
     porteurAgrement: true,
     raisonSociale: "Organisme test dépôt",
     representantsLegaux: [
       { fonction: "Présidente", nom: "Martin", prenom: "Claire" },
     ],
+    responsableSejour: buildResponsableSejourDepose(),
+    siegeSocial: true,
     siren: "123456789",
     siret: "12345678901234",
     statut: "Association loi 1901",
     telephone: "0102030405",
   },
+  personnePhysique: {},
   typeOrganisme: "personne_morale",
 });
 
 export const buildOrganismeEtablissementSecondaireForDepose = () => ({
+  ...buildOrganismeDeposeBase(),
   agrement: buildAgrementDeposeFixture(),
   personneMorale: {
     adresse: "12 rue Secondaire 75003 Paris",
@@ -159,26 +204,34 @@ export const buildOrganismeEtablissementSecondaireForDepose = () => ({
       adresse: "10 rue de la Paix 75002 Paris",
       email: "siege@organisme-test.fr",
       nomCommercial: "Nom commercial siège",
+      pays: "France",
       raisonSociale: "Organisme siège agréé",
       siret: "98765432109876",
       telephone: "0102030406",
     },
+    etablissements: [],
     nomCommercial: "Nom commercial secondaire",
+    pays: "France",
     porteurAgrement: false,
     raisonSociale: "Établissement secondaire test",
     representantsLegaux: [
       { fonction: "Directrice", nom: "Bernard", prenom: "Anne" },
     ],
+    responsableSejour: buildResponsableSejourDepose(),
+    siegeSocial: false,
     siren: "123456789",
     siret: "12345678901234",
     statut: "Association loi 1901",
     telephone: "0102030405",
   },
+  personnePhysique: {},
   typeOrganisme: "personne_morale",
 });
 
 export const buildOrganismePersonnePhysiqueForDepose = () => ({
+  ...buildOrganismeDeposeBase(),
   agrement: buildAgrementDeposeFixture(),
+  personneMorale: {},
   personnePhysique: {
     adresseDomicile: { label: "5 avenue Domicile 75010 Paris" },
     adresseIdentique: true,
@@ -186,7 +239,7 @@ export const buildOrganismePersonnePhysiqueForDepose = () => ({
     nomNaissance: "Dupont",
     nomUsage: "Dupont",
     prenom: "Marie",
-    profession: "Directrice de centre",
+    profession: "Hébergement et restauration",
     siret: "12345678901234",
     telephone: "0102030405",
   },
