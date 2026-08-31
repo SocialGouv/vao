@@ -259,7 +259,7 @@ import {
   type ApiError,
 } from "@vao/shared-ui";
 import type { DemandeSejourCourante } from "~/stores/demande-sejour";
-import type { UploadedFile } from "@vao/shared-bridge";
+import { FILE_CATEGORY, type UploadedFile } from "@vao/shared-bridge";
 
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 
@@ -331,6 +331,7 @@ const demandeCourante = computed(
 );
 
 const organismeStore = useOrganismeStore();
+const agrementStore = useAgrementStore();
 
 const organismeEnCours = computed(() => {
   if (
@@ -338,10 +339,25 @@ const organismeEnCours = computed(() => {
     demandeSejourStore?.demandeCourante.statut ===
       DeclarationSejour.statuts.BROUILLON
   ) {
-    return organismeStore.organismeCourant as unknown as Record<
-      string,
-      unknown
-    >;
+    const file = agrementStore?.agrementCourant?.file
+      ? agrementStore?.agrementCourant?.file
+      : agrementStore?.agrementCourant?.agrementFiles?.find(
+          (f) => f.category === FILE_CATEGORY.ARRETE_AGREMENT,
+        );
+    return {
+      ...(organismeStore.organismeCourant as unknown as Record<
+        string,
+        unknown
+      >),
+      agrement: {
+        id: agrementStore?.agrementCourant?.id,
+        file,
+        numero: agrementStore?.agrementCourant?.numero,
+        dateObtention: agrementStore?.agrementCourant?.dateObtention,
+        dateFinValidite: agrementStore?.agrementCourant?.dateFinValidite,
+        regionObtention: agrementStore?.agrementCourant?.regionObtention,
+      },
+    };
   } else {
     return demandeSejourStore.demandeCourante.organisme as unknown as Record<
       string,
@@ -626,7 +642,7 @@ async function updateOrCreate(data: Record<string, unknown>, type: string) {
     `${sejourId.value ? "Sauvegarde" : "Création"} de la demande de séjour en cours`,
   );
   let counter = 0;
-
+  data.organisme = organismeEnCours.value;
   if (data.file) {
     log.d("updateOrCreate - look at data.file");
     const file = unref(data.file) as UploadedFile;
@@ -736,12 +752,14 @@ async function finalize(attestation: Record<string, unknown>) {
   setApiStatut("Transmission de la déclaration en cours");
   try {
     const url = `/sejour/depose/${sejourId.value}`;
+    const data = {
+      attestation,
+      organisme: organismeEnCours.value,
+    };
     const response = await $fetchBackend(url, {
       method: "POST",
       credentials: "include",
-      body: {
-        attestation,
-      },
+      body: data,
     });
     if (
       demandeCourante.value.statut === DeclarationSejour.statuts.VALIDEE_8J ||

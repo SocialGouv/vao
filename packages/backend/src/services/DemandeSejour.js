@@ -182,6 +182,7 @@ const query = {
     sanitaires,
     hebergement,
     attestation,
+    organisme,
   ) => [
     `
 UPDATE front.demande_sejour ds
@@ -196,6 +197,7 @@ SET
   sanitaires = $8,
   hebergement = $9,
   attestation = $10,
+  organisme = $11,
   edited_at = NOW()
 WHERE
   ds.id = $1
@@ -213,6 +215,7 @@ RETURNING
       sanitaires,
       hebergement,
       attestation,
+      organisme,
     ],
   ],
   finalize8jours: (
@@ -329,7 +332,13 @@ FROM front.demande_sejour ds
   JOIN front.organismes o ON o.id = ds.organisme_id
   LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
   LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = TRUE
-  LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
+  LEFT JOIN LATERAL (
+      SELECT a.*
+      FROM front.agrements a
+      WHERE a.organisme_id = ds.organisme_id
+      ORDER BY a.id DESC
+      LIMIT 1
+  ) a ON TRUE
   LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
       SELECT MAX(dsmax.id)
       FROM front.demande_sejour_message  dsmax
@@ -360,7 +369,13 @@ FROM front.demande_sejour ds
 JOIN front.organismes o ON o.id = ds.organisme_id
 LEFT JOIN front.personne_morale pm ON pm.organisme_id  = ds.organisme_id AND pm.current = true
 LEFT JOIN front.personne_physique pp ON pp.organisme_id  = ds.organisme_id AND pp.current = TRUE
-LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
+LEFT JOIN LATERAL (
+    SELECT a.*
+    FROM front.agrements a
+    WHERE a.organisme_id = ds.organisme_id
+    ORDER BY a.id DESC
+    LIMIT 1
+) a ON TRUE
 LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id
 WHERE
   ds.statut <> 'BROUILLON'
@@ -414,7 +429,13 @@ WHERE
       JOIN front.organismes o ON o.id = ds.organisme_id
       LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
       LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = TRUE
-      LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
+      LEFT JOIN LATERAL (
+          SELECT a.*
+          FROM front.agrements a
+          WHERE a.organisme_id = ds.organisme_id
+          ORDER BY a.id DESC
+          LIMIT 1
+      ) a ON TRUE
     where ds.id = $1`,
       [declarationId, departements],
     ];
@@ -1791,6 +1812,7 @@ module.exports.finalize = async (
     informationsSanitaires,
     hebergement,
     attestation,
+    organisme,
   },
 ) => {
   log.i("finalize - IN", {
@@ -1820,6 +1842,7 @@ module.exports.finalize = async (
       informationsSanitaires,
       hebergement,
       attestation,
+      organisme,
     ),
   );
   log.i("finalize - DONE");
