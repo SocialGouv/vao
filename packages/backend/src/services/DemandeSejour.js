@@ -224,7 +224,6 @@ RETURNING
     personnel,
     hebergement,
     attestation,
-    organisme,
   ) => [
     `
 UPDATE front.demande_sejour ds
@@ -234,14 +233,13 @@ SET
   personnel = $3,
   hebergement = $4,
   attestation = $5,
-  organisme = $6,
   edited_at = NOW()
 WHERE
   ds.id = $1
 RETURNING
   id as "declarationId"
 ;`,
-    [declarationId, vacanciers, personnel, hebergement, attestation, organisme],
+    [declarationId, vacanciers, personnel, hebergement, attestation],
   ],
   get: () =>
     `SELECT
@@ -1778,13 +1776,7 @@ module.exports.update = async (type, declarationId, parametre) => {
 
 module.exports.finalize8jours = async (
   declarationId,
-  {
-    informationsVacanciers,
-    informationsPersonnel,
-    hebergement,
-    attestation,
-    organisme,
-  },
+  { informationsVacanciers, informationsPersonnel, hebergement, attestation },
 ) => {
   log.i("finalize - IN", {
     declaration: {
@@ -1792,7 +1784,6 @@ module.exports.finalize8jours = async (
       hebergement,
       informationsPersonnel,
       informationsVacanciers,
-      organisme,
     },
     declarationId,
   });
@@ -1804,7 +1795,6 @@ module.exports.finalize8jours = async (
       informationsPersonnel,
       hebergement,
       attestation,
-      organisme,
     ),
   );
   log.i("finalize - DONE");
