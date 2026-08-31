@@ -67,8 +67,11 @@ async function completeOtpVerification(page: Page, email: string) {
 async function fillOtpCode(page: Page, otpCode: string) {
   expect(otpCode).toMatch(/^\d{6}$/);
 
+  await page.getByRole("textbox", { name: "Chiffre 1 sur" }).click();
   for (let index = 0; index < 6; index++) {
-    await page.locator(`#code-input-${index}`).fill(otpCode[index]);
+    await page
+      .getByRole("textbox", { name: `Chiffre ${index + 1} sur` })
+      .fill(otpCode[index]);
   }
 
   await page.getByRole("button", { name: "Valider" }).click();
@@ -99,7 +102,7 @@ async function getOtpCodeFromMaildev(
       const code = await otpLocator.first().textContent();
       expect(code).toMatch(/^\d{6}$/);
       otpCode = code!;
-    }).toPass({ timeout: 15000 });
+    }).toPass({ timeout: 30000 });
   } finally {
     await mailPage.close();
   }
@@ -130,14 +133,16 @@ async function expectVisibleWithAlertOnFailure(
 
 export async function loginBo(page: Page, email: string, password: string) {
   await page
-    .getByRole("textbox", { name: "Identifiant * Format attendu" })
+    .getByRole("textbox", { name: "Identifiant Format attendu :" })
     .click();
   await page
-    .getByRole("textbox", { name: "Identifiant * Format attendu" })
+    .getByRole("textbox", { name: "Identifiant Format attendu :" })
     .fill(email);
-  await page.getByRole("textbox", { name: "Mot de passe * Veuillez" }).click();
   await page
-    .getByRole("textbox", { name: "Mot de passe * Veuillez" })
+    .getByRole("textbox", { name: "Mot de passe Veuillez saisir" })
+    .click();
+  await page
+    .getByRole("textbox", { name: "Mot de passe Veuillez saisir" })
     .fill(password);
   await page.getByRole("button", { name: "Se connecter" }).click();
   await waitReadyPage(page);
@@ -157,14 +162,16 @@ export async function loginUsagers(
   expectCgu = false,
 ) {
   await page
-    .getByRole("textbox", { name: "Identifiant * Format attendu" })
+    .getByRole("textbox", { name: "Identifiant Format attendu :" })
     .click();
   await page
-    .getByRole("textbox", { name: "Identifiant * Format attendu" })
+    .getByRole("textbox", { name: "Identifiant Format attendu :" })
     .fill(email);
-  await page.getByRole("textbox", { name: "Mot de passe * Veuillez" }).click();
   await page
-    .getByRole("textbox", { name: "Mot de passe * Veuillez" })
+    .getByRole("textbox", { name: "Mot de passe Veuillez saisir" })
+    .click();
+  await page
+    .getByRole("textbox", { name: "Mot de passe Veuillez saisir" })
     .fill(password);
   await page.getByRole("button", { name: "Se connecter" }).click();
   await waitReadyPage(page);

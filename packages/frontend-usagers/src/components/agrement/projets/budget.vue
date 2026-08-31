@@ -1,9 +1,9 @@
 <template>
-  <fieldset class="no-border">
-    <legend class="fr-fieldset__legend fr-text--lead">
-      <span class="fr-icon-bank-card-fill" aria-hidden="true"></span>
-      Budget des personnes prévu
-    </legend>
+  <h3 id="budget-personnes" class="fr-text--lead">
+    <span class="fr-icon-bank-card-fill" aria-hidden="true"></span>
+    Budget des personnes prévu
+  </h3>
+  <fieldset class="no-border" aria-labelledby="budget-personnes">
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup

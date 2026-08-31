@@ -10,15 +10,16 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const agrementStore = useAgrementStore();
   const organismeStore = useOrganismeStore();
-
   try {
     if (!organismeStore.organismeCourant) {
       await organismeStore.setMyOrganisme();
     }
 
     if (!agrementStore.agrementCourant) {
-      // getCurrent nécessite désormais organismeCourant en paramètre
-      await agrementStore.getCurrent();
+      const organismeCourant = organismeStore.organismeCourant;
+      if (organismeCourant) {
+        await agrementStore.getCurrent(organismeCourant);
+      }
     }
 
     const { agrementId: agrementIdParam } = to.params;

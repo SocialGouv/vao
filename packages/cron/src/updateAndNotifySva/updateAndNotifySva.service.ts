@@ -22,10 +22,12 @@ import {
 const sendTaciteNotifications = async (
   svaToNotify: any,
   ficheTerritoire: any,
+  firstAgrement: boolean,
 ) => {
   MailSva.bo.sendNotificationSvaTacite({
     to: ficheTerritoire.service_mail,
     svaToNotify,
+    firstAgrement,
   });
 
   await addHistoric({
@@ -49,6 +51,7 @@ const sendTaciteNotifications = async (
     to: mailsOVA,
     territoire: ficheTerritoire,
     svaToNotify,
+    firstAgrement,
   });
 
   await addHistoric({
@@ -70,6 +73,7 @@ const handlePassedFinished = async (
   svaToNotify: any,
   ficheTerritoire: any,
   report: UpdateAndNotifySvaReport,
+  firstAgrement: boolean,
 ) => {
   const client = await pool.connect();
   let committed = false;
@@ -115,7 +119,7 @@ const handlePassedFinished = async (
       userType: UserTypes.Cron,
     });
 
-    await sendTaciteNotifications(svaToNotify, ficheTerritoire);
+    await sendTaciteNotifications(svaToNotify, ficheTerritoire, firstAgrement);
 
     report.miseAJourEffectuees += 1;
   } catch (error) {
@@ -140,6 +144,7 @@ const handleNotify = async (
   svaToNotify: any,
   ficheTerritoire: any,
   report: UpdateAndNotifySvaReport,
+  firstAgrement: boolean,
 ) => {
   await UpdateAndNotifySvaRepository.updateMailNotificationSva({
     id: svaToNotify.id,
@@ -149,6 +154,7 @@ const handleNotify = async (
     MailSva.bo.sendNotificationDelay21Days({
       to: ficheTerritoire.service_mail,
       svaToNotify,
+      firstAgrement,
     });
   } catch (emailErr) {
     await UpdateAndNotifySvaRepository.updateMailNotificationSvaRollback({
@@ -196,8 +202,18 @@ export const updateAndNotifySvaActions = async () => {
       terCode: svaToNotify.region_obtention,
     });
 
+    const agrements =
+      await UpdateAndNotifySvaRepository.selectAgrementsActifOrganisme({
+        id: svaToNotify.organisme_id,
+      });
+    const firstAgrement = agrements.length === 0;
     if (svaToNotify.to_passed_finished) {
-      await handlePassedFinished(svaToNotify, ficheTerritoire, report);
+      await handlePassedFinished(
+        svaToNotify,
+        ficheTerritoire,
+        report,
+        firstAgrement,
+      );
       continue;
     }
 
@@ -205,7 +221,7 @@ export const updateAndNotifySvaActions = async () => {
       continue;
     }
 
-    await handleNotify(svaToNotify, ficheTerritoire, report);
+    await handleNotify(svaToNotify, ficheTerritoire, report, firstAgrement);
   }
 
   await insertCron({

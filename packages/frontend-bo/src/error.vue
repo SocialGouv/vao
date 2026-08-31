@@ -11,11 +11,13 @@ const props = defineProps({
 const navItems = useMenuNavItems();
 const userStore = useUserStore();
 const config = useRuntimeConfig();
+const agrementStore = useAgrementStore();
 
 const { quickLinks, homeTo } = useLayoutHeader({
   logoutUrl: "/bo-authentication/disconnect",
   accountPath: "/comptes/mon-compte",
   userStore,
+  additionalStoresToReset: [agrementStore],
 });
 </script>
 

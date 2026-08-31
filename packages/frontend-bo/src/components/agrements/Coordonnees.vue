@@ -67,26 +67,25 @@
         <h4 class="fr-text--lg fr-mt-4w">Représentant légal</h4>
 
         <div
-          v-for="(rep, idx) in representants"
-          :key="Number(idx)"
+          v-for="(rep, index) in paginatedRepresentants"
+          :key="rep.id ?? index"
           class="fr-mb-4w"
-          :data-idx="Number(idx)"
         >
-          <template v-if="Number(idx) > 0">
+          <template v-if="offset + Number(index) >= 0">
             <h4 class="fr-text--md fr-mb-1w">
-              Représentant n°{{ Number(idx) + 1 }}
+              Représentant n°{{ offset + Number(index) + 1 }}
             </h4>
           </template>
           <dl class="fr-text--sm fr-pl-0">
-            <dt>Prénom:</dt>
+            <dt>Prénom :</dt>
             <dd>{{ rep.prenom || "-" }}</dd>
-            <dt>Nom:</dt>
+            <dt>Nom :</dt>
             <dd>{{ rep.nom || "-" }}</dd>
-            <dt>Téléphone:</dt>
+            <dt>Téléphone :</dt>
             <dd>{{ rep.telephoneRepresentant || "-" }}</dd>
-            <dt>Email:</dt>
+            <dt>Email :</dt>
             <dd>{{ rep.emailRepresentant || "-" }}</dd>
-            <dt>Adresse du domicile:</dt>
+            <dt>Adresse du domicile :</dt>
             <dd>
               {{
                 rep.adresseDomicile && rep.adresseDomicile.label
@@ -98,6 +97,11 @@
             </dd>
           </dl>
         </div>
+        <DsfrPaginationV2
+          v-model:offset="offset"
+          v-model:limit="limit"
+          :total="representants.length"
+        />
         <div class="separator fr-my-2w"></div>
         <h3 class="fr-text--lg fr-mt-4w">Procès verbal</h3>
         <FileUpload
@@ -122,6 +126,7 @@ import {
   TitleWithIcon,
   DisplayLabel,
   AgrementDisplayInput,
+  DsfrPaginationV2,
 } from "@vao/shared-ui";
 import {
   getFileByCategory,
@@ -129,12 +134,23 @@ import {
   ORGANISME_TYPE,
 } from "@vao/shared-bridge";
 
+import { computed, ref } from "vue";
+
 const props = defineProps({
   valid: { type: Boolean, default: true },
   initAgrement: { type: Object, required: true },
   initOrganisme: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
   cdnUrl: { type: String, required: true },
+});
+
+const offset = ref(0);
+const limit = ref(10);
+
+const paginatedRepresentants = computed(() => {
+  const start = offset.value;
+
+  return representants.value.slice(start, start + limit.value);
 });
 
 const isPersonneMorale = computed(

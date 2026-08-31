@@ -87,14 +87,19 @@
       </div>
       <div v-if="props.showButtons">
         <div class="fr-fieldset__element">
-          <UtilsNavigationButtons
-            :show-buttons="props.showButtons"
-            :is-downloading="props.isDownloading"
-            :message="props.message"
-            :disabled="!meta.valid"
-            @next="next"
-            @previous="emit('previous')"
-          />
+          <DsfrButtonGroup
+            :inline-layout-when="true"
+            :reverse="true"
+            class="fr-mt-2w"
+          >
+            <DsfrButton label="Annuler" secondary @click.prevent="cancel" />
+            <DsfrButton
+              label="Valider"
+              primary
+              :disabled="!meta.valid"
+              @click.prevent="save"
+            />
+          </DsfrButtonGroup>
         </div>
       </div>
     </form>
@@ -119,7 +124,7 @@ const props = defineProps({
   message: { type: String, required: false, default: null },
 });
 
-const emit = defineEmits(["previous", "next", "update"]);
+const emit = defineEmits(["update"]);
 
 const regionStore = useRegionStore();
 regionStore.fetch();
@@ -167,8 +172,11 @@ const {
 } = useField("regionObtention");
 
 const { value: file } = useField("file");
+async function cancel() {
+  navigateTo("/");
+}
 
-async function next() {
+async function save() {
   log.i("next - IN");
   if (file.value.type && file.value.type !== "application/pdf") {
     toaster.error({
@@ -177,10 +185,6 @@ async function next() {
       role: "alert",
     });
   } else {
-    if (!meta.value.dirty) {
-      return emit("next");
-    }
-
     emit(
       "update",
       {

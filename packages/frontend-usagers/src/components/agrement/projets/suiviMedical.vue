@@ -1,9 +1,9 @@
 <template>
-  <fieldset class="no-border">
-    <legend class="fr-fieldset__legend fr-text--lead">
-      <span class="fr-icon-capsule-fill" aria-hidden="true"></span>
-      Suivi médical prévu
-    </legend>
+  <h3 id="suivi-medical" class="fr-text--lead">
+    <span class="fr-icon-capsule-fill" aria-hidden="true"></span>
+    Suivi médical prévu
+  </h3>
+  <fieldset class="no-border" aria-labelledby="suivi-medical">
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup

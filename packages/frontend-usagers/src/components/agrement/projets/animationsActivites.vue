@@ -1,10 +1,9 @@
 <template>
-  <fieldset class="no-border fr-py-0v">
-    <legend class="fr-fieldset__legend fr-text--lead">
-      <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
-      Animation et activités prévues
-    </legend>
-
+  <h3 id="animation-activites" class="fr-text--lead">
+    <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
+    Animation et activités prévues
+  </h3>
+  <fieldset class="no-border" aria-labelledby="animation-activites">
     <div class="flex flex-col">
       <div>
         <DsfrMultiselect

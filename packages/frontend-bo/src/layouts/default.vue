@@ -1,14 +1,22 @@
 <script setup>
-import { Header, Footer, Skiplinks, useLayoutHeader, Toaster } from "@vao/shared-ui";
+import {
+  Header,
+  Footer,
+  Skiplinks,
+  useLayoutHeader,
+  Toaster,
+} from "@vao/shared-ui";
 
 const navItems = useMenuNavItems();
 const userStore = useUserStore();
 const config = useRuntimeConfig();
+const agrementStore = useAgrementStore();
 
 const { quickLinks, homeTo } = useLayoutHeader({
   logoutUrl: "/bo-authentication/disconnect",
   accountPath: "/comptes/mon-compte",
   userStore,
+  additionalStoresToReset: [agrementStore],
 });
 
 const consentCookie = useCookie("VAO_BO_consent", {
