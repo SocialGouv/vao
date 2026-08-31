@@ -2,7 +2,7 @@
   <div>
     <OrganismesWarningNonAgree
       :libelle="organismeStore.libelle"
-      :date-fin-validite="organismeStore.dateFinValidite"
+      :date-fin-validite="organismeStore.dateFinValidite ?? undefined"
     />
     <DemandesSejourDetails v-if="isCurrentDemandeIsAvailable" />
     <DsfrTabsV2
@@ -28,8 +28,8 @@
   </div>
 </template>
 
-<script setup>
-import { DsfrTabsV2 } from "@vao/shared-ui";
+<script setup lang="ts">
+import { DsfrTabsV2, useToaster } from "@vao/shared-ui";
 
 definePageMeta({
   layout: "default",
@@ -40,11 +40,11 @@ definePageMeta({
 const route = useRoute();
 const demandeSejourStore = useDemandeSejourStore();
 const organismeStore = useOrganismeStore();
+const toaster = useToaster();
 
 const unreadMessages = computed(() => {
-  const nb = demandeSejourStore.messages.filter(
-    (m) => !m.readAt && m.frontUserId != null,
-  ).length;
+  const messages = demandeSejourStore.messages ?? [];
+  const nb = messages.filter((m) => !m.readAt && m.frontUserId != null).length;
   return nb && nb > 0 ? `(${nb})` : "";
 });
 
@@ -74,16 +74,10 @@ const tabs = computed(() => [
     href: "messagerie",
     icon: `${unreadMessages.value ? "feedback-line" : ""}`,
   },
-  /*{
-    label: "EIG",
-    tabPanelId: "tabpanel-eig-panel",
-    tabId: "tabpanel-eig",
-    href: "eig",
-  },*/
 ]);
 
 const defaultTab = tabs.value.findIndex(({ href }) =>
-  route.name.includes(href),
+  String(route.name ?? "").includes(href),
 );
 
 const activeTab = ref(defaultTab !== -1 ? defaultTab : 0);
@@ -93,38 +87,55 @@ if (defaultTab === -1) {
   );
 }
 
+const declarationId = computed(() => {
+  const param = route.params.declarationId;
+  const value = Array.isArray(param) ? param[0] : param;
+  return Number(value);
+});
+
+const declarationIdString = computed(() => String(declarationId.value));
+
 const isCurrentDemandeIsAvailable = computed(() => {
   return (
-    demandeSejourStore.currentDemande?.declarationId ===
-    parseInt(route.params.declarationId, 10)
+    demandeSejourStore.currentDemande?.declarationId === declarationId.value
   );
 });
 
-const updatePage = async (index) => {
-  navigateTo(
-    `/sejours/${route.params.declarationId}/${tabs.value[index].href}`,
-  );
+const updatePage = async (index: number) => {
+  navigateTo(`/sejours/${declarationId.value}/${tabs.value[index].href}`);
   if (tabs.value[index].href === "messagerie") {
-    await demandeSejourStore.readMessages(route.params.declarationId);
-    demandeSejourStore.fetchMessages(route.params.declarationId);
+    await demandeSejourStore.readMessages(declarationIdString.value);
+    demandeSejourStore.fetchMessages(declarationIdString.value);
   }
 };
-
 const init = async () => {
   try {
-    await demandeSejourStore.getCurrentDemande(route.params.declarationId);
-    await demandeSejourStore.fetchMessages(route.params.declarationId);
+    await demandeSejourStore.getCurrentDemande(declarationId.value);
+    await demandeSejourStore.fetchMessages(declarationIdString.value);
     const organismeId = demandeSejourStore.currentDemande?.organismeId;
     if (organismeId) {
       await organismeStore.getOrganisme(organismeId);
     }
-  } catch (error) {
-    toaster.error({
-      titleTag: "h2",
-      title: "Erreur lors de la récupération de la demande",
-      description: error.message,
-      role: "alert",
-    });
+  } catch (error: unknown) {
+    const httpError = error as { response?: { status?: number } };
+
+    if (httpError.response?.status === 403) {
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "Vous n'êtes pas autorisé à accéder à cette déclaration de séjour",
+        role: "alert",
+      });
+    } else {
+      const errorMessage =
+        error instanceof Error ? error.message : "Erreur inconnue";
+      toaster.error({
+        titleTag: "h2",
+        title: "Erreur lors de la récupération de la demande",
+        description: errorMessage,
+        role: "alert",
+      });
+    }
     navigateTo("/sejours");
     throw error;
   }
