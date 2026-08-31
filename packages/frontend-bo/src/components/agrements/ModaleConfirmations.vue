@@ -1,5 +1,12 @@
 <template>
   <div>
+    <DsfrAlert
+      v-if="props.submitErrorMessage"
+      class="fr-grid-row fr-alert--sm fr-my-3v"
+      role="alert"
+      type="error"
+      :description="props.submitErrorMessage"
+    />
     <p v-if="props.showRequiredFieldsMessage" class="fr-hint-text">
       Tous les champs sont obligatoires.
     </p>
@@ -15,7 +22,7 @@
             :model-value="commentaire"
             :is-valid="commentaireMeta.valid"
             :error-message="commentaireErrorMessage"
-            hint="Redimensionnez le champ pour saisir plus de ligne. Minimum 20 caractères"
+            hint="Redimensionnez le champ pour saisir plus de ligne. Minimum 5 caractères"
             placeholder=""
             @update:model-value="onCommentaireChange"
           />
@@ -24,7 +31,7 @@
     </div>
     <div class="fr-grid-row fr-alert--sm fr-my-3v">
       <FileUpload
-        :model-value="localFile"
+        :model-value="file"
         :label="labelFileUpload"
         :cdn-url="props.cdnUrl"
         :modifiable="true"
@@ -32,6 +39,9 @@
         hint-class="file-upload-hint"
         @update:model-value="handleFileChange"
       />
+      <p v-if="fileErrorMessage" class="fr-error-text">
+        {{ fileErrorMessage }}
+      </p>
     </div>
     <div v-if="props.haveAgrementNumber" class="fr-fieldset">
       <div class="fr-fieldset__element">
@@ -61,6 +71,7 @@
         {{ item }}
       </p>
     </DsfrAlert>
+
     <div class="fr-fieldset">
       <DsfrButtonGroup :inline-layout-when="true">
         <DsfrButton id="CancelForm" secondary @click.prevent="cancelForm"
@@ -70,7 +81,7 @@
           id="ValidationDemandeComplement"
           primary
           :label="validButton"
-          @click.prevent="validateForm"
+          @click.prevent="onSubmit"
         >
         </DsfrButton>
       </DsfrButtonGroup>
@@ -84,12 +95,6 @@ import type { DsfrAlertType } from "@gouvminint/vue-dsfr";
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 
-const initialValues = {
-  commentaire: null,
-};
-
-const localFile = ref<File | null>(null);
-
 const props = defineProps<{
   cdnUrl: string;
   textAlert?: string[] | null;
@@ -100,46 +105,56 @@ const props = defineProps<{
   haveAgrementNumber?: boolean;
   validButton: string;
   showRequiredFieldsMessage?: boolean;
+  submitErrorMessage?: string | null;
 }>();
 
-const labelFileUpload = computed(() =>
-  props.haveRequiredFile ? "" : "Ajouter un fichier (optionnel)",
-);
-const hintFileUpload = computed(() => {
-  const parts = [];
+const emit = defineEmits<{
+  valid: [
+    payload: {
+      commentaire?: string;
+      numeroAgrement?: string;
+      file: File | null;
+    },
+  ];
+  close: [];
+}>();
 
-  if (!props.haveRequiredFile) {
-    parts.push("Vous pouvez ajouter une pièce jointe.\n");
-  }
-
-  parts.push(
-    "Documents importés : taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf.",
-  );
-
-  return parts.join(" ");
-});
 const validationSchema = computed(() =>
   yup.object({
     commentaire: props.haveCommentaire
       ? yup
           .string()
-          .min(5, 'Le champ "Numéro d’agrément" est vide. Veuillez le remplir.')
-          .required(
-            'Le champ "Numéro d’agrément" est vide. Veuillez le remplir.',
+          .min(
+            5,
+            "Le champ « Commentaires » doit contenir au moins 5 caractères.",
           )
+          .required("Le champ « Commentaires » est vide. Veuillez le remplir.")
       : yup.string().notRequired(),
     numeroAgrement: props.haveAgrementNumber
       ? yup
           .string()
-          .min(5, 'Le champ "Numéro d’agrément" est vide. Veuillez le remplir.')
+          .min(
+            5,
+            "Le champ « Numéro d’agrément » doit contenir au moins 5 caractères.",
+          )
           .required(
-            'Le champ "Numéro d’agrément" est vide. Veuillez le remplir.',
+            "Le champ « Numéro d’agrément » est vide. Veuillez le remplir.",
           )
       : yup.string().notRequired(),
+
+    file: props.haveRequiredFile
+      ? yup.mixed<File>().required("Vous devez ajouter un fichier.")
+      : yup.mixed<File>().notRequired(),
   }),
 );
 
-const { values } = useForm({
+const initialValues = {
+  commentaire: "",
+  numeroAgrement: "",
+  file: null as File | null,
+};
+
+const { handleSubmit, resetForm } = useForm({
   validationSchema,
   initialValues,
 });
@@ -149,42 +164,52 @@ const {
   errorMessage: commentaireErrorMessage,
   handleChange: onCommentaireChange,
   meta: commentaireMeta,
-} = useField<string>("commentaire", undefined, {
-  initialValue: "",
-});
+} = useField<string>("commentaire");
 
 const {
   value: numeroAgrement,
   errorMessage: numeroAgrementErrorMessage,
   handleChange: onNumeroAgrementChange,
   meta: numeroAgrementMeta,
-} = useField<string>("numeroAgrement", undefined, {
-  initialValue: "",
+} = useField<string>("numeroAgrement");
+
+const {
+  value: file,
+  errorMessage: fileErrorMessage,
+  handleChange: onFileChange,
+} = useField<File | null>("file");
+
+const labelFileUpload = computed(() =>
+  props.haveRequiredFile ? "" : "Ajouter un fichier (optionnel)",
+);
+const hintFileUpload = computed(() => {
+  const parts = [];
+
+  if (!props.haveRequiredFile) {
+    parts.push("Vous pouvez ajouter un fichier.\n");
+  }
+
+  parts.push(
+    "Documents importés : taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf.",
+  );
+
+  return parts.join(" ");
 });
-
-const enableValidationButton = computed(() => {
-  const isCommentaireOk =
-    !props.haveCommentaire ||
-    (commentaire.value && commentaire.value.length >= 20);
-
-  const isFileOk = !props.haveRequiredFile || localFile.value !== null;
-
-  const isAgrementNumberOk =
-    !props.haveAgrementNumber ||
-    (numeroAgrement.value && numeroAgrement.value.length >= 5);
-
-  return isCommentaireOk && isFileOk && isAgrementNumberOk;
-});
-const emit = defineEmits(["valid", "update:file", "close"]);
 
 function handleFileChange(newFile: File | null) {
-  localFile.value = newFile;
-  emit("update:file", newFile);
+  onFileChange(newFile);
 }
-function validateForm() {
-  emit("valid", { ...values });
-}
+
+const onSubmit = handleSubmit((formValues) => {
+  emit("valid", {
+    commentaire: formValues.commentaire,
+    numeroAgrement: formValues.numeroAgrement,
+    file: formValues.file ?? null,
+  });
+});
+
 function cancelForm() {
+  resetForm();
   emit("close");
 }
 </script>

@@ -255,6 +255,8 @@ fileignoreconfig:
   checksum: 2ba032561adc4ef237463114e8761fb3f7a754e062f0d192f7b38d31f80763b7
 - filename: packages/frontend-bo/src/assets/Download.svg
   checksum: 2845f88f98040035bf7e9434a9bd5fe5cb8d0dd28fd1d765dd9c6a0b440e49f7
+- filename: packages/frontend-bo/src/components/agrements/ActionsStatut.vue
+  checksum: 96abad70d81827bd5b437e10b18f1c8d7fdea467a7a81cff76db01ecce2deffa
 - filename: packages/frontend-bo/src/components/agrements/Coordonnees.vue
   checksum: cd5072a1d920ef6934c55a2d3d7ebef4cef348e437d9870b326a6485b6a5c5ef
 - filename: packages/frontend-bo/src/components/agrements/bilan/Hebergements.vue
