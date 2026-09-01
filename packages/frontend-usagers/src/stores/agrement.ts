@@ -176,6 +176,7 @@ export const useAgrementStore = defineStore("agrement", {
           await AgrementService.getListAgrements({});
         const filtered = agrements.filter(
           (agrement) =>
+            agrement.supprime === false &&
             agrement.statut !== null &&
             ALLOWED_STATUTS_RENOUVELLEMENT.includes(
               agrement.statut as AGREMENT_STATUT,
