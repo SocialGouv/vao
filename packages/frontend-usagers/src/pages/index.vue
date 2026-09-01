@@ -92,7 +92,7 @@ useHead({
 
 onMounted(async () => {
   if (agrementStore.agrements === null) {
-    await agrementStore.fetchAgrementStatus();
+    await agrementStore.getCurrent();
   }
 });
 

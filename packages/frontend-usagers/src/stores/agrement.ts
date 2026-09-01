@@ -362,21 +362,5 @@ export const useAgrementStore = defineStore("agrement", {
         return false;
       }
     },
-    async fetchAgrementStatus(): Promise<void> {
-      log.i("fetchAgrementStatus - IN");
-      try {
-        const { agrements } = await AgrementService.getListAgrements({});
-        const filtered = agrements.filter((a) => a.supprime === false);
-
-        this.agrements = filtered;
-        this.agrementCourant =
-          filtered.find((a) => a.statut === AGREMENT_STATUT.VALIDE) ?? null;
-
-        log.i("fetchAgrementStatus - DONE", { count: filtered.length });
-      } catch (err) {
-        log.w("fetchAgrementStatus - DONE with error", err);
-        throw err;
-      }
-    },
   },
 });
