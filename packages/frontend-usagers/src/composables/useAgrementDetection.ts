@@ -6,7 +6,7 @@ export async function loadAgrementDetectionState() {
   const organismeStore = useOrganismeStore();
 
   if (agrementStore.agrements === null) {
-    await agrementStore.fetchAgrementStatus();
+    await agrementStore.getCurrent();
   }
 
   const hasLegacyAgrement = Boolean(organismeStore.organismeCourant?.agrement);
