@@ -80,7 +80,7 @@ exports.up = function (knex) {
       ON front.site_organisme USING btree (organisme_id);
 
   CREATE INDEX IF NOT EXISTS idx_site_site_id
-      ON front.site USING btree (site_id);
+      ON front.site_organisme USING btree (site_id);
 
   CREATE INDEX IF NOT EXISTS idx_site_adresse_id
       ON front.site USING btree (adresse_id);
