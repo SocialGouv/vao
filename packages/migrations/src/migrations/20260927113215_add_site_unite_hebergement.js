@@ -138,8 +138,11 @@ exports.up = function (knex) {
       FOREIGN KEY (statut_id)
       REFERENCES front.hebergement_statut(id));
 
-    CREATE INDEX IF NOT EXISTS idx_unite_hebergement_organisme_id
-    ON front.unite_hebergement USING btree (organisme_id);
+  CREATE INDEX IF NOT EXISTS idx_unite_hebergement_organisme_id
+  ON front.unite_hebergement USING btree (organisme_id);
+
+  CREATE INDEX IF NOT EXISTS idx_unite_hebergement_site_id
+  ON front.unite_hebergement USING btree (site_id);
 
   GRANT ALL ON TABLE front.unite_hebergement TO ${postgresUser};
   GRANT ALL ON SEQUENCE front.unite_hebergement_id_seq TO ${postgresUser};
