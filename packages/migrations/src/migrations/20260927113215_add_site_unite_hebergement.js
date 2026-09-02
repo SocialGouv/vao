@@ -15,11 +15,6 @@ exports.up = function (knex) {
     "current"       			bool DEFAULT true NOT NULL,
     adresse_id    		    int4 NULL,
     nom_site_officiel     varchar(120) NULL,
-    hebergement_type_id   int4 NULL, -- Type de site
-    descriptif				    text NULL,
-    resp_nom_prenom			  varchar(120) NULL,
-    resp_telephone        varchar(20) NULL,
-    resp_email            varchar(320) NULL,
     created_at      		  timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
     edited_at       		  timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     created_by            int4 NULL,
@@ -45,6 +40,11 @@ exports.up = function (knex) {
     site_id         uuid NOT NULL,
     organisme_id    int4 NOT NULL,
     nom_site        varchar(120) NULL,
+    hebergement_type_id   int4 NULL, -- Type de site
+    descriptif				    text NULL,
+    resp_nom_prenom			  varchar(120) NULL,
+    resp_telephone        varchar(20) NULL,
+    resp_email            varchar(320) NULL,
     CONSTRAINT fk_site_organisme_site_id
           FOREIGN KEY (site_id)
           REFERENCES front.site(site_id),
