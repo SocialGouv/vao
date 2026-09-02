@@ -55,6 +55,9 @@ exports.up = function (knex) {
       PRIMARY KEY (site_id, organisme_id)
   );
 
+  CREATE UNIQUE INDEX idx_site_org_organisme_id
+      ON front.organismes USING btree (id);
+
   CREATE UNIQUE INDEX idx_site_site_id
       ON front.site USING btree (site_id);
 
@@ -73,6 +76,8 @@ exports.up = function (knex) {
   CREATE TABLE front.unite_hebergement (
     id                                      serial NOT NULL,
     site_id                                 uuid NOT NULL,
+    organisme_id                            int4 NOT NULL,
+    statut_id                               int4 NULL,
     created_at                              timestamp default CURRENT_TIMESTAMP NOT NULL,
     edited_at                               timestamp default CURRENT_TIMESTAMP NOT NULL,
     hebergement_id                          uuid default gen_random_uuid() NOT NULL,
@@ -81,7 +86,6 @@ exports.up = function (knex) {
     edited_by                               int4 NULL,
     hebergement_type_id                     int4 NULL,
     nombre_couchage_total                   int4 NULL,
-    type_pension_id                         int4 NULL,
     lits_superposes                         bool NULL,
     accessibilite_pmr                       bool NULL,
     accessibilite_precision                 text NULL,
@@ -96,42 +100,36 @@ exports.up = function (knex) {
     file_reponse_exploitant_ou_proprietaire uuid NULL,
     file_dernier_arrete_autorisation_maire  uuid NULL,
     file_derniere_attestation_securite      uuid NULL,
-    statut_id                               int4 NULL,
-    CONSTRAINT pk_unite_hebergement
-      PRIMARY KEY (id),
-    CONSTRAINT fk_unite_hebergement_site
-      FOREIGN KEY (site_id)
-      REFERENCES front.site(site_id),
-    CONSTRAINT uq_unite_hebergement_id
-      UNIQUE (hebergement_id));
-
-
-  GRANT ALL ON TABLE front.unite_hebergement TO vao_u;
-  GRANT ALL ON SEQUENCE front.unite_hebergement_id_seq TO vao_u;
-
-  /* ============================================================
-    TABLE UNITE_HEBERGEMENT_ORGANISME
-    ============================================================ */
-
-  CREATE TABLE front.unite_hebergement_organisme (
-    id                                  serial NOT NULL,
-    hebergement_id                      uuid NOT NULL,
-      organisme_id                      int4 NOT NULL,
     visite_locaux                       bool NULL,
     visite_locaux_at                    timestamp NULL,
     deplacement_proximite_description   text NULL,
     vehicules_adaptes                   bool NULL,
+    CONSTRAINT pk_unite_hebergement
+    PRIMARY KEY (id),
+    CONSTRAINT fk_unite_hebergement_site
+      FOREIGN KEY (site_id)
+      REFERENCES front.site(site_id),
     CONSTRAINT fk_uho_organisme_id
-          FOREIGN KEY (organisme_id)
-          REFERENCES front.organismes(id),
-    CONSTRAINT fk_uho_hebergement_id
-          FOREIGN KEY (hebergement_id)
-          REFERENCES front.unite_hebergement(hebergement_id),
-    CONSTRAINT pk_unite_hebergement_organisme
-      PRIMARY KEY (id));
+      FOREIGN KEY (organisme_id)
+      REFERENCES front.organismes(id),
+    CONSTRAINT uq_unite_hebergement_id
+      UNIQUE (hebergement_id));
 
-  GRANT ALL ON TABLE front.unite_hebergement_organisme TO vao_u;
-  GRANT ALL ON SEQUENCE front.unite_hebergement_organisme_id_seq TO vao_u;
+    CREATE UNIQUE INDEX idx_unite_hebergement_organisme_id
+    ON front.organismes USING btree (id);
+
+  GRANT ALL ON TABLE front.unite_hebergement TO vao_u;
+  GRANT ALL ON SEQUENCE front.unite_hebergement_id_seq TO vao_u;
+
+  CREATE TABLE front.unite_hebergement_to_type_pension (
+      unite_hebergement_id        int4 not null,
+      type_pension_id       int4 not null,
+  CONSTRAINT pk_unite_hebergement_type_pension primary key (
+      unite_hebergement_id,
+      type_pension_id));
+
+  GRANT ALL on table front.unite_hebergement_to_type_pension to vao_u;
+
   `);
 };
 
@@ -141,11 +139,13 @@ exports.up = function (knex) {
  */
 exports.down = function (knex) {
   return knex.raw(`
-    DROP TABLE IF EXISTS front.site;
-    DROP TABLE IF EXISTS front.site_organisme;
-    DROP INDEX IF EXISTS idx_site_site_id;
-    DROP INDEX IF EXISTS idx_site_adresse_id;
-    DROP TABLE IF EXISTS front.unite_hebergement_organisme;
+    DROP TABLE IF EXISTS unite_hebergement_to_type_pension;
     DROP TABLE IF EXISTS front.unite_hebergement;
+    DROP TABLE IF EXISTS front.site_organisme;
+    DROP TABLE IF EXISTS front.site;
+    DROP INDEX IF EXISTS idx_site_site_id;
+    DROP INDEX IF EXISTS idx_site_org_organisme_id;
+    DROP INDEX IF EXISTS idx_site_adresse_id;
+    DROP INDEX IF EXISTS idx_unite_hebergement_organisme_id;
   `);
 };
