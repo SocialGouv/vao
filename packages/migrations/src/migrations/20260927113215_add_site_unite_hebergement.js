@@ -17,11 +17,7 @@ erDiagram
 ```
 
 */
-const postgresUser = process.env.PG_VAO_USER;
-
-if (!postgresUser) {
-  throw new Error("PG_VAO_USER environment variable is required");
-}
+const postgresUser = process.env.PG_VAO_USER ?? "vao_u";
 
 exports.up = function (knex) {
   return knex.raw(`
