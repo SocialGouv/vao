@@ -2,6 +2,26 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
+/*
+
+Diagramme au format MD
+
+```mermaid
+erDiagram
+    SITE ||--o{ SITE_ORGANISME : "possède"
+    ORGANISMES ||--o{ SITE_ORGANISME : "rattaché à"
+
+    SITE ||--o{ UNITE_HEBERGEMENT : "contient"
+
+    ADRESSE ||--o{ SITE : "adresse"
+
+    UNITE_HEBERGEMENT ||--o{ UNITE_HEBERGEMENT_TO_TYPE_PENSION : "possède"
+    HEBERGEMENT_TYPE_PENSION ||--o{ UNITE_HEBERGEMENT_TO_TYPE_PENSION : "définit"
+
+    UNITE_HEBERGEMENT ||--o{ HEBERGEMENT_TYPE : "type"
+```
+
+*/
 exports.up = function (knex) {
   return knex.raw(`
   /* ============================================================
