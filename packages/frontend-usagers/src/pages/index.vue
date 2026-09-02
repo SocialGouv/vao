@@ -97,12 +97,6 @@ useHead({
   meta: [{ name: "description", content: "Page d'accueil." }],
 });
 
-onMounted(async () => {
-  if (agrementStore.agrements === null) {
-    await agrementStore.fetchAgrementStatus();
-  }
-});
-
 const userStore = useUserStore();
 const demandeSejourStore = useDemandeSejourStore() as {
   stats: DemandeSejourStats | null;
@@ -151,6 +145,12 @@ const bottomCards = computed(() => [
     redirect: `/demande-sejour/liste?statut=${DeclarationSejour.statuts.TERMINEE}`,
   },
 ]);
+
+onMounted(async () => {
+  if (agrementStore.agrements === null) {
+    await agrementStore.getCurrent(organismeCourant.value);
+  }
+});
 
 const libelleMessageAccueil =
   "Afin de profiter de toutes les fonctionnalités de ce site, nous vous invitons à renseigner votre fiche organisateur";

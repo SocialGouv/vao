@@ -10,6 +10,7 @@ import { getPool } from "../../utils/pgpool";
 import { getFoAppHelper } from "../helpers/appHelper";
 import {
   buildOrganismeEtablissementSecondaireForDepose,
+  buildOrganismePersonneMoralePorteurForDepose,
   buildOrganismePersonnePhysiqueForDepose,
   createDemandeSejour,
   deleteDemandeSejour,
@@ -270,7 +271,7 @@ describe("Domaine /sejour", () => {
 
     const postDepose2Mois = async (
       idFonctionnelle: string,
-      organisme?: object,
+      organisme: object = buildOrganismePersonneMoralePorteurForDepose(),
     ) => {
       const dsId = await createDemandeSejour({
         idFonctionnelle,
@@ -292,7 +293,7 @@ describe("Domaine /sejour", () => {
         organisme,
       });
 
-      return request(getFoAppHelper(getSejourFoUser()))
+      const response = await request(getFoAppHelper(getSejourFoUser()))
         .post(`/sejour/depose/${dsId}`)
         .send({
           attestation: {
@@ -302,7 +303,9 @@ describe("Domaine /sejour", () => {
             prenom: "John",
             qualite: "Président",
           },
+          organisme,
         });
+      return response;
     };
 
     it("retourne 400 si l'attestation est manquante", async () => {
@@ -438,6 +441,7 @@ describe("Domaine /sejour", () => {
         depot8jStatut,
         fileUuid,
         hebergementId,
+        organisme: buildOrganismePersonneMoralePorteurForDepose(),
       });
 
       return request(getFoAppHelper(getSejourFoUser()))
@@ -450,6 +454,7 @@ describe("Domaine /sejour", () => {
             prenom: "John",
             qualite: "Président",
           },
+          organisme: buildOrganismePersonneMoralePorteurForDepose(),
         });
     };
 

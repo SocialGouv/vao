@@ -2,10 +2,10 @@ import { defineStore } from "pinia";
 import type {
   AgrementDto,
   ActiviteDto,
-  OrganismeDto,
   AgrementHistoryItem,
   AgrementMessage,
   AGREMENT_TYPE_DEPOT,
+  OrganismeDto,
 } from "@vao/shared-bridge";
 import {
   AGREMENT_STATUT,
@@ -14,6 +14,8 @@ import {
   isBetweenDates,
   addDays,
 } from "@vao/shared-bridge";
+import { isOrganismePorteurAgrement } from "../utils/isPorteurAgrement";
+
 import { AgrementService } from "~/services/agrementService";
 
 const log = logger("stores/agrement");
@@ -147,13 +149,34 @@ export const useAgrementStore = defineStore("agrement", {
         throw err;
       }
     },
-    async getEnRenouvellement(): Promise<void> {
+    async getEnRenouvellement(
+      organismeCourant: OrganismeDto | null,
+    ): Promise<void> {
       log.i("getEnRenouvellement - IN");
+      if (!organismeCourant) {
+        log.w(
+          "getEnRenouvellement - organismeCourant non renseigné, impossible de déterminer la compétence de renouvellement",
+        );
+        this.agrementEnTraitement = null;
+        return;
+      }
+      if (!isOrganismePorteurAgrement(organismeCourant)) {
+        log.w(
+          "getEnRenouvellement - organisme non porteur de l'agrement, renouvellement non autorisé",
+          {
+            organismeId: organismeCourant?.id,
+          },
+        );
+        this.agrementEnTraitement = null;
+        return;
+      }
+
       try {
         const { agrements }: { agrements: AgrementDto[] | [] } =
           await AgrementService.getListAgrements({});
         const filtered = agrements.filter(
           (agrement) =>
+            agrement.supprime === false &&
             agrement.statut !== null &&
             ALLOWED_STATUTS_RENOUVELLEMENT.includes(
               agrement.statut as AGREMENT_STATUT,
@@ -366,22 +389,6 @@ export const useAgrementStore = defineStore("agrement", {
         this.agrementEnTraitement = null;
         log.w("getEnTraitementById - FAIL", { agrementId, err });
         return false;
-      }
-    },
-    async fetchAgrementStatus(): Promise<void> {
-      log.i("fetchAgrementStatus - IN");
-      try {
-        const { agrements } = await AgrementService.getListAgrements({});
-        const filtered = agrements.filter((a) => a.supprime === false);
-
-        this.agrements = filtered;
-        this.agrementCourant =
-          filtered.find((a) => a.statut === AGREMENT_STATUT.VALIDE) ?? null;
-
-        log.i("fetchAgrementStatus - DONE", { count: filtered.length });
-      } catch (err) {
-        log.w("fetchAgrementStatus - DONE with error", err);
-        throw err;
       }
     },
   },
