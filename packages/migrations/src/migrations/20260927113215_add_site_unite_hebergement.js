@@ -22,6 +22,12 @@ erDiagram
 ```
 
 */
+const postgresUser = process.env.PG_VAO_USER;
+
+if (!postgresUser) {
+  throw new Error("PG_VAO_USER environment variable is required");
+}
+
 exports.up = function (knex) {
   return knex.raw(`
   /* ============================================================
@@ -84,10 +90,10 @@ exports.up = function (knex) {
   CREATE INDEX IF NOT EXISTS idx_site_adresse_id
       ON front.site USING btree (adresse_id);
 
-  GRANT ALL ON TABLE front.site TO vao_u;
-  GRANT ALL ON SEQUENCE front.site_id_seq TO vao_u;
+  GRANT ALL ON TABLE front.site TO ${postgresUser};
+  GRANT ALL ON SEQUENCE front.site_id_seq TO ${postgresUser};
 
-  GRANT ALL ON TABLE front.site_organisme TO vao_u;
+  GRANT ALL ON TABLE front.site_organisme TO ${postgresUser};
 
   /* ============================================================
     TABLE UNITE_HEBERGEMENT
@@ -138,8 +144,8 @@ exports.up = function (knex) {
     CREATE UNIQUE INDEX idx_unite_hebergement_organisme_id
     ON front.organismes USING btree (id);
 
-  GRANT ALL ON TABLE front.unite_hebergement TO vao_u;
-  GRANT ALL ON SEQUENCE front.unite_hebergement_id_seq TO vao_u;
+  GRANT ALL ON TABLE front.unite_hebergement TO ${postgresUser};
+  GRANT ALL ON SEQUENCE front.unite_hebergement_id_seq TO ${postgresUser};
 
   CREATE TABLE front.unite_hebergement_to_type_pension (
       unite_hebergement_id        int4 not null,
@@ -148,7 +154,7 @@ exports.up = function (knex) {
       unite_hebergement_id,
       type_pension_id));
 
-  GRANT ALL on table front.unite_hebergement_to_type_pension to vao_u;
+  GRANT ALL on table front.unite_hebergement_to_type_pension to ${postgresUser};
 
   -- Ajout du site sur l'hébergment actuel pour compatibilité migration future
   ALTER TABLE front.hebergement ADD COLUMN site_id uuid null;
