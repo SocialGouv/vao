@@ -40,10 +40,11 @@ exports.up = function (knex) {
     edited_by             int4 NULL,
       CONSTRAINT pk_site
           PRIMARY KEY (id),
-
-      CONSTRAINT fk_site_adresse
-          FOREIGN KEY (adresse_id)
-          REFERENCES front.adresse(id),
+      CONSTRAINT uq_site_site_id
+        UNIQUE (site_id),
+    CONSTRAINT fk_site_adresse
+      FOREIGN KEY (adresse_id)
+      REFERENCES front.adresse(id),
     CONSTRAINT fk_site_hebergement_type
           FOREIGN KEY (hebergement_type_id)
           REFERENCES front.hebergement_type(id)
@@ -127,8 +128,6 @@ exports.up = function (knex) {
     CONSTRAINT fk_uho_organisme_id
       FOREIGN KEY (organisme_id)
       REFERENCES front.organismes(id),
-    CONSTRAINT uq_unite_hebergement_id
-      UNIQUE (hebergement_id),
     CONSTRAINT fk_unite_hebergement_statut
       FOREIGN KEY (statut_id)
       REFERENCES front.hebergement_statut(id));
