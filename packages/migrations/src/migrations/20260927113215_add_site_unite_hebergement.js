@@ -1,9 +1,4 @@
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
 /*
-
 Diagramme au format MD
 
 ```mermaid
@@ -81,10 +76,10 @@ exports.up = function (knex) {
       PRIMARY KEY (site_id, organisme_id)
   );
 
-  CREATE UNIQUE INDEX idx_site_org_organisme_id
-      ON front.organismes USING btree (id);
+  CREATE INDEX IF NOT EXISTS idx_site_org_organisme_id
+      ON front.site_organisme USING btree (organisme_id);
 
-  CREATE UNIQUE INDEX idx_site_site_id
+  CREATE INDEX IF NOT EXISTS idx_site_site_id
       ON front.site USING btree (site_id);
 
   CREATE INDEX IF NOT EXISTS idx_site_adresse_id
@@ -110,7 +105,6 @@ exports.up = function (knex) {
     "current"                               bool default true NOT NULL,
     created_by                              int4 NULL,
     edited_by                               int4 NULL,
-    hebergement_type_id                     int4 NULL,
     nombre_couchage_total                   int4 NULL,
     lits_superposes                         bool NULL,
     accessibilite_pmr                       bool NULL,
@@ -139,10 +133,13 @@ exports.up = function (knex) {
       FOREIGN KEY (organisme_id)
       REFERENCES front.organismes(id),
     CONSTRAINT uq_unite_hebergement_id
-      UNIQUE (hebergement_id));
+      UNIQUE (hebergement_id),
+    CONSTRAINT fk_unite_hebergement_statut
+      FOREIGN KEY (statut_id)
+      REFERENCES front.hebergement_statut(id));
 
-    CREATE UNIQUE INDEX idx_unite_hebergement_organisme_id
-    ON front.organismes USING btree (id);
+    CREATE INDEX IF NOT EXISTS idx_unite_hebergement_organisme_id
+    ON front.unite_hebergement USING btree (organisme_id);
 
   GRANT ALL ON TABLE front.unite_hebergement TO ${postgresUser};
   GRANT ALL ON SEQUENCE front.unite_hebergement_id_seq TO ${postgresUser};
@@ -152,7 +149,13 @@ exports.up = function (knex) {
       type_pension_id       int4 not null,
   CONSTRAINT pk_unite_hebergement_type_pension primary key (
       unite_hebergement_id,
-      type_pension_id));
+      type_pension_id),
+  CONSTRAINT fk_uhtp_unite_hebergement
+      FOREIGN KEY (unite_hebergement_id)
+      REFERENCES front.unite_hebergement(id) ON DELETE CASCADE,
+  CONSTRAINT fk_uhtp_type_pension
+      FOREIGN KEY (type_pension_id)
+      REFERENCES front.hebergement_type_pension(id));
 
   GRANT ALL on table front.unite_hebergement_to_type_pension to ${postgresUser};
 
@@ -173,9 +176,9 @@ exports.down = function (knex) {
     DROP TABLE IF EXISTS front.unite_hebergement;
     DROP TABLE IF EXISTS front.site_organisme;
     DROP TABLE IF EXISTS front.site;
-    DROP INDEX IF EXISTS idx_site_site_id;
-    DROP INDEX IF EXISTS idx_site_org_organisme_id;
-    DROP INDEX IF EXISTS idx_site_adresse_id;
-    DROP INDEX IF EXISTS idx_unite_hebergement_organisme_id;
+    DROP INDEX IF EXISTS front.idx_site_site_id;
+    DROP INDEX IF EXISTS front.idx_site_org_organisme_id;
+    DROP INDEX IF EXISTS front.idx_site_adresse_id;
+    DROP INDEX IF EXISTS front.idx_unite_hebergement_organisme_id;
   `);
 };
