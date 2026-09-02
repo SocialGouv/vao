@@ -10,9 +10,11 @@
     <p v-if="props.showRequiredFieldsMessage" class="fr-hint-text">
       Tous les champs sont obligatoires.
     </p>
-    <label class="fr-label"> {{ description }} </label>
+    <label class="fr-label" :class="{ 'fr-label--error': fileErrorMessage }">
+      {{ description }}
+    </label>
     <div v-if="props.haveCommentaire" class="fr-fieldset">
-      <div class="fr-fieldset__element">
+      <div ref="commentaireFieldRef" class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
             is-textarea
@@ -29,7 +31,7 @@
         </div>
       </div>
     </div>
-    <div class="fr-grid-row fr-alert--sm fr-my-3v">
+    <div ref="fileFieldRef" class="fr-grid-row fr-alert--sm fr-my-3v">
       <FileUpload
         :model-value="file"
         :label="labelFileUpload"
@@ -44,7 +46,7 @@
       </p>
     </div>
     <div v-if="props.haveAgrementNumber" class="fr-fieldset">
-      <div class="fr-fieldset__element">
+      <div ref="numeroAgrementFieldRef" class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
             name="numeroAgrement"
@@ -196,17 +198,39 @@ const hintFileUpload = computed(() => {
   return parts.join(" ");
 });
 
+const commentaireFieldRef = ref<HTMLElement | null>(null);
+const fileFieldRef = ref<HTMLElement | null>(null);
+const numeroAgrementFieldRef = ref<HTMLElement | null>(null);
+
+function focusFirstErrorField(errors: Partial<Record<string, string>>) {
+  const fieldOrder: Array<{ key: string; container: Ref<HTMLElement | null> }> =
+    [
+      { key: "commentaire", container: commentaireFieldRef },
+      { key: "file", container: fileFieldRef },
+      { key: "numeroAgrement", container: numeroAgrementFieldRef },
+    ];
+
+  const firstInError = fieldOrder.find(({ key }) => errors[key]);
+  const focusable = firstInError?.container.value?.querySelector<HTMLElement>(
+    "input, textarea, button, [tabindex]",
+  );
+  focusable?.focus();
+}
+
 function handleFileChange(newFile: File | null) {
   onFileChange(newFile);
 }
 
-const onSubmit = handleSubmit((formValues) => {
-  emit("valid", {
-    commentaire: formValues.commentaire,
-    numeroAgrement: formValues.numeroAgrement,
-    file: formValues.file ?? null,
-  });
-});
+const onSubmit = handleSubmit(
+  (formValues) => {
+    emit("valid", {
+      commentaire: formValues.commentaire,
+      numeroAgrement: formValues.numeroAgrement,
+      file: formValues.file ?? null,
+    });
+  },
+  ({ errors }) => focusFirstErrorField(errors),
+);
 
 function cancelForm() {
   resetForm();
@@ -217,5 +241,8 @@ function cancelForm() {
 <style lang="css">
 .fr-hint-text {
   white-space: pre-line;
+}
+.fr-label--error {
+  color: var(--text-default-error);
 }
 </style>

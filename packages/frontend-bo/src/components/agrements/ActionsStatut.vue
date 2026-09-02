@@ -241,7 +241,8 @@ const statutConfig: Partial<
 > = {
   [AGREMENT_STATUT.EN_INSTRUCTION]: {
     category: FILE_CATEGORY.COMPLETUDE,
-    description: "La confirmation de complétude de l'agrément a été envoyée",
+    description:
+      "Succès: la confirmation de complétude de l'agrément a été envoyée",
   },
   [AGREMENT_STATUT.REFUSE]: {
     category: FILE_CATEGORY.REFUS,
@@ -249,15 +250,15 @@ const statutConfig: Partial<
   },
   [AGREMENT_STATUT.A_CORRIGER]: {
     category: FILE_CATEGORY.ACORRIGER,
-    description: `La demande de correction a été envoyée`,
+    description: `Succès: la demande de correction a été envoyée`,
   },
   [AGREMENT_STATUT.A_COMPLETER]: {
     category: FILE_CATEGORY.AMODIFER,
-    description: `La demande de complétion de l'agrément a été envoyée`,
+    description: `Succès: la demande de complétion de l'agrément a été envoyée`,
   },
   [AGREMENT_STATUT.VALIDE]: {
     category: FILE_CATEGORY.ARRETE_AGREMENT,
-    description: `La validation de l'agrément a été envoyée`,
+    description: `Succès: la validation de l'agrément a été envoyée`,
   },
 };
 
@@ -338,7 +339,7 @@ const onValidForm = async (
 
     if (!success) {
       submitErrorMessage.value =
-        "Votre requête n'a pas abouti. Veuillez vérifier les champs et réessayer.";
+        "Erreur: votre requête n'a pas abouti. Veuillez vérifier les champs et réessayer.";
       return;
     }
 
@@ -350,7 +351,7 @@ const onValidForm = async (
   } catch (error) {
     log.w("onValidForm - changeStatutAgrement failed", error);
     submitErrorMessage.value =
-      "Votre requête n'a pas abouti. Veuillez vérifier les champs et réessayer.";
+      "Erreur: votre requête n'a pas abouti. Veuillez vérifier les champs et réessayer.";
   } finally {
     isSubmittingAction.value = false;
   }
