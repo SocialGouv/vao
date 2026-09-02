@@ -40,8 +40,7 @@ exports.up = function (knex) {
     edited_by             int4 NULL,
       CONSTRAINT pk_site
           PRIMARY KEY (id),
-      CONSTRAINT uq_site_id
-          UNIQUE (site_id),
+
       CONSTRAINT fk_site_adresse
           FOREIGN KEY (adresse_id)
           REFERENCES front.adresse(id),
@@ -133,6 +132,9 @@ exports.up = function (knex) {
     CONSTRAINT fk_unite_hebergement_statut
       FOREIGN KEY (statut_id)
       REFERENCES front.hebergement_statut(id));
+
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_unite_hebergement_hebergement_id
+  ON front.unite_hebergement (hebergement_id) WHERE ("current" IS TRUE);
 
   CREATE INDEX IF NOT EXISTS idx_unite_hebergement_organisme_id
   ON front.unite_hebergement USING btree (organisme_id);
