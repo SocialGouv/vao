@@ -102,7 +102,7 @@ const links = [
   {
     text: hebergementId.value
       ? `Hébergement ${hebergementStore.hebergementCourant.nom}`
-      : "Nouvel hébergement",
+      : "Ajouter un hébergement",
   },
 ];
 
