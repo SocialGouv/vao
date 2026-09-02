@@ -35,6 +35,8 @@ exports.up = function (knex) {
     "current"       			bool DEFAULT true NOT NULL,
     adresse_id    		    int4 NULL,
     nom_site_officiel     varchar(120) NULL,
+    hebergement_type_id   int4 NULL, -- Type de site
+    descriptif				    text NULL,
     created_at      		  timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
     edited_at       		  timestamp DEFAULT CURRENT_TIMESTAMP NULL,
     created_by            int4 NULL,
@@ -60,8 +62,6 @@ exports.up = function (knex) {
     site_id         uuid NOT NULL,
     organisme_id    int4 NOT NULL,
     nom_site        varchar(120) NULL,
-    hebergement_type_id   int4 NULL, -- Type de site
-    descriptif				    text NULL,
     resp_nom_prenom			  varchar(120) NULL,
     resp_telephone        varchar(20) NULL,
     resp_email            varchar(320) NULL,
@@ -150,6 +150,9 @@ exports.up = function (knex) {
 
   GRANT ALL on table front.unite_hebergement_to_type_pension to vao_u;
 
+  -- Ajout du site sur l'hébergment actuel pour compatibilité migration future
+  ALTER TABLE front.hebergement ADD COLUMN site_id uuid null;
+
   `);
 };
 
@@ -159,7 +162,8 @@ exports.up = function (knex) {
  */
 exports.down = function (knex) {
   return knex.raw(`
-    DROP TABLE IF EXISTS unite_hebergement_to_type_pension;
+    ALTER TABLE front.hebergement DROP COLUMN site_id;
+    DROP TABLE IF EXISTS front.unite_hebergement_to_type_pension;
     DROP TABLE IF EXISTS front.unite_hebergement;
     DROP TABLE IF EXISTS front.site_organisme;
     DROP TABLE IF EXISTS front.site;
