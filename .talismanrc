@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: .claude/product.md
+  checksum: 60eb40f72aaa7536bf2ab4e233f5dd9f97c1be0b167664512f88d6bf321ee3b4
 - filename: .env.dev.example.env
   checksum: 7750aad06145ec2c279c3e85684a5877bb3f5e67c4d3e40f112ff87f3d6869e6
 - filename: .github/workflows/e2e.yaml

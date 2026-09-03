@@ -1,20 +1,19 @@
 ---
-name: vao-branch-review
+name: branch-review
 description: >-
-  Code review d'une branche Git vs origin/main
+  Review the current Git branch against origin/main for VAO clean code,
+  TypeScript/Vue module conventions, and backend integration-test coverage.
+  Use when the user asks for a branch review, PR review vs main, or
+  @branch-review.
 ---
 
 # Review de branche VAO
 
 ## Déclenchement
 
-Demander explicitement, par exemple :
+Exemples : « review de cette branche vs origin/main », « @branch-review », « review PR vs main ».
 
-- « Fais une review de cette branche par rapport à origin/main »
-- « @vao-branch-review »
-- « Review PR vs main »
-
-L'agent charge ce skill et compare **la branche courante** à `origin/main`.
+Comparer **la branche courante** à `origin/main`.
 
 ## Workflow
 
@@ -23,7 +22,7 @@ L'agent charge ce skill et compare **la branche courante** à `origin/main`.
 3. `git diff origin/main...HEAD --name-only`
 4. Lire le diff complet : `git diff origin/main...HEAD`
 5. Pour chaque fichier modifié, appliquer les critères ci-dessous
-6. Vérifier les tests d'intégration dans `phr-server/src/__tests__/` (et serveurs backend concernés)
+6. Vérifier les tests d'intégration dans `packages/backend/src/__tests__/`
 
 ## Critères obligatoires
 
@@ -38,8 +37,8 @@ L'agent charge ce skill et compare **la branche courante** à `origin/main`.
 
 ### Tests d'intégration backend
 
-- Tout nouveau comportement backend (`phr-server`, `phd-server`, `pp-server`) doit avoir un test d'intégration
-- Les tests unitaires `shared-bridge` ne remplacent pas les tests d'intégration serveur
+- Tout nouveau comportement backend (`packages/backend`) doit avoir un test d'intégration
+- Les tests unitaires (`*.spec.ts`, `shared-bridge`) ne remplacent pas les TI serveur
 - Signaler les scénarios supprimés ou non couverts (filtres, rôles, exclusions SQL, etc.)
 
 ### Conventions modules
@@ -85,8 +84,8 @@ done
 
 ## Périmètre typique du repo
 
-| Zone                                                  | Tests intégration                 |
-| ----------------------------------------------------- | --------------------------------- |
-| `pakcages/backend/src/`                               | `pakcages/backend/src/__tests__/` |
-| `packages/shared-bridge/`                             | `*.spec.ts` (unitaires)           |
-| `packages/frontend-bo/`, `packages/frontend-usagers/` | conventions Vue/TS uniquement     |
+| Zone                                                  | Tests                                                            |
+| ----------------------------------------------------- | ---------------------------------------------------------------- |
+| `packages/backend/src/`                               | TI dans `packages/backend/src/__tests__/` (`admin/`, `usagers/`) |
+| `packages/shared-bridge/`                             | unitaires `*.spec.ts`                                            |
+| `packages/frontend-bo/`, `packages/frontend-usagers/` | conventions Vue/TS uniquement                                    |
