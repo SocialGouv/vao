@@ -8,7 +8,7 @@
       :description="props.submitErrorMessage"
     />
     <p v-if="props.showRequiredFieldsMessage" class="fr-hint-text">
-      Tous les champs sont obligatoires.
+      Sauf mention contraire, tous les champs sont obligatoires.
     </p>
     <label class="fr-label" :class="{ 'fr-label--error': fileErrorMessage }">
       {{ description }}
@@ -55,7 +55,7 @@
             :model-value="numeroAgrement"
             :is-valid="numeroAgrementMeta.valid"
             :error-message="numeroAgrementErrorMessage"
-            hint="Entrez le numéro d'agrément associé à l'arrêté"
+            hint="Entrez le numéro d'agrément associé à l'arrêté. Minimum 5 caractères"
             placeholder=""
             @update:model-value="onNumeroAgrementChange"
           />
