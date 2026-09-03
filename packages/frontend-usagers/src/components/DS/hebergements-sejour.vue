@@ -56,7 +56,7 @@
           </div>
 
           <DsfrButton
-            v-if="props.modifiable"
+            v-if="props.modifiable && !isModuleHebergementEnabled"
             label="Ajouter une fiche hébergement"
             :disabled="isSejourComplet"
             @click.prevent="onOpenNuitee"
