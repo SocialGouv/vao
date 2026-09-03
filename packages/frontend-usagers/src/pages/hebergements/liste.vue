@@ -32,7 +32,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { HebergementFunnelOrigin } from "@vao/shared-bridge";
 
 const hebergementStore = useHebergementStore();
