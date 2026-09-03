@@ -1,27 +1,56 @@
 ---
-description:
-globs:
-alwaysApply: true
+name: write-unit-tests
+description: >-
+  Write or update VAO unit tests (.spec.ts) for pure functions only.
+  Use when adding unit tests, writing *.spec.ts, or when the user asks for TU /
+  tests unitaires.
 ---
 
-# TU
+# Tests unitaires VAO
 
-Les tests unitaire sont présent dans le même dossier que l'implementation et ne s'applique qu'au fonction pure (pas d'accès en base de données ou servic externe)
+## Règles
 
-La documentation "docs/tests/INTEGRATIONS_TEST" décrit le fonctionnement des tests
-Les tests sont écrits en typescript (.ts avec import)
+- Les tests unitaires sont présents dans **le même dossier** que l'implémentation
+- Suffixe : `.spec.ts` (les TI utilisent `.test.ts` dans `__tests__/`)
+- S'appliquent **uniquement aux fonctions pures** (pas d'accès en base de données, pas d'appel de service externe)
+- Écrits en TypeScript (`.ts` avec `import` / `export`)
+- Isolation : chaque test indépendant ; descriptions claires (FR ou EN cohérent avec le fichier voisin)
+- Documentation humaine de référence : `docs/tests/UNIT_TESTS.md`
 
-# Exemple
+## Emplacement typique
 
-```js
-import {
-  formatFrDateTime,
-  formatFrShort,
-  formatISOShort,
-  isValidFrShort,
-  isValidIsoShort,
-  parseFrShort,
-} from "./date";
+```
+packages/backend/src/
+├── utils/
+│   ├── file.ts
+│   └── file.spec.ts
+packages/shared-bridge/src/utils/
+│   ├── date.ts
+│   └── date.spec.ts
+packages/frontend-usagers/src/utils/
+│   ├── agrementStatus.ts
+│   └── agrementStatus.spec.ts
+```
+
+## Ne pas faire
+
+- Pas de Testcontainers / DB
+- Pas de `supertest` / endpoints HTTP
+- Pas de mock de repository / service pour « simuler » une couche d'intégration — si ça nécessite DB ou I/O, c'est un test d'intégration → skill `write-integration-tests`
+- Pas de `require` / `module.exports` dans un `.ts`
+
+## Commandes utiles
+
+```bash
+cd packages/backend
+pnpm test -- src/utils/file.spec.ts
+pnpm test:watch
+```
+
+## Exemple (référence historique Cursor — fonctions pures date)
+
+```ts
+import { formatFrDateTime, formatFrShort, formatISOShort, isValidFrShort, isValidIsoShort, parseFrShort } from "./date";
 
 describe("formatFrShort", () => {
   it("should return undefined when date is undefined", () => {
@@ -79,9 +108,7 @@ describe("formatFrDateTime", () => {
     });
     const d = new Date(2026, 2, 16, 14, 30, 0);
     // @ts-expect-error - test
-    expect(formatFrDateTime("2026-03-16T14:30:00")).toBe(
-      frDateTimeFormatter.format(d),
-    );
+    expect(formatFrDateTime("2026-03-16T14:30:00")).toBe(frDateTimeFormatter.format(d));
   });
 });
 
@@ -160,5 +187,6 @@ describe("isValidIsoShort", () => {
     expect(isValidIsoShort(undefined)).toBe(false);
   });
 });
-
 ```
+
+Exemple vivant dans le repo : `packages/shared-bridge/src/utils/date.spec.ts`.
