@@ -16,11 +16,15 @@
       <div class="fr-col">
         <form>
           <div class="fr-fieldset">
-            <DsfrButton>
-              <NuxtLink to="/hebergements">
-                Déclarer un nouvel hébergement
-              </NuxtLink>
-            </DsfrButton>
+            <NuxtLink
+              class="fr-btn fr-btn--secondary fr-btn--md inline-flex"
+              to="/hebergements"
+              icon
+              @click="handleNouvelHebergementClick"
+            >
+              <span aria-hidden="true" class="fr-icon-add-line"></span>
+              Ajouter un nouvel hébergement
+            </NuxtLink>
           </div>
         </form>
       </div>
@@ -28,7 +32,11 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { HebergementFunnelOrigin } from "@vao/shared-bridge";
+
+const hebergementStore = useHebergementStore();
+
 useHead({
   title: "Mes hébergements | Vacances Adaptées Organisées",
   meta: [
@@ -47,4 +55,8 @@ const links = [
     text: "Mes hébergements",
   },
 ];
+
+function handleNouvelHebergementClick() {
+  hebergementStore.setFunnelOrigin(HebergementFunnelOrigin.MES_HEBERGEMENTS);
+}
 </script>
