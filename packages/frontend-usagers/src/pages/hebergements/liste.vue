@@ -16,14 +16,15 @@
       <div class="fr-col">
         <form>
           <div class="fr-fieldset">
-            <DsfrButton icon="ri-add-line" icon-position="left">
-              <NuxtLink
-                to="/hebergements"
-                @click="handleNouvelHebergementClick"
-              >
-                Ajouter un nouvel hébergement
-              </NuxtLink>
-            </DsfrButton>
+            <NuxtLink
+              class="fr-btn fr-btn--secondary fr-btn--md inline-flex"
+              to="/hebergements"
+              icon
+              @click="handleNouvelHebergementClick"
+            >
+              <span aria-hidden="true" class="fr-icon-add-line"></span>
+              Ajouter un nouvel hébergement
+            </NuxtLink>
           </div>
         </form>
       </div>
