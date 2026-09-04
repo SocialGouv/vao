@@ -14,7 +14,7 @@ CREATE TABLE doc.documents (
    	constraint pk_identites primary key (uuid)
 );
 
-GRANT USAGE ON SCHEMA doc TO vao_doc;
+GRANT USAGE ON SCHEMA doc TO :"doc_role";
 
-GRANT ALL ON ALL TABLES IN SCHEMA doc TO vao_doc;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA doc TO vao_doc;
+GRANT ALL ON ALL TABLES IN SCHEMA doc TO :"doc_role";
+GRANT ALL ON ALL SEQUENCES IN SCHEMA doc TO :"doc_role";

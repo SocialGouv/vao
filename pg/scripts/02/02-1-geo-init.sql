@@ -6,7 +6,7 @@
 DROP SCHEMA IF EXISTS geo CASCADE;          -- données géographiques communes aux 3 portails
 CREATE SCHEMA geo;
 
-GRANT USAGE ON SCHEMA geo TO vao_u;
+GRANT USAGE ON SCHEMA geo TO :"app_role";
 
 
 /*==============================================================*/
@@ -34,5 +34,5 @@ create table geo.communes (
    constraint pk_communes primary key (id)
 );
 
-GRANT SELECT ON ALL TABLES IN SCHEMA geo TO vao_u;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA geo TO vao_u;
+GRANT SELECT ON ALL TABLES IN SCHEMA geo TO :"app_role";
+GRANT ALL ON ALL SEQUENCES IN SCHEMA geo TO :"app_role";
