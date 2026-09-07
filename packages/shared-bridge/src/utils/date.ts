@@ -58,8 +58,10 @@ export function addMonths(date: Date, months: number) {
   return dayjs(date).add(months, "month").toDate();
 }
 
-export function formatFR(date: Date) {
-  return dayjs(date).format("DD/MM/YYYY");
+export function formatFR(date?: Date | string | null, fallback = "") {
+  if (!date) return fallback;
+  const d = dayjs(date);
+  return d.isValid() ? d.format("DD/MM/YYYY") : fallback;
 }
 
 export function formatFRDateTime(date: Date) {

@@ -32,7 +32,7 @@
     <div class="fr-fieldset__element">
       <MultiFilesUpload
         v-model="filesBilanQualitPerception"
-        label="Ajouter des fichiers"
+        label="Document(s) relatif(s) à la perception globale du public accueilli (optionnel)"
         :modifiable="false"
         :cdn-url="props.cdnUrl"
       />
@@ -65,7 +65,7 @@
     <div class="fr-fieldset__element">
       <MultiFilesUpload
         v-model="filesBilanQualitPerspectives"
-        label="Ajouter des fichiers"
+        label="Document(s) relatif(s) aux perspectives d'évolution (optionnel)"
         :modifiable="false"
         :cdn-url="props.cdnUrl"
       />
@@ -97,7 +97,7 @@
     <div class="fr-fieldset__element">
       <MultiFilesUpload
         v-model="filesBilanQualitElementsMarquants"
-        label="Ajouter des fichiers complémentaires"
+        label="Document(s) relatif(s) aux éléments marquants (optionnel)"
         :modifiable="false"
         :cdn-url="props.cdnUrl"
       />
@@ -106,7 +106,7 @@
   <div class="fr-fieldset__element fr-mt-6v">
     <MultiFilesUpload
       v-model="filesBilanQualitComplementaires"
-      label="Ajouter des fichiers complémentaires (optionnel)"
+      label="Document(s) complémentaire(s) relatif(s) au bilan qualitatif sur les quatre dernières années (optionnel)"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
     />

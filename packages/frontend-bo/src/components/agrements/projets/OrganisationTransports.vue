@@ -25,7 +25,7 @@
       v-model="filesProjetsSejoursOrgaTransports"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
-      label="Ajouter des fichiers (optionnel)"
+      label="Document(s) relatif(s) à l'organisation des transports prévus (optionnel)"
     />
   </div>
 </template>

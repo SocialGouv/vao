@@ -4,14 +4,13 @@
       <dl class="fr-text--sm fr-pl-0">
         <dt>{{ $attrs.label }}</dt>
         <dd>
-          <p v-if="rows.length > 0">
-            <DsfrTable
-              title="Fichier(s) téléversé(s)"
-              :headers="headers"
-              :rows="rows"
-              :no-caption="true"
-            />
-          </p>
+          <DsfrTable
+            v-if="rows.length > 0"
+            title="Fichier(s) téléversé(s)"
+            :headers="headers"
+            :rows="rows"
+            :no-caption="true"
+          />
           <p v-else class="fr-mb-4v fr-icon-file-line fr-text--sm">
             Aucun fichier téléversé
           </p>

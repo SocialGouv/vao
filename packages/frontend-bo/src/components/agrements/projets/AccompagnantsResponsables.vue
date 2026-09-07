@@ -34,7 +34,7 @@
         v-model="filesProjetsSejoursCompetencesExperience"
         :modifiable="false"
         :cdn-url="props.cdnUrl"
-        label="Ajouter des fichiers"
+        label="Document(s) relatif(s) aux compétences et expériences des accompagnants prévus"
       />
     </div>
   </div>
@@ -55,14 +55,14 @@
       v-model="filesProjetsSejoursMesures"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
-      label="Ajouter des fichiers"
+      label="Document(s) relatif(s) aux mesures envisagées au cas où des accompagnants supplémentaires devraient être recrutés en urgence"
     />
   </div>
   <MultiFilesUpload
     v-model="filesProjetsSejoursComplementaires"
     :modifiable="false"
     :cdn-url="props.cdnUrl"
-    label="Ajouter des fichiers complémentaires (optionnel)"
+    label="Document(s) complémentaire(s) relatif(s) aux séjours prévus (optionnel)"
   />
 </template>
 

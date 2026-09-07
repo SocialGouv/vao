@@ -1,5 +1,11 @@
 <template>
-  <DsfrBadge :small="small" :type="badgeType" :label="label" class="fr-ml-1v" />
+  <p
+    class="fr-badge fr-ml-1v"
+    :class="[`fr-badge--${badgeType}`, { 'fr-badge--sm': small }]"
+  >
+    <span class="fr-sr-only">Statut : </span>
+    <span>{{ label }}</span>
+  </p>
 </template>
 
 <script setup lang="ts">

@@ -41,7 +41,7 @@
   <div class="fr-fieldset__element">
     <MultiFilesUpload
       v-model="filesProjetsSejoursPrevus"
-      label="Ajouter des fichiers (optionnel)"
+      label="Document(s) relatif(s) aux séjours prévus (optionnel)"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
     />

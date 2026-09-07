@@ -59,7 +59,7 @@
       v-model="filesBilanFinancierQuatreAnnees"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
-      label="Ajouter des fichiers complémentaires (optionnel)"
+      label="Document(s) relatif(s) au bilan financier sur les quatre dernières années (optionnel)"
     />
   </div>
 </template>

@@ -30,7 +30,7 @@
       v-model="filesProjetsSejoursProtocoleReorientation"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
-      label="Ajouter des fichiers (optionnel)"
+      label="Document(s) relatif(s) à la réorientation et à l'évacuation (optionnel)"
     />
   </div>
   <hr class="fr-mt-8v" />
@@ -60,7 +60,7 @@
       v-model="filesProjetsSejoursProtocoleRapatriement"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
-      label="Ajouter des fichiers (optionnel)"
+      label="Document(s) relatif(s) au rapatriement (optionnel)"
     />
   </div>
 </template>
