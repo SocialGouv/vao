@@ -6,6 +6,8 @@ on:
 env:
   BRANCH_NAME: ${{ github.event.deployment.ref || github.event.pull_request.head.ref || github.ref_name }}
   E2E_BO_PASSWORD: ${{ secrets.E2E_BO_PASSWORD }}
+  E2E_MAILDEV_USERNAME: ${{ secrets.E2E_MAILDEV_USERNAME }}
+  E2E_MAILDEV_PASSWORD: ${{ secrets.E2E_MAILDEV_PASSWORD }}
   TZ: Europe/Paris
 jobs:
   e2e:

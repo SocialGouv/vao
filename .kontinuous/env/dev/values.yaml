@@ -1,7 +1,16 @@
 global:
   s3SecretName: vao-dev-app-access-key
 
-maildev: {}
+maildev:
+  ingress:
+    ~tpl~annotations: |
+      {{- if eq .Values.global.gitBranch "main" }}
+      nginx.ingress.kubernetes.io/auth-type: basic
+      nginx.ingress.kubernetes.io/auth-secret: maildev-basic-auth
+      nginx.ingress.kubernetes.io/auth-realm: Maildev VAO
+      {{- else }}
+      {}
+      {{- end }}
 
 backend:
   vars:
