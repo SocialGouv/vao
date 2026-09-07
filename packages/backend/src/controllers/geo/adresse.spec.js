@@ -11,8 +11,8 @@ describe("controllers/geo/adresse", () => {
       },
     };
     const res = {
-      status: jest.fn().mockReturnThis(),
       json: jest.fn(),
+      status: jest.fn().mockReturnThis(),
     };
 
     axios.get.mockRejectedValueOnce(new Error("boom"));

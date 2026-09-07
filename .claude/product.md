@@ -63,3 +63,4 @@ Fiche organisateur (6 étapes) : `doc_produit/front-ova/fiche-organisateur/READM
 
 - Repo : https://github.com/SocialGouv/vao
 - API GitHub : https://api.github.com/repos/SocialGouv/vao
+- JIRA : https://jira-mcas.atlassian.net/jira/software/c/projects/VAO/boards/336

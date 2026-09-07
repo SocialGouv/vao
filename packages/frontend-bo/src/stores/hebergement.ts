@@ -25,7 +25,7 @@ export const useHebergementStore = defineStore("hebergement", {
     async exportHebergements(params = {}) {
       log.i("exportHebergements - IN");
       try {
-        const response = await $fetchBackend(`/hebergement/extract/`, {
+        const response = await $fetchBackend(`/admin/hebergement/extract`, {
           method: "GET",
           credentials: "include",
           params,
@@ -42,7 +42,7 @@ export const useHebergementStore = defineStore("hebergement", {
       log.i("getHebergements - IN");
       this.isGetHebergementsLoading = true;
       try {
-        const { rows, total } = await $fetchBackend("hebergement/admin", {
+        const { rows, total } = await $fetchBackend("admin/hebergement", {
           method: "GET",
           credentials: "include",
           params,

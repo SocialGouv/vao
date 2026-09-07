@@ -7,7 +7,6 @@ export * as e2eController from "./e2e";
 export * as eigController from "./eig";
 export * as FOUserController from "./fo-user";
 export * as geoController from "./geo";
-export * as hebergementController from "./hebergement";
 export * as messageController from "./message";
 export * as organismeController from "./organisme";
 export * as siretController from "./siret";

@@ -8,7 +8,6 @@ export { default as eig } from "./eig";
 export { default as FOUser } from "./fo-user";
 export { default as geo } from "./geo";
 export { default as healthz } from "./healthz";
-export { default as hebergement } from "./hebergement";
 export { default as message } from "./message";
 export { default as organisme } from "./organisme";
 export { default as sejour } from "./sejour";

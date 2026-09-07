@@ -33,3 +33,16 @@ export const createFeatureFlag = async ({
 export const resetFeatureFlag = async (): Promise<void> => {
   await getPool().query(`DELETE FROM public.feature_flags`);
 };
+
+export const setFeatureFlagEnabled = async ({
+  enabled,
+  name,
+}: {
+  enabled: boolean;
+  name: FeatureFlagName;
+}): Promise<void> => {
+  await getPool().query(
+    `UPDATE public.feature_flags SET enabled = $2, updated_at = NOW() WHERE "name" = $1`,
+    [name, enabled],
+  );
+};
