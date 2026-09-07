@@ -42,8 +42,12 @@ jobs:
         run: |
           E2E_BASE_URL=${{ env.SITE_URL }} pnpm playwright test
 
+      # Seul chemin qui tourne sans identifiant réel : c'est donc le seul où les
+      # traces et vidéos peuvent être publiées dans l'artefact.
       - name: Run Playwright tests (PR)
         if: ${{ env.BRANCH_NAME != 'main' && env.BRANCH_NAME != 'preprod' }}
+        env:
+          E2E_RETAIN_ARTIFACTS: "true"
         run: |
           E2E_BASE_URL=${{ env.SITE_URL }} E2E_BO_PASSWORD="" pnpm playwright test
 

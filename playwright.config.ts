@@ -10,6 +10,16 @@ import { getMaildevCredentials } from "./e2e/utils/urls";
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 /**
+ * Traces et vidéos enregistrent les identifiants du contexte et les valeurs
+ * saisies par `fill`, et le rapport part en artefact d'un dépôt public. Sur CI
+ * elles ne sont donc retenues que là où les tests tournent avec des comptes
+ * factices, c'est-à-dire les review apps, qui doivent le demander
+ * explicitement : une variable absente coupe la rétention, jamais l'inverse.
+ * Sur `main` et preprod il ne reste que le rapport HTML.
+ */
+const retainCiArtifacts = process.env.E2E_RETAIN_ARTIFACTS === "true";
+
+/**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
@@ -27,9 +37,13 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     httpCredentials: getMaildevCredentials(),
-    trace: process.env.CI ? "retain-on-failure" : "on-first-retry",
+    trace: process.env.CI
+      ? retainCiArtifacts
+        ? "retain-on-failure"
+        : "off"
+      : "on-first-retry",
     screenshot: "only-on-failure",
-    video: process.env.CI ? "retain-on-failure" : "off",
+    video: process.env.CI && retainCiArtifacts ? "retain-on-failure" : "off",
     actionTimeout: process.env.CI ? 25_000 : 15_000,
     navigationTimeout: process.env.CI ? 25_000 : 15_000,
   },
