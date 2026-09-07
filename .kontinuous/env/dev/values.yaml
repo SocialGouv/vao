@@ -3,6 +3,11 @@ global:
 
 maildev:
   ingress:
+    # Traefik traduit ces annotations nginx en middleware BasicAuth, mais si le
+    # secret est absent il se contente de logger l'erreur et sert le trafic sans
+    # middleware. Le SealedSecret maildev-basic-auth est donc déployé
+    # inconditionnellement dans cet env, y compris là où l'annotation ne
+    # s'applique pas : c'est ce qui empêche le contrôle d'échouer en silence.
     ~tpl~annotations: |
       {{- if eq .Values.global.gitBranch "main" }}
       nginx.ingress.kubernetes.io/auth-type: basic

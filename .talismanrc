@@ -4,11 +4,15 @@ fileignoreconfig:
 - filename: .env.dev.example.env
   checksum: 7750aad06145ec2c279c3e85684a5877bb3f5e67c4d3e40f112ff87f3d6869e6
 - filename: .github/workflows/e2e.yaml
-  checksum: 20e4a828b197495e39482c581c5ee24bf9e6d1c193ad65edc2a0154c373ea7a7
+  checksum: 19a2fef32c46da5c58ccfa48ff3c6fb9fbf34c6343c3aa762b22cb4aa626f6c8
 - filename: .github/workflows/lint-format-tests.yaml
   checksum: eeca39face10741f484b738a467b8a5d7dd8da4b8306cae058bb0fbf2ff4cf3c
+- filename: .kontinuous/env/dev/templates/maildev-basic-auth.sealed.secret.yaml
+  checksum: aa8b4e435c1ddc919e9a88cf924dcfdabdd11d6ab955d52dc1342684158c2657
 - filename: .kontinuous/env/dev/values.yaml
-  checksum: 94379e9edc293b6725659fde3dc273f8a79954d858d5c864e4650f8f26a645c0
+  checksum: 94ec3780919140efd1f2f40ce3104143984b715532c5a25d2aa19791b68d36ef
+- filename: .kontinuous/env/preprod/templates/maildev-basic-auth.sealed.secret.yaml
+  checksum: f220dc2b73bc8efc09dc05d63d88da8dab73422b34cb907cd40d1b76ce8ba5f9
 - filename: .kontinuous/env/preprod/templates/smtp/ingress.yaml
   checksum: 2414a3f1746ccd11cbb12b86dd2bb4a16cbc5bd6fe1450c308579972128176e6
 - filename: .kontinuous/env/preprod/templates/token.sealed.secret.yaml
@@ -56,7 +60,7 @@ fileignoreconfig:
 - filename: docker-compose.yaml
   checksum: c9749cbb6dc02437d7c2d00f7754b7a8a40c07d03a7b58a6e5340211eba5eb2c
 - filename: docs/tests/E2E_TESTS.md
-  checksum: 401cfa9d8e598b6cd78b7b60e6657ca1c42cd00aca2fc95dd44efc6e731ee3fe
+  checksum: 7437e7f9a8c4a7ae8204d7a280d90e3fb45593ae05d456f9b303b049895d731a
 - filename: e2e/personne-physique-2-hebergement.spec.ts
   checksum: c61577f5c812343e93ac9e683e5606818f258ea1ef63e0af1e4c16fabbb4c8f1
 - filename: e2e/register-login-organisateur.spec.ts
@@ -66,7 +70,7 @@ fileignoreconfig:
 - filename: e2e/utils/helper.ts
   checksum: 15cc40212e476bc94c1a62a2dde6314c29e80e359c72cfd386b652b2451beda5
 - filename: e2e/utils/urls.ts
-  checksum: 960940757f2b53cbf232bc24fe853a4ba42c7dc6b5c7be186f8620281890e0a5
+  checksum: dbbf8505133f6acb8dff2db95a16f18c1068cb1b7f18fa299e24790545f422ca
 - filename: e2e/utils/users.ts
   checksum: e5bab517626659855438a876dfca7fb40451337adbe8cbc11ca65b8a554adaf8
 - filename: package-lock.json

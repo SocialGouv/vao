@@ -80,7 +80,7 @@ pnpm -w tests:e2e --grep "create_organisateur"
 - `E2E_BASE_URL` : URL de base (défaut : `vao-main.ovh.fabrique.social.gouv.fr`)
 - `E2E_LOCAL` : Mode local (`true` pour `localhost:3000`)
 - `E2E_USERNAME` : Email de test (généré automatiquement)
-- `E2E_MAILDEV_USERNAME` / `E2E_MAILDEV_PASSWORD` : identifiants HTTP basic de Maildev, uniquement si l’interface est protégée (`main` et preprod). S’ils sont définis, ils sont injectés dans `maildevUrl` (`https://user:pass@host`). Ignorés s’ils sont vides (local et review apps).
+- `E2E_MAILDEV_USERNAME` / `E2E_MAILDEV_PASSWORD` : identifiants HTTP basic de Maildev, uniquement si l’interface est protégée (`main` et preprod). S’ils sont définis, ils alimentent `httpCredentials` restreint à l’origine de Maildev (`playwright.config.ts`) : jamais dans une URL, donc jamais recopiés dans les traces ni le rapport HTML. Ignorés s’ils sont vides (local et review apps).
 
 ## Bonnes pratiques
 

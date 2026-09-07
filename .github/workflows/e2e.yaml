@@ -6,8 +6,6 @@ on:
 env:
   BRANCH_NAME: ${{ github.event.deployment.ref || github.event.pull_request.head.ref || github.ref_name }}
   E2E_BO_PASSWORD: ${{ secrets.E2E_BO_PASSWORD }}
-  E2E_MAILDEV_USERNAME: ${{ secrets.E2E_MAILDEV_USERNAME }}
-  E2E_MAILDEV_PASSWORD: ${{ secrets.E2E_MAILDEV_PASSWORD }}
   TZ: Europe/Paris
 jobs:
   e2e:
@@ -34,13 +32,18 @@ jobs:
       - name: Set env
         run: |
           echo "SITE_URL=${{ steps.env.outputs.subdomain }}.ovh.fabrique.social.gouv.fr" >> $GITHUB_ENV
-      - name: Run Playwright tests (main or prepod)
-        if: ${{ env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'prepod' }}
+      # Maildev n'est protégé que sur main et preprod : les identifiants ne sont
+      # exposés qu'à ce step, pas aux review apps ni aux scripts d'installation.
+      - name: Run Playwright tests (main or preprod)
+        if: ${{ env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'preprod' }}
+        env:
+          E2E_MAILDEV_USERNAME: ${{ secrets.E2E_MAILDEV_USERNAME }}
+          E2E_MAILDEV_PASSWORD: ${{ secrets.E2E_MAILDEV_PASSWORD }}
         run: |
           E2E_BASE_URL=${{ env.SITE_URL }} pnpm playwright test
 
       - name: Run Playwright tests (PR)
-        if: ${{ env.BRANCH_NAME != 'main' && env.BRANCH_NAME != 'prepod' }}
+        if: ${{ env.BRANCH_NAME != 'main' && env.BRANCH_NAME != 'preprod' }}
         run: |
           E2E_BASE_URL=${{ env.SITE_URL }} E2E_BO_PASSWORD="" pnpm playwright test
 

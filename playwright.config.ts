@@ -1,5 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
+import { getMaildevCredentials } from "./e2e/utils/urls";
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -24,6 +26,7 @@ export default defineConfig({
   reporter: [["html", { open: "never" }], ["list"]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
+    httpCredentials: getMaildevCredentials(),
     trace: process.env.CI ? "retain-on-failure" : "on-first-retry",
     screenshot: "only-on-failure",
     video: process.env.CI ? "retain-on-failure" : "off",
