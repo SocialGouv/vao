@@ -78,7 +78,7 @@ La préprod est accessible via les URLS suivantes :
 
 - [Backoffice Agent](https://bo-vao-preprod.ovh.fabrique.social.gouv.fr/)
 - [Front usagers OVA](https://vao-preprod.ovh.fabrique.social.gouv.fr/)
-- [Service de mails](https://maildev-vao-preprod.ovh.fabrique.social.gouv.fr/)
+- [Service de mails](https://maildev-vao-preprod.ovh.fabrique.social.gouv.fr/) (HTTP basic auth)
 - [Service backend](https://api-vao-preprod.ovh.fabrique.social.gouv.fr/)
 
 ## Déploiement Production (Option B (hotfix) ou option A (déploiement d'une release))

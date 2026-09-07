@@ -1,11 +1,28 @@
 import { defineConfig, devices } from "@playwright/test";
 
+import { getMaildevCredentials } from "./e2e/utils/urls";
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
 // import dotenv from 'dotenv';
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
+
+/**
+ * Traces et vidéos enregistrent les identifiants du contexte et les valeurs
+ * saisies par `fill` ; les captures d'écran, elles, rendent en clair le contenu
+ * des boîtes Maildev que les tests ouvrent — codes OTP et liens de validation.
+ * Le rapport partant en artefact d'un dépôt public, les trois sont conditionnés
+ * à la propriété qui compte — aucun identifiant réel dans ce run — et non au nom
+ * de la branche : injecter un identifiant dans un job qui publie ses artefacts
+ * coupe la rétention de lui-même, sans que personne ait à y penser.
+ */
+const usesRealCredentials =
+  Boolean(process.env.E2E_BO_PASSWORD) ||
+  Boolean(process.env.E2E_MAILDEV_PASSWORD);
+
+const retainCiArtifacts = Boolean(process.env.CI) && !usesRealCredentials;
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -24,9 +41,15 @@ export default defineConfig({
   reporter: [["html", { open: "never" }], ["list"]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    trace: process.env.CI ? "retain-on-failure" : "on-first-retry",
-    screenshot: "only-on-failure",
-    video: process.env.CI ? "retain-on-failure" : "off",
+    httpCredentials: getMaildevCredentials(),
+    trace: process.env.CI
+      ? retainCiArtifacts
+        ? "retain-on-failure"
+        : "off"
+      : "on-first-retry",
+    screenshot:
+      retainCiArtifacts || !process.env.CI ? "only-on-failure" : "off",
+    video: retainCiArtifacts ? "retain-on-failure" : "off",
     actionTimeout: process.env.CI ? 25_000 : 15_000,
     navigationTimeout: process.env.CI ? 25_000 : 15_000,
   },
