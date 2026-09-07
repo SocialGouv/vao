@@ -11,11 +11,12 @@ import { getMaildevCredentials } from "./e2e/utils/urls";
 
 /**
  * Traces et vidéos enregistrent les identifiants du contexte et les valeurs
- * saisies par `fill`, et le rapport part en artefact d'un dépôt public. La
- * rétention est donc conditionnée à la propriété qui compte — aucun identifiant
- * réel dans ce run — et non au nom de la branche : injecter un identifiant dans
- * un job qui publie ses artefacts coupe la rétention de lui-même, sans que
- * personne ait à y penser.
+ * saisies par `fill` ; les captures d'écran, elles, rendent en clair le contenu
+ * des boîtes Maildev que les tests ouvrent — codes OTP et liens de validation.
+ * Le rapport partant en artefact d'un dépôt public, les trois sont conditionnés
+ * à la propriété qui compte — aucun identifiant réel dans ce run — et non au nom
+ * de la branche : injecter un identifiant dans un job qui publie ses artefacts
+ * coupe la rétention de lui-même, sans que personne ait à y penser.
  */
 const usesRealCredentials =
   Boolean(process.env.E2E_BO_PASSWORD) ||
@@ -46,7 +47,8 @@ export default defineConfig({
         ? "retain-on-failure"
         : "off"
       : "on-first-retry",
-    screenshot: "only-on-failure",
+    screenshot:
+      retainCiArtifacts || !process.env.CI ? "only-on-failure" : "off",
     video: retainCiArtifacts ? "retain-on-failure" : "off",
     actionTimeout: process.env.CI ? 25_000 : 15_000,
     navigationTimeout: process.env.CI ? 25_000 : 15_000,
