@@ -38,7 +38,7 @@
                   'bilanQualPerceptionSensibilite'
                 ].label
               "
-              :model-value="bilanQualPerceptionSensibilite"
+              :model-value="bilanQualPerceptionSensibilite ?? undefined"
               :label-visible="true"
               :is-textarea="true"
               :is-valid="bilanQualPerceptionSensibiliteMeta.valid"
@@ -96,7 +96,7 @@
                   'bilanQualPerspectiveEvol'
                 ].label
               "
-              :model-value="bilanQualPerspectiveEvol"
+              :model-value="bilanQualPerspectiveEvol ?? undefined"
               :label-visible="true"
               :is-textarea="true"
               :is-valid="bilanQualPerspectiveEvolMeta.valid"
@@ -153,7 +153,7 @@
                   'bilanQualElementsMarquants'
                 ].label
               "
-              :model-value="bilanQualElementsMarquants"
+              :model-value="bilanQualElementsMarquants ?? undefined"
               :label-visible="true"
               :is-textarea="true"
               :is-valid="bilanQualElementsMarquantsMeta.valid"

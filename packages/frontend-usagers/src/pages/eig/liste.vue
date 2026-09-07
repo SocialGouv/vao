@@ -10,12 +10,18 @@
             >
               <div class="fr-input-group">
                 <DsfrInputGroup
-                  v-model="searchState.idFonctionnelle"
+                  :model-value="searchState.idFonctionnelle ?? undefined"
                   type="text"
                   name="Déclaration"
                   label="Déclaration"
                   placeholder="Déclaration"
                   :label-visible="true"
+                  @update:model-value="
+                    (v) => {
+                      searchState.idFonctionnelle =
+                        v == null ? null : String(v);
+                    }
+                  "
                 />
               </div>
             </div>
@@ -24,12 +30,17 @@
             >
               <div class="fr-input-group">
                 <DsfrInputGroup
-                  v-model="searchState.libelle"
+                  :model-value="searchState.libelle ?? undefined"
                   type="text"
                   name="Séjour"
                   label="Séjour"
                   placeholder="Séjour"
                   :label-visible="true"
+                  @update:model-value="
+                    (v) => {
+                      searchState.libelle = v == null ? null : String(v);
+                    }
+                  "
                 />
               </div>
             </div>

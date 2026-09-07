@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { organisme } from "#imports";
+import organisme from "./organisme";
 
 /*  Sur l'espace admin, le status BROUILLON ne sera jamais vu,
 il ne fait donc pas parti de la liste des status possibles*/

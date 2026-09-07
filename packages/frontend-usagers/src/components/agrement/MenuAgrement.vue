@@ -57,6 +57,10 @@ const sommaireOptionsToDisplay = computed(() =>
 );
 
 function onSelect(idx: number) {
-  emit("select", menus.value[idx].id);
+  const menu = menus.value[idx];
+  if (!menu) {
+    return;
+  }
+  emit("select", menu.id);
 }
 </script>

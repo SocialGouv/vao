@@ -118,11 +118,16 @@ export const useAgrementStore = defineStore("agrement", {
           if (!filtered || filtered.length === 0) {
             this.agrementCourant = null;
           } else {
-            const { agrement: agrementDetail } = await AgrementService.get(
-              filtered[0].id!,
-            );
+            const firstAgrement = filtered[0];
+            if (!firstAgrement?.id) {
+              this.agrementCourant = null;
+            } else {
+              const { agrement: agrementDetail } = await AgrementService.get(
+                firstAgrement.id,
+              );
 
-            this.agrementCourant = agrementDetail;
+              this.agrementCourant = agrementDetail;
+            }
           }
         } else {
           const agrementId = organismeCourant.agrement?.id;
@@ -188,8 +193,13 @@ export const useAgrementStore = defineStore("agrement", {
           log.i("getEnRenouvellement - DONE no agrement in renouvellement");
           return;
         }
+        const firstAgrement = filtered[0];
+        if (!firstAgrement?.id) {
+          this.agrementEnTraitement = this.agrementCourant;
+          return;
+        }
         const { agrement: agrementDetail } = await AgrementService.get(
-          filtered[0].id!,
+          firstAgrement.id,
         );
         log.i("getEnRenouvellement - DONE");
         this.agrementEnTraitement = agrementDetail ?? null;

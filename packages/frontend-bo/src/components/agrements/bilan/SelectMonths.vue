@@ -36,7 +36,7 @@ const selectedLabels = ref<string[]>(
   props.defaultSelected
     ? props.defaultSelected
         .map((num) => months[num - 1])
-        .filter((label) => !!label)
+        .filter((label): label is string => !!label)
     : [],
 );
 </script>

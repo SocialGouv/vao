@@ -172,6 +172,9 @@ const valueFromObject = (
     return null;
   }
   const [key, ...rest] = string.split(":");
+  if (key === undefined) {
+    return null;
+  }
   if (rest.length) {
     return valueFromObject(rest.join(":"), obj[key]);
   }

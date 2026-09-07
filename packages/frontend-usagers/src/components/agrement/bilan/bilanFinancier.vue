@@ -16,7 +16,7 @@
               ].label
             "
             hint="Minimum 20 caractères. Détaillez les dépenses et recettes rattachées spécifiquement à l’activité concernée, en précisant les postes budgétaires si possible."
-            :model-value="bilanFinancierComptabilite"
+            :model-value="bilanFinancierComptabilite ?? undefined"
             :label-visible="true"
             :is-textarea="true"
             :is-valid="bilanFinancierComptabiliteMeta.valid"
@@ -48,7 +48,7 @@
                 .label
             "
             hint="Présentez les principales évolutions financières entre l’année en cours (N) et l’année précédente (N-1) : écarts, tendances ou variations significatives."
-            :model-value="bilanFinancierComparatif"
+            :model-value="bilanFinancierComparatif ?? undefined"
             :label-visible="true"
             :is-textarea="true"
             :is-valid="bilanFinancierComparatifMeta.valid"
@@ -79,7 +79,7 @@
               ].label
             "
             hint="Indiquez le nombre de personnes impliquées (en ETP), leurs fonctions et compétences principales, ainsi que les coûts salariaux, dépenses de fonctionnement ou autres coûts associés à leur mobilisation."
-            :model-value="bilanFinancierRessourcesHumaines"
+            :model-value="bilanFinancierRessourcesHumaines ?? undefined"
             :label-visible="true"
             :is-textarea="true"
             :is-valid="bilanFinancierRessourcesHumainesMeta.valid"
@@ -107,7 +107,7 @@
             v-if="props.modifiable"
             name="bilanFinancierCommentaire"
             label="Ajouter un commentaire (optionnel)"
-            :model-value="bilanFinancierCommentaire"
+            :model-value="bilanFinancierCommentaire ?? undefined"
             :label-visible="true"
             :is-textarea="true"
             :is-valid="bilanFinancierCommentaireMeta.valid"

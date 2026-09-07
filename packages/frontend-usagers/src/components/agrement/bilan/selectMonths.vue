@@ -4,6 +4,7 @@
       v-if="props.modifiable"
       id="months-select"
       v-model="selectedLabels"
+      label="sélectionnez un ou plusieurs mois"
       aria-label="sélectionnez un ou plusieurs mois"
       :button-label="buttonLabel"
       :options="months"
@@ -48,7 +49,7 @@ const selectedLabels = ref<string[]>(
   props.defaultSelected
     ? props.defaultSelected
         .map((num) => months[num - 1])
-        .filter((label) => !!label)
+        .filter((label): label is string => !!label)
     : [],
 );
 
@@ -75,11 +76,19 @@ const buttonLabel = computed(() => {
     .filter((num: number) => num > 0)
     .sort((a, b) => a - b);
 
-  if (selectedIndices.length === 1) {
-    return months[selectedIndices[0] - 1];
+  const firstSelected = selectedIndices[0];
+  const lastSelected = selectedIndices[selectedIndices.length - 1];
+  if (firstSelected === undefined || lastSelected === undefined) {
+    return "Sélection";
   }
-  const firstMonth = months[selectedIndices[0] - 1];
-  const lastMonth = months[selectedIndices[selectedIndices.length - 1] - 1];
+  const firstMonth = months[firstSelected - 1];
+  const lastMonth = months[lastSelected - 1];
+  if (!firstMonth || !lastMonth) {
+    return "Sélection";
+  }
+  if (selectedIndices.length === 1) {
+    return firstMonth;
+  }
   return `${truncate(firstMonth)}-${truncate(lastMonth)}`;
 });
 </script>

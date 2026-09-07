@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import demandeSejours from "./demandes-sejours";
-
-import { organisme } from "#imports";
+import organisme from "./organisme";
 
 describe("getSaison", () => {
   it("should return Hiver for dates in January", () => {

@@ -9,36 +9,51 @@
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
               <DsfrInputGroup
-                v-model="searchState.idFonctionnelle"
+                :model-value="searchState.idFonctionnelle ?? undefined"
                 type="text"
                 name="Déclaration"
                 label="Déclaration"
                 placeholder="Déclaration"
                 :label-visible="true"
+                @update:model-value="
+                  (v) => {
+                    searchState.idFonctionnelle = v == null ? null : String(v);
+                  }
+                "
               />
             </div>
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
               <DsfrInputGroup
-                v-model="searchState.organisme"
+                :model-value="searchState.organisme ?? undefined"
                 type="text"
                 name="organisme"
                 label="Organisme"
                 placeholder="Organisme"
                 :label-visible="true"
+                @update:model-value="
+                  (v) => {
+                    searchState.organisme = v == null ? null : String(v);
+                  }
+                "
               />
             </div>
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
               <DsfrInputGroup
-                v-model="searchState.libelle"
+                :model-value="searchState.libelle ?? undefined"
                 type="text"
                 name="Séjour"
                 label="Séjour"
                 placeholder="Séjour"
                 :label-visible="true"
+                @update:model-value="
+                  (v) => {
+                    searchState.libelle = v == null ? null : String(v);
+                  }
+                "
               />
             </div>
             <div
@@ -375,7 +390,7 @@ const headers: Array<EigTableHeader> = [
       component: EigTypeListe,
       types: (types ?? [])
         .filter((t): t is string => typeof t === "string")
-        .map((t) => mapEigToLabel[t]),
+        .map((t) => mapEigToLabel[t as keyof typeof mapEigToLabel]),
     }),
   },
   {

@@ -13,7 +13,7 @@
             displayInput.AgrementBilanAnnuelInput['bilanChangementEvolution']
               .label
           "
-          :model-value="bilanChangementEvolution"
+          :model-value="bilanChangementEvolution ?? undefined"
           :label-visible="true"
           :is-textarea="true"
           :is-valid="bilanChangementEvolutionMeta.valid"

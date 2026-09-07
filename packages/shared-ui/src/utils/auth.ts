@@ -4,13 +4,25 @@ import { emailRegex } from "./regex";
 import { TwoFactorErrorCode, addMinutes } from "@vao/shared-bridge";
 
 export function maskEmail(emailAddress: string): string {
-  if (!emailAddress || !emailAddress.includes("@")) return emailAddress;
+  if (!emailAddress || !emailAddress.includes("@")) {
+    return emailAddress;
+  }
 
   const [local, domain] = emailAddress.split("@");
+  if (!local || !domain) {
+    return emailAddress;
+  }
+
   const domainParts = domain.split(".");
   const extension = domainParts.pop();
+  const domainName = domainParts[0];
+  const localInitial = local[0];
+  const domainInitial = domainName?.[0];
+  if (!extension || !localInitial || !domainInitial) {
+    return emailAddress;
+  }
 
-  return `${local[0]}***@${domainParts[0][0]}***.${extension}`;
+  return `${localInitial}***@${domainInitial}***.${extension}`;
 }
 
 export function getErrorMessage2FA(

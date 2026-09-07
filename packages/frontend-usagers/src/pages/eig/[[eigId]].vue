@@ -112,7 +112,7 @@ const log = logger("pages/eig/[[eigId]]");
 
 const eigId = ref<string | null>(route.params.eigId?.toString() ?? null);
 
-const hash = computed(() => route.hash.slice(1) || eigMenu[0].id);
+const hash = computed(() => route.hash.slice(1) || eigMenu[0]?.id || "");
 
 const links = [
   {
@@ -162,14 +162,22 @@ const updateOrCreate = async (data: unknown, type: string) => {
 
 function previousHash() {
   const index = eigMenu.findIndex((o) => o.id === hash.value);
-  return navigateTo({ hash: "#" + eigMenu[index - 1].id });
+  const previous = eigMenu[index - 1];
+  if (!previous) {
+    return;
+  }
+  return navigateTo({ hash: "#" + previous.id });
 }
 
 const nextHash = () => {
   const index = eigMenu.findIndex((o) => o.id === hash.value);
+  const next = eigMenu[index + 1];
+  if (!next) {
+    return;
+  }
   return navigateTo({
     path: `/eig/${eigId.value}`,
-    hash: "#" + eigMenu[index + 1].id,
+    hash: "#" + next.id,
   });
 };
 

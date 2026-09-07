@@ -129,8 +129,8 @@
               :is-valid="confirmField.isValid"
               aria-required="true"
               @update:model-value="
-                (confirm: string) => {
-                  confirmField.modelValue = confirm;
+                (confirm) => {
+                  confirmField.modelValue = String(confirm ?? '');
                 }
               "
             />
@@ -400,7 +400,8 @@ function resolveErrorMessage(
   return invalidMessage;
 }
 
-function checkValidEmail(email: string) {
+function checkValidEmail(payload: string | number | undefined) {
+  const email = String(payload ?? "");
   emailField.modelValue = email;
   emailField.isValid = !!email && regex.emailRegex.test(email);
   emailField.errorMessage = resolveErrorMessage(
@@ -411,7 +412,8 @@ function checkValidEmail(email: string) {
   );
 }
 
-function checkValidPassword(pwd: string) {
+function checkValidPassword(payload: string | number | undefined) {
+  const pwd = String(payload ?? "");
   passwordField.modelValue = pwd;
   passwordField.isValid = !!pwd && regex.pwdRegex.test(pwd);
 
@@ -429,7 +431,8 @@ function checkValidPassword(pwd: string) {
   );
 }
 
-function checkValidNom(nom: string) {
+function checkValidNom(payload: string | number | undefined) {
+  const nom = String(payload ?? "");
   nomField.modelValue = nom;
   nomField.isValid =
     !!nom &&
@@ -445,7 +448,8 @@ function checkValidNom(nom: string) {
   );
 }
 
-function checkValidPrenom(prenom: string) {
+function checkValidPrenom(payload: string | number | undefined) {
+  const prenom = String(payload ?? "");
   prenomField.modelValue = prenom;
   prenomField.isValid =
     !!prenom &&
@@ -461,7 +465,8 @@ function checkValidPrenom(prenom: string) {
   );
 }
 
-function checkValidTelephone(telephone: string) {
+function checkValidTelephone(payload: string | number | undefined) {
+  const telephone = String(payload ?? "");
   telephoneField.modelValue = telephone;
   telephoneField.isValid =
     !!telephone && regex.numTelephoneRegex.test(telephone);
@@ -473,7 +478,8 @@ function checkValidTelephone(telephone: string) {
   );
 }
 
-function checkValidSiret(siret: string) {
+function checkValidSiret(payload: string | number | undefined) {
+  const siret = String(payload ?? "");
   siretField.modelValue = siret;
 
   if (!siret) {

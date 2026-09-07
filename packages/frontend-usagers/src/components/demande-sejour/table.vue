@@ -267,9 +267,9 @@ const queryString: Record<string, string> = Object.fromEntries(
 
 const sortableColumns = columns.flatMap((column) =>
   column.options?.isSortable ? [column.key] : [],
-) as NestedKeys<object>[];
+) as NestedKeys<Data>[];
 
-const { limit, offset, sort, sortDirection } = usePagination<object>(
+const { limit, offset, sort, sortDirection } = usePagination<Data>(
   {
     limit: queryString.limit,
     offset: queryString.offset,
@@ -277,12 +277,7 @@ const { limit, offset, sort, sortDirection } = usePagination<object>(
     sortDirection: queryString.sortDirection as "asc" | "desc" | "",
   },
   sortableColumns,
-) as {
-  limit: Ref<number>;
-  offset: Ref<number>;
-  sort: Ref<NestedKeys<Data> | "">;
-  sortDirection: Ref<"asc" | "desc" | "">;
-};
+);
 
 const getSearchParams = (): Partial<ApiQuery> => ({
   ...(isValidParams(idFonctionnelle.value)
