@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const { logger } = require("../utils/logger");
 
 const log = logger(module.filename);

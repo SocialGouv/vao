@@ -18,6 +18,7 @@ export const createHebergement = async ({
   const fixture: Omit<HebergementDto, "id"> = {
     ...buildHebergementFixture(),
     organismeId: organismeId ?? 1,
+    siteId: null,
     statut: "actif",
     ...hebergement,
   };

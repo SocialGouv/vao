@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: .claude/docs/module-hebergement.md
+  checksum: b5cf78c49131afcb9eed4b31e0490b07e991e8e6c051ef8ccd05d39554fb947f
 - filename: .claude/product.md
   checksum: 60eb40f72aaa7536bf2ab4e233f5dd9f97c1be0b167664512f88d6bf321ee3b4
 - filename: .env.dev.example.env
@@ -51,6 +53,8 @@ fileignoreconfig:
   checksum: 5500f51a969877fcd8752914257b42067328bf8c9c7e84bb55849ef91b4ae44c
 - filename: .vscode/settings.json
   checksum: bfa8870f696549d178edd6992541e3c7c2eb10a911abac24f97575436183fdaa
+- filename: AGENTS.md
+  checksum: 45c701b44b695d09784c33ad1137d8db3d1190d460296cb15d9458ea1ba1b20e
 - filename: README.md
   checksum: 3627cd363d1cfc640df689ce74d5467e13707a2cc9c44b0bffaba14f217296e2
 - filename: \_scripts/dev/local-node.dockerfile
@@ -97,6 +101,8 @@ fileignoreconfig:
   checksum: 1592485597a9d3c481163fc6f495367be3e70c112cb3cbe3d528afc6a7919860
 - filename: packages/backend/src/admin/agrements/agrements.service.ts
   checksum: 7a829c5b141bb9761e1d3fcebacc6d0a5b0ca699af877295d671d33d84728f33
+- filename: packages/backend/src/admin/hebergement/hebergement.controller.ts
+  checksum: e78e5feb11bd600c5d60318b255cc5b9fb27311ba85e44cc82f6ce131676aed2
 - filename: packages/backend/src/admin/users/users.service.ts
   checksum: 3263ede3a41a662307af17ed84d3b2ff62be383c4d758783109e701f8aa91d11
 - filename: packages/backend/src/config.js
@@ -419,6 +425,10 @@ fileignoreconfig:
   checksum: 2fdccc406cc543d7ddbf91331b524ab24d9f170466ea2fd4555a43d2dfb2f5d6
 - filename: packages/migrations/src/migrations/20260927113215_add_site_unite_hebergement.js
   checksum: 0494c6b29f243694722affe35c6d828c39a214366209219eef6498e36bdb73ad
+- filename: packages/migrations/src/migrations/20260929071549_migrate_hebergement_to_site_unite_hebergement.js
+  checksum: a8698f91fbd818b18dd2bf9e91ef26c39c4fa54acc894366a865742758e36e76
+- filename: packages/migrations/src/scripts/check-hebergement-migration.js
+  checksum: 012f47eaa328f4b8fc28d75da8151c4ece3104f7c54d9bd670e4c85058dba124
 - filename: packages/migrations/src/scripts/migrate-files-to-s3.js
   checksum: 0c60a5a9f3321ab3c36025bdeb35663395586d5bca3d21984fdbe5997b46c6eb
 - filename: packages/migrations/src/scripts/reset-s3.js

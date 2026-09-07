@@ -6,7 +6,7 @@ const HebergementService = {
     const { hebergement } = await buildRequest<
       HebergementAdminRoutes["GetOne"]
     >({
-      path: "/hebergement/admin/{id}",
+      path: "/admin/hebergement/{id}",
       method: "GET",
       params: { id: String(hebergementId) },
     })();

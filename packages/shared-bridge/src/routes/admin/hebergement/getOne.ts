@@ -5,7 +5,7 @@ import type { BasicRoute, RouteResponseBody, RouteSchema } from "../..";
 
 export interface GetOneAdminRoute extends BasicRoute {
   method: "GET";
-  path: "/hebergement/admin/{id}";
+  path: "/admin/hebergement/{id}";
   params: {
     id: string;
   };

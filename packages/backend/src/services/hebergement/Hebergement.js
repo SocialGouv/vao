@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const { logger } = require("../../utils/logger");
 const {
   saveAdresse,
@@ -19,6 +18,9 @@ const {
   mapDBHebergementToDSHebergement,
 } = require("./helpers");
 const { getPool } = require("../../utils/pgpool");
+const {
+  HebergementServiceShared,
+} = require("../../shared/hebergements/hebergements.service");
 
 const log = logger(module.filename);
 
@@ -116,7 +118,7 @@ ${new Array(nbRows)
       $35,                                                              --AMENAGEMENTS_SPECIFIQUES_PRECISION
       (SELECT ID FROM FRONT.HEBERGEMENT_STATUT WHERE VALUE = $36)        -- STATUT
     )
-    RETURNING id
+    RETURNING id, hebergement_id
     `,
   getByDSId: `
     SELECT
@@ -248,6 +250,11 @@ ${new Array(nbRows)
     WHERE
       h.id = $1
   `,
+  getStatutId: `
+    SELECT id
+      FROM front.hebergement_statut
+    WHERE value = $1
+  `,
   historize: `
     UPDATE front.hebergement
     SET current = FALSE
@@ -371,6 +378,7 @@ const create = async (
   ]);
 
   const hebergementId = rows[0].id;
+  const hebergementUuid = rows[0].hebergement_id;
   const prestationsHotelieres = informationsLocaux.prestationsHotelieres;
 
   if (prestationsHotelieres.length > 0) {
@@ -380,16 +388,62 @@ const create = async (
     );
   }
 
-  return hebergementId;
+  return { hebergementId, hebergementUuid };
+};
+
+const getStatutId = async (statut, client = getPool()) => {
+  const { rows } = await client.query(query.getStatutId, [statut]);
+  return rows?.[0]?.id ?? null;
+};
+
+const syncSiteAndUniteOnCreate = async (
+  client,
+  userId,
+  organismeId,
+  hebergement,
+  created,
+) => {
+  const siteId = await HebergementServiceShared.createSite(
+    {
+      adresse: hebergement.coordonnees?.adresse ?? null,
+      adresseId: null,
+      createdBy: userId,
+      descriptif:
+        hebergement.informationsLocaux?.descriptionLieuHebergement ?? null,
+      hebergementTypeId: null,
+      hebergementTypeValue: hebergement.informationsLocaux?.type ?? null,
+      nomSiteOfficiel: hebergement.nom,
+      organismeId,
+      respEmail: hebergement.coordonnees?.email ?? null,
+      respNomPrenom: hebergement.coordonnees?.nomGestionnaire ?? null,
+      respTelephone: hebergement.coordonnees?.numTelephone1 ?? null,
+    },
+    client,
+  );
+  await HebergementServiceShared.createUniteHebergement(
+    {
+      createdBy: userId,
+      hebergementId: created.hebergementUuid,
+      id: created.hebergementId,
+      informationsLocaux: hebergement.informationsLocaux,
+      informationsTransport: hebergement.informationsTransport,
+      organismeId,
+      siteId,
+      statutId: null,
+      typePensions: [],
+      uniteData: hebergement.uniteData ?? undefined,
+    },
+    client,
+  );
 };
 
 module.exports.create = async (userId, organismeId, statut, hebergement) => {
   const client = await getPool().connect();
-  let hebergementId;
+  let created;
 
   try {
     await client.query("BEGIN");
-    hebergementId = await create(
+    created = await create(
       client,
       {
         createdAt: new Date(),
@@ -400,6 +454,13 @@ module.exports.create = async (userId, organismeId, statut, hebergement) => {
       },
       hebergement,
     );
+    await syncSiteAndUniteOnCreate(
+      client,
+      userId,
+      organismeId,
+      hebergement,
+      created,
+    );
     await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK");
@@ -408,7 +469,7 @@ module.exports.create = async (userId, organismeId, statut, hebergement) => {
     client.release();
   }
 
-  return hebergementId;
+  return created.hebergementId;
 };
 
 // Utilisée par exemple lorsque l'on modifie un hebergement en statut brouillon
@@ -474,6 +535,43 @@ module.exports.updateWithoutHistory = async (
       );
     }
 
+    const uniteHebergement =
+      await HebergementServiceShared.getUniteHebergementById(
+        Number(hebergementId),
+        client,
+      );
+    if (uniteHebergement) {
+      await HebergementServiceShared.updateUniteHebergementInPlace(
+        uniteHebergement.id,
+        {
+          editedBy: userId,
+          informationsLocaux,
+          informationsTransport,
+          statutId: await getStatutId(statut, client),
+          typePensions: [],
+          uniteData: hebergement.uniteData ?? undefined,
+        },
+        client,
+      );
+      await HebergementServiceShared.updateSite(
+        uniteHebergement.siteId,
+        {
+          adresse: coordonnees?.adresse ?? null,
+          adresseId: null,
+          descriptif: informationsLocaux?.descriptionLieuHebergement ?? null,
+          editedBy: userId,
+          hebergementTypeId: null,
+          hebergementTypeValue: informationsLocaux?.type ?? null,
+          nomSiteOfficiel: nom,
+          organismeId: uniteHebergement.organismeId,
+          respEmail: coordonnees?.email ?? null,
+          respNomPrenom: coordonnees?.nomGestionnaire ?? null,
+          respTelephone: coordonnees?.numTelephone1 ?? null,
+        },
+        client,
+      );
+    }
+
     await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK");
@@ -500,11 +598,11 @@ module.exports.update = async (userId, hebergementId, hebergement, statut) => {
 
   const client = await getPool().connect();
 
-  let newHebergementId;
+  let newHebergement;
   try {
     await client.query("BEGIN");
     await client.query(query.historize, [hebergementId]);
-    newHebergementId = await create(
+    newHebergement = await create(
       client,
       {
         createdAt,
@@ -517,6 +615,46 @@ module.exports.update = async (userId, hebergementId, hebergement, statut) => {
       hebergementUuid,
     );
 
+    const uniteHebergement =
+      await HebergementServiceShared.getUniteHebergementById(
+        Number(hebergementId),
+        client,
+      );
+    if (uniteHebergement) {
+      await HebergementServiceShared.updateUniteHebergement(
+        uniteHebergement.id,
+        {
+          editedBy: userId,
+          hebergementId: newHebergement.hebergementUuid,
+          id: newHebergement.hebergementId,
+          informationsLocaux: hebergement.informationsLocaux,
+          informationsTransport: hebergement.informationsTransport,
+          statutId: await getStatutId(statut, client),
+          typePensions: [],
+          uniteData: hebergement.uniteData ?? undefined,
+        },
+        client,
+      );
+      await HebergementServiceShared.updateSite(
+        uniteHebergement.siteId,
+        {
+          adresse: hebergement.coordonnees?.adresse ?? null,
+          adresseId: null,
+          descriptif:
+            hebergement.informationsLocaux?.descriptionLieuHebergement ?? null,
+          editedBy: userId,
+          hebergementTypeId: null,
+          hebergementTypeValue: hebergement.informationsLocaux?.type ?? null,
+          nomSiteOfficiel: hebergement.nom,
+          organismeId: uniteHebergement.organismeId,
+          respEmail: hebergement.coordonnees?.email ?? null,
+          respNomPrenom: hebergement.coordonnees?.nomGestionnaire ?? null,
+          respTelephone: hebergement.coordonnees?.numTelephone1 ?? null,
+        },
+        client,
+      );
+    }
+
     await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK");
@@ -524,13 +662,34 @@ module.exports.update = async (userId, hebergementId, hebergement, statut) => {
   } finally {
     client.release();
   }
+
   log.i("update - DONE");
-  return newHebergementId;
+  return newHebergement.hebergementId;
 };
 
 module.exports.updateStatut = async (userId, hebergementId, statut) => {
   log.i("updateStatut - IN");
-  await getPool().query(query.updateStatut, [hebergementId, userId, statut]);
+  const client = await getPool().connect();
+
+  try {
+    await client.query("BEGIN");
+    await client.query(query.updateStatut, [hebergementId, userId, statut]);
+    const statutId = await getStatutId(statut, client);
+    if (statutId) {
+      await client.query(
+        `UPDATE front.unite_hebergement
+         SET statut_id = $2, edited_by = $3, edited_at = NOW()
+         WHERE id = $1 AND "current" IS TRUE`,
+        [hebergementId, statutId, userId],
+      );
+    }
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
   log.i("update - DONE");
   return hebergementId;
 };
