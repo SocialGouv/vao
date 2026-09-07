@@ -4,7 +4,7 @@ fileignoreconfig:
 - filename: .env.dev.example.env
   checksum: 7750aad06145ec2c279c3e85684a5877bb3f5e67c4d3e40f112ff87f3d6869e6
 - filename: .github/workflows/e2e.yaml
-  checksum: 19a2fef32c46da5c58ccfa48ff3c6fb9fbf34c6343c3aa762b22cb4aa626f6c8
+  checksum: 376d20750a9a9d9ecd37fa5df824a6945cebc8b75e130d923c8c3d120da03e53
 - filename: .github/workflows/lint-format-tests.yaml
   checksum: eeca39face10741f484b738a467b8a5d7dd8da4b8306cae058bb0fbf2ff4cf3c
 - filename: .kontinuous/env/dev/templates/maildev-basic-auth.sealed.secret.yaml
