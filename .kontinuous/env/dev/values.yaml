@@ -8,14 +8,11 @@ maildev:
     # middleware. Le SealedSecret maildev-basic-auth est donc déployé
     # inconditionnellement dans cet env, y compris là où l'annotation ne
     # s'applique pas : c'est ce qui empêche le contrôle d'échouer en silence.
-    ~tpl~annotations: |
-      {{- if eq .Values.global.gitBranch "main" }}
-      nginx.ingress.kubernetes.io/auth-type: basic
-      nginx.ingress.kubernetes.io/auth-secret: maildev-basic-auth
-      nginx.ingress.kubernetes.io/auth-realm: Maildev VAO
-      {{- else }}
-      {}
-      {{- end }}
+    # Le rendu doit tenir sur une ligne : kontinuous passe la sortie d'un ~tpl~
+    # à loadValue, qui enveloppe toute valeur multi-ligne dans un scalaire bloc
+    # et rend donc une chaîne, que le schéma du chart rejette. D'où le flow JSON,
+    # comme le ~tpl~annotations de pgweb.
+    ~tpl~annotations: '{{ if eq .Values.global.gitBranch "main" }}{"nginx.ingress.kubernetes.io/auth-type": "basic", "nginx.ingress.kubernetes.io/auth-secret": "maildev-basic-auth", "nginx.ingress.kubernetes.io/auth-realm": "Maildev VAO"}{{ else }}{}{{ end }}'
 
 backend:
   vars:
