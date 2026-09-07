@@ -5,7 +5,6 @@ on:
 
 env:
   BRANCH_NAME: ${{ github.event.deployment.ref || github.event.pull_request.head.ref || github.ref_name }}
-  E2E_BO_PASSWORD: ${{ secrets.E2E_BO_PASSWORD }}
   TZ: Europe/Paris
 jobs:
   e2e:
@@ -32,24 +31,26 @@ jobs:
       - name: Set env
         run: |
           echo "SITE_URL=${{ steps.env.outputs.subdomain }}.ovh.fabrique.social.gouv.fr" >> $GITHUB_ENV
-      # Maildev n'est protégé que sur main et preprod : les identifiants ne sont
-      # exposés qu'à ce step, pas aux review apps ni aux scripts d'installation.
+      # Tous les identifiants réels vivent ici et nulle part ailleurs : ni au
+      # niveau du workflow, ni dans le step des review apps, ni dans
+      # `pnpm install`. C'est aussi leur présence qui coupe la rétention des
+      # traces et vidéos (playwright.config.ts).
       - name: Run Playwright tests (main or preprod)
         if: ${{ env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'preprod' }}
         env:
+          E2E_BO_PASSWORD: ${{ secrets.E2E_BO_PASSWORD }}
           E2E_MAILDEV_USERNAME: ${{ secrets.E2E_MAILDEV_USERNAME }}
           E2E_MAILDEV_PASSWORD: ${{ secrets.E2E_MAILDEV_PASSWORD }}
         run: |
           E2E_BASE_URL=${{ env.SITE_URL }} pnpm playwright test
 
-      # Seul chemin qui tourne sans identifiant réel : c'est donc le seul où les
-      # traces et vidéos peuvent être publiées dans l'artefact.
+      # Aucun secret dans l'environnement de ce step : les comptes de test
+      # retombent sur leur mot de passe seedé, et les artefacts complets peuvent
+      # être publiés.
       - name: Run Playwright tests (PR)
         if: ${{ env.BRANCH_NAME != 'main' && env.BRANCH_NAME != 'preprod' }}
-        env:
-          E2E_RETAIN_ARTIFACTS: "true"
         run: |
-          E2E_BASE_URL=${{ env.SITE_URL }} E2E_BO_PASSWORD="" pnpm playwright test
+          E2E_BASE_URL=${{ env.SITE_URL }} pnpm playwright test
 
       - uses: actions/upload-artifact@v4
         if: always()

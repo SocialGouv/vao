@@ -11,13 +11,17 @@ import { getMaildevCredentials } from "./e2e/utils/urls";
 
 /**
  * Traces et vidéos enregistrent les identifiants du contexte et les valeurs
- * saisies par `fill`, et le rapport part en artefact d'un dépôt public. Sur CI
- * elles ne sont donc retenues que là où les tests tournent avec des comptes
- * factices, c'est-à-dire les review apps, qui doivent le demander
- * explicitement : une variable absente coupe la rétention, jamais l'inverse.
- * Sur `main` et preprod il ne reste que le rapport HTML.
+ * saisies par `fill`, et le rapport part en artefact d'un dépôt public. La
+ * rétention est donc conditionnée à la propriété qui compte — aucun identifiant
+ * réel dans ce run — et non au nom de la branche : injecter un identifiant dans
+ * un job qui publie ses artefacts coupe la rétention de lui-même, sans que
+ * personne ait à y penser.
  */
-const retainCiArtifacts = process.env.E2E_RETAIN_ARTIFACTS === "true";
+const usesRealCredentials =
+  Boolean(process.env.E2E_BO_PASSWORD) ||
+  Boolean(process.env.E2E_MAILDEV_PASSWORD);
+
+const retainCiArtifacts = Boolean(process.env.CI) && !usesRealCredentials;
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -43,7 +47,7 @@ export default defineConfig({
         : "off"
       : "on-first-retry",
     screenshot: "only-on-failure",
-    video: process.env.CI && retainCiArtifacts ? "retain-on-failure" : "off",
+    video: retainCiArtifacts ? "retain-on-failure" : "off",
     actionTimeout: process.env.CI ? 25_000 : 15_000,
     navigationTimeout: process.env.CI ? 25_000 : 15_000,
   },
