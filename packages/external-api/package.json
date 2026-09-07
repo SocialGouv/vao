@@ -36,7 +36,7 @@
     "@vao/shared-bridge": "workspace:^",
     "axios": "^1.16.1",
     "express": "^5.0.1",
-    "magic-bytes.js": "^1.10.0",
+    "magic-bytes.js": "^1.13.1",
     "multer": "catalog:",
     "nestjs-pino": "^4.2.0",
     "nestjs-zod": "^4.2.0",
