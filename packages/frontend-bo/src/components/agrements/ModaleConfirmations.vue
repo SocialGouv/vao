@@ -38,12 +38,10 @@
         :cdn-url="props.cdnUrl"
         :modifiable="true"
         :hint="hintFileUpload"
+        :error-message="fileErrorMessage"
         hint-class="file-upload-hint"
         @update:model-value="handleFileChange"
       />
-      <p v-if="fileErrorMessage" class="fr-error-text">
-        {{ fileErrorMessage }}
-      </p>
     </div>
     <div v-if="props.haveAgrementNumber" class="fr-fieldset">
       <div ref="numeroAgrementFieldRef" class="fr-fieldset__element">
@@ -182,7 +180,9 @@ const {
 } = useField<File | null>("file");
 
 const labelFileUpload = computed(() =>
-  props.haveRequiredFile ? "" : "Ajouter un fichier (optionnel)",
+  props.haveRequiredFile
+    ? "Ajouter un fichier"
+    : "Ajouter un fichier (optionnel)",
 );
 const hintFileUpload = computed(() => {
   const parts = [];
