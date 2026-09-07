@@ -7,4 +7,8 @@ export default async function globalSetup(_config: FullConfig) {
   console.log("E2E_BASE_URL", process.env.E2E_BASE_URL ?? "(default)");
   console.log("TZ", process.env.TZ ?? "(system)");
   console.log("e2e urls", getUrls());
+  console.log(
+    "E2E_MAILDEV_USERNAME",
+    process.env.E2E_MAILDEV_USERNAME ? "(set)" : "(unset)",
+  );
 }
