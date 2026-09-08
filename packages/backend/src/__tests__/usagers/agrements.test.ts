@@ -37,6 +37,13 @@ jest.mock("../../services/mail", () => ({
 jest.mock("../../services/Insee", () => ({
   getEtablissement: jest.fn(),
 }));
+jest.mock("@sentry/node", () => ({
+  addBreadcrumb: jest.fn(),
+  captureException: jest.fn(() => "mocked-sentry-id"),
+  init: jest.fn(),
+  requestDataIntegration: jest.fn(() => ({ name: "RequestData" })),
+  setupExpressErrorHandler: jest.fn(),
+}));
 
 const mockedGetEtablissement = getEtablissement as jest.Mock;
 
@@ -1567,13 +1574,10 @@ describe("upload fichiers", () => {
       })
       .mockImplementationOnce(() => Promise.resolve());
 
-    // Mock Sentry
-    const sentryCaptureSpy = jest
-      .spyOn(Sentry, "captureException")
-      .mockImplementation(() => "mocked-sentry-id");
-    const sentryBreadcrumbSpy = jest
-      .spyOn(Sentry, "addBreadcrumb")
-      .mockImplementation(() => {});
+    const captureExceptionMock = jest.mocked(Sentry.captureException);
+    const addBreadcrumbMock = jest.mocked(Sentry.addBreadcrumb);
+    captureExceptionMock.mockClear();
+    addBreadcrumbMock.mockClear();
 
     const agrementId = await createAgrement({
       agrement: agrementData,
@@ -1597,13 +1601,11 @@ describe("upload fichiers", () => {
     expect(response.status).toBe(200);
 
     // Vérifie que Sentry.captureException a été appelé
-    expect(sentryCaptureSpy).toHaveBeenCalledTimes(1);
-    expect(sentryBreadcrumbSpy).toHaveBeenCalledTimes(1);
+    expect(captureExceptionMock).toHaveBeenCalledTimes(1);
+    expect(addBreadcrumbMock).toHaveBeenCalledTimes(1);
 
     // Nettoyage
     deleteFileSpy.mockRestore();
-    sentryCaptureSpy.mockRestore();
-    sentryBreadcrumbSpy.mockRestore();
   });
 });
 

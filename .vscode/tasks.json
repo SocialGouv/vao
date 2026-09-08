@@ -58,7 +58,7 @@
     },
     {
       "label": "Start External API",
-      "command": "source ~/.zshrc && nvm use && npx env-cmd -- corepack pnpm --filter @vao/external-api dev",
+      "command": "source ~/.zshrc && nvm use && npx env-cmd -- corepack pnpm --filter @vao/external-api start:dev",
       "type": "shell",
       "problemMatcher": [],
       "options": {
