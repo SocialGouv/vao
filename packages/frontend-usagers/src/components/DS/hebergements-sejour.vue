@@ -63,6 +63,7 @@
           />
 
           <DsfrButton
+            v-if="props.modifiable && isModuleHebergementEnabled"
             label="Ajouter un nouvel hébergement"
             secondary
             @click.prevent="openLeaveFunnelModal"
@@ -176,13 +177,23 @@ type HebergementFormValues = {
   hebergements: DemandeSejourHebergementItemDto[];
 };
 
+interface HebergementsSejourProps {
+  modifiable?: boolean;
+  showButtons?: boolean;
+  isDownloading?: boolean;
+  message?: string;
+  saveBeforeLeave?: (
+    data: Record<string, unknown>,
+    type: string,
+  ) => Promise<unknown>;
+}
+
 const toaster = useToaster();
 
-const props = defineProps({
-  modifiable: { type: Boolean, default: true },
-  showButtons: { type: Boolean, default: true },
-  isDownloading: { type: Boolean, required: false, default: false },
-  message: { type: String, required: false, default: null },
+const props = withDefaults(defineProps<HebergementsSejourProps>(), {
+  modifiable: true,
+  showButtons: true,
+  isDownloading: false,
 });
 
 const emit = defineEmits(["previous", "next", "update"]);
@@ -393,17 +404,21 @@ const isSejourComplet = computed(() =>
   ),
 );
 
-async function next() {
-  if (!meta.value.dirty || !props.modifiable) {
-    return emit("next");
-  }
-  const data = {
+function buildHebergementsPayload() {
+  return {
     ...toRaw(values),
     sejourItinerant: hebergements.value.length > 1,
     nombreHebergements: hebergements.value.length,
   };
-  emit("update", data, "hebergements");
 }
+
+async function next() {
+  if (!meta.value.dirty || !props.modifiable) {
+    return emit("next");
+  }
+  emit("update", buildHebergementsPayload(), "hebergements");
+}
+
 watch([tableData, limit, offset], () => updateData(), {
   immediate: true,
 });
@@ -426,6 +441,22 @@ function closeLeaveFunnelModal() {
 
 async function confirmLeaveFunnel() {
   log.i("confirmLeaveFunnel - IN");
+
+  if (meta.value.dirty && props.modifiable) {
+    if (!props.saveBeforeLeave) {
+      log.w(
+        "confirmLeaveFunnel - saveBeforeLeave manquant, sauvegarde impossible",
+      );
+    } else {
+      const result = await props.saveBeforeLeave(
+        buildHebergementsPayload(),
+        "hebergements",
+      );
+      if (!result) {
+        return;
+      }
+    }
+  }
 
   hebergementStore.setFunnelOrigin(HebergementFunnelOrigin.DECLARATION_SEJOUR, {
     sejourId: demandeSejourStore.demandeCourante?.id ?? null,
