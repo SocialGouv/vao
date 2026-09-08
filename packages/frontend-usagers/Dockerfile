@@ -12,9 +12,11 @@ RUN corepack enable
 
 # Non-interactive pnpm behavior during Docker builds
 ENV CI=true
+ENV COREPACK_DEFAULT_TO_LATEST=0
 
-# --- deps fetch layer (cache keyed by lockfile + config only)
+# --- deps fetch layer (cache keyed by lockfile + config + packageManager)
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
+RUN corepack prepare --activate
 RUN pnpm fetch --prod --ignore-scripts
 
 # --- install layer (package.json changes should not bust fetch cache)
