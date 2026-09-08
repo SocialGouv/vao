@@ -447,6 +447,7 @@ async function confirmLeaveFunnel() {
       log.w(
         "confirmLeaveFunnel - saveBeforeLeave manquant, sauvegarde impossible",
       );
+      return;
     } else {
       const result = await props.saveBeforeLeave(
         buildHebergementsPayload(),
