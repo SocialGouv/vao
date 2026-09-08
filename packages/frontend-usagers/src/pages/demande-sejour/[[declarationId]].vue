@@ -744,7 +744,7 @@ async function updateOrCreate(
     return response;
   } catch (error) {
     log.w("Creation/modification de declaration de sejour: ", { error });
-    return toaster.error({
+    toaster.error({
       titleTag: "h2",
       description:
         (error as ApiError).data?.message ??
