@@ -101,7 +101,12 @@ export default defineNuxtConfig({
       },
     },
     optimizeDeps: {
-      include: ["maplibre-gl"],
+      include: [
+        "maplibre-gl",
+        "dayjs",
+        "dayjs/locale/fr",
+        "dayjs/plugin/customParseFormat",
+      ],
     },
     plugins: [
       // Sentry vite plugin can strip/rename the client manifest (NUXT_B7021) under Vitest + Vite 8

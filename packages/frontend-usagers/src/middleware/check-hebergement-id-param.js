@@ -10,14 +10,14 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const hebergementStore = useHebergementStore();
   const hebergementId = to.params.hebergementId;
 
-  if (isNaN(hebergementId)) {
-    log.w("invalid param");
-    return navigateTo("/hebergements/liste");
-  }
-
   if (!hebergementId) {
     log.i("DONE");
     return;
+  }
+
+  if (isNaN(hebergementId)) {
+    log.w("invalid param");
+    return navigateTo("/hebergements/liste");
   }
 
   await hebergementStore.fetchById(hebergementId);
