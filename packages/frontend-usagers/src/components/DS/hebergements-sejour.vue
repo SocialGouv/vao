@@ -80,9 +80,9 @@
         >
           <template #default>
             <p>
-              Votre déclaration de séjour est enregistrée en brouillon. Une fois
-              votre nouvel hébergement créé, vous pourrez reprendre et finaliser
-              votre déclaration.
+              Votre déclaration de séjour sera enregistrée en brouillon. Une
+              fois votre nouvel hébergement créé, vous pourrez reprendre et
+              finaliser votre déclaration.
             </p>
             <div class="modal-btns-group">
               <DsfrButton
@@ -167,9 +167,10 @@ import { useField, useForm } from "vee-validate";
 import dayjs from "dayjs";
 import {
   formatISOShort,
+  HebergementFunnelOrigin,
+  FeatureFlagName,
   type DemandeSejourHebergementItemDto,
 } from "@vao/shared-bridge";
-import { HebergementFunnelOrigin, FeatureFlagName } from "@vao/shared-bridge";
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 
 type HebergementFormValues = {
@@ -448,14 +449,13 @@ async function confirmLeaveFunnel() {
         "confirmLeaveFunnel - saveBeforeLeave manquant, sauvegarde impossible",
       );
       return;
-    } else {
-      const result = await props.saveBeforeLeave(
-        buildHebergementsPayload(),
-        "hebergements",
-      );
-      if (!result) {
-        return;
-      }
+    }
+    const result = await props.saveBeforeLeave(
+      buildHebergementsPayload(),
+      "hebergements",
+    );
+    if (!result) {
+      return;
     }
   }
 
