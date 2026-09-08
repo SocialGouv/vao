@@ -503,23 +503,17 @@ const titles: Record<string | number, () => string> = {
 };
 
 const hash = computed(() => {
+  const titleKey =
+    selectedTabIndex.value === 0
+      ? route.hash || "#info-generales"
+      : selectedTabIndex.value;
+  const titleFn = titles[titleKey];
+  if (titleFn) {
+    useHead({ title: titleFn() });
+  }
   if (route.hash) {
-    useHead({
-      title:
-        titles[
-          selectedTabIndex.value === 0 ? route.hash : selectedTabIndex.value
-        ](),
-    });
     return route.hash.slice(1);
   }
-  useHead({
-    title:
-      titles[
-        selectedTabIndex.value === 0
-          ? "#info-generales"
-          : selectedTabIndex.value
-      ](),
-  });
   return sommaireOptions[0];
 });
 

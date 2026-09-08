@@ -514,20 +514,14 @@ const formatedSiret = computed(() => {
     return "";
   }
   const siretSaisi = siret.value;
-  let formatedSiret;
+  let formatedSiret = "";
   for (let i = 0; i < siretSaisi.length; i++) {
-    i === 0
-      ? (formatedSiret = siretSaisi[i])
-      : (formatedSiret = formatedSiret + siretSaisi[i]);
+    formatedSiret += siretSaisi[i] ?? "";
     switch (i) {
       case 2:
-        formatedSiret = formatedSiret + " ";
-        break;
       case 5:
-        formatedSiret = formatedSiret + " ";
-        break;
       case 8:
-        formatedSiret = formatedSiret + " ";
+        formatedSiret += " ";
         break;
     }
   }

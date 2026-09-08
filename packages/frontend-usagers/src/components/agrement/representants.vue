@@ -59,7 +59,7 @@
           hint="Saisissez le premier prénom. Exemple: Pierre"
           @update:model-value="
             (val) => {
-              representant.prenom = val;
+              representant.prenom = String(val ?? '');
               validateField(representant, 'prenom');
             }
           "
@@ -75,7 +75,7 @@
           hint="Saisissez le nom d'usage. Exemple: Dupont"
           @update:model-value="
             (val) => {
-              representant.nom = val;
+              representant.nom = String(val ?? '');
               validateField(representant, 'nom');
             }
           "
@@ -91,7 +91,7 @@
           hint="Saisissez la fonction du représentant. Exemple : Président"
           @update:model-value="
             (val) => {
-              representant.fonction = val;
+              representant.fonction = String(val ?? '');
               validateField(representant, 'fonction');
             }
           "
@@ -193,7 +193,15 @@ function getAllErrors(errors: RepresentantUi["errors"]): string[] {
     .map(([key, msg]) => {
       if (key.includes(".")) {
         const parts = key.split(".");
-        return `${parts[1][0].toUpperCase() + parts[1].slice(1)}: ${msg}`;
+        const nestedKey = parts[1];
+        if (!nestedKey) {
+          return msg;
+        }
+        const firstChar = nestedKey[0];
+        if (!firstChar) {
+          return msg;
+        }
+        return `${firstChar.toUpperCase() + nestedKey.slice(1)}: ${msg}`;
       }
       return msg;
     });
@@ -248,12 +256,18 @@ function removeRepresentant(idx: number): void {
 
 function editRepresentant(idx: number): void {
   const representant = representantsList.value[idx];
+  if (!representant) {
+    return;
+  }
   representant._backup = { ...representant };
   representant.isEditing = true;
 }
 
 function cancelEditRepresentant(idx: number): void {
   const representant = representantsList.value[idx];
+  if (!representant) {
+    return;
+  }
   if (representant._backup) {
     Object.assign(representant, representant._backup);
     representant.isEditing = false;
@@ -265,6 +279,9 @@ function cancelEditRepresentant(idx: number): void {
 
 async function saveRepresentant(idx: number): Promise<void> {
   const representant = representantsList.value[idx];
+  if (!representant) {
+    return;
+  }
   Object.keys(representant.errors).forEach(
     (key) =>
       (representant.errors[key as keyof typeof representant.errors] = ""),

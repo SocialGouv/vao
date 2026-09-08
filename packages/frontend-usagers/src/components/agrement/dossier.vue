@@ -10,7 +10,7 @@
           v-if="modifiable"
           name="motivations"
           :label="displayInput.AgrementInput['motivations'].label"
-          :model-value="motivations"
+          :model-value="motivations ?? undefined"
           :label-visible="true"
           :is-textarea="true"
           :is-valid="motivationsMeta.valid"
@@ -69,7 +69,7 @@
               : undefined
           "
           :label-visible="true"
-          :model-value="dateObtentionCertificat"
+          :model-value="dateObtentionCertificat ?? undefined"
           hint="format attendu : JJ/MM/AAAA"
           @update:model-value="onDateObtentionCertificatChange"
         />

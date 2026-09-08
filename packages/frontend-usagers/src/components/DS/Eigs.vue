@@ -5,7 +5,7 @@
     </div>
     <p v-else>Aucun Eig déclaré actuellement</p>
     <div v-if="eig.isDeclarationligibleToEig(ds)" class="fr-fieldset">
-      <DsfrButton>
+      <DsfrButton type="button">
         <NuxtLink :to="`/eig${ds.id != null ? '?dsId=' + ds.id : ''}`">
           Déclarer un EIG
         </NuxtLink>
@@ -125,7 +125,10 @@ const deleteEig = async () => {
     await eigStore.delete(eigToDelete.value);
     await props.fetchEig();
   } catch (error) {
-    toaster.error({ description: "Une erreur est survenue de la suppression de l'EIG", role: "alert" });
+    toaster.error({
+      description: "Une erreur est survenue de la suppression de l'EIG",
+      role: "alert",
+    });
     throw error;
   } finally {
     closeEigModal();

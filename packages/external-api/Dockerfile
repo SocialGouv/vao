@@ -13,12 +13,12 @@ RUN corepack enable
 
 # Non-interactive pnpm behavior during Docker builds
 ENV CI=true
+ENV COREPACK_DEFAULT_TO_LATEST=0
 
-# cache keyed by lockfile/config
-COPY pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+# cache keyed by lockfile/config + packageManager
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
+RUN corepack prepare --activate
 RUN pnpm fetch --prod --ignore-scripts
-
-COPY package.json ./
 COPY packages/external-api/package.json ./packages/external-api/
 COPY packages/external-api/src ./packages/external-api/src
 COPY packages/shared-bridge/package.json packages/shared-bridge/

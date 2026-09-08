@@ -2,14 +2,15 @@ const Statuts = {
   BROUILLON: "BROUILLON",
   ENVOYE: "ENVOYE",
   LU: "LU",
-};
+} as const;
 
 const Categorie = {
   FONCTIONNEMENT_ORGANISME: "FONCTIONNEMENT_ORGANISME",
   SANTE: "SANTE",
   SECURITE: "SECURITE",
   VICTIMES: "VICTIMES",
-};
+} as const;
+
 const Types = {
   [Categorie.VICTIMES]: {
     VIOLENCES_SEXUELLES: "VIOLENCES_SEXUELLES",
@@ -49,7 +50,7 @@ const Types = {
       "CONFLITS_OU_MENACES_DE_CONFLITS_INTERNES",
     AUTRE: "AUTRE__FONCTIONNEMENT_ORGANISME",
   },
-};
+} as const;
 
 const UpdateTypes = {
   DECLARATION_SEJOUR: "DECLARATION_SEJOUR",
@@ -57,10 +58,10 @@ const UpdateTypes = {
   TYPE_EVENEMENT: "TYPE_EVENEMENT",
   RENSEIGNEMENT_GENERAUX: "RENSEIGNEMENT_GENERAUX",
   EMAIL_AUTRES_DESTINATAIRES: "EMAIL_AUTRES_DESTINATAIRES",
-};
+} as const;
 
 const isTypeActive = (type: string) => {
-  return ![Types[Categorie.VICTIMES].VIOLS].includes(type);
+  return type !== Types[Categorie.VICTIMES].VIOLS;
 };
 
 export { Statuts, Categorie, Types, UpdateTypes, isTypeActive };

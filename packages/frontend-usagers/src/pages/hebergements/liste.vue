@@ -16,7 +16,7 @@
       <div class="fr-col">
         <form>
           <div class="fr-fieldset">
-            <DsfrButton>
+            <DsfrButton type="button">
               <NuxtLink to="/hebergements">
                 Déclarer un nouvel hébergement
               </NuxtLink>

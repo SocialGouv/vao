@@ -396,7 +396,10 @@ const handleInput = (index: number, event: InputEvent): void => {
   const sanitized = value.replace(/\D/g, "");
 
   if (sanitized.length > 0) {
-    codeDigits.value[index] = sanitized[0];
+    const digit = sanitized[0];
+    if (digit !== undefined) {
+      codeDigits.value[index] = digit;
+    }
 
     if (index < 5) {
       nextTick(() => {

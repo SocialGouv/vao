@@ -43,7 +43,7 @@
               name="telephone"
               label="Téléphone"
               :label-visible="true"
-              :model-value="telephone"
+              :model-value="telephone ?? undefined"
               :is-valid="telephoneMeta.valid"
               :error-message="telephoneError"
               hint="Au format 0X, +33X ou 0033. Exemple : 0612345678"

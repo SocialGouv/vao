@@ -7,12 +7,12 @@ RUN corepack enable
 
 # Non-interactive pnpm behavior during Docker builds
 ENV CI=true
+ENV COREPACK_DEFAULT_TO_LATEST=0
 
-COPY pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
-
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
+RUN corepack prepare --activate
 RUN pnpm fetch --prod --ignore-scripts
 
-COPY package.json ./
 COPY packages/backend/package.json packages/backend/
 COPY packages/backend/tsconfig.build.json packages/backend/tsconfig.build.json
 COPY packages/backend/src packages/backend/src

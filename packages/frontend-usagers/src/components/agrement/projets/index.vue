@@ -123,7 +123,7 @@ const validateAllForms = async (formulaires: FormulaireItem[]) => {
   );
 
   resultats.forEach((result, index) => {
-    const nomFormulaire = formulaires[index].nom;
+    const nomFormulaire = formulaires[index]?.nom ?? `formulaire ${index + 1}`;
 
     if (result.status !== "fulfilled" || !result.value?.data) {
       formsErrors.push(`Le formulaire "${nomFormulaire}" contient des erreurs`);

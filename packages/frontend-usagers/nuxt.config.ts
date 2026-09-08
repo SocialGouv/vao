@@ -24,8 +24,10 @@ export default defineNuxtConfig({
     "nuxt-maplibre",
     "nuxt-security",
     "vue-dsfr-nuxt-module",
-    "@samk-dev/nuxt-vcalendar",
   ],
+  build: {
+    transpile: ["v-calendar", "@popperjs/core"],
+  },
   typescript: {
     typeCheck: true,
     tsConfig: {
@@ -81,29 +83,51 @@ export default defineNuxtConfig({
     removeLoggers: false,
   },
   srcDir: "src",
+  // Nuxt 4 resolves public/ from rootDir; keep assets under src/public
+  dir: {
+    public: "src/public",
+  },
   ssr: false,
   sourcemap: {
     client: true,
   },
   vite: {
+    css: {
+      lightningcss: {
+        errorRecovery: true,
+      },
+    },
     optimizeDeps: {
-      include: ["maplibre-gl"],
+      include: [
+        "maplibre-gl",
+        "dayjs",
+        "dayjs/locale/fr",
+        "dayjs/plugin/customParseFormat",
+      ],
     },
     plugins: [
-      sentryVitePlugin({
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-        org: process.env.SENTRY_ORG,
-        project: process.env.SENTRY_PROJECT,
-        url: process.env.SENTRY_URL,
-        release: { name: process.env.SENTRY_RELEASE },
-      }),
+      // Sentry vite plugin can strip/rename the client manifest (NUXT_B7021) under Vitest + Vite 8
+      ...(!process.env.VITEST
+        ? [
+            sentryVitePlugin({
+              authToken: process.env.SENTRY_AUTH_TOKEN,
+              org: process.env.SENTRY_ORG,
+              project: process.env.SENTRY_PROJECT,
+              url: process.env.SENTRY_URL,
+              release: { name: process.env.SENTRY_RELEASE },
+            }),
+          ]
+        : []),
     ],
   },
   devServer: {
     port: 8000,
   },
+  // Opt into current Nitro/Nuxt preset defaults (not a version pin).
+  compatibilityDate: "2025-07-15",
   experimental: {
     // https://github.com/nuxt/nuxt/issues/34957
-    viteEnvironmentApi: true,
+    // Disabled under Vitest: conflicts with client manifest emission (NUXT_B7021)
+    viteEnvironmentApi: !process.env.VITEST,
   },
 });
