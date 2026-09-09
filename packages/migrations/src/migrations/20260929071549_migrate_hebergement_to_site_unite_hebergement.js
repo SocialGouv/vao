@@ -8,7 +8,14 @@
  * La table front.hebergement_to_prestations_hotelieres est conservée en l'état
  * (elle référence hebergement.id qui ne change pas).
  *
- * La colonne hebergement.site_id est renseignée pour chaque hébergement migré.
+ * La colonne hebergement.site_id est renseignée pour chaque hébergement migré,
+ * et à l'exécution par la double-écriture (le lien est aussi maintenu sur les
+ * nouvelles versions à chaque mise à jour).
+ *
+ * down() retire l'ensemble des lignes pointées par front.hebergement.site_id
+ * puis remet ce lien à NULL : un rollback après déploiement emporte donc aussi
+ * la double-écriture effectuée depuis (les données nouvelles du schéma site /
+ * unite construites par l'application), sans autre manifeste de reprise.
  *
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
@@ -119,14 +126,17 @@ exports.up = function (knex) {
           r.hebergement_id, r.current,
           r.created_by, r.edited_by,
           r.nombre_max_personnes_couchage,
-          CASE WHEN COALESCE(r.nombre_lits_superposes, 0) > 0
-               THEN true ELSE false END,
+          CASE
+            WHEN r.nombre_lits_superposes IS NULL THEN NULL
+            WHEN r.nombre_lits_superposes > 0 THEN true
+            ELSE false
+          END,
           CASE
             WHEN r.accessibilite_id = v_accessible_id THEN true
             WHEN r.accessibilite_id = v_non_adapte_id THEN false
             ELSE NULL
           END,
-          NULL,
+          r.accessibilite_precision,
           r.chambres_doubles, r.chambres_unisexes,
           r.reglementation_erp, r.couchage_individuel,
           r.rangement_individuel, r.amenagements_specifiques,
@@ -154,6 +164,9 @@ exports.up = function (knex) {
       RAISE NOTICE '% hébergements ignorés (organisme_id NULL)',
         (SELECT count(*) FROM front.hebergement
          WHERE supprime = false AND site_id IS NULL AND organisme_id IS NULL);
+
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_unite_hebergement_hebergement_id
+      ON front.unite_hebergement (hebergement_id) WHERE ("current" IS TRUE);
     END $$;
   `);
 };
@@ -164,9 +177,9 @@ exports.up = function (knex) {
  */
 exports.down = function (knex) {
   return knex.raw(`
-    UPDATE front.hebergement SET site_id = NULL WHERE site_id IS NOT NULL;
     DELETE FROM front.unite_hebergement_to_type_pension;
     DELETE FROM front.unite_hebergement;
+    UPDATE front.hebergement SET site_id = NULL WHERE site_id IS NOT NULL;
     DELETE FROM front.site_organisme;
     DELETE FROM front.site;
   `);

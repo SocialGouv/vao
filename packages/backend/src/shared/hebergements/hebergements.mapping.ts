@@ -39,11 +39,16 @@ export const uniteToLegacyPayload = (
       couchageIndividuel: uniteData.couchageIndividuel ?? null,
       descriptionLieuHebergement: null,
       fileDernierArreteAutorisationMaire:
-        uniteData.fileDernierArreteAutorisationMaire ?? null,
-      fileDerniereAttestationSecurite:
-        uniteData.fileDerniereAttestationSecurite ?? null,
+        uniteData.fileDernierArreteAutorisationMaire
+          ? { uuid: uniteData.fileDernierArreteAutorisationMaire }
+          : null,
+      fileDerniereAttestationSecurite: uniteData.fileDerniereAttestationSecurite
+        ? { uuid: uniteData.fileDerniereAttestationSecurite }
+        : null,
       fileReponseExploitantOuProprietaire:
-        uniteData.fileReponseExploitantOuProprietaire ?? null,
+        uniteData.fileReponseExploitantOuProprietaire
+          ? { uuid: uniteData.fileReponseExploitantOuProprietaire }
+          : null,
       litsDessus: null,
       nombreLits: uniteData.nombreCouchageTotal ?? null,
       nombreLitsSuperposes:

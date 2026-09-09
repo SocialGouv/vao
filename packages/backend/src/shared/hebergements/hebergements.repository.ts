@@ -438,6 +438,7 @@ export const HebergementsRepositoryShared = {
   },
 
   async linkHebergementToSite(
+    tx: PoolClient,
     hebergementId: number,
     siteId: string,
   ): Promise<void> {
@@ -447,7 +448,7 @@ export const HebergementsRepositoryShared = {
       SET site_id = $2
       WHERE id = $1;
     `;
-    await getPool().query(query, [hebergementId, siteId]);
+    await tx.query(query, [hebergementId, siteId]);
     log.i("linkHebergementToSite - DONE");
   },
 

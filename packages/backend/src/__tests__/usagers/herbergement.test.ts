@@ -685,7 +685,7 @@ describe("GET /hebergement/:id avec flag MODULE_SITE_UNITE_HEBERGEMENT", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(response.body.hebergement.siteId).toBeNull();
+    expect(response.body.hebergement.siteId).toBeTruthy();
     expect(response.body.hebergement.informationsLocaux.accessibilite).toBe(
       "accessible",
     );
@@ -798,6 +798,49 @@ describe("POST /hebergement avec flag MODULE_SITE_UNITE_HEBERGEMENT", () => {
     expect(legacyRows[0].statut_id).toBe(
       await getStatutIdFromValue(HebergementStatuts.ACTIF),
     );
+  });
+
+  it("retourne 200 et propage les fichiers unite vers les colonnes legacy", async () => {
+    authUser = await createUsagersUser();
+    await createOrganisme({ userId: authUser.id });
+    await setFeatureFlagEnabled({
+      enabled: true,
+      name: FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT,
+    });
+
+    const [arreteUuid, attestationUuid] = [randomUUID(), randomUUID()];
+    const body = buildUniteHebergementFixtureToPost({
+      uniteData: {
+        ...buildUniteHebergementFixtureToPost().uniteData,
+        fileDernierArreteAutorisationMaire: arreteUuid,
+        fileDerniereAttestationSecurite: attestationUuid,
+        fileReponseExploitantOuProprietaire: null,
+        reglementationErp: true,
+      },
+    });
+    const response = await request(getFoAppHelper(authUser))
+      .post("/hebergement")
+      .send(body);
+
+    expect(response.status).toBe(200);
+    const hebergementId = response.body.id as number;
+
+    const { rows: legacyRows } = await getPool().query(
+      `SELECT file_dernier_arrete_autorisation_maire,
+              file_derniere_attestation_securite,
+              file_reponse_exploitant_ou_proprietaire
+       FROM front.hebergement
+       WHERE id = $1 AND "current" IS TRUE`,
+      [hebergementId],
+    );
+    expect(legacyRows).toHaveLength(1);
+    expect(legacyRows[0].file_dernier_arrete_autorisation_maire).toBe(
+      arreteUuid,
+    );
+    expect(legacyRows[0].file_derniere_attestation_securite).toBe(
+      attestationUuid,
+    );
+    expect(legacyRows[0].file_reponse_exploitant_ou_proprietaire).toBeNull();
   });
 
   it("retourne 200 et versionne unite_hebergement depuis uniteData", async () => {
@@ -1077,7 +1120,7 @@ describe("double écriture legacy -> unite (flag MODULE_SITE_UNITE_HEBERGEMENT d
     expect(response.status).toBe(200);
 
     const { rows: uniteRows } = await getPool().query(
-      `SELECT id, "current", lits_superposes, nombre_couchage_total, statut_id
+      `SELECT id, site_id, "current", lits_superposes, nombre_couchage_total, statut_id
        FROM front.unite_hebergement
        WHERE hebergement_id = $1
        ORDER BY id`,
@@ -1101,6 +1144,16 @@ describe("double écriture legacy -> unite (flag MODULE_SITE_UNITE_HEBERGEMENT d
     expect(typePensionRows.map((row) => row.pension)).toEqual([
       "pension_complete",
     ]);
+
+    const {
+      rows: [legacyCurrent],
+    } = await getPool().query(
+      `SELECT site_id
+       FROM front.hebergement
+       WHERE hebergement_id = $1 AND "current" IS TRUE`,
+      [uuid],
+    );
+    expect(legacyCurrent.site_id).toBe(uniteRows[1].site_id);
   });
 });
 
@@ -1131,8 +1184,9 @@ describe("flag MODULE_SITE_UNITE_HEBERGEMENT - préservation legacy lors d'un up
     expect(response.status).toBe(200);
 
     const { rows: legacyRows } = await getPool().query(
-      `SELECT ht.value AS "type", htp.value AS "pension",
-              h.description_lieu_hebergement AS "descriptionLieuHebergement"
+      `SELECT h.id, ht.value AS "type", htp.value AS "pension",
+              h.description_lieu_hebergement AS "descriptionLieuHebergement",
+              h.lit_dessus AS "litsDessus", h.site_id AS "siteId"
        FROM front.hebergement h
        LEFT JOIN front.hebergement_type ht ON ht.id = h.type_id
        LEFT JOIN front.hebergement_type_pension htp ON htp.id = h.type_pension_id
@@ -1145,6 +1199,21 @@ describe("flag MODULE_SITE_UNITE_HEBERGEMENT - préservation legacy lors d'un up
     expect(legacyRows[0].descriptionLieuHebergement).toBe(
       "Description du lieu",
     );
+    expect(legacyRows[0].litsDessus).toBe(false);
+    expect(legacyRows[0].siteId).toBeTruthy();
+
+    const { rows: prestationRows } = await getPool().query(
+      `SELECT hp.value AS "prestation"
+       FROM front.hebergement_to_prestations_hotelieres hph
+       JOIN front.hebergement_prestations_hotelieres hp ON hp.id = hph.prestation_id
+       WHERE hph.hebergement_id = $1
+       ORDER BY hph.prestation_id`,
+      [legacyRows[0].id],
+    );
+    expect(prestationRows.map((row) => row.prestation)).toEqual([
+      "blanchisseries",
+      "entretien_locaux",
+    ]);
 
     const { rows: siteRows } = await getPool().query(
       `SELECT ht.value AS "hebergementType", s.descriptif

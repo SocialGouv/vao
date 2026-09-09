@@ -181,13 +181,17 @@ export const HebergementServiceShared = {
   },
 
   async linkHebergementToSite(
+    tx: PoolClient | undefined,
     hebergementId: number,
     siteId: string,
   ): Promise<void> {
-    return HebergementsRepositoryShared.linkHebergementToSite(
-      hebergementId,
-      siteId,
-    );
+    return withTx(tx, async (client) => {
+      await HebergementsRepositoryShared.linkHebergementToSite(
+        client,
+        hebergementId,
+        siteId,
+      );
+    });
   },
 
   async updateSite(

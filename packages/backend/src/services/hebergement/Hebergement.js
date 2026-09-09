@@ -76,7 +76,8 @@ ${new Array(nbRows)
       VISITE_LOCAUX_AT,
       ACCESSIBILITE_PRECISION,
       AMENAGEMENTS_SPECIFIQUES_PRECISION,
-      STATUT_ID
+      STATUT_ID,
+      SITE_ID
     )
     VALUES (
       $1,                                                               --organisme_id,
@@ -116,7 +117,8 @@ ${new Array(nbRows)
       $33,                                                              --VISITE_LOCAUX_AT
       $34,                                                              --ACCESSIBILITE_PRECISION
       $35,                                                              --AMENAGEMENTS_SPECIFIQUES_PRECISION
-      (SELECT ID FROM FRONT.HEBERGEMENT_STATUT WHERE VALUE = $36)        -- STATUT
+      (SELECT ID FROM FRONT.HEBERGEMENT_STATUT WHERE VALUE = $36),        -- STATUT
+      $37                                                                 -- SITE_ID
     )
     RETURNING id, hebergement_id
     `,
@@ -202,12 +204,20 @@ ${new Array(nbRows)
     SELECT
       ht.value AS "type",
       htp.value AS "pension",
-      h.description_lieu_hebergement AS "descriptionLieuHebergement"
+      h.description_lieu_hebergement AS "descriptionLieuHebergement",
+      h.lit_dessus AS "litsDessus",
+      COALESCE(
+        ARRAY_AGG(hp.value ORDER BY hpt.prestation_id) FILTER (WHERE hp.value IS NOT NULL),
+        '{}'
+      ) AS "prestationsHotelieres"
     FROM front.hebergement h
     LEFT JOIN front.hebergement_type ht ON ht.id = h.type_id
     LEFT JOIN front.hebergement_type_pension htp ON htp.id = h.type_pension_id
+    LEFT JOIN front.hebergement_to_prestations_hotelieres hpt ON hpt.hebergement_id = h.id
+    LEFT JOIN front.hebergement_prestations_hotelieres hp ON hp.id = hpt.prestation_id
     WHERE h.id = $1
       AND h.current = TRUE
+    GROUP BY h.id, ht.value, htp.value
   `,
 
   getListe: () => `
@@ -246,7 +256,8 @@ ${new Array(nbRows)
     h.organisme_id AS "organismeId",
     h.created_by AS "createdBy",
     h.created_at AS "createdAt",
-    h.current AS "current"
+    h.current AS "current",
+    h.site_id AS "siteId"
   FROM
     front.hebergement h
     LEFT JOIN front.hebergement_statut hs ON hs.id = h.statut_id
@@ -343,7 +354,7 @@ ${new Array(nbRows)
 */
 const create = async (
   client,
-  { createdBy, createdAt, updatedBy, organismeId, statut },
+  { createdBy, createdAt, updatedBy, organismeId, statut, siteId = null },
   { nom, coordonnees, informationsLocaux, informationsTransport },
   hebergemenetUuid,
 ) => {
@@ -387,6 +398,7 @@ const create = async (
     informationsLocaux.accessibilitePrecision,
     informationsLocaux.precisionAmenagementsSpecifiques,
     statut,
+    siteId, // 37
   ]);
 
   const hebergementId = rows[0].id;
@@ -424,6 +436,14 @@ const preserveLegacyUniteContext = (hebergement, legacyContext) => {
   informationsLocaux.pension ??= legacyContext.pension ?? null;
   informationsLocaux.descriptionLieuHebergement ??=
     legacyContext.descriptionLieuHebergement ?? null;
+  informationsLocaux.litsDessus ??= legacyContext.litsDessus ?? null;
+  if (
+    !Array.isArray(informationsLocaux.prestationsHotelieres) ||
+    informationsLocaux.prestationsHotelieres.length === 0
+  ) {
+    informationsLocaux.prestationsHotelieres =
+      legacyContext.prestationsHotelieres ?? [];
+  }
 };
 
 const syncSiteAndUniteOnCreate = async (
@@ -450,6 +470,11 @@ const syncSiteAndUniteOnCreate = async (
       respTelephone: hebergement.coordonnees?.numTelephone1 ?? null,
     },
     client,
+  );
+  await HebergementServiceShared.linkHebergementToSite(
+    client,
+    created.hebergementId,
+    siteId,
   );
   await HebergementServiceShared.createUniteHebergement(
     {
@@ -627,7 +652,7 @@ module.exports.updateWithoutHistory = async (
 module.exports.update = async (userId, hebergementId, hebergement, statut) => {
   log.i("update - IN");
   const {
-    rows: [{ hebergementUuid, organismeId, createdBy, createdAt, current }],
+    rows: [{ current, hebergementUuid, organismeId, createdBy, createdAt }],
   } = await getPool().query(query.getPreviousValueForHistory, [hebergementId]);
 
   if (!current) {
@@ -641,6 +666,9 @@ module.exports.update = async (userId, hebergementId, hebergement, statut) => {
   let newHebergement;
   try {
     await client.query("BEGIN");
+    const {
+      rows: [{ siteId }],
+    } = await client.query(query.getPreviousValueForHistory, [hebergementId]);
     preserveLegacyUniteContext(
       hebergement,
       await getLegacyUniteContext(hebergementId, client),
@@ -652,6 +680,7 @@ module.exports.update = async (userId, hebergementId, hebergement, statut) => {
         createdAt,
         createdBy,
         organismeId,
+        siteId,
         statut,
         updatedBy: userId,
       },

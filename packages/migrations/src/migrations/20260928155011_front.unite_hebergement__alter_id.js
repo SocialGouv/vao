@@ -1,3 +1,5 @@
+const postgresUser = process.env.PG_VAO_USER ?? "vao_u";
+
 /**
  * Prépare front.unite_hebergement afin que son id corresponde
  * temporairement à front.hebergement.id.
@@ -102,6 +104,10 @@ exports.down = function (knex) {
 
       -- Recréer la séquence
       CREATE SEQUENCE front.unite_hebergement_id_seq;
+
+
+      -- Restaurer les droits du rôle applicatif
+      GRANT ALL ON SEQUENCE front.unite_hebergement_id_seq TO ${postgresUser};
 
 
       -- Rattacher la séquence à la colonne
