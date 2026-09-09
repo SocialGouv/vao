@@ -118,10 +118,14 @@ export const mapLocauxToUnite = (
     fileReponseExploitantOuProprietaire: fileUuid(
       informationsLocaux.fileReponseExploitantOuProprietaire,
     ),
-    litsSuperposes: informationsLocaux.nombreLitsSuperposes
-      ? informationsLocaux.nombreLitsSuperposes > 0
-      : null,
-    nombreCouchageTotal,
+    litsSuperposes:
+      informationsLocaux.nombreLitsSuperposes == null
+        ? null
+        : informationsLocaux.nombreLitsSuperposes > 0,
+    nombreCouchageTotal:
+      nombreCouchageTotal ??
+      informationsLocaux.nombreMaxPersonnesCouchage ??
+      null,
     rangementIndividuel: informationsLocaux.rangementIndividuel ?? null,
     reglementationErp: informationsLocaux.reglementationErp ?? null,
     separationHommeFemme: informationsLocaux.chambresUnisexes ?? null,

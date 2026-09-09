@@ -943,13 +943,16 @@ describe("flux brouillon unite avec flag MODULE_SITE_UNITE_HEBERGEMENT", () => {
     const uuid = await getHebergementUuid(hebergementId);
 
     const { rows: uniteRows } = await getPool().query(
-      `SELECT nombre_couchage_total, "current"
+      `SELECT nombre_couchage_total, statut_id, "current"
        FROM front.unite_hebergement
        WHERE hebergement_id = $1`,
       [uuid],
     );
     expect(uniteRows).toHaveLength(1);
     expect(uniteRows[0].nombre_couchage_total).toBe(25);
+    expect(uniteRows[0].statut_id).toBe(
+      await getStatutIdFromValue(HebergementStatuts.BROUILLON),
+    );
     expect(uniteRows[0].current).toBe(true);
 
     const { rows: legacyRows } = await getPool().query(
@@ -1043,5 +1046,132 @@ describe("flux brouillon unite avec flag MODULE_SITE_UNITE_HEBERGEMENT", () => {
     expect(legacyRows[0].statut_id).toBe(
       await getStatutIdFromValue(HebergementStatuts.ACTIF),
     );
+  });
+});
+
+describe("double écriture legacy -> unite (flag MODULE_SITE_UNITE_HEBERGEMENT désactivé)", () => {
+  it("retourne 200 et récupère les données legacy dans unite_hebergement lors d'un update", async () => {
+    authUser = await createUsagersUser();
+    await setFeatureFlagEnabled({
+      enabled: false,
+      name: FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT,
+    });
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const hebergementId = await createHebergement({
+      organismeId,
+      userId: authUser.id,
+    });
+    const uuid = await getHebergementUuid(hebergementId);
+
+    const response = await request(getFoAppHelper(authUser))
+      .post(`/hebergement/${hebergementId}`)
+      .send({
+        ...buildHebergementFixtureToPost(),
+        informationsLocaux: {
+          ...buildHebergementFixtureToPost().informationsLocaux,
+          nombreLitsSuperposes: 0,
+          pension: "pension_complete",
+        },
+      });
+
+    expect(response.status).toBe(200);
+
+    const { rows: uniteRows } = await getPool().query(
+      `SELECT id, "current", lits_superposes, nombre_couchage_total, statut_id
+       FROM front.unite_hebergement
+       WHERE hebergement_id = $1
+       ORDER BY id`,
+      [uuid],
+    );
+    expect(uniteRows).toHaveLength(2);
+    expect(uniteRows[1].current).toBe(true);
+    expect(uniteRows[1].lits_superposes).toBe(false);
+    expect(uniteRows[1].nombre_couchage_total).toBe(10);
+    expect(uniteRows[1].statut_id).toBe(
+      await getStatutIdFromValue(HebergementStatuts.ACTIF),
+    );
+
+    const { rows: typePensionRows } = await getPool().query(
+      `SELECT hp.value AS "pension"
+       FROM front.unite_hebergement_to_type_pension uhtp
+       JOIN front.hebergement_type_pension hp ON hp.id = uhtp.type_pension_id
+       WHERE uhtp.unite_hebergement_id = $1`,
+      [uniteRows[1].id],
+    );
+    expect(typePensionRows.map((row) => row.pension)).toEqual([
+      "pension_complete",
+    ]);
+  });
+});
+
+describe("flag MODULE_SITE_UNITE_HEBERGEMENT - préservation legacy lors d'un update unite", () => {
+  it("retourne 200 et préserve type/pension/description legacy et site", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const hebergementId = await createHebergement({
+      hebergement: {
+        informationsLocaux: {
+          ...buildHebergementFixture().informationsLocaux,
+          pension: "pension_complete",
+        },
+      },
+      organismeId,
+      userId: authUser.id,
+    });
+    const uuid = await getHebergementUuid(hebergementId);
+    await setFeatureFlagEnabled({
+      enabled: true,
+      name: FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT,
+    });
+
+    const response = await request(getFoAppHelper(authUser))
+      .post(`/hebergement/${hebergementId}`)
+      .send(buildUniteHebergementFixtureToPost());
+
+    expect(response.status).toBe(200);
+
+    const { rows: legacyRows } = await getPool().query(
+      `SELECT ht.value AS "type", htp.value AS "pension",
+              h.description_lieu_hebergement AS "descriptionLieuHebergement"
+       FROM front.hebergement h
+       LEFT JOIN front.hebergement_type ht ON ht.id = h.type_id
+       LEFT JOIN front.hebergement_type_pension htp ON htp.id = h.type_pension_id
+       WHERE h.hebergement_id = $1 AND h."current" IS TRUE`,
+      [uuid],
+    );
+    expect(legacyRows).toHaveLength(1);
+    expect(legacyRows[0].type).toBe("hotel");
+    expect(legacyRows[0].pension).toBe("pension_complete");
+    expect(legacyRows[0].descriptionLieuHebergement).toBe(
+      "Description du lieu",
+    );
+
+    const { rows: siteRows } = await getPool().query(
+      `SELECT ht.value AS "hebergementType", s.descriptif
+       FROM front.site s
+       LEFT JOIN front.hebergement_type ht ON ht.id = s.hebergement_type_id
+       WHERE s."current" IS TRUE
+         AND s.site_id IN (
+           SELECT site_id FROM front.unite_hebergement
+           WHERE hebergement_id = $1
+         )`,
+      [uuid],
+    );
+    expect(siteRows).toHaveLength(1);
+    expect(siteRows[0].hebergementType).toBe("hotel");
+    expect(siteRows[0].descriptif).toBe("Description du lieu");
+
+    const {
+      rows: [{ typePensionCount }],
+    } = await getPool().query(
+      `SELECT count(*)::INTEGER AS "typePensionCount"
+       FROM front.unite_hebergement_to_type_pension uhtp
+       WHERE uhtp.unite_hebergement_id IN (
+         SELECT id FROM front.unite_hebergement
+         WHERE hebergement_id = $1 AND "current" IS TRUE
+       )`,
+      [uuid],
+    );
+    expect(typePensionCount).toBe(1);
   });
 });

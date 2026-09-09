@@ -487,16 +487,22 @@ export const HebergementsRepositoryShared = {
       [uniteHebergementId],
     );
     if (typePensionValues.length > 0) {
-      const values = typePensionValues
-        .map(
-          (_, i) =>
-            `($1, (SELECT id FROM front.hebergement_type_pension WHERE value = $${i + 2}))`,
-        )
-        .join(", ");
-      await tx.query(
-        `INSERT INTO front.unite_hebergement_to_type_pension (unite_hebergement_id, type_pension_id) VALUES ${values}`,
-        [uniteHebergementId, ...typePensionValues],
+      const { rows: typePensionIdRows } = await tx.query(
+        `SELECT id
+           FROM front.hebergement_type_pension
+          WHERE value = ANY($1)`,
+        [typePensionValues],
       );
+      const typePensionIds = typePensionIdRows.map((row) => row.id as number);
+      if (typePensionIds.length > 0) {
+        const values = typePensionIds
+          .map((_, i) => `($1, $${i + 2})`)
+          .join(", ");
+        await tx.query(
+          `INSERT INTO front.unite_hebergement_to_type_pension (unite_hebergement_id, type_pension_id) VALUES ${values}`,
+          [uniteHebergementId, ...typePensionIds],
+        );
+      }
     }
     log.i("setUniteHebergementTypePensions - DONE");
   },

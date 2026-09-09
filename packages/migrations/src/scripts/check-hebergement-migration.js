@@ -101,12 +101,12 @@ async function main() {
 
   console.log("— cohérence attendue —");
   const attenduSite = Number(hRowAtt.hebergement_distinct_current);
-  const attenduUh = Number(hRow.non_supprime) - Number(hRow.organisme_null);
+  const attenduUh = Number(hRowAtt.total);
   console.log(
     `  site attendu            : ${attenduSite}  (hebergement_distinct current=true migrables)`,
   );
   console.log(
-    `  unite_hebergement att.  : ${attenduUh}  (non supprimés - organisme null)`,
+    `  unite_hebergement att.  : ${attenduUh}  (non supprimés, organisme non nul)`,
   );
   console.log(`  hebergement distinct (UH): ${c.uh_hebergement_distinct}`);
   console.log("");
