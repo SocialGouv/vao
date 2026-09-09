@@ -230,6 +230,29 @@ describe("POST /hebergement/:id", () => {
     expect(response.status).toBe(400);
   });
 
+  it("retourne 400 si l'hébergement est déjà archivé", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const hebergementId = await createHebergement({
+      organismeId,
+      userId: authUser.id,
+    });
+
+    const firstResponse = await request(getFoAppHelper(authUser))
+      .post(`/hebergement/${hebergementId}`)
+      .send(buildHebergementFixtureToPost());
+    expect(firstResponse.status).toBe(200);
+
+    const secondResponse = await request(getFoAppHelper(authUser))
+      .post(`/hebergement/${hebergementId}`)
+      .send(buildHebergementFixtureToPost());
+
+    expect(secondResponse.status).toBe(400);
+    expect(secondResponse.body.message).toBe(
+      "L'hebergement est archivé et ne peux pas etre modifié",
+    );
+  });
+
   it("retourne 200 et versionne legacy + unite_hebergement", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
@@ -433,6 +456,29 @@ describe("PUT /hebergement/:id/desactivate", () => {
     expect(uniteRows[1].statut_id).toBe(statutDesactiveId);
   });
 
+  it("retourne 400 si l'hébergement est déjà archivé", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const hebergementId = await createHebergement({
+      organismeId,
+      userId: authUser.id,
+    });
+
+    const firstResponse = await request(getFoAppHelper(authUser)).put(
+      `/hebergement/${hebergementId}/desactivate`,
+    );
+    expect(firstResponse.status).toBe(200);
+
+    const secondResponse = await request(getFoAppHelper(authUser)).put(
+      `/hebergement/${hebergementId}/desactivate`,
+    );
+
+    expect(secondResponse.status).toBe(400);
+    expect(secondResponse.body.message).toBe(
+      "L'hebergement est archivé et ne peux pas etre modifié",
+    );
+  });
+
   it("retourne 403 avec le bon message si l'utilisateur n'a pas la permission", async () => {
     const owner = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: owner.id });
@@ -500,6 +546,19 @@ describe("GET /hebergement", () => {
     );
 
     expect(response.status).toBe(200);
+  });
+
+  it("retourne 400 si le paramètre search n'est pas un JSON valide", async () => {
+    authUser = await createUsagersUser();
+    await createOrganisme({ userId: authUser.id });
+    const response = await request(getFoAppHelper(authUser)).get(
+      "/hebergement?search={invalid",
+    );
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "une erreur est survenue durant la récupération des hebergements",
+    );
   });
 
   it("retourne tous les hébergements du SIREN siège lorsque search sans statut", async () => {
