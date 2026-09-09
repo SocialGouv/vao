@@ -65,8 +65,8 @@
       "h3": "^1.15.9",
       "multer@<2.1.1": "^2.1.1",
       "protobufjs": "^7.5.8",
-      "tar": ">=7.5.21",
-      "lodash": ">=4.18.1"
+      "tar": "^7.5.21",
+      "lodash": "^4.18.1"
     },
     "onlyBuiltDependencies": [
       "@nestjs/core",
