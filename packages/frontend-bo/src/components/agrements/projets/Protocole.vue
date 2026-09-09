@@ -31,6 +31,7 @@
       :modifiable="false"
       :cdn-url="props.cdnUrl"
       label="Document(s) relatif(s) à la réorientation et à l'évacuation (optionnel)"
+      :optional="true"
     />
   </div>
   <hr class="fr-mt-8v" />
@@ -61,6 +62,7 @@
       :modifiable="false"
       :cdn-url="props.cdnUrl"
       label="Document(s) relatif(s) au rapatriement (optionnel)"
+      :optional="true"
     />
   </div>
 </template>

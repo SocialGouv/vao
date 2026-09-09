@@ -21,6 +21,7 @@
       :modifiable="false"
       :cdn-url="props.cdnUrl"
       label="Document(s) relatif(s) aux informations d’ordre sanitaire (optionnel)"
+      :optional="true"
     />
   </div>
 
@@ -46,12 +47,12 @@
   <div class="fr-fieldset__element">
     <div class="fr-col-12">
       <DisplayLabel
-        :value="
-          props.initAgrement?.dateObtentionCertificat
-            ? formatFR(props.initAgrement?.dateObtentionCertificat)
-            : 'Date Invalide'
-        "
+        :value="formatFR(props.initAgrement?.dateObtentionCertificat)"
         :input="AgrementDisplayInput.AgrementInput['dateObtentionCertificat']"
+        :is-valid="
+          !isInvalidDateValue(props.initAgrement?.dateObtentionCertificat)
+        "
+        error-message="Date invalide: à corriger"
       />
     </div>
   </div>
@@ -92,7 +93,12 @@ import {
   MultiFilesUpload,
 } from "@vao/shared-ui";
 
-import { FILE_CATEGORY, formatFR, getFileByCategory } from "@vao/shared-bridge";
+import {
+  FILE_CATEGORY,
+  formatFR,
+  isInvalidDateValue,
+  getFileByCategory,
+} from "@vao/shared-bridge";
 // --- Props et événements ---
 const props = defineProps({
   initAgrement: { type: Object, required: true },

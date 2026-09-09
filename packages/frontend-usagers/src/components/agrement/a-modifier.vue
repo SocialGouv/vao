@@ -35,6 +35,7 @@
         label="Fichier joint à la demande de complétude"
         hint="Pièce jointe associée à la demande de complément d'information au dossier d'agrément."
         :modifiable="false"
+        :optional="true"
       />
     </div>
     <DsfrButton class="fr-mt-3v" @click.prevent="onClickModifier">

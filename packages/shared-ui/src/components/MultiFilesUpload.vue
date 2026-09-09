@@ -2,7 +2,7 @@
   <div class="fr-fieldset__element">
     <div v-if="!props.modifiable">
       <dl class="fr-text--sm fr-pl-0">
-        <dt v-if="label">{{ label }}</dt>
+        <dt v-if="props.label">{{ props.label }}</dt>
         <dd>
           <DsfrTable
             v-if="rows.length > 0"
@@ -10,48 +10,56 @@
             :headers="headers"
             :rows="rows"
           />
-          <p v-else class="fr-mb-4v fr-icon-file-line fr-text--sm">
+          <span
+            v-else-if="!props.optional"
+            class="fr-mb-4v fr-text--sm fr-error-text"
+          >
+            À compléter
+          </span>
+          <span v-else class="fr-mb-4v fr-icon-file-line fr-text--sm">
             Aucun fichier téléversé
-          </p>
-          <p v-if="hint" class="fr-hint-text">
-            {{ hint }}
-          </p>
+          </span>
+          <span v-if="props.hint" class="fr-hint-text">
+            {{ props.hint }}
+          </span>
         </dd>
       </dl>
     </div>
     <div v-else class="fr-input-group">
-      <p v-if="rows.length > 0">
-        <DsfrTable
-          title="Fichier(s) téléversé(s)"
-          :headers="headers"
-          :rows="rows"
-        />
-      </p>
+      <DsfrTable
+        v-if="rows.length > 0"
+        title="Fichier(s) téléversé(s)"
+        :headers="headers"
+        :rows="rows"
+      />
       <p v-else class="fr-mb-4v fr-icon-file-line fr-text--sm">
         Aucun fichier téléversé
       </p>
-      <DsfrFileUpload v-bind="$attrs" @change="onFileInputChange" />
+      <DsfrFileUpload
+        v-bind="$attrs"
+        :label="props.label"
+        :hint="props.hint"
+        @change="onFileInputChange"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, useAttrs } from "vue";
+import { computed } from "vue";
 import type { PropType } from "vue";
 import type { UploadedFile } from "@vao/shared-bridge";
-
 import dayjs from "dayjs";
+
+defineOptions({ inheritAttrs: false });
 
 const props = defineProps({
   modifiable: { type: Boolean, default: true },
   cdnUrl: { type: String, required: true },
+  label: { type: String, default: "" },
+  hint: { type: String, default: "" },
+  optional: { type: Boolean, default: false },
 });
-
-const attrs = useAttrs();
-const label = computed(() =>
-  typeof attrs.label === "string" ? attrs.label : "",
-);
-const hint = computed(() => (typeof attrs.hint === "string" ? attrs.hint : ""));
 
 const headers: string[] = ["Fichier", "Date de création", "Actions"];
 
@@ -105,7 +113,6 @@ function removeFile(index: number): void {
 function onFileInputChange(fileList: FileList): void {
   const arr: UploadedFile[] = Array.from(fileList).map((file) => ({
     name: file.name,
-    // uuid et createdAt seront ajoutés côté backend ou lors de l'upload effectif
   }));
   const current = files.value as UploadedFile[] | undefined;
   files.value = [...(current || []), ...arr];

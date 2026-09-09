@@ -92,7 +92,12 @@
     size="md"
     @close="isModalOpen = false"
   >
-    <FileUpload v-if="props.cdnUrl" v-model="file" :cdn-url="props.cdnUrl" />
+    <FileUpload
+      v-if="props.cdnUrl"
+      v-model="file"
+      :cdn-url="props.cdnUrl"
+      :optional="true"
+    />
     <DsfrButton type="button" @click="isModalOpen = false">Valider</DsfrButton>
   </DsfrModal>
 </template>

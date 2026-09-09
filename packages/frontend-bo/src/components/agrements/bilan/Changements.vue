@@ -22,6 +22,7 @@
       label="Document(s) relatif(s) aux changements ou évolutions (optionnel)"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
+      :optional="true"
     />
   </div>
   <p class="fr-my-2w fr-text--bold">

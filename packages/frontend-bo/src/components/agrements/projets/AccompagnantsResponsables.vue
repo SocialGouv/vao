@@ -35,6 +35,7 @@
         :modifiable="false"
         :cdn-url="props.cdnUrl"
         label="Document(s) relatif(s) aux compétences et expériences des accompagnants prévus"
+        :optional="false"
       />
     </div>
   </div>
@@ -56,6 +57,7 @@
       :modifiable="false"
       :cdn-url="props.cdnUrl"
       label="Document(s) relatif(s) aux mesures envisagées au cas où des accompagnants supplémentaires devraient être recrutés en urgence"
+      :optional="false"
     />
   </div>
   <MultiFilesUpload
@@ -63,6 +65,7 @@
     :modifiable="false"
     :cdn-url="props.cdnUrl"
     label="Document(s) complémentaire(s) relatif(s) aux séjours prévus (optionnel)"
+    :optional="true"
   />
 </template>
 

@@ -60,6 +60,7 @@
       :modifiable="false"
       :cdn-url="props.cdnUrl"
       label="Document(s) relatif(s) au bilan financier sur les quatre dernières années (optionnel)"
+      :optional="true"
     />
   </div>
 </template>

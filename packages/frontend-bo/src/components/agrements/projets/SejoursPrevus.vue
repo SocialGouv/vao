@@ -44,6 +44,7 @@
       label="Document(s) relatif(s) aux séjours prévus (optionnel)"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
+      :optional="true"
     />
   </div>
 </template>

@@ -26,6 +26,7 @@
       :modifiable="false"
       :cdn-url="props.cdnUrl"
       label="Document(s) relatif(s) à l'organisation des transports prévus (optionnel)"
+      :optional="true"
     />
   </div>
 </template>

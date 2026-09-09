@@ -35,6 +35,7 @@
       :modifiable="false"
       :cdn-url="props.cdnUrl"
       label="Document(s) relatif(s) au budget des personnes prévu (optionnel)"
+      :optional="true"
     />
   </div>
 </template>

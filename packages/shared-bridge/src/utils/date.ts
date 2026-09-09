@@ -126,3 +126,8 @@ export const parseFrShort = (date?: string | null): dayjs.Dayjs | undefined => {
   const parsed = dayjs(date, "DD/MM/YYYY", true);
   return parsed.isValid() ? parsed : undefined;
 };
+
+export function isInvalidDateValue(date?: Date | string | null): boolean {
+  if (!date) return false;
+  return !dayjs(date).isValid();
+}
