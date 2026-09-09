@@ -34,8 +34,8 @@
                   >
                     <span class="fr-sr-only">
                       Voir l’hébergement {{ row.nom }}
-                    </span></DsfrButton
-                  >
+                    </span>
+                  </DsfrButton>
                   <DsfrButton
                     icon="ri:delete-bin-2-line"
                     icon-only
@@ -48,19 +48,54 @@
                   >
                     <span class="fr-sr-only">
                       Supprimer l’hébergement {{ row.nom }}
-                    </span></DsfrButton
-                  >
+                    </span>
+                  </DsfrButton>
                 </div>
               </template>
             </DsfrDataTableV2Wrapper>
           </div>
+
           <DsfrButton
             v-if="props.modifiable"
             label="Ajouter une fiche hébergement"
             :disabled="isSejourComplet"
             @click.prevent="onOpenNuitee"
           />
+
+          <DsfrButton
+            label="Ajouter un nouvel hébergement"
+            secondary
+            @click.prevent="openLeaveFunnelModal"
+          />
         </div>
+
+        <DsfrModal
+          v-if="props.modifiable && isModuleHebergementEnabled"
+          v-model:opened="leaveFunnelModal.opened"
+          title="Ajouter un nouvel hébergement"
+          is-alert
+          @close="closeLeaveFunnelModal"
+          @keydown.esc.prevent.stop="closeLeaveFunnelModal"
+        >
+          <template #default>
+            <p>
+              Votre déclaration de séjour est enregistrée en brouillon. Une fois
+              votre nouvel hébergement créé, vous pourrez reprendre et finaliser
+              votre déclaration.
+            </p>
+            <div class="modal-btns-group">
+              <DsfrButton
+                label="Annuler"
+                secondary
+                @click="closeLeaveFunnelModal"
+              />
+              <DsfrButton
+                label="Ajouter un nouvel hébergement"
+                @click="confirmLeaveFunnel"
+              />
+            </div>
+          </template>
+        </DsfrModal>
       </div>
 
       <div class="fr-fieldset">
@@ -133,6 +168,7 @@ import {
   formatISOShort,
   type DemandeSejourHebergementItemDto,
 } from "@vao/shared-bridge";
+import { HebergementFunnelOrigin, FeatureFlagName } from "@vao/shared-bridge";
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 
 type HebergementFormValues = {
@@ -192,6 +228,16 @@ const hebergementStore = useHebergementStore();
 const demandeSejourStore = useDemandeSejourStore();
 const nuiteeOpened = ref(false);
 const currentIndex = ref(-1);
+const userStore = useUserStore();
+
+const leaveFunnelModal = reactive({ opened: false });
+
+const isModuleHebergementEnabled = computed(
+  () =>
+    !!userStore.user?.featureFlags?.[
+      FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT
+    ],
+);
 
 const validationSchema = computed(() => {
   return DeclarationSejour.hebergementSchema(
@@ -369,11 +415,35 @@ function updateData() {
     offset.value + limit.value,
   );
 }
+
+function openLeaveFunnelModal() {
+  leaveFunnelModal.opened = true;
+}
+
+function closeLeaveFunnelModal() {
+  leaveFunnelModal.opened = false;
+}
+
+async function confirmLeaveFunnel() {
+  log.i("confirmLeaveFunnel - IN");
+
+  hebergementStore.setFunnelOrigin(HebergementFunnelOrigin.DECLARATION_SEJOUR, {
+    sejourId: demandeSejourStore.demandeCourante?.id ?? null,
+  });
+
+  leaveFunnelModal.opened = false;
+  await navigateTo("/hebergements");
+}
 </script>
 
 <style lang="scss" scoped>
 .buttons-group {
   display: flex;
   gap: 0.3rem;
+}
+.modal-btns-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
 }
 </style>
