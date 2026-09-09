@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+
 import { FeatureFlagName } from "@vao/shared-bridge";
 import request from "supertest";
 
@@ -837,5 +839,209 @@ describe("POST /hebergement avec flag MODULE_SITE_UNITE_HEBERGEMENT", () => {
     expect(uniteRows[1].current).toBe(true);
     expect(uniteRows[1].nombre_couchage_total).toBe(40);
     expect(uniteRows[1].separation_homme_femme).toBe(false);
+  });
+});
+
+describe("POST /hebergement avec flag MODULE_SITE_UNITE_HEBERGEMENT - lecture unite", () => {
+  it("retourne 400 si aucun body n'est envoyé", async () => {
+    authUser = await createUsagersUser();
+    await createOrganisme({ userId: authUser.id });
+
+    const response = await request(getFoAppHelper(authUser)).post(
+      "/hebergement",
+    );
+
+    expect(response.status).toBe(400);
+  });
+
+  it("retourne 200 et résout les fichiers unite lors de la lecture", async () => {
+    authUser = await createUsagersUser();
+    await createOrganisme({ userId: authUser.id });
+    await setFeatureFlagEnabled({
+      enabled: true,
+      name: FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT,
+    });
+
+    const body = buildUniteHebergementFixtureToPost({
+      uniteData: {
+        ...buildUniteHebergementFixtureToPost().uniteData,
+        fileDernierArreteAutorisationMaire: randomUUID(),
+        fileReponseExploitantOuProprietaire: null,
+        reglementationErp: true,
+      },
+    });
+    const createResponse = await request(getFoAppHelper(authUser))
+      .post("/hebergement")
+      .send(body);
+    expect(createResponse.status).toBe(200);
+
+    const response = await request(getFoAppHelper(authUser)).get(
+      `/hebergement/${createResponse.body.id}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(
+      response.body.hebergement.informationsLocaux
+        .fileDernierArreteAutorisationMaire,
+    ).toBeNull();
+  });
+
+  it("retourne les données legacy lorsque des champs de unite_hebergement sont nuls", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const hebergementId = await createHebergement({
+      organismeId,
+      userId: authUser.id,
+    });
+    await setFeatureFlagEnabled({
+      enabled: true,
+      name: FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT,
+    });
+
+    await getPool().query(
+      `UPDATE front.unite_hebergement
+       SET accessibilite_pmr = NULL, lits_superposes = NULL, chambres_doubles = NULL
+       WHERE id = $1 AND "current" IS TRUE`,
+      [hebergementId],
+    );
+
+    const response = await request(getFoAppHelper(authUser)).get(
+      `/hebergement/${hebergementId}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.body.hebergement.informationsLocaux.accessibilite).toBe(
+      "accessible",
+    );
+    expect(
+      response.body.hebergement.informationsLocaux.nombreLitsSuperposes,
+    ).toBe(10);
+    expect(response.body.hebergement.informationsLocaux.chambresDoubles).toBe(
+      true,
+    );
+  });
+});
+
+describe("flux brouillon unite avec flag MODULE_SITE_UNITE_HEBERGEMENT", () => {
+  it("retourne 200 et crée un brouillon unite depuis uniteData", async () => {
+    authUser = await createUsagersUser();
+    await createOrganisme({ userId: authUser.id });
+    await setFeatureFlagEnabled({
+      enabled: true,
+      name: FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT,
+    });
+
+    const body = buildUniteHebergementFixtureToPost();
+    const response = await request(getFoAppHelper(authUser))
+      .post("/hebergement/brouillon")
+      .send(body);
+
+    expect(response.status).toBe(200);
+    const hebergementId = response.body.id as number;
+    expect(hebergementId).toBeDefined();
+
+    const uuid = await getHebergementUuid(hebergementId);
+
+    const { rows: uniteRows } = await getPool().query(
+      `SELECT nombre_couchage_total, "current"
+       FROM front.unite_hebergement
+       WHERE hebergement_id = $1`,
+      [uuid],
+    );
+    expect(uniteRows).toHaveLength(1);
+    expect(uniteRows[0].nombre_couchage_total).toBe(25);
+    expect(uniteRows[0].current).toBe(true);
+
+    const { rows: legacyRows } = await getPool().query(
+      `SELECT statut_id
+       FROM front.hebergement
+       WHERE id = $1 AND "current" IS TRUE`,
+      [hebergementId],
+    );
+    expect(legacyRows).toHaveLength(1);
+    expect(legacyRows[0].statut_id).toBe(
+      await getStatutIdFromValue(HebergementStatuts.BROUILLON),
+    );
+  });
+
+  it("retourne 200 et met à jour unite en place via le brouillon", async () => {
+    authUser = await createUsagersUser();
+    await createOrganisme({ userId: authUser.id });
+    await setFeatureFlagEnabled({
+      enabled: true,
+      name: FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT,
+    });
+
+    const createResponse = await request(getFoAppHelper(authUser))
+      .post("/hebergement/brouillon")
+      .send(buildUniteHebergementFixtureToPost());
+    expect(createResponse.status).toBe(200);
+    const hebergementId = createResponse.body.id as number;
+    const uuid = await getHebergementUuid(hebergementId);
+
+    const body = buildUniteHebergementFixtureToPost({
+      uniteData: {
+        ...buildUniteHebergementFixtureToPost().uniteData,
+        nombreCouchageTotal: 33,
+      },
+    });
+    const response = await request(getFoAppHelper(authUser))
+      .put(`/hebergement/${hebergementId}/brouillon`)
+      .send(body);
+
+    expect(response.status).toBe(200);
+
+    const { rows: uniteRows } = await getPool().query(
+      `SELECT nombre_couchage_total, "current"
+       FROM front.unite_hebergement
+       WHERE hebergement_id = $1
+       ORDER BY id`,
+      [uuid],
+    );
+    expect(uniteRows).toHaveLength(1);
+    expect(uniteRows[0].nombre_couchage_total).toBe(33);
+    expect(uniteRows[0].current).toBe(true);
+
+    const { rows: legacyRows } = await getPool().query(
+      `SELECT statut_id
+       FROM front.hebergement
+       WHERE id = $1 AND "current" IS TRUE`,
+      [hebergementId],
+    );
+    expect(legacyRows[0].statut_id).toBe(
+      await getStatutIdFromValue(HebergementStatuts.BROUILLON),
+    );
+  });
+
+  it("retourne 200 et active un brouillon unite depuis uniteData", async () => {
+    authUser = await createUsagersUser();
+    await createOrganisme({ userId: authUser.id });
+    await setFeatureFlagEnabled({
+      enabled: true,
+      name: FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT,
+    });
+
+    const createResponse = await request(getFoAppHelper(authUser))
+      .post("/hebergement/brouillon")
+      .send(buildUniteHebergementFixtureToPost());
+    expect(createResponse.status).toBe(200);
+    const hebergementId = createResponse.body.id as number;
+
+    const response = await request(getFoAppHelper(authUser))
+      .put(`/hebergement/${hebergementId}/activate`)
+      .send(buildUniteHebergementFixtureToPost());
+
+    expect(response.status).toBe(200);
+
+    const { rows: legacyRows } = await getPool().query(
+      `SELECT statut_id
+       FROM front.hebergement
+       WHERE id = $1 AND "current" IS TRUE`,
+      [hebergementId],
+    );
+    expect(legacyRows).toHaveLength(1);
+    expect(legacyRows[0].statut_id).toBe(
+      await getStatutIdFromValue(HebergementStatuts.ACTIF),
+    );
   });
 });
