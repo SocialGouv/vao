@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@sentry/cli": "^2.42.3",
-    "@sentry/node": "^9.5.0",
+    "@sentry/node": "catalog:",
     "@vao/shared-bridge": "workspace:^",
     "cron": "^4.1.0",
     "nodemailer": "catalog:",

@@ -32,14 +32,12 @@ if (config.sentry.enabled) {
       Sentry.requestDataIntegration({
         include: {
           cookies: false,
-          user: {
-            email: false,
-          },
         },
       }),
       nodeProfilingIntegration(),
     ],
-    profilesSampleRate: 1.0,
+    profileLifecycle: "trace",
+    profileSessionSampleRate: 1.0,
     release: config.sentry.release,
     tracesSampleRate: 1.0,
   });

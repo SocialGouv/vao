@@ -13,14 +13,12 @@ Sentry.init({
     Sentry.requestDataIntegration({
       include: {
         cookies: false,
-        user: {
-          email: false,
-        },
       },
     }),
     nodeProfilingIntegration(),
   ],
-  profilesSampleRate: 1.0,
+  profileLifecycle: "trace",
+  profileSessionSampleRate: 1.0,
   release: configuration().sentry.release,
   tracesSampleRate: 1.0,
 });
