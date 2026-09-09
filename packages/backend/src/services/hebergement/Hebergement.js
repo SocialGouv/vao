@@ -198,6 +198,18 @@ ${new Array(nbRows)
     WHERE uo.use_id = $1 AND h.id = $2
   `,
 
+  getLegacyUniteContext: `
+    SELECT
+      ht.value AS "type",
+      htp.value AS "pension",
+      h.description_lieu_hebergement AS "descriptionLieuHebergement"
+    FROM front.hebergement h
+    LEFT JOIN front.hebergement_type ht ON ht.id = h.type_id
+    LEFT JOIN front.hebergement_type_pension htp ON htp.id = h.type_pension_id
+    WHERE h.id = $1
+      AND h.current = TRUE
+  `,
+
   getListe: () => `
     WITH stat AS (
       SELECT id,
@@ -396,10 +408,29 @@ const getStatutId = async (statut, client = getPool()) => {
   return rows?.[0]?.id ?? null;
 };
 
+const getLegacyUniteContext = async (hebergementId, client = getPool()) => {
+  const { rows } = await client.query(query.getLegacyUniteContext, [
+    hebergementId,
+  ]);
+  return rows?.[0] ?? {};
+};
+
+const preserveLegacyUniteContext = (hebergement, legacyContext) => {
+  if (!hebergement.uniteData) {
+    return;
+  }
+  const { informationsLocaux } = hebergement;
+  informationsLocaux.type ??= legacyContext.type ?? null;
+  informationsLocaux.pension ??= legacyContext.pension ?? null;
+  informationsLocaux.descriptionLieuHebergement ??=
+    legacyContext.descriptionLieuHebergement ?? null;
+};
+
 const syncSiteAndUniteOnCreate = async (
   client,
   userId,
   organismeId,
+  statut,
   hebergement,
   created,
 ) => {
@@ -429,8 +460,10 @@ const syncSiteAndUniteOnCreate = async (
       informationsTransport: hebergement.informationsTransport,
       organismeId,
       siteId,
-      statutId: null,
-      typePensions: [],
+      statutId: await getStatutId(statut, client),
+      typePensions: hebergement.informationsLocaux?.pension
+        ? [hebergement.informationsLocaux.pension]
+        : [],
       uniteData: hebergement.uniteData ?? undefined,
     },
     client,
@@ -458,6 +491,7 @@ module.exports.create = async (userId, organismeId, statut, hebergement) => {
       client,
       userId,
       organismeId,
+      statut,
       hebergement,
       created,
     );
@@ -487,6 +521,10 @@ module.exports.updateWithoutHistory = async (
 
   try {
     await client.query("BEGIN");
+    preserveLegacyUniteContext(
+      hebergement,
+      await getLegacyUniteContext(hebergementId, client),
+    );
     const adresseId = coordonnees.adresse
       ? await saveAdresse(client, coordonnees.adresse)
       : null;
@@ -548,7 +586,9 @@ module.exports.updateWithoutHistory = async (
           informationsLocaux,
           informationsTransport,
           statutId: await getStatutId(statut, client),
-          typePensions: [],
+          typePensions: informationsLocaux?.pension
+            ? [informationsLocaux.pension]
+            : [],
           uniteData: hebergement.uniteData ?? undefined,
         },
         client,
@@ -601,6 +641,10 @@ module.exports.update = async (userId, hebergementId, hebergement, statut) => {
   let newHebergement;
   try {
     await client.query("BEGIN");
+    preserveLegacyUniteContext(
+      hebergement,
+      await getLegacyUniteContext(hebergementId, client),
+    );
     await client.query(query.historize, [hebergementId]);
     newHebergement = await create(
       client,
@@ -630,7 +674,9 @@ module.exports.update = async (userId, hebergementId, hebergement, statut) => {
           informationsLocaux: hebergement.informationsLocaux,
           informationsTransport: hebergement.informationsTransport,
           statutId: await getStatutId(statut, client),
-          typePensions: [],
+          typePensions: hebergement.informationsLocaux?.pension
+            ? [hebergement.informationsLocaux.pension]
+            : [],
           uniteData: hebergement.uniteData ?? undefined,
         },
         client,
