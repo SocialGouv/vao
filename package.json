@@ -34,7 +34,7 @@
     "@commitlint/config-conventional": "^19.0.0",
     "@eslint/eslintrc": "catalog:",
     "@eslint/js": "catalog:",
-    "@playwright/test": "^1.55.1",
+    "@playwright/test": "^1.62.1",
     "@socialgouv/eslint-config-recommended": "^1.131.0",
     "@types/multer": "^2.1.0",
     "@types/node": "^24.10.0",
