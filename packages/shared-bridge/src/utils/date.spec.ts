@@ -12,6 +12,7 @@ import {
   isAfter,
   isBefore,
   isBetweenDates,
+  isInvalidDateValue,
   isValidFrShort,
   isValidIsoShort,
   minutesBetween,
@@ -346,5 +347,39 @@ describe("isValidIsoShort", () => {
   it("retourne false pour des valeurs non date", () => {
     expect(isValidIsoShort("hello")).toBe(false);
     expect(isValidIsoShort("123")).toBe(false);
+  });
+});
+
+describe("isInvalidDateValue", () => {
+  it("should return false for undefined", () => {
+    expect(isInvalidDateValue(undefined)).toBe(false);
+  });
+
+  it("should return false for null", () => {
+    expect(isInvalidDateValue(null)).toBe(false);
+  });
+
+  it("should return false for empty string", () => {
+    expect(isInvalidDateValue("")).toBe(false);
+  });
+
+  it("should return false for a valid Date object", () => {
+    expect(isInvalidDateValue(new Date(2023, 0, 1))).toBe(false);
+  });
+
+  it("should return false for a valid ISO date string", () => {
+    expect(isInvalidDateValue("2023-01-01")).toBe(false);
+  });
+
+  it("should return true for an invalid Date object", () => {
+    expect(isInvalidDateValue(new Date("invalid"))).toBe(true);
+  });
+
+  it("should return true for a non-date string", () => {
+    expect(isInvalidDateValue("not-a-date")).toBe(true);
+  });
+
+  it("should return true for a malformed date string", () => {
+    expect(isInvalidDateValue("32/13/2023")).toBe(true);
   });
 });
