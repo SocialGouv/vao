@@ -1,7 +1,10 @@
 import { defineStore } from "pinia";
 import { $fetchBackend, logger } from "#imports";
 import uploadFile from "~/utils/UploadFile";
-import type { HebergementDto } from "@vao/shared-bridge";
+import type {
+  HebergementDto,
+  HebergementFunnelOrigin,
+} from "@vao/shared-bridge";
 import { HebergementService } from "~/services/hebergementService";
 
 const log = logger("stores/hebergement");
@@ -10,10 +13,15 @@ type IdResponse = { id?: number };
 type HebergementsBySirenResponse = { hebergements?: HebergementDto[] };
 type HebergementsListResponse = { rows: HebergementDto[]; total: number };
 
+interface HebergementFunnelContext {
+  origin: HebergementFunnelOrigin;
+  sejourId?: number | null;
+}
 interface HebergementStoreState {
   hebergements: HebergementDto[];
   hebergementsTotal: number;
   hebergementCourant: HebergementDto | null;
+  funnelContext: HebergementFunnelContext | null;
 }
 
 export const useHebergementStore = defineStore("hebergement", {
@@ -21,8 +29,19 @@ export const useHebergementStore = defineStore("hebergement", {
     hebergements: [],
     hebergementsTotal: 0,
     hebergementCourant: null,
+    funnelContext: null,
   }),
   actions: {
+    setFunnelOrigin(
+      origin: HebergementFunnelOrigin,
+      context: Omit<HebergementFunnelContext, "origin"> = {},
+    ) {
+      log.d("setFunnelOrigin", { origin, context });
+      this.funnelContext = { origin, ...context };
+    },
+    resetFunnelContext() {
+      this.funnelContext = null;
+    },
     async fetchBySiren(siren: string) {
       try {
         log.i("fetchBySiren - IN");
