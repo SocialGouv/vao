@@ -520,7 +520,7 @@ fileignoreconfig:
 - filename: pg/seeds/PG-1-proc-data-deletion.sql
   checksum: f93c69228f6832f4417ca3e432f481e23a30aa4b6d4c07082da17d2312c0cd52
 - filename: pnpm-lock.yaml
-  checksum: 0a7fefef2d3e683fdcf49725744a83321cfbf06c6858497f82180775ed0e7121
+  checksum: 02a2dbfd1e8ee33508cfe0c1549876cad19b65eb07c3857d9c2bc97311c2533e
 - filename: s/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
 version: "1.0"
