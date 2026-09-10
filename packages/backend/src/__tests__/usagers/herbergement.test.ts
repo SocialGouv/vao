@@ -1,9 +1,16 @@
+import { FeatureFlagName } from "@vao/shared-bridge";
 import request from "supertest";
 
 import { statuts as HebergementStatuts } from "../../helpers/hebergement";
 import { partOrganisme } from "../../helpers/org-part";
+import { HebergementsRepositoryShared } from "../../shared/hebergements/hebergements.repository";
 import { buildHebergementFixture } from "../fixtures/hebergementFixture";
 import { getFoAppHelper } from "../helpers/appHelper";
+import { setFeatureFlagEnabled } from "../helpers/featureFlagHelper";
+import {
+  getCurrentUniteIdByHebergementId,
+  getUniteStatutValue,
+} from "../helpers/hebergementDoubleEntryHelper";
 import { createHebergement } from "../helpers/hebergementHelper";
 import {
   createOrganisme,
@@ -17,6 +24,22 @@ import { createUsagersUser } from "../helpers/userHelper";
 
 let authUser = { id: 1, role: "admin" };
 
+const FAKE_FILE_UUID = "00000000-0000-0000-0000-000000000001";
+
+const createUserAndOrganisme = async (): Promise<number> => {
+  authUser = await createUsagersUser();
+  return createOrganisme({ userId: authUser.id });
+};
+
+const buildActifFixture = () =>
+  buildHebergementFixture({
+    informationsLocaux: {
+      ...buildHebergementFixture().informationsLocaux,
+      fileReponseExploitantOuProprietaire: { uuid: FAKE_FILE_UUID },
+      reglementationErp: false,
+    },
+  });
+
 beforeAll(async () => {
   await createTestContainer();
 });
@@ -26,6 +49,13 @@ afterAll(async () => {
 });
 
 describe("GET /hebergement/:id", () => {
+  afterEach(async () => {
+    await setFeatureFlagEnabled({
+      enabled: false,
+      name: FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT,
+    });
+  });
+
   it("devrait retourner un hébergement par ID avec succès", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
@@ -40,6 +70,7 @@ describe("GET /hebergement/:id", () => {
     // Vérification des résultats
     expect(response.status).toBe(200);
     expect(response.body.hebergement.id).toEqual(hebergementId);
+    expect(response.body.hebergement.siteId).toBeUndefined();
   });
 
   it("retourne 400 si l'id est invalide", async () => {
@@ -50,6 +81,40 @@ describe("GET /hebergement/:id", () => {
 
     // TODO: add controller validation to return 400 if the id is invalid
     expect(response.status).toBe(404);
+  });
+
+  it("retourne la réponse legacy fusionnée avec les données de l'unité quand le flag est actif", async () => {
+    await setFeatureFlagEnabled({
+      enabled: true,
+      name: FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT,
+    });
+    const organismeId = await createUserAndOrganisme();
+    const hebergementId = await createHebergement({
+      organismeId,
+      userId: authUser.id,
+    });
+
+    const response = await request(getFoAppHelper(authUser)).get(
+      `/hebergement/${hebergementId}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.body.hebergement.siteId).toEqual(expect.any(String));
+    expect(
+      response.body.hebergement.informationsLocaux.nombreLitsSuperposes,
+    ).toBe(1);
+    expect(response.body.hebergement.informationsLocaux.chambresUnisexes).toBe(
+      true,
+    );
+    expect(
+      response.body.hebergement.informationsTransport.deplacementProximite,
+    ).toBe("Transport en commun");
+    expect(response.body.hebergement.informationsTransport.excursion).toBe(
+      "Excursions disponibles",
+    );
+    expect(
+      response.body.hebergement.informationsTransport.vehiculesAdaptes,
+    ).toBe(true);
   });
 });
 
@@ -95,6 +160,59 @@ describe("POST /hebergement", () => {
 
     expect(response.status).toBe(400);
   });
+
+  it("crée le site, l'unité et le lien site_id sur l'hébergement legacy", async () => {
+    const organismeId = await createUserAndOrganisme();
+    const response = await request(getFoAppHelper(authUser))
+      .post("/hebergement")
+      .send(buildActifFixture());
+
+    expect(response.status).toBe(200);
+    const hebergementId = response.body.id;
+    expect(hebergementId).toEqual(expect.any(Number));
+    expect(organismeId).toEqual(expect.any(Number));
+
+    const unite =
+      await HebergementsRepositoryShared.getUniteHebergementById(hebergementId);
+    expect(unite).not.toBeNull();
+    expect(unite!.current).toBe(true);
+    expect(unite!.hebergementId).toEqual(expect.any(String));
+    expect(unite!.siteId).toEqual(expect.any(String));
+    expect(unite!.nombreCouchageTotal).toBe(10);
+    expect(unite!.litsSuperposes).toBe(true);
+    expect(unite!.accessibilitePmr).toBe(true);
+    expect(unite!.chambresDoubles).toBe(true);
+    expect(unite!.separationHommeFemme).toBe(true);
+    expect(unite!.couchageIndividuel).toBe(true);
+    expect(unite!.rangementIndividuel).toBe(true);
+    expect(unite!.amenagementsSpecifiques).toBe(false);
+    expect(unite!.reglementationErp).toBe(false);
+    expect(unite!.visiteLocaux).toBe(true);
+    expect(await getUniteStatutValue(hebergementId)).toBe(
+      HebergementStatuts.ACTIF,
+    );
+
+    const site = await HebergementsRepositoryShared.getSiteById(unite!.siteId!);
+    expect(site).not.toBeNull();
+    expect(site!.nomSiteOfficiel).toBe("Hebergement fixture");
+
+    const siteOrganisme = await HebergementsRepositoryShared.getSiteOrganisme(
+      unite!.siteId!,
+      organismeId,
+    );
+    expect(siteOrganisme).not.toBeNull();
+    expect(siteOrganisme!.respNomPrenom).toBe("Gestionnaire fixture");
+    expect(siteOrganisme!.respTelephone).toBe("0102030405");
+    expect(siteOrganisme!.excursionDescription).toBe("Excursions disponibles");
+    expect(siteOrganisme!.deplacementProximiteDescription).toBe(
+      "Transport en commun",
+    );
+    expect(siteOrganisme!.vehiculesAdaptes).toBe(true);
+
+    expect(
+      await HebergementsRepositoryShared.getHebergementSiteId(hebergementId),
+    ).toBe(unite!.siteId);
+  });
 });
 
 describe("POST /hebergement/:id", () => {
@@ -111,6 +229,62 @@ describe("POST /hebergement/:id", () => {
 
     expect(response.status).toBe(400);
   });
+
+  it("archive l'ancienne unité et crée une nouvelle unité courante", async () => {
+    await createUserAndOrganisme();
+    const createResponse = await request(getFoAppHelper(authUser))
+      .post("/hebergement")
+      .send(buildActifFixture());
+    const hebergementId = createResponse.body.id;
+
+    const uniteAvant =
+      await HebergementsRepositoryShared.getUniteHebergementById(hebergementId);
+    expect(uniteAvant).not.toBeNull();
+
+    const response = await request(getFoAppHelper(authUser))
+      .post(`/hebergement/${hebergementId}`)
+      .send(
+        buildHebergementFixture({
+          informationsLocaux: {
+            ...buildActifFixture().informationsLocaux,
+            chambresDoubles: false,
+            nombreLits: 25,
+            nombreMaxPersonnesCouchage: 25,
+          },
+          nom: "Hebergement corrige",
+        }),
+      );
+
+    expect(response.status).toBe(200);
+
+    const ancienneUnite =
+      await HebergementsRepositoryShared.getUniteHebergementById(hebergementId);
+    expect(ancienneUnite).toBeNull();
+
+    const uniteCouranteId =
+      await getCurrentUniteIdByHebergementId(hebergementId);
+    expect(uniteCouranteId).not.toBeNull();
+    expect(uniteCouranteId).not.toBe(hebergementId);
+
+    const uniteCourante =
+      await HebergementsRepositoryShared.getUniteHebergementById(
+        uniteCouranteId!,
+      );
+    expect(uniteCourante).not.toBeNull();
+    expect(uniteCourante!.current).toBe(true);
+    expect(uniteCourante!.hebergementId).toBe(uniteAvant!.hebergementId);
+    expect(uniteCourante!.siteId).toBe(uniteAvant!.siteId);
+    expect(uniteCourante!.nombreCouchageTotal).toBe(25);
+    expect(uniteCourante!.chambresDoubles).toBe(false);
+    expect(await getUniteStatutValue(uniteCouranteId!)).toBe(
+      HebergementStatuts.ACTIF,
+    );
+
+    const site = await HebergementsRepositoryShared.getSiteById(
+      uniteCourante!.siteId!,
+    );
+    expect(site!.nomSiteOfficiel).toBe("Hebergement corrige");
+  });
 });
 
 describe("PUT /hebergement/:id/desactivate", () => {
@@ -123,24 +297,39 @@ describe("PUT /hebergement/:id/desactivate", () => {
     expect(response.status).toBe(404);
   });
 
-  it("retourne 200 quand la desactivation reussit", async () => {
+  it("retourne 200 quand la desactivation reussit et crée une unité courante désactivée", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const hebergementId = await createHebergement({
       organismeId,
       userId: authUser.id,
     });
+    expect(await getUniteStatutValue(hebergementId)).toBe(
+      HebergementStatuts.ACTIF,
+    );
 
     const response = await request(getFoAppHelper(authUser)).put(
       `/hebergement/${hebergementId}/desactivate`,
     );
 
     expect(response.status).toBe(200);
+
+    expect(
+      await HebergementsRepositoryShared.getUniteHebergementById(hebergementId),
+    ).toBeNull();
+
+    const uniteCouranteId =
+      await getCurrentUniteIdByHebergementId(hebergementId);
+    expect(uniteCouranteId).not.toBeNull();
+    expect(uniteCouranteId).not.toBe(hebergementId);
+    expect(await getUniteStatutValue(uniteCouranteId!)).toBe(
+      HebergementStatuts.DESACTIVE,
+    );
   });
 });
 
 describe("PUT /hebergement/:id/reactivate", () => {
-  it("retourne 200 quand la reactivation reussit", async () => {
+  it("retourne 200 et synchronise le statut de l'unité sur actif", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const hebergementId = await createHebergement({
@@ -148,11 +337,18 @@ describe("PUT /hebergement/:id/reactivate", () => {
       organismeId,
       userId: authUser.id,
     });
+    expect(await getUniteStatutValue(hebergementId)).toBe(
+      HebergementStatuts.DESACTIVE,
+    );
+
     const response = await request(getFoAppHelper(authUser)).put(
       `/hebergement/${hebergementId}/reactivate`,
     );
 
     expect(response.status).toBe(200);
+    expect(await getUniteStatutValue(hebergementId)).toBe(
+      HebergementStatuts.ACTIF,
+    );
   });
 });
 
@@ -300,7 +496,7 @@ describe("GET /hebergement/siren/:siren", () => {
 });
 
 describe("POST /hebergement/brouillon", () => {
-  it("retourne 200 avec un body valide", async () => {
+  it("retourne 200 avec un body valide et écrit l'unité au statut brouillon", async () => {
     authUser = await createUsagersUser();
     await createOrganisme({ userId: authUser.id });
     const response = await request(getFoAppHelper(authUser))
@@ -308,11 +504,21 @@ describe("POST /hebergement/brouillon", () => {
       .send(buildHebergementFixture());
 
     expect(response.status).toBe(200);
+
+    const unite = await HebergementsRepositoryShared.getUniteHebergementById(
+      response.body.id,
+    );
+    expect(unite).not.toBeNull();
+    expect(unite!.current).toBe(true);
+    expect(unite!.siteId).toEqual(expect.any(String));
+    expect(await getUniteStatutValue(response.body.id)).toBe(
+      HebergementStatuts.BROUILLON,
+    );
   });
 });
 
 describe("PUT /hebergement/:id/brouillon", () => {
-  it("retourne 200 quand la mise a jour brouillon est valide", async () => {
+  it("retourne 200 et met à jour l'unité et le site en place", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const hebergementId = await createHebergement({
@@ -320,11 +526,28 @@ describe("PUT /hebergement/:id/brouillon", () => {
       organismeId,
       userId: authUser.id,
     });
+    const uniteAvant =
+      await HebergementsRepositoryShared.getUniteHebergementById(hebergementId);
     const response = await request(getFoAppHelper(authUser))
       .put(`/hebergement/${hebergementId}/brouillon`)
       .send(buildHebergementFixture());
 
     expect(response.status).toBe(200);
+
+    const uniteApres =
+      await HebergementsRepositoryShared.getUniteHebergementById(hebergementId);
+    expect(uniteApres).not.toBeNull();
+    expect(uniteApres!.current).toBe(true);
+    expect(uniteApres!.siteId).toBe(uniteAvant!.siteId);
+    expect(uniteApres!.nombreCouchageTotal).toBe(10);
+    expect(await getUniteStatutValue(hebergementId)).toBe(
+      HebergementStatuts.BROUILLON,
+    );
+
+    const site = await HebergementsRepositoryShared.getSiteById(
+      uniteApres!.siteId!,
+    );
+    expect(site!.nomSiteOfficiel).toBe("Hebergement fixture");
   });
 });
 

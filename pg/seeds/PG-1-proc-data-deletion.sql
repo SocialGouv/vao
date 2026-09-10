@@ -196,6 +196,22 @@ BEGIN
       WHERE hebergement_id IN (SELECT id
                   FROM front.hebergement
                   WHERE organisme_id = p_organisme_id);
+
+    DELETE FROM front.unite_hebergement
+      WHERE organisme_id = p_organisme_id;
+
+    DELETE FROM front.site_organisme
+      WHERE organisme_id = p_organisme_id;
+
+    DELETE FROM front.site
+      WHERE site_id IN (SELECT h.site_id
+                  FROM front.hebergement h
+                  WHERE h.organisme_id = p_organisme_id
+                    AND h.site_id IS NOT NULL)
+        AND NOT EXISTS (SELECT 1
+                  FROM front.site_organisme so
+                  WHERE so.site_id = front.site.site_id);
+
     DELETE FROM front.hebergement WHERE organisme_id = p_organisme_id;
     DELETE FROM front.ops_to_ce
       WHERE protocole_sanitaire_id IN (SELECT id
