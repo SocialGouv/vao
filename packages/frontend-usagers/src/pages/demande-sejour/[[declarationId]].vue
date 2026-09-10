@@ -149,6 +149,7 @@
                     @update="updateOrCreate"
                     @next="nextHash"
                     @previous="previousHash"
+                    :save-before-leave="saveHebergementsStepBeforeLeave"
                   />
                 </div>
                 <div id="synthese">
@@ -630,7 +631,18 @@ const sendMessage = async ({
   demandeSejourStore.fetchMessages(sejourId.value as string);
 };
 
-async function updateOrCreate(data: Record<string, unknown>, type: string) {
+async function saveHebergementsStepBeforeLeave(
+  data: Record<string, unknown>,
+  type: string,
+) {
+  return updateOrCreate(data, type, false);
+}
+
+async function updateOrCreate(
+  data: Record<string, unknown>,
+  type: string,
+  advance = true,
+) {
   log.i("updateOrCreate - IN", { data, type });
   setApiStatut(
     `${sejourId.value ? "Sauvegarde" : "Création"} de la demande de séjour en cours`,
@@ -726,16 +738,20 @@ async function updateOrCreate(data: Record<string, unknown>, type: string) {
     sejourId.value = response.id;
     // force refresh
     await demandeSejourStore.setDemandeCourante(sejourId.value as number);
-    return await nextHash();
+    if (advance) {
+      return await nextHash();
+    }
+    return response;
   } catch (error) {
     log.w("Creation/modification de declaration de sejour: ", { error });
-    return toaster.error({
+    toaster.error({
       titleTag: "h2",
       description:
         (error as ApiError).data?.message ??
         `Une erreur est survenue lors de la mise à jour de la déclaration de séjour`,
       role: "alert",
     });
+    return null;
   } finally {
     resetApiStatut();
   }

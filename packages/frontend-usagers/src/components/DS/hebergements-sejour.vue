@@ -34,8 +34,8 @@
                   >
                     <span class="fr-sr-only">
                       Voir l’hébergement {{ row.nom }}
-                    </span></DsfrButton
-                  >
+                    </span>
+                  </DsfrButton>
                   <DsfrButton
                     icon="ri:delete-bin-2-line"
                     icon-only
@@ -48,19 +48,55 @@
                   >
                     <span class="fr-sr-only">
                       Supprimer l’hébergement {{ row.nom }}
-                    </span></DsfrButton
-                  >
+                    </span>
+                  </DsfrButton>
                 </div>
               </template>
             </DsfrDataTableV2Wrapper>
           </div>
+
           <DsfrButton
-            v-if="props.modifiable"
+            v-if="props.modifiable && !isModuleHebergementEnabled"
             label="Ajouter une fiche hébergement"
             :disabled="isSejourComplet"
             @click.prevent="onOpenNuitee"
           />
+
+          <DsfrButton
+            v-if="props.modifiable && isModuleHebergementEnabled"
+            label="Ajouter un nouvel hébergement"
+            secondary
+            @click.prevent="openLeaveFunnelModal"
+          />
         </div>
+
+        <DsfrModal
+          v-if="props.modifiable && isModuleHebergementEnabled"
+          v-model:opened="leaveFunnelModal.opened"
+          title="Ajouter un nouvel hébergement"
+          is-alert
+          @close="closeLeaveFunnelModal"
+          @keydown.esc.prevent.stop="closeLeaveFunnelModal"
+        >
+          <template #default>
+            <p>
+              Votre déclaration de séjour sera enregistrée en brouillon. Une
+              fois votre nouvel hébergement créé, vous pourrez reprendre et
+              finaliser votre déclaration.
+            </p>
+            <div class="modal-btns-group">
+              <DsfrButton
+                label="Annuler"
+                secondary
+                @click="closeLeaveFunnelModal"
+              />
+              <DsfrButton
+                label="Ajouter un nouvel hébergement"
+                @click="confirmLeaveFunnel"
+              />
+            </div>
+          </template>
+        </DsfrModal>
       </div>
 
       <div class="fr-fieldset">
@@ -131,6 +167,8 @@ import { useField, useForm } from "vee-validate";
 import dayjs from "dayjs";
 import {
   formatISOShort,
+  HebergementFunnelOrigin,
+  FeatureFlagName,
   type DemandeSejourHebergementItemDto,
 } from "@vao/shared-bridge";
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
@@ -140,13 +178,23 @@ type HebergementFormValues = {
   hebergements: DemandeSejourHebergementItemDto[];
 };
 
+interface HebergementsSejourProps {
+  modifiable?: boolean;
+  showButtons?: boolean;
+  isDownloading?: boolean;
+  message?: string;
+  saveBeforeLeave?: (
+    data: Record<string, unknown>,
+    type: string,
+  ) => Promise<unknown>;
+}
+
 const toaster = useToaster();
 
-const props = defineProps({
-  modifiable: { type: Boolean, default: true },
-  showButtons: { type: Boolean, default: true },
-  isDownloading: { type: Boolean, required: false, default: false },
-  message: { type: String, required: false, default: null },
+const props = withDefaults(defineProps<HebergementsSejourProps>(), {
+  modifiable: true,
+  showButtons: true,
+  isDownloading: false,
 });
 
 const emit = defineEmits(["previous", "next", "update"]);
@@ -192,6 +240,16 @@ const hebergementStore = useHebergementStore();
 const demandeSejourStore = useDemandeSejourStore();
 const nuiteeOpened = ref(false);
 const currentIndex = ref(-1);
+const userStore = useUserStore();
+
+const leaveFunnelModal = reactive({ opened: false });
+
+const isModuleHebergementEnabled = computed(
+  () =>
+    !!userStore.user?.featureFlags?.[
+      FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT
+    ],
+);
 
 const validationSchema = computed(() => {
   return DeclarationSejour.hebergementSchema(
@@ -347,17 +405,21 @@ const isSejourComplet = computed(() =>
   ),
 );
 
-async function next() {
-  if (!meta.value.dirty || !props.modifiable) {
-    return emit("next");
-  }
-  const data = {
+function buildHebergementsPayload() {
+  return {
     ...toRaw(values),
     sejourItinerant: hebergements.value.length > 1,
     nombreHebergements: hebergements.value.length,
   };
-  emit("update", data, "hebergements");
 }
+
+async function next() {
+  if (!meta.value.dirty || !props.modifiable) {
+    return emit("next");
+  }
+  emit("update", buildHebergementsPayload(), "hebergements");
+}
+
 watch([tableData, limit, offset], () => updateData(), {
   immediate: true,
 });
@@ -369,11 +431,51 @@ function updateData() {
     offset.value + limit.value,
   );
 }
+
+function openLeaveFunnelModal() {
+  leaveFunnelModal.opened = true;
+}
+
+function closeLeaveFunnelModal() {
+  leaveFunnelModal.opened = false;
+}
+
+async function confirmLeaveFunnel() {
+  log.i("confirmLeaveFunnel - IN");
+
+  if (meta.value.dirty && props.modifiable) {
+    if (!props.saveBeforeLeave) {
+      log.w(
+        "confirmLeaveFunnel - saveBeforeLeave manquant, sauvegarde impossible",
+      );
+      return;
+    }
+    const result = await props.saveBeforeLeave(
+      buildHebergementsPayload(),
+      "hebergements",
+    );
+    if (!result) {
+      return;
+    }
+  }
+
+  hebergementStore.setFunnelOrigin(HebergementFunnelOrigin.DECLARATION_SEJOUR, {
+    sejourId: demandeSejourStore.demandeCourante?.id ?? null,
+  });
+
+  leaveFunnelModal.opened = false;
+  await navigateTo("/hebergements");
+}
 </script>
 
 <style lang="scss" scoped>
 .buttons-group {
   display: flex;
   gap: 0.3rem;
+}
+.modal-btns-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
 }
 </style>
