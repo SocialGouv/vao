@@ -50,6 +50,7 @@
           hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
           label="Certificat d’immatriculation au registre des opérateurs de voyages et de séjours (code du tourisme)"
           :modifiable="props.modifiable"
+          :optional="false"
           :error-message="fileImmatriculationErrorMessage"
           @update:model-value="setFileImmatriculation"
         />
@@ -111,6 +112,7 @@
         label="Attestation d’assurance responsabilité civile"
         hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf. Cette assurance prouve que vous êtes couvert(e) pour tout dommage (matériel, immatériel) causé involontairement à autrui pendant les activités du séjour."
         :modifiable="props.modifiable"
+        :optional="false"
         :error-message="fileAttestationsRespCivileErrorMessage"
         @update:model-value="setFileAttestationsRespCivile"
       />
@@ -122,6 +124,7 @@
         label="Attestation d’assurance en cas de rapatriement"
         hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf. Cette assurance garantit la prise en charge des frais de retour ou d’assistance en cas de maladie, d’accident ou d’urgence pendant le séjour."
         :modifiable="props.modifiable"
+        :optional="false"
         :error-message="fileAttestationsRapatriementErrorMessage"
         @update:model-value="setFileAttestationsRapatriement"
       />

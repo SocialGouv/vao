@@ -40,6 +40,7 @@
         :cdn-url="props.cdnUrl"
         label="Certificat d’immatriculation au registre des opérateurs de voyages et de séjours (code du tourisme)"
         :modifiable="false"
+        :optional="false"
       />
     </div>
   </div>
@@ -71,6 +72,7 @@
       label="Attestation d’assurance responsabilité civile"
       hint="Cette assurance prouve que vous êtes couvert(e) pour tout dommage (matériel, immatériel) causé involontairement à autrui pendant les activités du séjour."
       :modifiable="false"
+      :optional="false"
     />
   </div>
   <div class="fr-fieldset__element">
@@ -80,6 +82,7 @@
       label="Attestation d’assurance en cas de rapatriement"
       hint="Cette assurance garantit la prise en charge des frais de retour ou d’assistance en cas de maladie, d’accident ou d’urgence pendant le séjour."
       :modifiable="false"
+      :optional="false"
     />
   </div>
 </template>

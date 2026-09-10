@@ -66,7 +66,7 @@ const props = defineProps({
   isDisabled: { type: Boolean, default: false },
   label: { type: String, default: "" },
   hint: { type: String, default: "" },
-  optional: { type: Boolean, default: false },
+  optional: { type: Boolean, default: true },
 });
 
 const headers = [

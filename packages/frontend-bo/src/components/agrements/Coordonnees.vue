@@ -109,6 +109,7 @@
           :cdn-url="props.cdnUrl"
           label="Dernier procès verbal d'assemblée générale"
           :modifiable="false"
+          :optional="false"
         />
       </div>
     </div>

@@ -93,6 +93,7 @@
         :model-value="localFile"
         :cdn-url="props.cdnUrl"
         :modifiable="false"
+        :optional="true"
         hint="Télécharger le fichier Eig"
         @update:model-value="handleFileChange"
       />
