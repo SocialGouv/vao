@@ -28,9 +28,11 @@ variables:
   CHART_VERSION: "0.0.0-sha.${CI_COMMIT_SHORT_SHA}"
 
 stages:
+  - check
   - build
   - publish
   - deploy
+  - e2e
 
 workflow:
   auto_cancel:
@@ -42,6 +44,36 @@ workflow:
 .build-rules: &build-rules
   - if: $CI_COMMIT_BRANCH =~ /^(feat|fix|chore|migration)\//
   - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+check:
+  stage: check
+  image: node:22.20.0
+  interruptible: true
+  tags:
+    - socialgouv-linux-small-amd64
+  services:
+    - docker:27-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375
+    NO_PROXY: docker
+    no_proxy: docker
+    TESTCONTAINERS_RYUK_DISABLED: "true"
+  cache:
+    key: pnpm-store
+    paths:
+      - .pnpm-store
+  before_script:
+    - corepack enable
+    - pnpm config set store-dir .pnpm-store
+    - pnpm install --frozen-lockfile
+    - sleep 3
+  script:
+    - pnpm -w lint:all
+    - pnpm -w test:unit:all
+    - pnpm --filter @vao/frontend-bo typecheck
+    - pnpm --filter @vao/frontend-usagers typecheck
+    - pnpm -w test:unit:frontend
 
 # ---------------------------------------------------------------------------
 # BUILD : 7 images (contexte = racine du monorepo, Dockerfile par package).
@@ -112,3 +144,31 @@ deploy-preprod:
     DEPLOY_ACTION: preprod
   environment:
     name: preprod
+
+e2e:
+  stage: e2e
+  image: mcr.microsoft.com/playwright:v1.50.1-noble
+  needs: ["deploy-preprod"]
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "feat/ci-atlas-v2"
+      when: manual
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: manual
+  variables:
+    E2E_BASE_URL: "vao-preprod.env-01ktvpxqrkny0sxv6qysgj95rt.dev.atlas-prod.public-cloud.social.gouv.fr"
+  cache:
+    key: pnpm-store
+    paths:
+      - .pnpm-store
+  before_script:
+    - corepack enable
+    - pnpm config set store-dir .pnpm-store
+    - pnpm install --frozen-lockfile
+  script:
+    - pnpm playwright test
+  artifacts:
+    when: always
+    paths:
+      - playwright-report/
+    expire_in: 1 week
