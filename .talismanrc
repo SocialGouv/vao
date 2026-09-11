@@ -95,6 +95,8 @@ fileignoreconfig:
   checksum: d5d23d8aa40adf45f04cb47587350ba4c52423bb669307779f9be0254e77b695
 - filename: packages/backend/src/**tests**/usagers/fo-user.test.ts
   checksum: 1592485597a9d3c481163fc6f495367be3e70c112cb3cbe3d528afc6a7919860
+- filename: packages/backend/src/__tests__/usagers/herbergement.test.ts
+  checksum: 16d520f0a12d963492c07ab77b6e958798c1e146b3f56491d2b650727548ffeb
 - filename: packages/backend/src/admin/agrements/agrements.service.ts
   checksum: 7a829c5b141bb9761e1d3fcebacc6d0a5b0ca699af877295d671d33d84728f33
 - filename: packages/backend/src/admin/users/users.service.ts
@@ -419,6 +421,8 @@ fileignoreconfig:
   checksum: 2fdccc406cc543d7ddbf91331b524ab24d9f170466ea2fd4555a43d2dfb2f5d6
 - filename: packages/migrations/src/migrations/20260927113215_add_site_unite_hebergement.js
   checksum: 0494c6b29f243694722affe35c6d828c39a214366209219eef6498e36bdb73ad
+- filename: packages/migrations/src/migrations/20260929071549_migrate_hebergement_to_site_unite_hebergement.js
+  checksum: 38c8adb4229d5bd6ad751e71d790e9f4020c7fb3c39e2796f643ad585611df2e
 - filename: packages/migrations/src/scripts/migrate-files-to-s3.js
   checksum: 0c60a5a9f3321ab3c36025bdeb35663395586d5bca3d21984fdbe5997b46c6eb
 - filename: packages/migrations/src/scripts/reset-s3.js
@@ -518,7 +522,7 @@ fileignoreconfig:
 - filename: pg/seeds/BO-1-back-user.sql
   checksum: 3c815380aa842c642789d87b635ad54e4ab89ea2a7a4eab7e02ed9e351abb52b
 - filename: pg/seeds/PG-1-proc-data-deletion.sql
-  checksum: f93c69228f6832f4417ca3e432f481e23a30aa4b6d4c07082da17d2312c0cd52
+  checksum: a63c2ae5c26e3501c988f72082374f074d66f6c5eb620b5b2702c0c9be3d6290
 - filename: pnpm-lock.yaml
   checksum: 02a2dbfd1e8ee33508cfe0c1549876cad19b65eb07c3857d9c2bc97311c2533e
 - filename: s/env/preprod/templates/smtp.sealed.secret.yaml
