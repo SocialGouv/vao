@@ -29,7 +29,7 @@ test.describe.serial(testName, () => {
 
     await page.getByRole("link", { name: "Mes hébergements" }).click();
     await page
-      .getByRole("link", { name: "Déclarer un nouvel hébergement" })
+      .getByRole("link", { name: "Ajouter un nouvel hébergement" })
       .click();
 
     await page.getByRole("textbox", { name: "Nom de l'hébergement *" }).click();
