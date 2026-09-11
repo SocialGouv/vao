@@ -12,10 +12,13 @@
  * et à l'exécution par la double-écriture (le lien est aussi maintenu sur les
  * nouvelles versions à chaque mise à jour).
  *
- * down() retire l'ensemble des lignes pointées par front.hebergement.site_id
- * puis remet ce lien à NULL : un rollback après déploiement emporte donc aussi
- * la double-écriture effectuée depuis (les données nouvelles du schéma site /
- * unite construites par l'application), sans autre manifeste de reprise.
+ * down() supprime uniquement les lignes créées par cette migration :
+ *   - front.unite_hebergement_to_type_pension / front.unite_hebergement
+ *   - front.site_organisme / front.site pour les site_id présents dans les unités
+ *     migrées
+ *   - puis remet front.hebergement.site_id à NULL uniquement pour ces sites,
+ *     sans effacer les données site/site_organisme déjà présentes dans l'instance
+ *     et non créées par cette migration.
  *
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
@@ -176,10 +179,38 @@ exports.up = function (knex) {
  */
 exports.down = function (knex) {
   return knex.raw(`
-    DELETE FROM front.unite_hebergement_to_type_pension;
-    DELETE FROM front.unite_hebergement;
-    UPDATE front.hebergement SET site_id = NULL WHERE site_id IS NOT NULL;
-    DELETE FROM front.site_organisme;
-    DELETE FROM front.site;
+    DELETE FROM front.unite_hebergement_to_type_pension
+     WHERE unite_hebergement_id IN (
+       SELECT uh.id
+         FROM front.unite_hebergement uh
+         JOIN front.hebergement h ON h.id = uh.id
+        WHERE h.site_id IS NOT NULL
+     );
+
+    DELETE FROM front.unite_hebergement
+     WHERE id IN (
+       SELECT uh.id
+         FROM front.unite_hebergement uh
+         JOIN front.hebergement h ON h.id = uh.id
+        WHERE h.site_id IS NOT NULL
+     );
+
+    DELETE FROM front.site_organisme
+     WHERE site_id IN (
+       SELECT site_id
+         FROM front.hebergement
+        WHERE site_id IS NOT NULL
+     );
+
+    DELETE FROM front.site
+     WHERE site_id IN (
+       SELECT site_id
+         FROM front.hebergement
+        WHERE site_id IS NOT NULL
+     );
+
+    UPDATE front.hebergement
+       SET site_id = NULL
+     WHERE site_id IS NOT NULL;
   `);
 };

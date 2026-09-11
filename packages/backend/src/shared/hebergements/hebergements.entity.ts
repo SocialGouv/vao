@@ -66,3 +66,11 @@ export interface HebergementWithSiteEntity {
   id: number | null;
   site_id: string | null;
 }
+
+export interface LegacyUniteContextEntity {
+  type: string | null;
+  pension: string | null;
+  descriptionLieuHebergement: string | null;
+  litsDessus: boolean | null;
+  prestationsHotelieres: string[];
+}

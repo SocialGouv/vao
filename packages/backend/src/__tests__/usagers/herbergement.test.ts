@@ -1,9 +1,13 @@
+import type { InformationsLocauxDto } from "@vao/shared-bridge";
 import { FeatureFlagName } from "@vao/shared-bridge";
 import request from "supertest";
 
 import { statuts as HebergementStatuts } from "../../helpers/hebergement";
 import { partOrganisme } from "../../helpers/org-part";
+import Hebergement from "../../services/hebergement/Hebergement";
 import { HebergementsRepositoryShared } from "../../shared/hebergements/hebergements.repository";
+import { HebergementServiceShared } from "../../shared/hebergements/hebergements.service";
+import { getPool } from "../../utils/pgpool";
 import { buildHebergementFixture } from "../fixtures/hebergementFixture";
 import { getFoAppHelper } from "../helpers/appHelper";
 import { setFeatureFlagEnabled } from "../helpers/featureFlagHelper";
@@ -102,7 +106,7 @@ describe("GET /hebergement/:id", () => {
     expect(response.body.hebergement.siteId).toEqual(expect.any(String));
     expect(
       response.body.hebergement.informationsLocaux.nombreLitsSuperposes,
-    ).toBe(1);
+    ).toBe(10);
     expect(response.body.hebergement.informationsLocaux.chambresUnisexes).toBe(
       true,
     );
@@ -596,5 +600,167 @@ describe("PUT /hebergement/:id/desactivate)", () => {
     );
 
     expect(response.statusCode).toBe(403);
+  });
+});
+
+describe("module site/unite : lectures partagées du référentiel", () => {
+  it("retourne le site et l'unité créés via les fonctions du référentiel partagé", async () => {
+    await createUserAndOrganisme();
+    const createResponse = await request(getFoAppHelper(authUser))
+      .post("/hebergement")
+      .send(buildActifFixture());
+    const hebergementId = createResponse.body.id;
+
+    const unite =
+      await HebergementsRepositoryShared.getUniteHebergementById(hebergementId);
+    expect(unite).not.toBeNull();
+    expect(unite!.id).toBe(hebergementId);
+
+    const uniteParHebergementId =
+      await HebergementServiceShared.getUniteHebergementByHebergementId(
+        unite!.hebergementId,
+      );
+    expect(uniteParHebergementId!.id).toBe(hebergementId);
+
+    const uniteParIdSingular =
+      await HebergementsRepositoryShared.getUniteHebergementByHebergementId(
+        unite!.hebergementId,
+      );
+    expect(uniteParIdSingular!.id).toBe(hebergementId);
+
+    const uniteParId =
+      await HebergementsRepositoryShared.getUniteHebergementsById(
+        String(hebergementId),
+      );
+    expect(uniteParId!.id).toBe(hebergementId);
+
+    const site = await HebergementServiceShared.getSiteById(unite!.siteId!);
+    expect(site).not.toBeNull();
+    expect(site!.id).toEqual(expect.any(Number));
+
+    const siteParIdentifiant =
+      await HebergementsRepositoryShared.getSiteByIdentifier(site!.id);
+    expect(siteParIdentifiant!.siteId).toBe(unite!.siteId);
+
+    const sites = await HebergementServiceShared.getSitesByOrganismeId(
+      unite!.organismeId,
+    );
+    expect(sites.some((s) => s.siteId === unite!.siteId)).toBe(true);
+
+    const unitesParSite =
+      await HebergementServiceShared.getUniteHebergementsBySiteId(
+        unite!.siteId!,
+      );
+    expect(unitesParSite.some((u) => u.id === unite!.id)).toBe(true);
+
+    expect(
+      await HebergementsRepositoryShared.getUniteHebergementTypePensions(
+        unite!.id,
+      ),
+    ).toEqual([]);
+
+    expect(
+      await HebergementsRepositoryShared.getHebergementSiteId(hebergementId),
+    ).toBe(unite!.siteId);
+  });
+
+  it("passe le site courant à false via setSiteCurrent", async () => {
+    await createUserAndOrganisme();
+    const createResponse = await request(getFoAppHelper(authUser))
+      .post("/hebergement")
+      .send(buildActifFixture());
+    const hebergementId = createResponse.body.id;
+
+    const unite =
+      await HebergementsRepositoryShared.getUniteHebergementById(hebergementId);
+    expect(unite).not.toBeNull();
+
+    const client = await getPool().connect();
+    try {
+      await HebergementsRepositoryShared.setSiteCurrent(client, unite!.siteId!);
+    } finally {
+      client.release();
+    }
+
+    expect(
+      await HebergementsRepositoryShared.getSiteById(unite!.siteId!),
+    ).toBeNull();
+  });
+
+  it("gère un type d'hébergement inconnu lors de la création d'un site", async () => {
+    const organismeId = await createUserAndOrganisme();
+    const siteId = await HebergementServiceShared.createSite(
+      {
+        adresseId: null,
+        createdBy: authUser.id,
+        deplacementProximiteDescription: null,
+        descriptif: null,
+        excursionDescription: null,
+        hebergementTypeId: null,
+        hebergementTypeValue: "type_inconnu",
+        nomSiteOfficiel: "Site secondaire",
+        organismeId,
+        respEmail: null,
+        respNomPrenom: null,
+        respTelephone: null,
+        vehiculesAdaptes: null,
+      },
+      undefined,
+    );
+
+    expect(siteId).toEqual(expect.any(String));
+  });
+
+  it("ignore la mise à jour d'une unité inconnue", async () => {
+    await createUserAndOrganisme();
+
+    await expect(
+      HebergementServiceShared.updateUniteHebergementInPlace(999999, {
+        editedBy: authUser.id,
+        informationsLocaux: {} as InformationsLocauxDto,
+        statutId: null,
+        typePensions: [],
+      }),
+    ).resolves.toBeUndefined();
+  });
+});
+
+describe("POST /hebergement/:id versionné avec uniteData", () => {
+  it("préserve le contexte legacy de l'hébergement lors de la mise à jour", async () => {
+    await createUserAndOrganisme();
+    const createResponse = await request(getFoAppHelper(authUser))
+      .post("/hebergement")
+      .send(buildActifFixture());
+    const hebergementId = createResponse.body.id;
+
+    const base = buildHebergementFixture();
+    await Hebergement.update(
+      authUser.id,
+      hebergementId,
+      {
+        ...base,
+        informationsLocaux: {
+          ...base.informationsLocaux,
+          prestationsHotelieres: [],
+        },
+        uniteData: {
+          accessibilitePmr: false,
+          litsSuperposes: false,
+          nombreCouchageTotal: 10,
+          visiteLocaux: true,
+        },
+      } as Parameters<typeof Hebergement.update>[2] & { uniteData: object },
+      HebergementStatuts.ACTIF,
+    );
+
+    const uniteCouranteId =
+      await getCurrentUniteIdByHebergementId(hebergementId);
+    expect(uniteCouranteId).not.toBeNull();
+    expect(uniteCouranteId).not.toBe(hebergementId);
+
+    const uniteCourante =
+      await HebergementServiceShared.getUniteHebergementById(uniteCouranteId!);
+    expect(uniteCourante!.litsSuperposes).toBe(false);
+    expect(uniteCourante!.accessibilitePmr).toBe(false);
   });
 });
