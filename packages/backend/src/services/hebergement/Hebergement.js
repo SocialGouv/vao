@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const { logger } = require("../../utils/logger");
 const {
   saveAdresse,
@@ -19,6 +18,9 @@ const {
   mapDBHebergementToDSHebergement,
 } = require("./helpers");
 const { getPool } = require("../../utils/pgpool");
+const {
+  HebergementServiceShared,
+} = require("../../shared/hebergements/hebergements.service");
 
 const log = logger(module.filename);
 
@@ -74,7 +76,8 @@ ${new Array(nbRows)
       VISITE_LOCAUX_AT,
       ACCESSIBILITE_PRECISION,
       AMENAGEMENTS_SPECIFIQUES_PRECISION,
-      STATUT_ID
+      STATUT_ID,
+      SITE_ID
     )
     VALUES (
       $1,                                                               --organisme_id,
@@ -114,9 +117,10 @@ ${new Array(nbRows)
       $33,                                                              --VISITE_LOCAUX_AT
       $34,                                                              --ACCESSIBILITE_PRECISION
       $35,                                                              --AMENAGEMENTS_SPECIFIQUES_PRECISION
-      (SELECT ID FROM FRONT.HEBERGEMENT_STATUT WHERE VALUE = $36)        -- STATUT
+      (SELECT ID FROM FRONT.HEBERGEMENT_STATUT WHERE VALUE = $36),        -- STATUT
+      $37                                                                 -- SITE_ID
     )
-    RETURNING id
+    RETURNING id, hebergement_id
     `,
   getByDSId: `
     SELECT
@@ -196,6 +200,26 @@ ${new Array(nbRows)
     WHERE uo.use_id = $1 AND h.id = $2
   `,
 
+  getLegacyUniteContext: `
+    SELECT
+      ht.value AS "type",
+      htp.value AS "pension",
+      h.description_lieu_hebergement AS "descriptionLieuHebergement",
+      h.lit_dessus AS "litsDessus",
+      COALESCE(
+        ARRAY_AGG(hp.value ORDER BY hpt.prestation_id) FILTER (WHERE hp.value IS NOT NULL),
+        '{}'
+      ) AS "prestationsHotelieres"
+    FROM front.hebergement h
+    LEFT JOIN front.hebergement_type ht ON ht.id = h.type_id
+    LEFT JOIN front.hebergement_type_pension htp ON htp.id = h.type_pension_id
+    LEFT JOIN front.hebergement_to_prestations_hotelieres hpt ON hpt.hebergement_id = h.id
+    LEFT JOIN front.hebergement_prestations_hotelieres hp ON hp.id = hpt.prestation_id
+    WHERE h.id = $1
+      AND h.current = TRUE
+    GROUP BY h.id, ht.value, htp.value
+  `,
+
   getListe: () => `
     WITH stat AS (
       SELECT id,
@@ -232,7 +256,8 @@ ${new Array(nbRows)
     h.organisme_id AS "organismeId",
     h.created_by AS "createdBy",
     h.created_at AS "createdAt",
-    h.current AS "current"
+    h.current AS "current",
+    h.site_id AS "siteId"
   FROM
     front.hebergement h
     LEFT JOIN front.hebergement_statut hs ON hs.id = h.statut_id
@@ -247,6 +272,11 @@ ${new Array(nbRows)
       LEFT JOIN front.hebergement_statut hs ON h.statut_id = hs.id
     WHERE
       h.id = $1
+  `,
+  getStatutId: `
+    SELECT id
+      FROM front.hebergement_statut
+    WHERE value = $1
   `,
   historize: `
     UPDATE front.hebergement
@@ -324,7 +354,7 @@ ${new Array(nbRows)
 */
 const create = async (
   client,
-  { createdBy, createdAt, updatedBy, organismeId, statut },
+  { createdBy, createdAt, updatedBy, organismeId, statut, siteId = null },
   { nom, coordonnees, informationsLocaux, informationsTransport },
   hebergemenetUuid,
 ) => {
@@ -368,9 +398,11 @@ const create = async (
     informationsLocaux.accessibilitePrecision,
     informationsLocaux.precisionAmenagementsSpecifiques,
     statut,
+    siteId, // 37
   ]);
 
   const hebergementId = rows[0].id;
+  const hebergementUuid = rows[0].hebergement_id;
   const prestationsHotelieres = informationsLocaux.prestationsHotelieres;
 
   if (prestationsHotelieres.length > 0) {
@@ -380,16 +412,96 @@ const create = async (
     );
   }
 
-  return hebergementId;
+  return { hebergementId, hebergementUuid };
+};
+
+const getStatutId = async (statut, client = getPool()) => {
+  const { rows } = await client.query(query.getStatutId, [statut]);
+  return rows?.[0]?.id ?? null;
+};
+
+const getLegacyUniteContext = async (hebergementId, client = getPool()) => {
+  const { rows } = await client.query(query.getLegacyUniteContext, [
+    hebergementId,
+  ]);
+  return rows?.[0] ?? {};
+};
+
+const preserveLegacyUniteContext = (hebergement, legacyContext) => {
+  if (!hebergement.uniteData) {
+    return;
+  }
+  const { informationsLocaux } = hebergement;
+  informationsLocaux.type ??= legacyContext.type ?? null;
+  informationsLocaux.pension ??= legacyContext.pension ?? null;
+  informationsLocaux.descriptionLieuHebergement ??=
+    legacyContext.descriptionLieuHebergement ?? null;
+  informationsLocaux.litsDessus ??= legacyContext.litsDessus ?? null;
+  if (
+    !Array.isArray(informationsLocaux.prestationsHotelieres) ||
+    informationsLocaux.prestationsHotelieres.length === 0
+  ) {
+    informationsLocaux.prestationsHotelieres =
+      legacyContext.prestationsHotelieres ?? [];
+  }
+};
+
+const syncSiteAndUniteOnCreate = async (
+  client,
+  userId,
+  organismeId,
+  statut,
+  hebergement,
+  created,
+) => {
+  const siteId = await HebergementServiceShared.createSite(
+    {
+      adresse: hebergement.coordonnees?.adresse ?? null,
+      adresseId: null,
+      createdBy: userId,
+      descriptif:
+        hebergement.informationsLocaux?.descriptionLieuHebergement ?? null,
+      hebergementTypeId: null,
+      hebergementTypeValue: hebergement.informationsLocaux?.type ?? null,
+      nomSiteOfficiel: hebergement.nom,
+      organismeId,
+      respEmail: hebergement.coordonnees?.email ?? null,
+      respNomPrenom: hebergement.coordonnees?.nomGestionnaire ?? null,
+      respTelephone: hebergement.coordonnees?.numTelephone1 ?? null,
+    },
+    client,
+  );
+  await HebergementServiceShared.linkHebergementToSite(
+    client,
+    created.hebergementId,
+    siteId,
+  );
+  await HebergementServiceShared.createUniteHebergement(
+    {
+      createdBy: userId,
+      hebergementId: created.hebergementUuid,
+      id: created.hebergementId,
+      informationsLocaux: hebergement.informationsLocaux,
+      informationsTransport: hebergement.informationsTransport,
+      organismeId,
+      siteId,
+      statutId: await getStatutId(statut, client),
+      typePensions: hebergement.informationsLocaux?.pension
+        ? [hebergement.informationsLocaux.pension]
+        : [],
+      uniteData: hebergement.uniteData ?? undefined,
+    },
+    client,
+  );
 };
 
 module.exports.create = async (userId, organismeId, statut, hebergement) => {
   const client = await getPool().connect();
-  let hebergementId;
+  let created;
 
   try {
     await client.query("BEGIN");
-    hebergementId = await create(
+    created = await create(
       client,
       {
         createdAt: new Date(),
@@ -400,6 +512,14 @@ module.exports.create = async (userId, organismeId, statut, hebergement) => {
       },
       hebergement,
     );
+    await syncSiteAndUniteOnCreate(
+      client,
+      userId,
+      organismeId,
+      statut,
+      hebergement,
+      created,
+    );
     await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK");
@@ -408,7 +528,7 @@ module.exports.create = async (userId, organismeId, statut, hebergement) => {
     client.release();
   }
 
-  return hebergementId;
+  return created.hebergementId;
 };
 
 // Utilisée par exemple lorsque l'on modifie un hebergement en statut brouillon
@@ -426,6 +546,10 @@ module.exports.updateWithoutHistory = async (
 
   try {
     await client.query("BEGIN");
+    preserveLegacyUniteContext(
+      hebergement,
+      await getLegacyUniteContext(hebergementId, client),
+    );
     const adresseId = coordonnees.adresse
       ? await saveAdresse(client, coordonnees.adresse)
       : null;
@@ -474,6 +598,45 @@ module.exports.updateWithoutHistory = async (
       );
     }
 
+    const uniteHebergement =
+      await HebergementServiceShared.getUniteHebergementById(
+        Number(hebergementId),
+        client,
+      );
+    if (uniteHebergement) {
+      await HebergementServiceShared.updateUniteHebergementInPlace(
+        uniteHebergement.id,
+        {
+          editedBy: userId,
+          informationsLocaux,
+          informationsTransport,
+          statutId: await getStatutId(statut, client),
+          typePensions: informationsLocaux?.pension
+            ? [informationsLocaux.pension]
+            : [],
+          uniteData: hebergement.uniteData ?? undefined,
+        },
+        client,
+      );
+      await HebergementServiceShared.updateSite(
+        uniteHebergement.siteId,
+        {
+          adresse: coordonnees?.adresse ?? null,
+          adresseId: null,
+          descriptif: informationsLocaux?.descriptionLieuHebergement ?? null,
+          editedBy: userId,
+          hebergementTypeId: null,
+          hebergementTypeValue: informationsLocaux?.type ?? null,
+          nomSiteOfficiel: nom,
+          organismeId: uniteHebergement.organismeId,
+          respEmail: coordonnees?.email ?? null,
+          respNomPrenom: coordonnees?.nomGestionnaire ?? null,
+          respTelephone: coordonnees?.numTelephone1 ?? null,
+        },
+        client,
+      );
+    }
+
     await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK");
@@ -489,7 +652,7 @@ module.exports.updateWithoutHistory = async (
 module.exports.update = async (userId, hebergementId, hebergement, statut) => {
   log.i("update - IN");
   const {
-    rows: [{ hebergementUuid, organismeId, createdBy, createdAt, current }],
+    rows: [{ current, hebergementUuid, organismeId, createdBy, createdAt }],
   } = await getPool().query(query.getPreviousValueForHistory, [hebergementId]);
 
   if (!current) {
@@ -500,22 +663,72 @@ module.exports.update = async (userId, hebergementId, hebergement, statut) => {
 
   const client = await getPool().connect();
 
-  let newHebergementId;
+  let newHebergement;
   try {
     await client.query("BEGIN");
+    const {
+      rows: [{ siteId }],
+    } = await client.query(query.getPreviousValueForHistory, [hebergementId]);
+    preserveLegacyUniteContext(
+      hebergement,
+      await getLegacyUniteContext(hebergementId, client),
+    );
     await client.query(query.historize, [hebergementId]);
-    newHebergementId = await create(
+    newHebergement = await create(
       client,
       {
         createdAt,
         createdBy,
         organismeId,
+        siteId,
         statut,
         updatedBy: userId,
       },
       hebergement,
       hebergementUuid,
     );
+
+    const uniteHebergement =
+      await HebergementServiceShared.getUniteHebergementById(
+        Number(hebergementId),
+        client,
+      );
+    if (uniteHebergement) {
+      await HebergementServiceShared.updateUniteHebergement(
+        uniteHebergement.id,
+        {
+          editedBy: userId,
+          hebergementId: newHebergement.hebergementUuid,
+          id: newHebergement.hebergementId,
+          informationsLocaux: hebergement.informationsLocaux,
+          informationsTransport: hebergement.informationsTransport,
+          statutId: await getStatutId(statut, client),
+          typePensions: hebergement.informationsLocaux?.pension
+            ? [hebergement.informationsLocaux.pension]
+            : [],
+          uniteData: hebergement.uniteData ?? undefined,
+        },
+        client,
+      );
+      await HebergementServiceShared.updateSite(
+        uniteHebergement.siteId,
+        {
+          adresse: hebergement.coordonnees?.adresse ?? null,
+          adresseId: null,
+          descriptif:
+            hebergement.informationsLocaux?.descriptionLieuHebergement ?? null,
+          editedBy: userId,
+          hebergementTypeId: null,
+          hebergementTypeValue: hebergement.informationsLocaux?.type ?? null,
+          nomSiteOfficiel: hebergement.nom,
+          organismeId: uniteHebergement.organismeId,
+          respEmail: hebergement.coordonnees?.email ?? null,
+          respNomPrenom: hebergement.coordonnees?.nomGestionnaire ?? null,
+          respTelephone: hebergement.coordonnees?.numTelephone1 ?? null,
+        },
+        client,
+      );
+    }
 
     await client.query("COMMIT");
   } catch (error) {
@@ -524,13 +737,34 @@ module.exports.update = async (userId, hebergementId, hebergement, statut) => {
   } finally {
     client.release();
   }
+
   log.i("update - DONE");
-  return newHebergementId;
+  return newHebergement.hebergementId;
 };
 
 module.exports.updateStatut = async (userId, hebergementId, statut) => {
   log.i("updateStatut - IN");
-  await getPool().query(query.updateStatut, [hebergementId, userId, statut]);
+  const client = await getPool().connect();
+
+  try {
+    await client.query("BEGIN");
+    await client.query(query.updateStatut, [hebergementId, userId, statut]);
+    const statutId = await getStatutId(statut, client);
+    if (statutId) {
+      await client.query(
+        `UPDATE front.unite_hebergement
+         SET statut_id = $2, edited_by = $3, edited_at = NOW()
+         WHERE id = $1 AND "current" IS TRUE`,
+        [hebergementId, statutId, userId],
+      );
+    }
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
   log.i("update - DONE");
   return hebergementId;
 };

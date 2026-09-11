@@ -44,6 +44,7 @@ if (condition) {
 - `.ts` : uniquement `import` / `export` (pas de `module.exports` / `require`)
 - `.js` : uniquement `require` / `module.exports` (pas de `import` / `export`)
 - `.vue` : TypeScript (`<script lang="ts">` ou `<script setup lang="ts">`)
+- Règle ESLint `sort-keys-fix` : les clés d'objet littéral, y compris les méthodes d'un objet `const` (mapper / repository / service), doivent être en **ordre alphabétique ascendant**. Corriger avec `eslint --fix` sur les fichiers concernés.
 
 ## Tests (résumé — détails dans les skills)
 

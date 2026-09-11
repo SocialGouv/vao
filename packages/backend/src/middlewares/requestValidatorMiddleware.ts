@@ -1,16 +1,42 @@
 import {
   type BasicRoute,
   type RouteSchema,
+  type WriteUsagerHebergementRouteSchema,
   ERRORS_COMMON,
+  FeatureFlagName,
 } from "@vao/shared-bridge";
 import { NextFunction } from "express";
 import * as yup from "yup";
 
+import { FeatureFlagService } from "../services/featureFlagService";
 import type { RouteRequest, RouteResponse } from "../types/request";
 import AppError from "../utils/error";
 import { logger } from "../utils/logger";
 
 const log = logger(module.filename);
+
+export function requestValidatorMiddlewareByFeatureFlag<T extends BasicRoute>(
+  validator: WriteUsagerHebergementRouteSchema<T>,
+  featureFlagName: FeatureFlagName,
+) {
+  return async (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    req: RouteRequest<any>,
+    res: RouteResponse<T>,
+    next: NextFunction,
+  ) => {
+    try {
+      const isFeatureFlagEnabled =
+        await FeatureFlagService.isFeatureAvailable(featureFlagName);
+      const selectedValidator = isFeatureFlagEnabled
+        ? validator.unite
+        : validator.legacy;
+      return requestValidatorMiddleware(selectedValidator)(req, res, next);
+    } catch (error) {
+      next(error);
+    }
+  };
+}
 
 export function requestValidatorMiddleware<T extends BasicRoute>(
   validator: RouteSchema<T>,

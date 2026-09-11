@@ -1,23 +1,5 @@
 <template>
   <div class="fr-input-group" style="margin-bottom: 2rem">
-    <div v-if="!props.modifiable">
-      <dl class="fr-text--sm fr-pl-0">
-        <dt>{{ $attrs.label }}</dt>
-        <dd>
-          <p v-if="rows.length > 0">
-            <DsfrTable
-              title="Fichier(s) téléversé(s)"
-              :headers="headers"
-              :rows="rows"
-              :no-caption="true"
-            />
-          </p>
-          <p v-else class="fr-mb-4v fr-icon-file-line fr-text--sm">
-            Aucun fichier téléversé
-          </p>
-        </dd>
-      </dl>
-    </div>
     <DsfrFileUpload
       v-if="props.modifiable"
       v-bind="$attrs"
@@ -32,6 +14,24 @@
       <label class="fr-label">
         {{ props.errorMessage }}
       </label>
+    </div>
+    <div>
+      <dl class="fr-text--sm fr-pl-0">
+        <dt v-if="!props.modifiable">{{ $attrs.label }}</dt>
+        <dd>
+          <p v-if="rows.length > 0">
+            <DsfrTable
+              title="Fichier(s) téléversé(s)"
+              :headers="headers"
+              :rows="rows"
+              :no-caption="true"
+            />
+          </p>
+          <p v-else class="fr-mb-4v fr-icon-file-line fr-text--sm">
+            Aucun fichier téléversé
+          </p>
+        </dd>
+      </dl>
     </div>
   </div>
 </template>

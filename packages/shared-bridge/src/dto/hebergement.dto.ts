@@ -39,6 +39,96 @@ export interface InformationsTransportDto {
   vehiculesAdaptes: boolean | null;
 }
 
+export interface SiteDto {
+  id: number;
+  siteId: string;
+  current: boolean;
+  adresseId: number | null;
+  nomSiteOfficiel: string | null;
+  hebergementTypeId: number | null;
+  descriptif: string | null;
+  createdAt: Date;
+  editedAt: Date | null;
+  createdBy: number | null;
+  editedBy: number | null;
+}
+
+export interface SiteOrganismeDto {
+  siteId: string;
+  organismeId: number;
+  nomSite: string | null;
+  respNomPrenom: string | null;
+  respTelephone: string | null;
+  respEmail: string | null;
+}
+
+export interface UniteHebergementDto {
+  id: number;
+  siteId: string;
+  organismeId: number;
+  statutId: number | null;
+  createdAt: Date;
+  editedAt: Date;
+  hebergementId: string;
+  current: boolean;
+  createdBy: number | null;
+  editedBy: number | null;
+  nombreCouchageTotal: number | null;
+  litsSuperposes: boolean | null;
+  accessibilitePmr: boolean | null;
+  accessibilitePrecision: string | null;
+  chambresDoubles: boolean | null;
+  separationHommeFemme: boolean | null;
+  reglementationErp: boolean | null;
+  couchageIndividuel: boolean | null;
+  rangementIndividuel: boolean | null;
+  amenagementsSpecifiques: boolean | null;
+  amenagementsSpecifiquesPrecision: string | null;
+  excursionDescription: string | null;
+  fileReponseExploitantOuProprietaire: string | null;
+  fileDernierArreteAutorisationMaire: string | null;
+  fileDerniereAttestationSecurite: string | null;
+  visiteLocaux: boolean | null;
+  visiteLocauxAt: Date | null;
+  deplacementProximiteDescription: string | null;
+  vehiculesAdaptes: boolean | null;
+}
+
+export type UniteHebergementPayloadDto = Omit<
+  UniteHebergementDto,
+  | "id"
+  | "siteId"
+  | "organismeId"
+  | "statutId"
+  | "createdAt"
+  | "editedAt"
+  | "hebergementId"
+  | "current"
+  | "createdBy"
+  | "editedBy"
+>;
+
+export type UniteHebergementWriteData = UniteHebergementPayloadDto & {
+  statutId: number | null;
+};
+
+export interface UsagerHebergementBodyLegacyDto {
+  coordonnees: CoordonneesDto;
+  informationsLocaux: InformationsLocauxDto;
+  informationsTransport: InformationsTransportDto;
+  nom: string;
+}
+
+export interface UsagerHebergementBodyUniteDto {
+  coordonnees: CoordonneesDto;
+  nom: string;
+  uniteData: UniteHebergementPayloadDto;
+}
+
+export type UsagerHebergementBodyDto =
+  | UsagerHebergementBodyLegacyDto
+  | UsagerHebergementBodyUniteDto;
+
 export interface HebergementDto {
   id: number;
   nom: string;
@@ -47,4 +137,5 @@ export interface HebergementDto {
   coordonnees: CoordonneesDto;
   informationsLocaux: InformationsLocauxDto;
   informationsTransport: InformationsTransportDto;
+  siteId: string | null;
 }

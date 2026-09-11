@@ -9,8 +9,8 @@ describe("controllers/geo/checkApiAdresse", () => {
   it("appelle next avec AppError quand le service échoue", async () => {
     const req = {};
     const res = {
-      status: jest.fn().mockReturnThis(),
       json: jest.fn(),
+      status: jest.fn().mockReturnThis(),
     };
     const next = jest.fn();
     const error = new Error("boom");

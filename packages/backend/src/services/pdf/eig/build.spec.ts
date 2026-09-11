@@ -1,9 +1,7 @@
 import build from "./build";
 
-/* eslint-disable no-var -- jest hoists jest.mock(); let/const are TDZ when the factory runs */
 var mockFakePdfDoc: { end: jest.Mock; on: jest.Mock };
 var mockCreatePdfKitDocument: jest.Mock;
-/* eslint-enable no-var */
 
 jest.mock("pdfmake", () => {
   mockFakePdfDoc = {

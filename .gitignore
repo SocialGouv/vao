@@ -19,3 +19,6 @@ test-results/
 
 # macOS
 .DS_Store
+
+# OpenCode config (contains API tokens)
+opencode.json

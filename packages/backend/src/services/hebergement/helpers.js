@@ -8,6 +8,7 @@ module.exports.queryGetFields = `
   H.TELEPHONE_1 AS "numTelephone1",
   H.TELEPHONE_2 AS "numTelephone2",
   H.NOM_GESTIONNAIRE AS "nomGestionnaire",
+  H.SITE_ID AS "siteId",
   (
     SELECT
       VALUE
@@ -135,6 +136,7 @@ const mapDBHebergement = async (hebergement, adresse) => {
     informationsTransport: mapHebergementToInformationsTransport(hebergement),
     nom: hebergement.nom,
     organismeId: hebergement.organismeId,
+    siteId: hebergement.siteId ?? null,
     statut: hebergement.statut ?? null,
   };
 };

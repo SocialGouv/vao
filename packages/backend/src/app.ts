@@ -15,9 +15,11 @@ import express, {
 import helmet from "helmet";
 
 import adminAgrementsRoute from "./admin/agrements/agrements.route";
+import adminHebergementRoute from "./admin/hebergement/hebergement.route";
 import { config } from "./config";
 import * as routes from "./routes";
 import agrementsRoute from "./usagers/agrements/agrements.route";
+import hebergementRoute from "./usagers/hebergement/hebergement.route";
 import AppError from "./utils/error";
 import { logger } from "./utils/logger";
 import ValidationAppError from "./utils/validation-error";
@@ -96,7 +98,8 @@ app.use(`/admin/agrements`, adminAgrementsRoute);
 
 app.use(`/organisme`, routes.organisme);
 app.use(`/sejour`, routes.sejour);
-app.use(`/hebergement`, routes.hebergement);
+app.use(`/hebergement`, hebergementRoute);
+app.use(`/admin/hebergement`, adminHebergementRoute);
 app.use(`/siret`, routes.siret);
 app.use(`/documents`, routes.documents);
 app.use(`/geo`, routes.geo);

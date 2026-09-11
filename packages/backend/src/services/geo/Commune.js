@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 const format = require("pg-format");
 const { logger } = require("../../utils/logger");
 const { getPool } = require("../../utils/pgpool");
