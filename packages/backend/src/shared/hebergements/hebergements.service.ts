@@ -14,20 +14,6 @@ import { LegacyUniteContextEntity } from "./hebergements.entity";
 import { buildUniteWriteData } from "./hebergements.mapping";
 import { HebergementsRepositoryShared } from "./hebergements.repository";
 
-const getHebergementTypeId = async (
-  client: PoolClient,
-  hebergementTypeValue: string | null,
-): Promise<number | null> => {
-  if (!hebergementTypeValue) {
-    return null;
-  }
-  const { rows } = await client.query<{ id: number }>(
-    `SELECT id FROM front.hebergement_type WHERE value = $1`,
-    [hebergementTypeValue],
-  );
-  return rows?.[0]?.id ?? null;
-};
-
 const withTx = async <T>(
   tx: PoolClient | undefined,
   // eslint-disable-next-line no-unused-vars -- paramètre typé d'une fonction-callback
@@ -79,7 +65,10 @@ export const HebergementServiceShared = {
         ? await saveAdresse(client, adresse)
         : adresseId;
       const resolvedTypeId = hebergementTypeValue
-        ? await getHebergementTypeId(client, hebergementTypeValue)
+        ? await HebergementsRepositoryShared.getHebergementTypeId(
+            client,
+            hebergementTypeValue,
+          )
         : hebergementTypeId;
       const siteId = await HebergementsRepositoryShared.createSite(client, {
         adresseId: resolvedAdresseId,
@@ -283,7 +272,10 @@ export const HebergementServiceShared = {
         ? await saveAdresse(client, adresse)
         : adresseId;
       const resolvedTypeId = hebergementTypeValue
-        ? await getHebergementTypeId(client, hebergementTypeValue)
+        ? await HebergementsRepositoryShared.getHebergementTypeId(
+            client,
+            hebergementTypeValue,
+          )
         : hebergementTypeId;
       await HebergementsRepositoryShared.updateSite(client, siteId, {
         adresseId: resolvedAdresseId,
@@ -342,7 +334,7 @@ export const HebergementServiceShared = {
         buildUniteWriteData({
           informationsLocaux,
         });
-      await HebergementsRepositoryShared.setUniteHebergementCurrent(
+      await HebergementsRepositoryShared.unsetUniteHebergementCurrent(
         client,
         uniteHebergementId,
       );

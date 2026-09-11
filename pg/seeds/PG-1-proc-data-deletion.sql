@@ -210,7 +210,10 @@ BEGIN
                     AND h.site_id IS NOT NULL)
         AND NOT EXISTS (SELECT 1
                   FROM front.site_organisme so
-                  WHERE so.site_id = front.site.site_id);
+                  WHERE so.site_id = front.site.site_id)
+        AND NOT EXISTS (SELECT 1
+                  FROM front.unite_hebergement uh
+                  WHERE uh.site_id = front.site.site_id);
 
     DELETE FROM front.hebergement WHERE organisme_id = p_organisme_id;
     DELETE FROM front.ops_to_ce

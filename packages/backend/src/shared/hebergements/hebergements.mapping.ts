@@ -14,11 +14,6 @@ export type LegacyHebergementPayload = Pick<
   "coordonnees" | "informationsLocaux" | "informationsTransport" | "nom"
 >;
 
-const uniteDateToLegacy = (value: string | Date | null): Date | null => {
-  if (!value) return null;
-  return value instanceof Date ? value : new Date(value);
-};
-
 export const uniteToLegacyPayload = (
   body: UsagerHebergementBodyUniteDto,
 ): LegacyHebergementPayload => {
@@ -26,12 +21,7 @@ export const uniteToLegacyPayload = (
   return {
     coordonnees: body.coordonnees,
     informationsLocaux: {
-      accessibilite:
-        uniteData.accessibilitePmr == null
-          ? null
-          : uniteData.accessibilitePmr
-            ? "accessible"
-            : "non_adapte",
+      accessibilite: majorityToAccessibilite(uniteData.accessibilitePmr),
       accessibilitePrecision: uniteData.accessibilitePrecision ?? null,
       amenagementsSpecifiques: uniteData.amenagementsSpecifiques ?? null,
       chambresDoubles: uniteData.chambresDoubles ?? null,
@@ -51,12 +41,7 @@ export const uniteToLegacyPayload = (
           : null,
       litsDessus: null,
       nombreLits: uniteData.nombreCouchageTotal ?? null,
-      nombreLitsSuperposes:
-        uniteData.litsSuperposes == null
-          ? null
-          : uniteData.litsSuperposes
-            ? 1
-            : 0,
+      nombreLitsSuperposes: booleanToLitsSuperposes(uniteData.litsSuperposes),
       nombreMaxPersonnesCouchage: uniteData.nombreCouchageTotal ?? null,
       pension: null,
       precisionAmenagementsSpecifiques:
@@ -66,7 +51,7 @@ export const uniteToLegacyPayload = (
       reglementationErp: uniteData.reglementationErp ?? null,
       type: null,
       visiteLocaux: uniteData.visiteLocaux ?? null,
-      visiteLocauxAt: uniteDateToLegacy(uniteData.visiteLocauxAt),
+      visiteLocauxAt: toDate(uniteData.visiteLocauxAt),
     },
     informationsTransport: {
       deplacementProximite: null,
