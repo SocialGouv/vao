@@ -27,10 +27,15 @@ services:
       retries: 5
 
   maildev:
-    image: maildev/maildev:2.2.1
+    image: axllent/mailpit
     restart: unless-stopped
+    # environment:
+    #   # for local development, use user1:password1
+    #   - MP_UI_AUTH_FILE=/etc/mailpit/passwd
+    # volumes:
+    #   - ./docker/mailpit/passwd:/etc/mailpit/passwd
     ports:
-      - "1080:1080"
+      - "1080:8025"
       - "1025:1025"
 
   # pghero:
