@@ -208,26 +208,6 @@ ${new Array(nbRows)
     WHERE uo.use_id = $1 AND h.id = $2
   `,
 
-  getLegacyUniteContext: `
-    SELECT
-      ht.value AS "type",
-      htp.value AS "pension",
-      h.description_lieu_hebergement AS "descriptionLieuHebergement",
-      h.lit_dessus AS "litsDessus",
-      COALESCE(
-        ARRAY_AGG(hp.value ORDER BY hpt.prestation_id) FILTER (WHERE hp.value IS NOT NULL),
-        '{}'
-      ) AS "prestationsHotelieres"
-    FROM front.hebergement h
-    LEFT JOIN front.hebergement_type ht ON ht.id = h.type_id
-    LEFT JOIN front.hebergement_type_pension htp ON htp.id = h.type_pension_id
-    LEFT JOIN front.hebergement_to_prestations_hotelieres hpt ON hpt.hebergement_id = h.id
-    LEFT JOIN front.hebergement_prestations_hotelieres hp ON hp.id = hpt.prestation_id
-    WHERE h.id = $1
-      AND h.current = TRUE
-    GROUP BY h.id, ht.value, htp.value
-  `,
-
   getListe: () => `
     WITH stat AS (
       SELECT id,
@@ -280,11 +260,6 @@ ${new Array(nbRows)
       LEFT JOIN front.hebergement_statut hs ON h.statut_id = hs.id
     WHERE
       h.id = $1
-  `,
-  getStatutId: `
-    SELECT id
-      FROM front.hebergement_statut
-    WHERE value = $1
   `,
   historize: `
     UPDATE front.hebergement

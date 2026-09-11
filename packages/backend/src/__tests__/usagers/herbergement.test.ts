@@ -1,3 +1,4 @@
+import type { InformationsLocauxDto } from "@vao/shared-bridge";
 import { FeatureFlagName } from "@vao/shared-bridge";
 import request from "supertest";
 
