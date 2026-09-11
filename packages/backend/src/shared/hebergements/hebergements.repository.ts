@@ -330,22 +330,6 @@ export const HebergementsRepositoryShared = {
     log.i("setUniteHebergementStatut - DONE");
   },
 
-  async setUniteHebergementStatut(
-    tx: PoolClient,
-    uniteHebergementId: number,
-    statutId: number,
-    editedBy: number,
-  ): Promise<void> {
-    log.i("setUniteHebergementStatut - IN");
-    const query = `
-      UPDATE front.unite_hebergement
-      SET statut_id = $2, edited_by = $3, edited_at = NOW()
-      WHERE id = $1 AND "current" IS TRUE;
-    `;
-    await tx.query(query, [uniteHebergementId, statutId, editedBy]);
-    log.i("setUniteHebergementStatut - DONE");
-  },
-
   async setUniteHebergementTypePensions(
     tx: PoolClient,
     uniteHebergementId: number,
