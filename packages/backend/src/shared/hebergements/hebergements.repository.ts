@@ -82,7 +82,7 @@ export const HebergementsRepositoryShared = {
     log.i("createSiteOrganisme - IN");
     const query = `
       INSERT INTO front.site_organisme (site_id, organisme_id, nom_site, resp_nom_prenom, resp_telephone, resp_email, excursion_description, deplacement_proximite_description, vehicules_adaptes)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      VALUES ($1, $2, left($3, 120), left($4, 120), $5, $6, $7, $8, $9)
       ON CONFLICT (site_id, organisme_id) DO UPDATE
       SET nom_site = EXCLUDED.nom_site, resp_nom_prenom = EXCLUDED.resp_nom_prenom,
           resp_telephone = EXCLUDED.resp_telephone, resp_email = EXCLUDED.resp_email,
