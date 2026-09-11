@@ -12,13 +12,11 @@
  * et à l'exécution par la double-écriture (le lien est aussi maintenu sur les
  * nouvelles versions à chaque mise à jour).
  *
- * down() supprime uniquement les lignes créées par cette migration :
- *   - front.unite_hebergement_to_type_pension / front.unite_hebergement
- *   - front.site_organisme / front.site pour les site_id présents dans les unités
- *     migrées
- *   - puis remet front.hebergement.site_id à NULL uniquement pour ces sites,
- *     sans effacer les données site/site_organisme déjà présentes dans l'instance
- *     et non créées par cette migration.
+ * down() est bloqué : après exécution de la double-écriture runtime, toutes les
+ * lignes site/unite ont h.site_id IS NOT NULL, rendant impossible la distinction
+ * entre lignes créées par up() et lignes créées par l'application. Un rollback
+ * complet nécessite une intervention manuelle (suppression des données
+ * site/site_organisme/unite puis remise à NULL de hebergement.site_id).
  *
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
@@ -178,42 +176,28 @@ exports.up = function (knex) {
  * @returns { Promise<void> }
  */
 exports.down = function (knex) {
-  // Rollback de la double écriture : on ne supprime que les enregistrements
-  // créés par up() (hebergement.site_id renseigné), en cascade enfants → parents.
-  // Les données legacy front.hebergement sont conservées (site_id remis à NULL).
+  // Blocage explicite du rollback : après exécution de la double-écriture
+  // runtime (Hebergement.js syncSiteAndUniteOnCreate), toutes les lignes
+  // site/unite portent h.site_id IS NOT NULL, rendant impossible la
+  // distinction entre lignes créées par up() et lignes créées par
+  // l'application.  Pour rollback complet, intervention manuelle requise :
+  //   1. DELETE front.unite_hebergement_to_type_pension
+  //   2. DELETE front.unite_hebergement
+  //   3. DELETE front.site_organisme
+  //   4. DELETE front.site
+  //   5. UPDATE front.hebergement SET site_id = NULL WHERE site_id IS NOT NULL
   return knex.raw(`
-    DELETE FROM front.unite_hebergement_to_type_pension
-     WHERE unite_hebergement_id IN (
-       SELECT uh.id
-         FROM front.unite_hebergement uh
-         JOIN front.hebergement h ON h.id = uh.id
-        WHERE h.site_id IS NOT NULL
-     );
-
-    DELETE FROM front.unite_hebergement
-     WHERE id IN (
-       SELECT uh.id
-         FROM front.unite_hebergement uh
-         JOIN front.hebergement h ON h.id = uh.id
-        WHERE h.site_id IS NOT NULL
-     );
-
-    DELETE FROM front.site_organisme
-     WHERE site_id IN (
-       SELECT site_id
-         FROM front.hebergement
-        WHERE site_id IS NOT NULL
-     );
-
-    DELETE FROM front.site
-     WHERE site_id IN (
-       SELECT site_id
-         FROM front.hebergement
-        WHERE site_id IS NOT NULL
-     );
-
-    UPDATE front.hebergement
-       SET site_id = NULL
-     WHERE site_id IS NOT NULL;
+    DO $$
+    BEGIN
+      IF EXISTS (
+        SELECT 1
+          FROM front.unite_hebergement
+        LIMIT 1
+      ) THEN
+        RAISE EXCEPTION
+          'Rollback impossible : la double-écriture runtime a produit des données site/unite. '
+          'Intervention manuelle requise (cf. commentaire de la migration).';
+      END IF;
+    END $$;
   `);
 };
