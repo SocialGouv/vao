@@ -15,6 +15,7 @@
             'bilanFinancierComptabilite'
           ]
         "
+        :required="true"
       />
     </div>
   </div>
@@ -27,6 +28,7 @@
             'bilanFinancierComparatif'
           ]
         "
+        :required="true"
       />
     </div>
   </div>

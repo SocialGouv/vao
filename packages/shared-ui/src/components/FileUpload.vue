@@ -23,21 +23,17 @@
           <span v-if="props.hint" class="fr-hint-text">
             {{ props.hint }}
           </span>
+          <span v-if="props.errorMessage" class="fr-error-text fr-text--sm">
+            {{ props.errorMessage }}
+          </span>
         </dd>
       </dl>
-      <p
-        v-if="props.errorMessage"
-        class="fr-error-text"
-        role="alert"
-        aria-live="polite"
-      >
-        {{ props.errorMessage }}
-      </p>
     </div>
     <div v-else>
       <DsfrTable
         v-if="rows.length > 0"
         title="Fichier téléversé"
+        :label="props.label || undefined"
         :headers="headers"
         :rows="rows"
         :no-caption="true"

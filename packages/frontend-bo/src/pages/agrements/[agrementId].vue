@@ -43,16 +43,16 @@
             }}
             :
           </dt>
-          <dd>{{ formatFR(agrementCourant.dateDepot) }}</dd>
+          <dd>
+            {{ formatFR(agrementCourant.dateDepot) }}
+            <span
+              v-if="isInvalidDateValue(agrementCourant.dateDepot)"
+              class="fr-error-text"
+            >
+              Date invalide : à corriger
+            </span>
+          </dd>
         </dl>
-        <p
-          v-if="isInvalidDateValue(agrementCourant.dateDepot)"
-          class="fr-error-text"
-          role="alert"
-          aria-live="polite"
-        >
-          Date invalide: à corriger
-        </p>
       </div>
       <div class="fr-mt-2w"></div>
     </div>

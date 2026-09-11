@@ -10,6 +10,7 @@
     <DisplayLabel
       :value="props.initAgrement.accompRespNb"
       :input="AgrementDisplayInput.AgrementProjetsInput['accompRespNb']"
+      :required="true"
     />
   </div>
   <div class="border fr-p-4v">
@@ -26,6 +27,7 @@
           :input="
             AgrementDisplayInput.AgrementProjetsInput['accompRespCompExp']
           "
+          :required="true"
         />
       </div>
     </div>
@@ -50,6 +52,7 @@
         :input="
           AgrementDisplayInput.AgrementProjetsInput['accompRespRecruteUrg']
         "
+        :required="true"
       />
     </div>
     <MultiFilesUpload

@@ -26,6 +26,7 @@
               'bilanQualPerceptionSensibilite'
             ]
           "
+          :required="true"
         />
       </div>
     </div>
@@ -60,6 +61,7 @@
               'bilanQualPerspectiveEvol'
             ]
           "
+          :required="true"
         />
       </div>
     </div>
@@ -93,6 +95,7 @@
               'bilanQualElementsMarquants'
             ]
           "
+          :required="true"
         />
       </div>
     </div>

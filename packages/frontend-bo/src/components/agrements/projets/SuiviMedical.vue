@@ -14,6 +14,7 @@
         :input="
           AgrementDisplayInput.AgrementProjetsInput['suiviMedDistribution']
         "
+        :required="true"
       />
     </div>
   </div>
@@ -25,6 +26,7 @@
         :input="
           AgrementDisplayInput.AgrementProjetsInput['suiviMedAccordSejour']
         "
+        :required="true"
       />
     </div>
   </div>

@@ -13,6 +13,7 @@
       <DisplayLabel
         :value="props.initAgrement?.protocoleEvacUrg"
         :input="AgrementDisplayInput.AgrementProjetsInput['protocoleEvacUrg']"
+        :required="true"
       />
     </div>
   </div>
@@ -21,6 +22,7 @@
       <DisplayLabel
         :value="props.initAgrement?.protocoleRapatUrg"
         :input="AgrementDisplayInput.AgrementProjetsInput['protocoleRapatUrg']"
+        :required="true"
       />
     </div>
   </div>
@@ -43,6 +45,7 @@
         :input="
           AgrementDisplayInput.AgrementProjetsInput['protocoleRapatEtranger']
         "
+        :required="true"
       />
     </div>
   </div>
@@ -53,6 +56,7 @@
         :input="
           AgrementDisplayInput.AgrementProjetsInput['protocoleInfoFamille']
         "
+        :required="true"
       />
     </div>
   </div>

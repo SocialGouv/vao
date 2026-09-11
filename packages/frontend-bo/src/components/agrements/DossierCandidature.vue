@@ -11,6 +11,7 @@
       <DisplayLabel
         :value="props.initAgrement?.motivations"
         :input="AgrementDisplayInput.AgrementInput['motivations']"
+        :required="true"
       />
     </div>
   </div>
@@ -50,10 +51,11 @@
       <DisplayLabel
         :value="formatFR(props.initAgrement?.dateObtentionCertificat)"
         :input="AgrementDisplayInput.AgrementInput['dateObtentionCertificat']"
+        :required="true"
         :is-valid="
           !isInvalidDateValue(props.initAgrement?.dateObtentionCertificat)
         "
-        error-message="Date invalide: à corriger"
+        error-message="Date invalide : à corriger"
       />
     </div>
   </div>
@@ -115,6 +117,11 @@ const filesMotivation = computed(() => {
         file.category === FILE_CATEGORY.MOTIVATION,
     ) || []
   );
+});
+
+const dateObtentionCertificatDisplayValue = computed(() => {
+  const raw = props.initAgrement?.dateObtentionCertificat;
+  return raw ? formatFR(raw) : "À compléter";
 });
 
 const fileImmatriculation = computed(() => {

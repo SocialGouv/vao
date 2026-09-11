@@ -37,7 +37,7 @@
       </p>
       <DsfrFileUpload
         v-bind="$attrs"
-        :label="props.label"
+        :label="props.label || undefined"
         :hint="props.hint"
         @change="onFileInputChange"
       />

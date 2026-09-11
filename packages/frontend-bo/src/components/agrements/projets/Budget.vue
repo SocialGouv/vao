@@ -12,6 +12,7 @@
       <DisplayLabel
         :value="props.initAgrement?.budgetGestionPerso"
         :input="AgrementDisplayInput.AgrementProjetsInput['budgetGestionPerso']"
+        :required="true"
       />
     </div>
   </div>

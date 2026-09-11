@@ -4,11 +4,19 @@
       <dl class="fr-text--sm fr-pl-0">
         <dt v-if="labelVisible">{{ input.label }} :</dt>
         <dd>
-          {{ displayValue ? displayValue : "-" }}
+          <span
+            v-if="showRequiredEmpty"
+            class="fr-mb-4v fr-text--sm fr-error-text"
+          >
+            À compléter
+          </span>
+          <template v-else>
+            {{ displayValue ? displayValue : "-" }}
+          </template>
         </dd>
       </dl>
     </div>
-    <p v-if="!isValid" class="fr-error-text" role="alert" aria-live="polite">
+    <p v-if="!isValid" class="fr-error-text">
       {{ errorMessage || "Champ invalide" }}
     </p>
   </div>
@@ -31,18 +39,10 @@ interface DisplayInputOption {
 }
 
 const props = defineProps({
-  labelVisible: {
-    type: Boolean,
-    default: true,
-  },
-  isValid: {
-    type: Boolean,
-    default: true,
-  },
-  errorMessage: {
-    type: String,
-    default: "",
-  },
+  labelVisible: { type: Boolean, default: true },
+  isValid: { type: Boolean, default: true },
+  errorMessage: { type: String, default: "" },
+  required: { type: Boolean, default: false },
   input: {
     type: Object as PropType<DisplayInputOption>,
     required: true,
@@ -93,37 +93,12 @@ const displayValue = computed(() => {
   const handler = inputHandlers[props.input.inputType];
   return handler ? handler() : "error";
 });
+
+const showRequiredEmpty = computed(
+  () =>
+    props.required &&
+    (displayValue.value === null ||
+      displayValue.value === undefined ||
+      displayValue.value === ""),
+);
 </script>
-
-<style scoped>
-.container {
-  display: flex;
-  flex-direction: column;
-  justify-content: left;
-  align-items: start;
-}
-
-.display-info-bloc {
-  position: relative;
-  width: 100%;
-}
-
-.container--error .read-only-label,
-.container--error .read-only-value {
-  color: var(--text-default-error);
-}
-
-dl {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  row-gap: 0.5rem;
-  column-gap: 1rem;
-  margin: 0;
-}
-dd {
-  padding-left: 0;
-}
-dt {
-  font-weight: bold;
-}
-</style>
