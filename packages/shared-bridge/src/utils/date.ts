@@ -58,8 +58,10 @@ export function addMonths(date: Date, months: number) {
   return dayjs(date).add(months, "month").toDate();
 }
 
-export function formatFR(date: Date) {
-  return dayjs(date).format("DD/MM/YYYY");
+export function formatFR(date?: Date | string | null, fallback = "") {
+  if (!date) return fallback;
+  const d = dayjs(date);
+  return d.isValid() ? d.format("DD/MM/YYYY") : fallback;
 }
 
 export function formatFRDateTime(date: Date) {
@@ -124,3 +126,8 @@ export const parseFrShort = (date?: string | null): dayjs.Dayjs | undefined => {
   const parsed = dayjs(date, "DD/MM/YYYY", true);
   return parsed.isValid() ? parsed : undefined;
 };
+
+export function isInvalidDateValue(date?: Date | string | null): boolean {
+  if (!date) return false;
+  return !dayjs(date).isValid();
+}

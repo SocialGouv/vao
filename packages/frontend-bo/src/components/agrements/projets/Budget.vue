@@ -12,6 +12,7 @@
       <DisplayLabel
         :value="props.initAgrement?.budgetGestionPerso"
         :input="AgrementDisplayInput.AgrementProjetsInput['budgetGestionPerso']"
+        :required="true"
       />
     </div>
   </div>
@@ -34,7 +35,8 @@
       v-model="filesProjSejoursBudgetPersonnes"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
-      label="Ajouter des fichiers (optionnel)"
+      label="Document(s) relatif(s) au budget des personnes prévu (optionnel)"
+      :optional="true"
     />
   </div>
 </template>

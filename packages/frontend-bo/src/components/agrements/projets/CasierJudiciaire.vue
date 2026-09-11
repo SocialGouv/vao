@@ -21,6 +21,7 @@
       :cdn-url="props.cdnUrl"
       :modifiable="false"
       label="Ajouter un fichier (optionnel)"
+      :optional="true"
     />
   </div>
 </template>

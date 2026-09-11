@@ -2,36 +2,50 @@
   <div class="fr-input-group" style="margin-bottom: 2rem">
     <div v-if="!props.modifiable">
       <dl class="fr-text--sm fr-pl-0">
-        <dt>{{ $attrs.label }}</dt>
+        <dt v-if="props.label">{{ props.label }}</dt>
         <dd>
-          <p v-if="rows.length > 0">
-            <DsfrTable
-              title="Fichier(s) téléversé(s)"
-              :headers="headers"
-              :rows="rows"
-              :no-caption="true"
-            />
-          </p>
-          <p v-else class="fr-mb-4v fr-icon-file-line fr-text--sm">
+          <DsfrTable
+            v-if="rows.length > 0"
+            title="Fichier(s) téléversé(s)"
+            :headers="headers"
+            :rows="rows"
+            :no-caption="true"
+          />
+          <span
+            v-else-if="!props.optional"
+            class="fr-mb-4v fr-text--sm fr-error-text"
+          >
+            À compléter
+          </span>
+          <span v-else class="fr-mb-4v fr-icon-file-line fr-text--sm">
             Aucun fichier téléversé
-          </p>
+          </span>
+          <span v-if="props.hint" class="fr-hint-text">
+            {{ props.hint }}
+          </span>
+          <span v-if="props.errorMessage" class="fr-error-text fr-text--sm">
+            {{ props.errorMessage }}
+          </span>
         </dd>
       </dl>
     </div>
-    <DsfrFileUpload
-      v-if="props.modifiable"
-      v-bind="$attrs"
-      :error="props.errorMessage"
-      :disabled="isDisabled"
-      @change="changeFile"
-    />
-    <div
-      v-else-if="props.errorMessage"
-      class="fr-input-group fr-input-group--error"
-    >
-      <label class="fr-label">
-        {{ props.errorMessage }}
-      </label>
+    <div v-else>
+      <DsfrTable
+        v-if="rows.length > 0"
+        title="Fichier téléversé"
+        :label="props.label || undefined"
+        :headers="headers"
+        :rows="rows"
+        :no-caption="true"
+      />
+      <DsfrFileUpload
+        v-bind="$attrs"
+        :label="props.label"
+        :hint="props.hint"
+        :error="props.errorMessage"
+        :disabled="isDisabled"
+        @change="changeFile"
+      />
     </div>
   </div>
 </template>
@@ -40,12 +54,17 @@
 import { DsfrFileUpload } from "@gouvminint/vue-dsfr";
 import { computed } from "vue";
 import dayjs from "dayjs";
+defineOptions({ inheritAttrs: false });
 const props = defineProps({
   modifiable: { type: Boolean, default: true },
   errorMessage: { type: String, default: null },
   cdnUrl: { type: String, required: true },
   isDisabled: { type: Boolean, default: false },
+  label: { type: String, default: "" },
+  hint: { type: String, default: "" },
+  optional: { type: Boolean, default: true },
 });
+
 const headers = [
   "Nom du fichier",
   "Type de fichier",

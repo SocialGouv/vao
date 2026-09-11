@@ -45,6 +45,12 @@
           </dt>
           <dd>
             {{ formatFR(agrementCourant.dateDepot) }}
+            <span
+              v-if="isInvalidDateValue(agrementCourant.dateDepot)"
+              class="fr-error-text"
+            >
+              Date invalide : à corriger
+            </span>
           </dd>
         </dl>
       </div>
@@ -122,7 +128,11 @@ import {
   useAgrementPageTitle,
 } from "@vao/shared-ui";
 import { useOrganismeStore } from "~/stores/organisme";
-import { formatFR, AGREMENT_TYPE_DEPOT } from "@vao/shared-bridge";
+import {
+  formatFR,
+  isInvalidDateValue,
+  AGREMENT_TYPE_DEPOT,
+} from "@vao/shared-bridge";
 
 const TAB_PAGE_TITLES = [
   "Dossier",

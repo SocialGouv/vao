@@ -40,6 +40,7 @@
         :hint="hintFileUpload"
         :error-message="fileErrorMessage"
         hint-class="file-upload-hint"
+        :optional="props.haveRequiredFile ? false : true"
         @update:model-value="handleFileChange"
       />
     </div>

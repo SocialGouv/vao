@@ -199,6 +199,7 @@
           :cdn-url="cdnUrl"
           :is-disabled="isDisabled"
           :error-message="fileDerniereAttestationSecuriteErrorMessage"
+          :optional="true"
         />
         <FileUpload
           v-model="fileDernierArreteAutorisationMaire"
@@ -208,6 +209,7 @@
           :cdn-url="cdnUrl"
           :is-disabled="isDisabled"
           :error-message="fileDernierArreteAutorisationMaireErrorMessage"
+          :optional="true"
         />
       </div>
       <div v-if="reglementationErp === false" class="fr-col-12">
@@ -219,6 +221,7 @@
           :cdn-url="cdnUrl"
           :is-disabled="isDisabled"
           :error-message="fileReponseExploitantOuProprietaireErrorMessage"
+          :optional="true"
         />
       </div>
       <div class="fr-fieldset__element fr-col-12">
@@ -614,7 +617,7 @@ import IsDownloading from "./IsDownloading.vue";
 import hebergementUtils from "../utils/hebergement";
 import FileUpload from "./FileUpload.vue";
 import createLogger from "../utils/createLogger";
-import { useToaster } from '../composables/useToaster';
+import { useToaster } from "../composables/useToaster";
 
 const toaster = useToaster();
 

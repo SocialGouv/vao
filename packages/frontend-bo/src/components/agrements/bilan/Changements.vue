@@ -19,9 +19,10 @@
   <div class="fr-my-2w">
     <MultiFilesUpload
       v-model="filesChangeEvol"
-      label="Ajouter des fichiers (optionnel)"
+      label="Document(s) relatif(s) aux changements ou évolutions (optionnel)"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
+      :optional="true"
     />
   </div>
   <p class="fr-my-2w fr-text--bold">

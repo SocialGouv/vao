@@ -14,6 +14,7 @@
         :input="
           AgrementDisplayInput.AgrementProjetsInput['suiviMedDistribution']
         "
+        :required="true"
       />
     </div>
   </div>
@@ -25,6 +26,7 @@
         :input="
           AgrementDisplayInput.AgrementProjetsInput['suiviMedAccordSejour']
         "
+        :required="true"
       />
     </div>
   </div>
@@ -33,7 +35,8 @@
       v-model="filesProjetsSejoursSuiviMed"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
-      label="Ajouter des fichiers (optionnel)"
+      label="Document(s) relatif(s) au suivi médical prévu (optionnel)"
+      :optional="true"
     />
   </div>
 </template>

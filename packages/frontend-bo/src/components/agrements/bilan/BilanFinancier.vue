@@ -15,6 +15,7 @@
             'bilanFinancierComptabilite'
           ]
         "
+        :required="true"
       />
     </div>
   </div>
@@ -27,6 +28,7 @@
             'bilanFinancierComparatif'
           ]
         "
+        :required="true"
       />
     </div>
   </div>
@@ -59,7 +61,8 @@
       v-model="filesBilanFinancierQuatreAnnees"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
-      label="Ajouter des fichiers complémentaires (optionnel)"
+      label="Document(s) relatif(s) au bilan financier sur les quatre dernières années (optionnel)"
+      :optional="true"
     />
   </div>
 </template>

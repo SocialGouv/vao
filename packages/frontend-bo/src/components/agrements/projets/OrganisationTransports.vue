@@ -11,12 +11,14 @@
     <DisplayLabel
       :value="props.initAgrement?.transportAllerRetour"
       :input="AgrementDisplayInput.AgrementProjetsInput['transportAllerRetour']"
+      :required="true"
     />
   </div>
   <div class="fr-col-12 fr-mt-6v">
     <DisplayLabel
       :value="props.initAgrement?.transportSejour"
       :input="AgrementDisplayInput.AgrementProjetsInput['transportSejour']"
+      :required="true"
     />
   </div>
 
@@ -25,7 +27,8 @@
       v-model="filesProjetsSejoursOrgaTransports"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
-      label="Ajouter des fichiers (optionnel)"
+      label="Document(s) relatif(s) à l'organisation des transports prévus (optionnel)"
+      :optional="true"
     />
   </div>
 </template>

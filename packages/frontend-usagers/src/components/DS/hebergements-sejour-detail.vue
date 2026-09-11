@@ -202,6 +202,7 @@
             :modifiable="false"
             :cdn-url="`${config.public.backendUrl}/documents/`"
             :error-message="fileDerniereAttestationSecuriteErrorMessage"
+            :optional="true"
           />
           <FileUpload
             v-model="fileDernierArreteAutorisationMaire"
@@ -210,6 +211,7 @@
             :modifiable="false"
             :cdn-url="`${config.public.backendUrl}/documents/`"
             :error-message="fileDernierArreteAutorisationMaireErrorMessage"
+            :optional="true"
           />
         </div>
         <div v-if="reglementationErp === false">
@@ -220,6 +222,7 @@
             :modifiable="false"
             :cdn-url="`${config.public.backendUrl}/documents/`"
             :error-message="fileReponseExploitantOuProprietaireErrorMessage"
+            :optional="true"
           />
         </div>
         <div class="fr-fieldset__element fr-col-12">
