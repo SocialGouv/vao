@@ -178,6 +178,9 @@ exports.up = function (knex) {
  * @returns { Promise<void> }
  */
 exports.down = function (knex) {
+  // Rollback de la double écriture : on ne supprime que les enregistrements
+  // créés par up() (hebergement.site_id renseigné), en cascade enfants → parents.
+  // Les données legacy front.hebergement sont conservées (site_id remis à NULL).
   return knex.raw(`
     DELETE FROM front.unite_hebergement_to_type_pension
      WHERE unite_hebergement_id IN (

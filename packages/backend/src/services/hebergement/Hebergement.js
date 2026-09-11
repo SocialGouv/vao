@@ -402,6 +402,9 @@ const preserveLegacyUniteContext = (hebergement, legacyContext) => {
     return;
   }
   const { informationsLocaux } = hebergement;
+  if (!informationsLocaux) {
+    return;
+  }
   informationsLocaux.type ??= legacyContext.type ?? null;
   informationsLocaux.pension ??= legacyContext.pension ?? null;
   informationsLocaux.descriptionLieuHebergement ??=
@@ -736,19 +739,19 @@ module.exports.updateStatut = async (userId, hebergementId, statut) => {
 
   try {
     await client.query("BEGIN");
-    await client.query(query.updateStatut, [hebergementId, userId, statut]);
     const statutId = await HebergementServiceShared.getStatutId(statut, client);
     if (!statutId) {
       const error = new Error(
         `Statut inconnu pour l'hébergement ${hebergementId}: ${statut}`,
       );
-      log.e("updateStatut - statut inconnu", {
+      log.w("updateStatut - statut inconnu", {
         error: error.message,
         hebergementId,
         statut,
       });
       throw error;
     }
+    await client.query(query.updateStatut, [hebergementId, userId, statut]);
 
     await HebergementServiceShared.setUniteHebergementStatut(
       hebergementId,

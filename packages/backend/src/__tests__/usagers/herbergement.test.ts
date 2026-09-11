@@ -1,4 +1,3 @@
-import type { InformationsLocauxDto } from "@vao/shared-bridge";
 import { FeatureFlagName } from "@vao/shared-bridge";
 import request from "supertest";
 
@@ -120,6 +119,41 @@ describe("GET /hebergement/:id", () => {
       response.body.hebergement.informationsTransport.vehiculesAdaptes,
     ).toBe(true);
   });
+
+  it("retourne la réponse legacy quand le flag est actif mais sans unité courante", async () => {
+    await setFeatureFlagEnabled({
+      enabled: true,
+      name: FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT,
+    });
+    await createUserAndOrganisme();
+    const createResponse = await request(getFoAppHelper(authUser))
+      .post("/hebergement")
+      .send(buildActifFixture());
+    const hebergementId = createResponse.body.id;
+
+    const unite =
+      await HebergementsRepositoryShared.getUniteHebergementById(hebergementId);
+    expect(unite).not.toBeNull();
+    const client = await getPool().connect();
+    try {
+      await HebergementsRepositoryShared.unsetUniteHebergementCurrent(
+        client,
+        unite!.id,
+      );
+    } finally {
+      client.release();
+    }
+
+    const response = await request(getFoAppHelper(authUser)).get(
+      `/hebergement/${hebergementId}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.body.hebergement.siteId).toBeUndefined();
+    expect(
+      response.body.hebergement.informationsLocaux.nombreLitsSuperposes,
+    ).toBe(10);
+  });
 });
 
 describe("POST /hebergement/:id/desactivate - middleware checkPermissionHebergementUser", () => {
@@ -151,6 +185,38 @@ describe("POST /hebergement", () => {
     const response = await request(getFoAppHelper(authUser))
       .post("/hebergement")
       .send({ nom: "" });
+
+    expect(response.status).toBe(400);
+  });
+
+  it("retourne 400 avec un message explicite si un champ dépasse sa limite", async () => {
+    authUser = await createUsagersUser();
+    const longEmail = "a".repeat(315);
+    const response = await request(getFoAppHelper(authUser))
+      .post("/hebergement")
+      .send({
+        ...buildHebergementFixture(),
+        coordonnees: {
+          ...buildHebergementFixture().coordonnees,
+          email: `${longEmail}@example.com`,
+        },
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "L'adresse courriel ne doit pas dépasser 320 caractères",
+    );
+    expect(response.body.name).toBe("ValidationError");
+  });
+
+  it("retourne 400 si le nom dépasse 80 caractères", async () => {
+    authUser = await createUsagersUser();
+    const response = await request(getFoAppHelper(authUser))
+      .post("/hebergement")
+      .send({
+        ...buildHebergementFixture(),
+        nom: "a".repeat(81),
+      });
 
     expect(response.status).toBe(400);
   });
@@ -622,18 +688,6 @@ describe("module site/unite : lectures partagées du référentiel", () => {
       );
     expect(uniteParHebergementId!.id).toBe(hebergementId);
 
-    const uniteParIdSingular =
-      await HebergementsRepositoryShared.getUniteHebergementByHebergementId(
-        unite!.hebergementId,
-      );
-    expect(uniteParIdSingular!.id).toBe(hebergementId);
-
-    const uniteParId =
-      await HebergementsRepositoryShared.getUniteHebergementsById(
-        String(hebergementId),
-      );
-    expect(uniteParId!.id).toBe(hebergementId);
-
     const site = await HebergementServiceShared.getSiteById(unite!.siteId!);
     expect(site).not.toBeNull();
     expect(site!.id).toEqual(expect.any(Number));
@@ -664,7 +718,7 @@ describe("module site/unite : lectures partagées du référentiel", () => {
     ).toBe(unite!.siteId);
   });
 
-  it("passe le site courant à false via setSiteCurrent", async () => {
+  it("passe le site courant à false via unsetSiteCurrent", async () => {
     await createUserAndOrganisme();
     const createResponse = await request(getFoAppHelper(authUser))
       .post("/hebergement")
@@ -677,7 +731,10 @@ describe("module site/unite : lectures partagées du référentiel", () => {
 
     const client = await getPool().connect();
     try {
-      await HebergementsRepositoryShared.setSiteCurrent(client, unite!.siteId!);
+      await HebergementsRepositoryShared.unsetSiteCurrent(
+        client,
+        unite!.siteId!,
+      );
     } finally {
       client.release();
     }
@@ -717,7 +774,7 @@ describe("module site/unite : lectures partagées du référentiel", () => {
     await expect(
       HebergementServiceShared.updateUniteHebergementInPlace(999999, {
         editedBy: authUser.id,
-        informationsLocaux: {} as InformationsLocauxDto,
+        informationsLocaux: buildHebergementFixture().informationsLocaux,
         statutId: null,
         typePensions: [],
       }),
@@ -725,42 +782,52 @@ describe("module site/unite : lectures partagées du référentiel", () => {
   });
 });
 
-describe("POST /hebergement/:id versionné avec uniteData", () => {
-  it("préserve le contexte legacy de l'hébergement lors de la mise à jour", async () => {
-    await createUserAndOrganisme();
-    const createResponse = await request(getFoAppHelper(authUser))
-      .post("/hebergement")
-      .send(buildActifFixture());
-    const hebergementId = createResponse.body.id;
+it("POST /hebergement/:id avec uniteData préserve le contexte legacy", async () => {
+  await createUserAndOrganisme();
+  const createResponse = await request(getFoAppHelper(authUser))
+    .post("/hebergement")
+    .send(buildActifFixture());
+  const hebergementId = createResponse.body.id;
 
-    const base = buildHebergementFixture();
-    await Hebergement.update(
-      authUser.id,
-      hebergementId,
-      {
-        ...base,
-        informationsLocaux: {
-          ...base.informationsLocaux,
-          prestationsHotelieres: [],
-        },
-        uniteData: {
-          accessibilitePmr: false,
-          litsSuperposes: false,
-          nombreCouchageTotal: 10,
-          visiteLocaux: true,
-        },
-      } as Parameters<typeof Hebergement.update>[2] & { uniteData: object },
-      HebergementStatuts.ACTIF,
-    );
+  const base = buildHebergementFixture();
+  await Hebergement.update(
+    authUser.id,
+    hebergementId,
+    {
+      ...base,
+      informationsLocaux: {
+        ...base.informationsLocaux,
+        prestationsHotelieres: [],
+      },
+      uniteData: {
+        accessibilitePmr: false,
+        litsSuperposes: false,
+        nombreCouchageTotal: 10,
+        visiteLocaux: true,
+      },
+    } as Parameters<typeof Hebergement.update>[2] & { uniteData: object },
+    HebergementStatuts.ACTIF,
+  );
 
-    const uniteCouranteId =
-      await getCurrentUniteIdByHebergementId(hebergementId);
-    expect(uniteCouranteId).not.toBeNull();
-    expect(uniteCouranteId).not.toBe(hebergementId);
+  const uniteCouranteId = await getCurrentUniteIdByHebergementId(hebergementId);
+  expect(uniteCouranteId).not.toBeNull();
+  expect(uniteCouranteId).not.toBe(hebergementId);
 
-    const uniteCourante =
-      await HebergementServiceShared.getUniteHebergementById(uniteCouranteId!);
-    expect(uniteCourante!.litsSuperposes).toBe(false);
-    expect(uniteCourante!.accessibilitePmr).toBe(false);
-  });
+  const uniteCourante = await HebergementServiceShared.getUniteHebergementById(
+    uniteCouranteId!,
+  );
+  expect(uniteCourante!.litsSuperposes).toBe(false);
+  expect(uniteCourante!.accessibilitePmr).toBe(false);
+});
+
+it("updateStatut rejette avec un statut inconnu", async () => {
+  await createUserAndOrganisme();
+  const createResponse = await request(getFoAppHelper(authUser))
+    .post("/hebergement")
+    .send(buildActifFixture());
+  const hebergementId = createResponse.body.id;
+
+  await expect(
+    Hebergement.updateStatut(authUser.id, hebergementId, "STATUT_INEXISTANT"),
+  ).rejects.toThrow(/Statut inconnu/);
 });

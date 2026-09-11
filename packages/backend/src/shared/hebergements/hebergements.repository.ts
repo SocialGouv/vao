@@ -201,16 +201,37 @@ export const HebergementsRepositoryShared = {
     return result.rows[0].id;
   },
 
-  async getHebergementSiteId(hebergementId: number): Promise<string | null> {
+  async getHebergementSiteId(
+    hebergementId: number,
+    tx?: PoolClient,
+  ): Promise<string | null> {
     log.i("getHebergementSiteId - IN");
     const query = `
       SELECT site_id
       FROM front.hebergement
       WHERE id = $1;
     `;
-    const result = await getPool().query(query, [hebergementId]);
+    const result = await (tx ?? getPool()).query(query, [hebergementId]);
     log.i("getHebergementSiteId - DONE");
     return result.rows[0]?.site_id ?? null;
+  },
+
+  async getHebergementTypeId(
+    tx: PoolClient,
+    hebergementTypeValue: string | null,
+  ): Promise<number | null> {
+    if (!hebergementTypeValue) return null;
+    log.i("getHebergementTypeId - IN");
+    const query = `
+      SELECT id
+        FROM front.hebergement_type
+      WHERE value = $1
+    `;
+    const result = await tx.query<{ id: number }>(query, [
+      hebergementTypeValue,
+    ]);
+    log.i("getHebergementTypeId - DONE");
+    return result.rows[0]?.id ?? null;
   },
 
   async getLegacyUniteContext(
@@ -330,34 +351,6 @@ export const HebergementsRepositoryShared = {
     return result.rows[0]?.id ?? null;
   },
 
-  async getUniteHebergementByHebergementId(
-    hebergementId: string,
-  ): Promise<UniteHebergementDto | null> {
-    log.i("getUniteHebergementByHebergementId - IN");
-    const query = `
-      SELECT
-        uh.id, uh.site_id, uh.organisme_id, uh.statut_id, uh.created_at,
-        uh.edited_at, uh.hebergement_id, uh."current", uh.created_by, uh.edited_by,
-        uh.nombre_couchage_total, uh.lits_superposes, uh.accessibilite_pmr,
-        uh.accessibilite_precision, uh.chambres_doubles, uh.separation_homme_femme,
-        uh.reglementation_erp, uh.couchage_individuel, uh.rangement_individuel,
-        uh.amenagements_specifiques, uh.amenagements_specifiques_precision,
-        uh.file_reponse_exploitant_ou_proprietaire,
-        uh.file_dernier_arrete_autorisation_maire, uh.file_derniere_attestation_securite,
-        uh.visite_locaux, uh.visite_locaux_at,
-        hs.value AS statut
-      FROM front.unite_hebergement uh
-      LEFT JOIN front.hebergement_statut hs ON hs.id = uh.statut_id
-      WHERE uh.hebergement_id = $1 AND uh."current" IS TRUE;
-    `;
-    const result = await getPool().query(query, [hebergementId]);
-    log.i("getUniteHebergementByHebergementId - DONE");
-    if (!result.rows?.length) return null;
-    const entity = result.rows[0] as UniteHebergementEntity;
-    entity.statut = result.rows[0].statut ?? null;
-    return UniteHebergementMapper.toModel(entity);
-  },
-
   async getUniteHebergementById(
     uniteHebergementId: number,
     tx?: PoolClient,
@@ -389,6 +382,7 @@ export const HebergementsRepositoryShared = {
 
   async getUniteHebergementTypePensions(
     uniteHebergementId: number,
+    tx?: PoolClient,
   ): Promise<string[]> {
     log.i("getUniteHebergementTypePensions - IN");
     const query = `
@@ -397,7 +391,7 @@ export const HebergementsRepositoryShared = {
       LEFT JOIN front.hebergement_type_pension hp ON hp.id = uhtp.type_pension_id
       WHERE uhtp.unite_hebergement_id = $1;
     `;
-    const result = await getPool().query(query, [uniteHebergementId]);
+    const result = await (tx ?? getPool()).query(query, [uniteHebergementId]);
     log.i("getUniteHebergementTypePensions - DONE");
     return result.rows.map((row) => row.value);
   },
@@ -426,36 +420,6 @@ export const HebergementsRepositoryShared = {
     `;
     const result = await getPool().query(query, [hebergementId]);
     log.i("getUniteHebergementsByHebergementId - DONE");
-    if (!result.rows?.length) return null;
-    const entity = result.rows[0] as UniteHebergementEntity;
-    entity.statut = result.rows[0].statut ?? null;
-    return UniteHebergementMapper.toModel(entity);
-  },
-
-  async getUniteHebergementsById(
-    hebergementId: string,
-  ): Promise<UniteHebergementDto | null> {
-    log.i("getUniteHebergementsById - IN");
-    const query = `
-      SELECT
-        uh.id, uh.site_id, uh.organisme_id, uh.statut_id, uh.created_at,
-        uh.edited_at, uh.hebergement_id, uh."current", uh.created_by, uh.edited_by,
-        uh.nombre_couchage_total, uh.lits_superposes, uh.accessibilite_pmr,
-        uh.accessibilite_precision, uh.chambres_doubles, uh.separation_homme_femme,
-        uh.reglementation_erp, uh.couchage_individuel, uh.rangement_individuel,
-        uh.amenagements_specifiques, uh.amenagements_specifiques_precision,
-        uh.file_reponse_exploitant_ou_proprietaire,
-        uh.file_dernier_arrete_autorisation_maire, uh.file_derniere_attestation_securite,
-        uh.visite_locaux, uh.visite_locaux_at,
-        hs.value AS statut
-      FROM front.unite_hebergement uh
-      LEFT JOIN front.hebergement_statut hs ON hs.id = uh.statut_id
-      WHERE uh.id = $1
-      ORDER BY uh.id DESC
-      LIMIT 1;
-    `;
-    const result = await getPool().query(query, [hebergementId]);
-    log.i("getUniteHebergementsById - DONE");
     if (!result.rows?.length) return null;
     const entity = result.rows[0] as UniteHebergementEntity;
     entity.statut = result.rows[0].statut ?? null;
@@ -505,31 +469,6 @@ export const HebergementsRepositoryShared = {
     log.i("linkHebergementToSite - DONE");
   },
 
-  async setSiteCurrent(tx: PoolClient, siteId: string): Promise<void> {
-    log.i("setSiteCurrent - IN");
-    const query = `
-      UPDATE front.site
-      SET "current" = FALSE
-      WHERE site_id = $1;
-    `;
-    await tx.query(query, [siteId]);
-    log.i("setSiteCurrent - DONE");
-  },
-
-  async setUniteHebergementCurrent(
-    tx: PoolClient,
-    uniteHebergementId: number,
-  ): Promise<void> {
-    log.i("setUniteHebergementCurrent - IN");
-    const query = `
-      UPDATE front.unite_hebergement
-      SET "current" = FALSE
-      WHERE id = $1;
-    `;
-    await tx.query(query, [uniteHebergementId]);
-    log.i("setUniteHebergementCurrent - DONE");
-  },
-
   async setUniteHebergementStatut(
     tx: PoolClient,
     uniteHebergementId: number,
@@ -575,6 +514,31 @@ export const HebergementsRepositoryShared = {
       }
     }
     log.i("setUniteHebergementTypePensions - DONE");
+  },
+
+  async unsetSiteCurrent(tx: PoolClient, siteId: string): Promise<void> {
+    log.i("unsetSiteCurrent - IN");
+    const query = `
+      UPDATE front.site
+      SET "current" = FALSE
+      WHERE site_id = $1 AND "current" IS TRUE;
+    `;
+    await tx.query(query, [siteId]);
+    log.i("unsetSiteCurrent - DONE");
+  },
+
+  async unsetUniteHebergementCurrent(
+    tx: PoolClient,
+    uniteHebergementId: number,
+  ): Promise<void> {
+    log.i("unsetUniteHebergementCurrent - IN");
+    const query = `
+      UPDATE front.unite_hebergement
+      SET "current" = FALSE
+      WHERE id = $1 AND "current" IS TRUE;
+    `;
+    await tx.query(query, [uniteHebergementId]);
+    log.i("unsetUniteHebergementCurrent - DONE");
   },
 
   async updateSite(
@@ -658,43 +622,52 @@ export const HebergementsRepositoryShared = {
     },
   ): Promise<void> {
     log.i("updateUniteHebergement - IN");
-    const hebergementIdClause = hebergementId ? `, hebergement_id = $20` : "";
+    const updates: Array<{ clause: string; value: unknown }> = [
+      { clause: "statut_id", value: statutId },
+      { clause: "nombre_couchage_total", value: nombreCouchageTotal },
+      { clause: "lits_superposes", value: litsSuperposes },
+      { clause: "accessibilite_pmr", value: accessibilitePmr },
+      { clause: "accessibilite_precision", value: accessibilitePrecision },
+      { clause: "chambres_doubles", value: chambresDoubles },
+      { clause: "separation_homme_femme", value: separationHommeFemme },
+      { clause: "reglementation_erp", value: reglementationErp },
+      { clause: "couchage_individuel", value: couchageIndividuel },
+      { clause: "rangement_individuel", value: rangementIndividuel },
+      { clause: "amenagements_specifiques", value: amenagementsSpecifiques },
+      {
+        clause: "amenagements_specifiques_precision",
+        value: amenagementsSpecifiquesPrecision,
+      },
+      {
+        clause: "file_reponse_exploitant_ou_proprietaire",
+        value: fileReponseExploitantOuProprietaire,
+      },
+      {
+        clause: "file_dernier_arrete_autorisation_maire",
+        value: fileDernierArreteAutorisationMaire,
+      },
+      {
+        clause: "file_derniere_attestation_securite",
+        value: fileDerniereAttestationSecurite,
+      },
+      { clause: "visite_locaux", value: visiteLocaux },
+      { clause: "visite_locaux_at", value: visiteLocauxAt },
+      ...(hebergementId
+        ? [{ clause: "hebergement_id", value: hebergementId }]
+        : []),
+    ];
+    const setClause = updates
+      .map(({ clause }, index) => `${clause} = $${index + 2}`)
+      .join(", ");
     const query = `
       UPDATE front.unite_hebergement
-      SET statut_id = $2, nombre_couchage_total = $3, lits_superposes = $4,
-          accessibilite_pmr = $5, accessibilite_precision = $6,
-          chambres_doubles = $7, separation_homme_femme = $8,
-          reglementation_erp = $9, couchage_individuel = $10,
-          rangement_individuel = $11, amenagements_specifiques = $12,
-          amenagements_specifiques_precision = $13,
-          file_reponse_exploitant_ou_proprietaire = $14,
-          file_dernier_arrete_autorisation_maire = $15,
-          file_derniere_attestation_securite = $16, visite_locaux = $17,
-          visite_locaux_at = $18, edited_by = $19, edited_at = NOW()
-          ${hebergementIdClause}
+      SET ${setClause}, edited_by = $${updates.length + 2}, edited_at = NOW()
       WHERE id = $1 AND "current" IS TRUE;
     `;
     await tx.query(query, [
       uniteHebergementId,
-      statutId,
-      nombreCouchageTotal,
-      litsSuperposes,
-      accessibilitePmr,
-      accessibilitePrecision,
-      chambresDoubles,
-      separationHommeFemme,
-      reglementationErp,
-      couchageIndividuel,
-      rangementIndividuel,
-      amenagementsSpecifiques,
-      amenagementsSpecifiquesPrecision,
-      fileReponseExploitantOuProprietaire,
-      fileDernierArreteAutorisationMaire,
-      fileDerniereAttestationSecurite,
-      visiteLocaux,
-      visiteLocauxAt,
+      ...updates.map(({ value }) => value),
       editedBy,
-      ...(hebergementId ? [hebergementId] : []),
     ]);
     log.i("updateUniteHebergement - DONE");
   },

@@ -96,7 +96,7 @@ fileignoreconfig:
 - filename: packages/backend/src/**tests**/usagers/fo-user.test.ts
   checksum: 1592485597a9d3c481163fc6f495367be3e70c112cb3cbe3d528afc6a7919860
 - filename: packages/backend/src/__tests__/usagers/herbergement.test.ts
-  checksum: a8c067d5ccc7b996e825a23908b8375cc31d6639297f717b1c89bb0c8f688975
+  checksum: 16d520f0a12d963492c07ab77b6e958798c1e146b3f56491d2b650727548ffeb
 - filename: packages/backend/src/admin/agrements/agrements.service.ts
   checksum: 7a829c5b141bb9761e1d3fcebacc6d0a5b0ca699af877295d671d33d84728f33
 - filename: packages/backend/src/admin/users/users.service.ts
@@ -522,7 +522,7 @@ fileignoreconfig:
 - filename: pg/seeds/BO-1-back-user.sql
   checksum: 3c815380aa842c642789d87b635ad54e4ab89ea2a7a4eab7e02ed9e351abb52b
 - filename: pg/seeds/PG-1-proc-data-deletion.sql
-  checksum: 8c4f3faed7f35df10eee252f844125907ea8cff885804ffd41e24cba22981fe9
+  checksum: a63c2ae5c26e3501c988f72082374f074d66f6c5eb620b5b2702c0c9be3d6290
 - filename: pnpm-lock.yaml
   checksum: 02a2dbfd1e8ee33508cfe0c1549876cad19b65eb07c3857d9c2bc97311c2533e
 - filename: s/env/preprod/templates/smtp.sealed.secret.yaml

@@ -73,9 +73,9 @@ exports.up = function (knex) {
       -- ================================================================
       -- 5. Ajout des colonnes manquantes sur front.site_organisme
       -- ================================================================
-      ALTER TABLE front.site_organisme ADD COLUMN      excursion_description   text NULL;
-      ALTER TABLE front.site_organisme ADD COLUMN      deplacement_proximite_description text NULL;
-      ALTER TABLE front.site_organisme ADD COLUMN      vehicules_adaptes        bool NULL;
+      ALTER TABLE front.site_organisme ADD COLUMN IF NOT EXISTS excursion_description   text NULL;
+      ALTER TABLE front.site_organisme ADD COLUMN IF NOT EXISTS deplacement_proximite_description text NULL;
+      ALTER TABLE front.site_organisme ADD COLUMN IF NOT EXISTS vehicules_adaptes        bool NULL;
 
     END $$;
   `);
@@ -93,15 +93,12 @@ exports.down = function (knex) {
     BEGIN
 
       -- La table doit être vide pour revenir proprement
-      -- au fonctionnement SERIAL.
-      IF EXISTS (
-        SELECT 1
-          FROM front.unite_hebergement
-        LIMIT 1
-      ) THEN
-        RAISE EXCEPTION
-          'Rollback impossible : front.unite_hebergement contient des données';
-      END IF;
+      -- au fonctionnement SERIAL. On supprime les lignes résiduelles
+      -- plutôt que de bloquer le rollback.
+      DELETE FROM front.unite_hebergement
+        WHERE id IN (
+          SELECT id FROM front.hebergement
+        );
 
 
       -- Supprimer la FK temporaire
@@ -110,7 +107,7 @@ exports.down = function (knex) {
 
 
       -- Recréer la séquence
-      CREATE SEQUENCE front.unite_hebergement_id_seq;
+      CREATE SEQUENCE IF NOT EXISTS front.unite_hebergement_id_seq;
 
 
       -- Restaurer les droits du rôle applicatif

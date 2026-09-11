@@ -12,20 +12,27 @@ import {
   UniteHebergementEntity,
 } from "./hebergements.entity";
 
+const required = <T>(value: T | null | undefined, field: string): T => {
+  if (value === null || value === undefined) {
+    throw new Error(`Champ requis manquant lors du mapping: ${field}`);
+  }
+  return value;
+};
+
 export const SiteMapper = {
   toModel: (entity: SiteEntity): SiteDto => {
     return {
       adresseId: entity.adresse_id ?? null,
-      createdAt: entity.created_at ?? new Date(),
+      createdAt: required(entity.created_at, "site.created_at"),
       createdBy: entity.created_by ?? null,
       current: entity.current ?? true,
       descriptif: entity.descriptif ?? null,
       editedAt: entity.edited_at ?? null,
       editedBy: entity.edited_by ?? null,
       hebergementTypeId: entity.hebergement_type_id ?? null,
-      id: entity.id ?? 0,
+      id: required(entity.id, "site.id"),
       nomSiteOfficiel: entity.nom_site_officiel ?? null,
-      siteId: entity.site_id ?? "",
+      siteId: required(entity.site_id, "site.site_id"),
     };
   },
   toModels: (entities: SiteEntity[]): SiteDto[] => {
@@ -40,11 +47,11 @@ export const SiteOrganismeMapper = {
         entity.deplacement_proximite_description ?? null,
       excursionDescription: entity.excursion_description ?? null,
       nomSite: entity.nom_site ?? null,
-      organismeId: entity.organisme_id ?? 0,
+      organismeId: required(entity.organisme_id, "site_organisme.organisme_id"),
       respEmail: entity.resp_email ?? null,
       respNomPrenom: entity.resp_nom_prenom ?? null,
       respTelephone: entity.resp_telephone ?? null,
-      siteId: entity.site_id ?? "",
+      siteId: required(entity.site_id, "site_organisme.site_id"),
       vehiculesAdaptes: entity.vehicules_adaptes ?? null,
     };
   },
@@ -63,10 +70,10 @@ export const UniteHebergementMapper = {
         entity.amenagements_specifiques_precision ?? null,
       chambresDoubles: entity.chambres_doubles ?? null,
       couchageIndividuel: entity.couchage_individuel ?? null,
-      createdAt: entity.created_at ?? new Date(),
+      createdAt: required(entity.created_at, "unite_hebergement.created_at"),
       createdBy: entity.created_by ?? null,
       current: entity.current ?? true,
-      editedAt: entity.edited_at ?? new Date(),
+      editedAt: required(entity.edited_at, "unite_hebergement.edited_at"),
       editedBy: entity.edited_by ?? null,
       fileDernierArreteAutorisationMaire:
         entity.file_dernier_arrete_autorisation_maire ?? null,
@@ -74,15 +81,21 @@ export const UniteHebergementMapper = {
         entity.file_derniere_attestation_securite ?? null,
       fileReponseExploitantOuProprietaire:
         entity.file_reponse_exploitant_ou_proprietaire ?? null,
-      hebergementId: entity.hebergement_id ?? "",
-      id: entity.id ?? 0,
+      hebergementId: required(
+        entity.hebergement_id,
+        "unite_hebergement.hebergement_id",
+      ),
+      id: required(entity.id, "unite_hebergement.id"),
       litsSuperposes: entity.lits_superposes ?? null,
       nombreCouchageTotal: entity.nombre_couchage_total ?? null,
-      organismeId: entity.organisme_id ?? 0,
+      organismeId: required(
+        entity.organisme_id,
+        "unite_hebergement.organisme_id",
+      ),
       rangementIndividuel: entity.rangement_individuel ?? null,
       reglementationErp: entity.reglementation_erp ?? null,
       separationHommeFemme: entity.separation_homme_femme ?? null,
-      siteId: entity.site_id ?? "",
+      siteId: required(entity.site_id, "unite_hebergement.site_id"),
       statutId: entity.statut_id ?? null,
       visiteLocaux: entity.visite_locaux ?? null,
       visiteLocauxAt: entity.visite_locaux_at ?? null,
