@@ -8,6 +8,7 @@ import { PoolClient } from "pg";
 import { logger } from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
 import {
+  LegacyUniteContextEntity,
   SiteEntity,
   SiteOrganismeEntity,
   UniteHebergementEntity,
@@ -212,6 +213,45 @@ export const HebergementsRepositoryShared = {
     return result.rows[0]?.site_id ?? null;
   },
 
+  async getLegacyUniteContext(
+    tx: PoolClient,
+    hebergementId: number,
+  ): Promise<LegacyUniteContextEntity> {
+    log.i("getLegacyUniteContext - IN");
+    const query = `
+      SELECT
+        ht.value AS "type",
+        htp.value AS "pension",
+        h.description_lieu_hebergement AS "descriptionLieuHebergement",
+        h.lit_dessus AS "litsDessus",
+        COALESCE(
+          ARRAY_AGG(hp.value ORDER BY hpt.prestation_id) FILTER (WHERE hp.value IS NOT NULL),
+          '{}'
+        ) AS "prestationsHotelieres"
+      FROM front.hebergement h
+      LEFT JOIN front.hebergement_type ht ON ht.id = h.type_id
+      LEFT JOIN front.hebergement_type_pension htp ON htp.id = h.type_pension_id
+      LEFT JOIN front.hebergement_to_prestations_hotelieres hpt ON hpt.hebergement_id = h.id
+      LEFT JOIN front.hebergement_prestations_hotelieres hp ON hp.id = hpt.prestation_id
+      WHERE h.id = $1
+        AND h.current = TRUE
+      GROUP BY h.id, ht.value, htp.value
+    `;
+    const result = await tx.query<LegacyUniteContextEntity>(query, [
+      hebergementId,
+    ]);
+    log.i("getLegacyUniteContext - DONE");
+    return (
+      result.rows[0] ?? {
+        descriptionLieuHebergement: null,
+        litsDessus: null,
+        pension: null,
+        prestationsHotelieres: [],
+        type: null,
+      }
+    );
+  },
+
   async getSiteById(siteId: string): Promise<SiteDto | null> {
     log.i("getSiteById - IN");
     const query = `
@@ -273,6 +313,21 @@ export const HebergementsRepositoryShared = {
     const result = await getPool().query(query, [organismeId]);
     log.i("getSitesByOrganismeId - DONE");
     return SiteMapper.toModels(result.rows as SiteEntity[]);
+  },
+
+  async getStatutId(
+    tx: PoolClient,
+    statutValue: string,
+  ): Promise<number | null> {
+    log.i("getStatutId - IN");
+    const query = `
+      SELECT id
+        FROM front.hebergement_statut
+      WHERE value = $1
+    `;
+    const result = await tx.query<{ id: number }>(query, [statutValue]);
+    log.i("getStatutId - DONE");
+    return result.rows[0]?.id ?? null;
   },
 
   async getUniteHebergementByHebergementId(
@@ -473,6 +528,22 @@ export const HebergementsRepositoryShared = {
     `;
     await tx.query(query, [uniteHebergementId]);
     log.i("setUniteHebergementCurrent - DONE");
+  },
+
+  async setUniteHebergementStatut(
+    tx: PoolClient,
+    uniteHebergementId: number,
+    statutId: number,
+    editedBy: number,
+  ): Promise<void> {
+    log.i("setUniteHebergementStatut - IN");
+    const query = `
+      UPDATE front.unite_hebergement
+      SET statut_id = $2, edited_by = $3, edited_at = NOW()
+      WHERE id = $1 AND "current" IS TRUE;
+    `;
+    await tx.query(query, [uniteHebergementId, statutId, editedBy]);
+    log.i("setUniteHebergementStatut - DONE");
   },
 
   async setUniteHebergementTypePensions(

@@ -207,26 +207,6 @@ ${new Array(nbRows)
     WHERE uo.use_id = $1 AND h.id = $2
   `,
 
-  getLegacyUniteContext: `
-    SELECT
-      ht.value AS "type",
-      htp.value AS "pension",
-      h.description_lieu_hebergement AS "descriptionLieuHebergement",
-      h.lit_dessus AS "litsDessus",
-      COALESCE(
-        ARRAY_AGG(hp.value ORDER BY hpt.prestation_id) FILTER (WHERE hp.value IS NOT NULL),
-        '{}'
-      ) AS "prestationsHotelieres"
-    FROM front.hebergement h
-    LEFT JOIN front.hebergement_type ht ON ht.id = h.type_id
-    LEFT JOIN front.hebergement_type_pension htp ON htp.id = h.type_pension_id
-    LEFT JOIN front.hebergement_to_prestations_hotelieres hpt ON hpt.hebergement_id = h.id
-    LEFT JOIN front.hebergement_prestations_hotelieres hp ON hp.id = hpt.prestation_id
-    WHERE h.id = $1
-      AND h.current = TRUE
-    GROUP BY h.id, ht.value, htp.value
-  `,
-
   getListe: () => `
     WITH stat AS (
       SELECT id,
@@ -279,11 +259,6 @@ ${new Array(nbRows)
       LEFT JOIN front.hebergement_statut hs ON h.statut_id = hs.id
     WHERE
       h.id = $1
-  `,
-  getStatutId: `
-    SELECT id
-      FROM front.hebergement_statut
-    WHERE value = $1
   `,
   historize: `
     UPDATE front.hebergement
@@ -422,18 +397,6 @@ const create = async (
   return { hebergementId, hebergementUuid };
 };
 
-const getStatutId = async (statut, client = getPool()) => {
-  const { rows } = await client.query(query.getStatutId, [statut]);
-  return rows?.[0]?.id ?? null;
-};
-
-const getLegacyUniteContext = async (hebergementId, client = getPool()) => {
-  const { rows } = await client.query(query.getLegacyUniteContext, [
-    hebergementId,
-  ]);
-  return rows?.[0] ?? {};
-};
-
 const preserveLegacyUniteContext = (hebergement, legacyContext) => {
   if (!hebergement.uniteData) {
     return;
@@ -497,7 +460,7 @@ const syncSiteAndUniteOnCreate = async (
       informationsLocaux: hebergement.informationsLocaux,
       organismeId,
       siteId,
-      statutId: await getStatutId(statut, client),
+      statutId: await HebergementServiceShared.getStatutId(statut, client),
       typePensions: hebergement.informationsLocaux?.pension
         ? [hebergement.informationsLocaux.pension]
         : [],
@@ -560,7 +523,10 @@ module.exports.updateWithoutHistory = async (
     await client.query("BEGIN");
     preserveLegacyUniteContext(
       hebergement,
-      await getLegacyUniteContext(hebergementId, client),
+      await HebergementServiceShared.getLegacyUniteContext(
+        hebergementId,
+        client,
+      ),
     );
     const adresseId = coordonnees.adresse
       ? await saveAdresse(client, coordonnees.adresse)
@@ -621,7 +587,7 @@ module.exports.updateWithoutHistory = async (
         {
           editedBy: userId,
           informationsLocaux,
-          statutId: await getStatutId(statut, client),
+          statutId: await HebergementServiceShared.getStatutId(statut, client),
           typePensions: informationsLocaux?.pension
             ? [informationsLocaux.pension]
             : [],
@@ -686,7 +652,10 @@ module.exports.update = async (userId, hebergementId, hebergement, statut) => {
     } = await client.query(query.getPreviousValueForHistory, [hebergementId]);
     preserveLegacyUniteContext(
       hebergement,
-      await getLegacyUniteContext(hebergementId, client),
+      await HebergementServiceShared.getLegacyUniteContext(
+        hebergementId,
+        client,
+      ),
     );
     await client.query(query.historize, [hebergementId]);
     newHebergement = await create(
@@ -716,7 +685,7 @@ module.exports.update = async (userId, hebergementId, hebergement, statut) => {
           hebergementId: newHebergement.hebergementUuid,
           id: newHebergement.hebergementId,
           informationsLocaux: hebergement.informationsLocaux,
-          statutId: await getStatutId(statut, client),
+          statutId: await HebergementServiceShared.getStatutId(statut, client),
           typePensions: hebergement.informationsLocaux?.pension
             ? [hebergement.informationsLocaux.pension]
             : [],
@@ -768,15 +737,25 @@ module.exports.updateStatut = async (userId, hebergementId, statut) => {
   try {
     await client.query("BEGIN");
     await client.query(query.updateStatut, [hebergementId, userId, statut]);
-    const statutId = await getStatutId(statut, client);
-    if (statutId) {
-      await client.query(
-        `UPDATE front.unite_hebergement
-         SET statut_id = $2, edited_by = $3, edited_at = NOW()
-         WHERE id = $1 AND "current" IS TRUE`,
-        [hebergementId, statutId, userId],
+    const statutId = await HebergementServiceShared.getStatutId(statut, client);
+    if (!statutId) {
+      const error = new Error(
+        `Statut inconnu pour l'hébergement ${hebergementId}: ${statut}`,
       );
+      log.e("updateStatut - statut inconnu", {
+        error: error.message,
+        hebergementId,
+        statut,
+      });
+      throw error;
     }
+
+    await HebergementServiceShared.setUniteHebergementStatut(
+      hebergementId,
+      statutId,
+      userId,
+      client,
+    );
     await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK");

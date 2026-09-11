@@ -130,9 +130,9 @@ exports.down = function (knex) {
       -- ================================================================
       -- 5. Rollback : Ajouter les colonnes manquantes sur front.site_organisme
       -- ================================================================
-      ALTER TABLE front.site_organisme ADD COLUMN      excursion_description;
-      ALTER TABLE front.site_organisme ADD COLUMN      deplacement_proximite_description;
-      ALTER TABLE front.site_organisme ADD COLUMN      vehicules_adaptes;
+      ALTER TABLE front.site_organisme DROP COLUMN IF EXISTS excursion_description;
+      ALTER TABLE front.site_organisme DROP COLUMN IF EXISTS deplacement_proximite_description;
+      ALTER TABLE front.site_organisme DROP COLUMN IF EXISTS vehicules_adaptes;
 
     END $$;
   `);

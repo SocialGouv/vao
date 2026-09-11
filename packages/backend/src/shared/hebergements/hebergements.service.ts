@@ -10,6 +10,7 @@ import { PoolClient } from "pg";
 
 import { saveAdresse } from "../../services/adresse";
 import { withTransaction } from "../../utils/pgpool";
+import { LegacyUniteContextEntity } from "./hebergements.entity";
 import { buildUniteWriteData } from "./hebergements.mapping";
 import { HebergementsRepositoryShared } from "./hebergements.repository";
 
@@ -155,6 +156,15 @@ export const HebergementServiceShared = {
     });
   },
 
+  async getLegacyUniteContext(
+    hebergementId: number,
+    tx?: PoolClient,
+  ): Promise<LegacyUniteContextEntity> {
+    return withTx(tx, (client) =>
+      HebergementsRepositoryShared.getLegacyUniteContext(client, hebergementId),
+    );
+  },
+
   async getSiteById(siteId: string): Promise<SiteDto | null> {
     return HebergementsRepositoryShared.getSiteById(siteId);
   },
@@ -168,6 +178,15 @@ export const HebergementServiceShared = {
 
   async getSitesByOrganismeId(organismeId: number): Promise<SiteDto[]> {
     return HebergementsRepositoryShared.getSitesByOrganismeId(organismeId);
+  },
+
+  async getStatutId(
+    statutValue: string,
+    tx?: PoolClient,
+  ): Promise<number | null> {
+    return withTx(tx, (client) =>
+      HebergementsRepositoryShared.getStatutId(client, statutValue),
+    );
   },
 
   async getUniteHebergementByHebergementId(
@@ -206,6 +225,22 @@ export const HebergementServiceShared = {
         siteId,
       );
     });
+  },
+
+  async setUniteHebergementStatut(
+    uniteHebergementId: number,
+    statutId: number,
+    editedBy: number,
+    tx?: PoolClient,
+  ): Promise<void> {
+    return withTx(tx, (client) =>
+      HebergementsRepositoryShared.setUniteHebergementStatut(
+        client,
+        uniteHebergementId,
+        statutId,
+        editedBy,
+      ),
+    );
   },
 
   async updateSite(

@@ -90,7 +90,9 @@ const accessibilitePmrToBoolean = (
   accessibilite: string | null,
 ): boolean | null => {
   if (!accessibilite) return null;
-  return accessibilite === "accessible";
+  if (accessibilite === "accessible") return true;
+  if (accessibilite === "non_adapte") return false;
+  return null;
 };
 
 const toDate = (value: string | Date | null): Date | null => {
@@ -162,6 +164,17 @@ const booleanToLitsSuperposes = (
   return litsSuperposes ? 1 : 0;
 };
 
+const resolveNombreLitsSuperposes = (
+  uniteLitsSuperposes: boolean | null,
+  legacyNombreLitsSuperposes: number | null,
+): number | null => {
+  if (uniteLitsSuperposes == null) return legacyNombreLitsSuperposes;
+  if (uniteLitsSuperposes && (legacyNombreLitsSuperposes ?? 0) > 0) {
+    return legacyNombreLitsSuperposes;
+  }
+  return booleanToLitsSuperposes(uniteLitsSuperposes);
+};
+
 export const applyUniteToHebergement = (
   hebergement: HebergementDto,
   unite: UniteHebergementDto,
@@ -171,10 +184,10 @@ export const applyUniteToHebergement = (
     unite.accessibilitePmr == null
       ? legacyLocaux.accessibilite
       : majorityToAccessibilite(unite.accessibilitePmr);
-  const nombreLitsSuperposes =
-    unite.litsSuperposes == null
-      ? legacyLocaux.nombreLitsSuperposes
-      : booleanToLitsSuperposes(unite.litsSuperposes);
+  const nombreLitsSuperposes = resolveNombreLitsSuperposes(
+    unite.litsSuperposes,
+    legacyLocaux.nombreLitsSuperposes,
+  );
   return {
     ...hebergement,
     informationsLocaux: {

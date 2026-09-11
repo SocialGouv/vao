@@ -95,6 +95,8 @@ fileignoreconfig:
   checksum: d5d23d8aa40adf45f04cb47587350ba4c52423bb669307779f9be0254e77b695
 - filename: packages/backend/src/**tests**/usagers/fo-user.test.ts
   checksum: 1592485597a9d3c481163fc6f495367be3e70c112cb3cbe3d528afc6a7919860
+- filename: packages/backend/src/__tests__/usagers/herbergement.test.ts
+  checksum: a8c067d5ccc7b996e825a23908b8375cc31d6639297f717b1c89bb0c8f688975
 - filename: packages/backend/src/admin/agrements/agrements.service.ts
   checksum: 7a829c5b141bb9761e1d3fcebacc6d0a5b0ca699af877295d671d33d84728f33
 - filename: packages/backend/src/admin/users/users.service.ts
