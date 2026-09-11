@@ -91,14 +91,18 @@ exports.down = function (knex) {
   return knex.raw(`
     DO $$
     BEGIN
-
       -- La table doit être vide pour revenir proprement
-      -- au fonctionnement SERIAL. On supprime les lignes résiduelles
-      -- plutôt que de bloquer le rollback.
-      DELETE FROM front.unite_hebergement
-        WHERE id IN (
-          SELECT id FROM front.hebergement
-        );
+      -- au fonctionnement SERIAL. Après la double-écriture runtime,
+      -- des lignes unitaires existent inévitablement → rollback bloqué.
+      IF EXISTS (
+        SELECT 1
+          FROM front.unite_hebergement
+        LIMIT 1
+      ) THEN
+        RAISE EXCEPTION
+          'Rollback impossible : des unités d''hébergement existent (migration ou runtime). '
+          'Intervention manuelle requise.';
+      END IF;
 
 
       -- Supprimer la FK temporaire
