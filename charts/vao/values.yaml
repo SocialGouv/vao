@@ -49,6 +49,22 @@ backend:
     limits:
       cpu: 500m
       memory: 1024Mi
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  extraVolumeMounts:
+    - name: tmp
+      mountPath: /tmp
+  extraVolumes:
+    - name: tmp
+      emptyDir: {}
   livenessProbe:
     tcpSocket:
       port: 3000
@@ -102,6 +118,22 @@ externalApi:
     limits:
       cpu: 500m
       memory: 1024Mi
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  extraVolumeMounts:
+    - name: tmp
+      mountPath: /tmp
+  extraVolumes:
+    - name: tmp
+      emptyDir: {}
   livenessProbe:
     httpGet:
       path: /health
@@ -155,6 +187,22 @@ cron:
     limits:
       cpu: 500m
       memory: 1024Mi
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  extraVolumeMounts:
+    - name: tmp
+      mountPath: /tmp
+  extraVolumes:
+    - name: tmp
+      emptyDir: {}
   livenessProbe:
     exec:
       command: ["cat", "/app/healthy"]
@@ -217,6 +265,14 @@ frontendUsagers:
     limits:
       cpu: 100m
       memory: 128Mi
+  securityContext:
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
   livenessProbe:
     tcpSocket:
       port: 8080
@@ -272,6 +328,14 @@ frontendBo:
     limits:
       cpu: 100m
       memory: 128Mi
+  securityContext:
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
   livenessProbe:
     tcpSocket:
       port: 8080
@@ -316,6 +380,22 @@ migrateS3:
     limits:
       cpu: "2"
       memory: 6Gi
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  extraVolumeMounts:
+    - name: tmp
+      mountPath: /tmp
+  extraVolumes:
+    - name: tmp
+      emptyDir: {}
   env:
     S3_BUCKET_ROOT_DIR: ""
   autoscaling:
@@ -342,6 +422,24 @@ jobs:
         cpu: 64m
         # LimitRange Atlas : maxLimitRequestRatio.memory = 2 (≈ limits/2)
         memory: 512Mi
+    podSecurityContext:
+      fsGroup: 1000
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+    extraVolumeMounts:
+      - name: tmp
+        mountPath: /tmp
+    extraVolumes:
+      - name: tmp
+        emptyDir: {}
   migrationsDb:
     enabled: true
     backoffLimit: 3
@@ -355,6 +453,24 @@ jobs:
         cpu: 64m
         # LimitRange Atlas : maxLimitRequestRatio.memory = 2 (≈ limits/2)
         memory: 512Mi
+    podSecurityContext:
+      fsGroup: 1000
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+    extraVolumeMounts:
+      - name: tmp
+        mountPath: /tmp
+    extraVolumes:
+      - name: tmp
+        emptyDir: {}
 
 pg:
   enabled: true
@@ -420,6 +536,24 @@ pgBackupCron:
     limits:
       cpu: 500m
       memory: 512Mi
+  podSecurityContext:
+    fsGroup: 1000
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  extraVolumeMounts:
+    - name: tmp
+      mountPath: /tmp
+  extraVolumes:
+    - name: tmp
+      emptyDir: {}
 
 redirectIngresses: []
 

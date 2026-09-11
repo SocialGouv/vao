@@ -49,6 +49,8 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.cron.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.cron.securityContext | nindent 12 }}
           lifecycle:
             postStart:
               exec:
@@ -59,6 +61,9 @@ spec:
           volumeMounts:
             - name: readiness-check-volume
               mountPath: /var/run/readiness-check
+            {{- with .Values.cron.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           env:
             # valueFrom directs : l'expansion $(VAR) k8s ne voit ni envFrom ni les entrées
             # env suivantes — toute indirection $() ici arrive littérale dans l'app.
@@ -94,4 +99,7 @@ spec:
       volumes:
         - name: readiness-check-volume
           emptyDir: {}
+        {{- with .Values.cron.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
 {{- end }}

@@ -22,7 +22,7 @@ spec:
       restartPolicy: Never
       {{- include "vao.imagePullSecrets" . | nindent 6 }}
       securityContext:
-        fsGroup: 1000
+        {{- toYaml .Values.jobs.migrationsDb.podSecurityContext | nindent 8 }}
       containers:
         - name: migrations-db
           image: {{ include "vao.image" (dict "context" . "package" "migrations") }}
@@ -30,10 +30,13 @@ spec:
           imagePullPolicy: {{ . }}
           {{- end }}
           securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
+            {{- toYaml .Values.jobs.migrationsDb.securityContext | nindent 12 }}
           resources:
             {{- toYaml .Values.jobs.migrationsDb.resources | nindent 12 }}
+          {{- with .Values.jobs.migrationsDb.extraVolumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
             - name: PG_VAO_SUPERUSER
               valueFrom:
@@ -88,4 +91,8 @@ spec:
           envFrom:
             - secretRef:
                 name: {{ .Values.secrets.s3 }}
+      {{- with .Values.jobs.migrationsDb.extraVolumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{- end }}

@@ -49,6 +49,8 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.frontendUsagers.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.frontendUsagers.securityContext | nindent 12 }}
           env:
             # Configuration appliquée au démarrage : ces variables remplacent les marqueurs
             # __NUXT_PUBLIC_X__ écrits dans les pages pendant le build (docker/runtime-env.sh).

@@ -25,9 +25,17 @@ spec:
           serviceAccountName: {{ include "vao.serviceAccountName" . }}
           {{- include "vao.imagePullSecrets" . | nindent 10 }}
           restartPolicy: Never
+          securityContext:
+            {{- toYaml .Values.pgBackupCron.podSecurityContext | nindent 12 }}
           containers:
             - name: pg-backup
               image: {{ .Values.pgBackupCron.image }}
+              securityContext:
+                {{- toYaml .Values.pgBackupCron.securityContext | nindent 16 }}
+              {{- with .Values.pgBackupCron.extraVolumeMounts }}
+              volumeMounts:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
               command:
                 - /bin/sh
                 - -c
@@ -73,4 +81,8 @@ spec:
                     name: {{ .Values.secrets.s3Backups }}
               resources:
                 {{- toYaml .Values.pgBackupCron.resources | nindent 16 }}
+          {{- with .Values.pgBackupCron.extraVolumes }}
+          volumes:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
 {{- end }}
