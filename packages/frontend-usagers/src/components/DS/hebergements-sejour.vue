@@ -464,7 +464,7 @@ async function confirmLeaveFunnel() {
   });
 
   leaveFunnelModal.opened = false;
-  await navigateTo("/hebergements");
+  await navigateTo("/hebergements/site");
 }
 </script>
 

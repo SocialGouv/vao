@@ -169,6 +169,17 @@ function onCloseModal() {
                 />
               </template>
               <template #no-result> Pas de résultat</template>
+              <template #afterlist>
+                <div class="fr-multiselect-adress--free">
+                  <button
+                    type="button"
+                    class="fr-btn fr-btn--tertiary"
+                    @click="isModalOpen = true"
+                  >
+                    Saisir une adresse libre
+                  </button>
+                </div>
+              </template>
             </Multiselect>
             <button
               v-if="canShowClear"
@@ -181,11 +192,6 @@ function onCloseModal() {
               <span aria-hidden="true" class="fr-icon-close-line"></span>
             </button>
             <span v-else aria-hidden="true"></span>
-          </div>
-          <div class="container">
-            <DsfrButton type="button" size="sm" @click="isModalOpen = true"
-              >Adresse introuvable
-            </DsfrButton>
           </div>
 
           <div v-if="message" class="fr-messages-group">
@@ -212,15 +218,18 @@ function onCloseModal() {
 </template>
 
 <style lang="scss" scoped>
-.container {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin-top: 1rem;
-  width: 100%;
-}
 .fr-multiselect-adress {
   position: relative;
+}
+.fr-multiselect-adress--free {
+  position: sticky;
+  bottom: 0;
+  padding: 0.5rem;
+  background-color: var(--background-contrast-grey, #fff);
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.08);
+}
+.fr-multiselect-adress--free .fr-btn {
+  width: 100%;
 }
 .btn-multiselect-clear {
   position: absolute;
