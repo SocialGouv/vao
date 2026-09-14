@@ -1,7 +1,12 @@
 <script setup>
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
-import { MultiSelectOption, ApiUnavailable, apiModel, useToaster } from "@vao/shared-ui";
+import {
+  MultiSelectOption,
+  ApiUnavailable,
+  apiModel,
+  useToaster,
+} from "@vao/shared-ui";
 import { ref } from "vue";
 const apiTypes = apiModel.apiTypes;
 
@@ -171,29 +176,18 @@ function onCloseModal() {
               <template #no-result> Pas de résultat</template>
               <template #afterlist>
                 <div class="fr-multiselect-adress--free">
-                  <button
-                    type="button"
-                    class="fr-btn fr-btn--tertiary"
+                  <span>Vous ne trouvez pas votre adresse ?</span>
+                  <DsfrButton
+                    label="Saisir une adresse libre"
+                    icon="fr-icon-edit-line"
+                    always-visible
+                    secondary
                     @click="isModalOpen = true"
-                  >
-                    Saisir une adresse libre
-                  </button>
+                  />
                 </div>
               </template>
             </Multiselect>
-            <button
-              v-if="canShowClear"
-              class="btn-multiselect-clear"
-              aria-label="Supprimer l’adresse"
-              @click="clearSelection"
-              @keydown.enter.prevent="clearSelection"
-              @keydown.space.prevent="clearSelection"
-            >
-              <span aria-hidden="true" class="fr-icon-close-line"></span>
-            </button>
-            <span v-else aria-hidden="true"></span>
           </div>
-
           <div v-if="message" class="fr-messages-group">
             <p :class="messageClass">
               <span>{{ message }}</span>
@@ -224,12 +218,17 @@ function onCloseModal() {
 .fr-multiselect-adress--free {
   position: sticky;
   bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
   padding: 0.5rem;
   background-color: var(--background-contrast-grey, #fff);
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.08);
 }
 .fr-multiselect-adress--free .fr-btn {
-  width: 100%;
+  width: auto;
+  flex: 0 0 auto;
 }
 .btn-multiselect-clear {
   position: absolute;
@@ -238,5 +237,13 @@ function onCloseModal() {
   top: 50%;
   transform: translateY(-50%);
   background-color: transparent;
+}
+.fr-multiselect-adress :deep(.multiselect-dropdown) {
+  max-height: 500px !important;
+}
+
+.fr-multiselect-adress :deep(.multiselect-options) {
+  max-height: none !important;
+  overflow-y: visible !important;
 }
 </style>
