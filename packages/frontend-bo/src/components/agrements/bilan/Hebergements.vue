@@ -7,6 +7,7 @@
       :data="paginatedData"
       :total="hebergements.length"
       row-id="nomHebergement"
+      table-title="Bilan des hébergements"
     >
       <template #cell-adresse="{ row }">
         {{ row.adresse?.label || "" }}
