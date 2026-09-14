@@ -192,7 +192,7 @@ function onCloseModal() {
                   <span>Vous ne trouvez pas votre adresse ?</span>
                   <DsfrButton
                     label="Saisir une adresse libre"
-                    type="bouton"
+                    type="button"
                     icon="fr-icon-edit-line"
                     always-visible
                     secondary

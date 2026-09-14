@@ -2,26 +2,52 @@
   <form novalidate @submit.prevent="onSubmit">
     <div class="fr-fieldset fr-mb-6w">
       <h2 class="fr-h3 fr-mt-0">Coordonnées du site</h2>
+      <div class="fr-col-12">
+        <DsfrAlert
+          class="fr-grid-row fr-my-3v"
+          type="info"
+          :closeable="false"
+          title="Vérifiez les informations transmises"
+        >
+          Les informations saisies dans ce formulaire vous engagent, elles
+          doivent être vérifiées auprès de l'hébergeur afin de garantir leur
+          fiabilité.
+        </DsfrAlert>
+      </div>
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
           name="nomSiteOfficiel"
-          label="Nom du site"
+          label="Nom du site officiel"
           :label-visible="true"
           placeholder=""
-          hint="Nom qui permet d’identifier ce lieu d’hébergement. Exemple : Résidence Les Pins."
+          hint="Saisir le nom officiel tel qu’indiqué par l’hébergeur. Exemple : Gîte des Pins"
           :model-value="nomSiteOfficiel"
           :error-message="nomSiteOfficielErrorMessage"
           :is-valid="nomSiteOfficielMeta.valid"
-          required
           :disabled="!props.modifiable"
           @update:model-value="onNomSiteOfficielChange"
+        />
+      </div>
+      <div class="fr-fieldset__element fr-col-12">
+        <DsfrInputGroup
+          name="nomSiteOrganisme"
+          label="Nom officiel du lieu (optionnel)"
+          hint="Exemple : Gîte de mon séjour n°5"
+          :label-visible="true"
+          placeholder=""
+          :model-value="nomSiteOrganisme"
+          :error-message="nomSiteOrganismeErrorMessage"
+          :is-valid="nomSiteOrganismeMeta.valid"
+          :disabled="!props.modifiable"
+          @update:model-value="onNomSiteOrganismeChange"
         />
       </div>
       <div class="fr-fieldset__element fr-col-12">
         <AddressSearchAddress
           name="adresse"
           :value="(adresse as unknown as Record<string, unknown>) ?? undefined"
-          label="Adresse du site"
+          label="Adresse"
+          hint="Exemple : 123 route des oiseaux, 17800 Saint-Mauret"
           :initial-adress="initialAdresse"
           :error-message="adresseErrorMessage"
           :modifiable="props.modifiable"
@@ -49,6 +75,7 @@ import type { AdresseDto } from "@vao/shared-bridge";
 
 interface SiteFormValues {
   nomSiteOfficiel: string;
+  nomSiteOrganisme: string;
   adresse: AdresseDto | null;
 }
 
@@ -78,6 +105,7 @@ const validationSchema = yup.object({
 
 const initialValues = {
   nomSiteOfficiel: props.initSite?.nomSiteOfficiel ?? "",
+  nomSiteOrganisme: props.initSite?.nomSiteOrganisme ?? "",
   adresse: props.initSite?.adresse ?? null,
 };
 
@@ -92,6 +120,12 @@ const {
   handleChange: onNomSiteOfficielChange,
   meta: nomSiteOfficielMeta,
 } = useField<string>("nomSiteOfficiel");
+const {
+  value: nomSiteOrganisme,
+  errorMessage: nomSiteOrganismeErrorMessage,
+  handleChange: onNomSiteOrganismeChange,
+  meta: nomSiteOrganismeMeta,
+} = useField<string>("nomSiteOrganisme");
 const {
   value: adresse,
   errorMessage: adresseErrorMessage,

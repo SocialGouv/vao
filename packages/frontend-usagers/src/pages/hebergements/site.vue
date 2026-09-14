@@ -1,23 +1,28 @@
 <template>
   <div class="fr-container">
     <div class="fr-grid-row">
-      <div class="fr-col">
+      <div class="fr-pb-3w fr-col-12">
         <DsfrBreadcrumb :links="links" />
         <h1 ref="pageHeadingRef" tabindex="-1">
           Ajouter un nouvel hébergement
         </h1>
         <p class="fr-mb-2w">
-          Sauf mention contraire “(optionnel)” dans le label, tous les champs
-          sont obligatoires.
+          Sauf mention contraire, tous les champs sont obligatoires.
         </p>
       </div>
     </div>
     <div class="fr-grid-row">
       <div class="fr-col">
-        <HebergementsSiteForm
-          :default-back-route="'/hebergements/liste'"
-          @submit="onSubmit"
-        />
+        <HebergementsStepper :step="hash" class="fr-mb-2w" />
+        <div v-if="hash === 'site-coordonnees'">
+          <HebergementsSiteForm
+            :default-back-route="'/hebergements/liste'"
+            @submit="onStep1Submit"
+          />
+        </div>
+        <div v-else class="fr-callout">
+          <p class="fr-callout__text">Cette étape n’est pas encore définie.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -31,6 +36,7 @@ definePageMeta({
   middleware: ["is-connected"],
 });
 
+const route = useRoute();
 const toaster = useToaster();
 const userStore = useUserStore();
 const pageHeadingRef = ref<HTMLHeadingElement | null>(null);
@@ -74,11 +80,40 @@ const links = [
   },
 ];
 
+const hash = computed(() => {
+  if (route.hash) {
+    useHead({
+      title: titles.value[route.hash as keyof typeof titles.value],
+    });
+    return route.hash.slice(1);
+  }
+  useHead({
+    title: titles.value["#agrement-coordonnees"],
+  });
+  return hebergementSiteMenu.menus?.[0]?.id ?? "site-coordonnees";
+});
+
+const titles = computed(() => hebergementSiteMenu.titles());
+
+watch(
+  hash,
+  (id) => {
+    useHead({
+      title: titles.value[`#${id}`],
+    });
+  },
+  { immediate: true },
+);
+
 function onSubmit() {
   toaster.info({
     titleTag: "h2",
     description:
       "Cet écran est en cours de construction, l’enregistrement n’est pas encore disponible.",
   });
+}
+
+function onStep1Submit() {
+  onSubmit();
 }
 </script>
