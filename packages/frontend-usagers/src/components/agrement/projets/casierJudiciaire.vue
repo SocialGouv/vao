@@ -23,6 +23,7 @@
         :cdn-url="props.cdnUrl"
         :modifiable="props.modifiable"
         label="Ajouter un fichier (optionnel)"
+        :optional="true"
       />
     </div>
   </fieldset>

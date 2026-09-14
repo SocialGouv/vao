@@ -29,6 +29,7 @@
         label="Dernier procès verbal d'assemblée générale"
         hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
         :modifiable="props.modifiable"
+        :optional="false"
       />
       <div
         v-if="showProcesVerbalError"

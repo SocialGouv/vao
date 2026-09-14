@@ -98,6 +98,7 @@
           </dl>
         </div>
         <DsfrPaginationV2
+          v-if="representants.length > limit"
           v-model:offset="offset"
           v-model:limit="limit"
           :total="representants.length"
@@ -109,6 +110,7 @@
           :cdn-url="props.cdnUrl"
           label="Dernier procès verbal d'assemblée générale"
           :modifiable="false"
+          :optional="false"
         />
       </div>
     </div>
@@ -145,7 +147,7 @@ const props = defineProps({
 });
 
 const offset = ref(0);
-const limit = ref(10);
+const limit = ref(5);
 
 const paginatedRepresentants = computed(() => {
   const start = offset.value;

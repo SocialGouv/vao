@@ -10,6 +10,7 @@
     <DisplayLabel
       :value="props.initAgrement.accompRespNb"
       :input="AgrementDisplayInput.AgrementProjetsInput['accompRespNb']"
+      :required="true"
     />
   </div>
   <div class="border fr-p-4v">
@@ -26,6 +27,7 @@
           :input="
             AgrementDisplayInput.AgrementProjetsInput['accompRespCompExp']
           "
+          :required="true"
         />
       </div>
     </div>
@@ -34,7 +36,8 @@
         v-model="filesProjetsSejoursCompetencesExperience"
         :modifiable="false"
         :cdn-url="props.cdnUrl"
-        label="Ajouter des fichiers"
+        label="Document(s) relatif(s) aux compétences et expériences des accompagnants prévus"
+        :optional="false"
       />
     </div>
   </div>
@@ -49,20 +52,23 @@
         :input="
           AgrementDisplayInput.AgrementProjetsInput['accompRespRecruteUrg']
         "
+        :required="true"
       />
     </div>
     <MultiFilesUpload
       v-model="filesProjetsSejoursMesures"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
-      label="Ajouter des fichiers"
+      label="Document(s) relatif(s) aux mesures envisagées au cas où des accompagnants supplémentaires devraient être recrutés en urgence"
+      :optional="false"
     />
   </div>
   <MultiFilesUpload
     v-model="filesProjetsSejoursComplementaires"
     :modifiable="false"
     :cdn-url="props.cdnUrl"
-    label="Ajouter des fichiers complémentaires (optionnel)"
+    label="Document(s) complémentaire(s) relatif(s) aux séjours prévus (optionnel)"
+    :optional="true"
   />
 </template>
 

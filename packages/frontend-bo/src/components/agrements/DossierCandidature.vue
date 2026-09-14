@@ -11,6 +11,7 @@
       <DisplayLabel
         :value="props.initAgrement?.motivations"
         :input="AgrementDisplayInput.AgrementInput['motivations']"
+        :required="true"
       />
     </div>
   </div>
@@ -21,6 +22,7 @@
       :modifiable="false"
       :cdn-url="props.cdnUrl"
       label="Document(s) relatif(s) aux informations d’ordre sanitaire (optionnel)"
+      :optional="true"
     />
   </div>
 
@@ -39,6 +41,7 @@
         :cdn-url="props.cdnUrl"
         label="Certificat d’immatriculation au registre des opérateurs de voyages et de séjours (code du tourisme)"
         :modifiable="false"
+        :optional="false"
       />
     </div>
   </div>
@@ -46,12 +49,13 @@
   <div class="fr-fieldset__element">
     <div class="fr-col-12">
       <DisplayLabel
-        :value="
-          props.initAgrement?.dateObtentionCertificat
-            ? formatFR(props.initAgrement?.dateObtentionCertificat)
-            : 'Date Invalide'
-        "
+        :value="formatFR(props.initAgrement?.dateObtentionCertificat)"
         :input="AgrementDisplayInput.AgrementInput['dateObtentionCertificat']"
+        :required="true"
+        :is-valid="
+          !isInvalidDateValue(props.initAgrement?.dateObtentionCertificat)
+        "
+        error-message="Date invalide : à corriger"
       />
     </div>
   </div>
@@ -70,6 +74,7 @@
       label="Attestation d’assurance responsabilité civile"
       hint="Cette assurance prouve que vous êtes couvert(e) pour tout dommage (matériel, immatériel) causé involontairement à autrui pendant les activités du séjour."
       :modifiable="false"
+      :optional="false"
     />
   </div>
   <div class="fr-fieldset__element">
@@ -79,6 +84,7 @@
       label="Attestation d’assurance en cas de rapatriement"
       hint="Cette assurance garantit la prise en charge des frais de retour ou d’assistance en cas de maladie, d’accident ou d’urgence pendant le séjour."
       :modifiable="false"
+      :optional="false"
     />
   </div>
 </template>
@@ -92,7 +98,12 @@ import {
   MultiFilesUpload,
 } from "@vao/shared-ui";
 
-import { FILE_CATEGORY, formatFR, getFileByCategory } from "@vao/shared-bridge";
+import {
+  FILE_CATEGORY,
+  formatFR,
+  isInvalidDateValue,
+  getFileByCategory,
+} from "@vao/shared-bridge";
 // --- Props et événements ---
 const props = defineProps({
   initAgrement: { type: Object, required: true },
@@ -106,6 +117,11 @@ const filesMotivation = computed(() => {
         file.category === FILE_CATEGORY.MOTIVATION,
     ) || []
   );
+});
+
+const dateObtentionCertificatDisplayValue = computed(() => {
+  const raw = props.initAgrement?.dateObtentionCertificat;
+  return raw ? formatFR(raw) : "À compléter";
 });
 
 const fileImmatriculation = computed(() => {

@@ -13,6 +13,7 @@
       <DisplayLabel
         :value="props.initAgrement?.protocoleEvacUrg"
         :input="AgrementDisplayInput.AgrementProjetsInput['protocoleEvacUrg']"
+        :required="true"
       />
     </div>
   </div>
@@ -21,6 +22,7 @@
       <DisplayLabel
         :value="props.initAgrement?.protocoleRapatUrg"
         :input="AgrementDisplayInput.AgrementProjetsInput['protocoleRapatUrg']"
+        :required="true"
       />
     </div>
   </div>
@@ -30,7 +32,8 @@
       v-model="filesProjetsSejoursProtocoleReorientation"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
-      label="Ajouter des fichiers (optionnel)"
+      label="Document(s) relatif(s) à la réorientation et à l'évacuation (optionnel)"
+      :optional="true"
     />
   </div>
   <hr class="fr-mt-8v" />
@@ -42,6 +45,7 @@
         :input="
           AgrementDisplayInput.AgrementProjetsInput['protocoleRapatEtranger']
         "
+        :required="true"
       />
     </div>
   </div>
@@ -52,6 +56,7 @@
         :input="
           AgrementDisplayInput.AgrementProjetsInput['protocoleInfoFamille']
         "
+        :required="true"
       />
     </div>
   </div>
@@ -60,7 +65,8 @@
       v-model="filesProjetsSejoursProtocoleRapatriement"
       :modifiable="false"
       :cdn-url="props.cdnUrl"
-      label="Ajouter des fichiers (optionnel)"
+      label="Document(s) relatif(s) au rapatriement (optionnel)"
+      :optional="true"
     />
   </div>
 </template>

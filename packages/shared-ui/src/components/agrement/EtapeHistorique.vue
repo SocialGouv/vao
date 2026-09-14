@@ -3,7 +3,7 @@
     <div class="texte">
       <p class="texte-intitule">{{ typeLabel }}</p>
       <p class="texte-temporalite">
-        {{ formatFR(created_at) ?? "" }} -
+        {{ formatFR(created_at, "-") }}
         <span v-if="type_precision"
           >Statut {{ formatLabel(type_precision) ?? "" }}</span
         >

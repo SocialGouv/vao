@@ -8,14 +8,17 @@
       :input="
         AgrementDisplayInput.AgrementBilanAnnuelInput['nbGlobalVacanciers']
       "
+      :required="true"
     />
     <DisplayLabel
       :value="props.bilanAnnuel?.nbHommes"
       :input="AgrementDisplayInput.AgrementBilanAnnuelInput['nbHommes']"
+      :required="true"
     />
     <DisplayLabel
       :value="props.bilanAnnuel?.nbFemmes"
       :input="AgrementDisplayInput.AgrementBilanAnnuelInput['nbFemmes']"
+      :required="true"
     />
     <!-- Tranches d'âge -->
     <AgrementsBilanTranchesAge
@@ -25,11 +28,13 @@
     <DisplayLabel
       :input="AgrementDisplayInput.AgrementBilanAnnuelInput['trancheAge']"
       :value="props.bilanAnnuel?.trancheAge"
+      :required="true"
     />
 
     <DisplayLabel
       :input="AgrementDisplayInput.AgrementBilanAnnuelInput['typeHandicap']"
       :value="props.bilanAnnuel?.typeHandicap"
+      :required="true"
     />
 
     <div class="fr-my-2w separator"></div>
@@ -46,6 +51,7 @@
       :input="
         AgrementDisplayInput.AgrementBilanAnnuelInput['nbTotalJoursVacances']
       "
+      :required="true"
     />
   </div>
 </template>
