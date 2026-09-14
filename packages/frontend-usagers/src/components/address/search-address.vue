@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
 import {
@@ -31,11 +31,20 @@ const emits = defineEmits(["select"]);
 
 const NB_CAR_ADDRESSE_MIN = 5;
 
-const options = ref([]);
+type AddressOption = {
+  label: string;
+  cleInsee?: string;
+  codeInsee?: string;
+  codePostal?: string;
+  coordinates?: number[];
+  departement?: string;
+};
+
+const options = ref<AddressOption[]>([]);
 const isLoading = ref(false);
 
 const isModalOpen = ref(false);
-const multiselectRef = ref(null);
+const multiselectRef = ref<Multiselect | null>(null);
 
 const canShowClear = ref(false);
 
@@ -44,14 +53,7 @@ const messageClass = computed(() =>
   props.errorMessage ? "fr-error-text" : "fr-valid-text",
 );
 
-function clearSelection() {
-  multiselectRef.value?.clear();
-  nextTick(() => {
-    multiselectRef.value?.input?.focus();
-  });
-}
-
-async function searchAddress(queryString) {
+async function searchAddress(queryString: string) {
   if (queryString.length > NB_CAR_ADDRESSE_MIN && isLoading.value === false) {
     await searchAddressDebounced(queryString);
     canShowClear.value = true;
@@ -61,7 +63,7 @@ async function searchAddress(queryString) {
   }
 }
 
-const searchAddressDebounced = debounce(async function (queryString) {
+const searchAddressDebounced = debounce(async function (queryString: string) {
   log.d("searchAddressDebounced - IN", { queryString });
   try {
     isLoading.value = true;
@@ -73,16 +75,27 @@ const searchAddressDebounced = debounce(async function (queryString) {
       credentials: "include",
     });
     log.d("searchAddress", { adresses });
-    options.value = adresses.map((address) => {
-      return {
-        label: address.properties.label,
-        cleInsee: address.properties.id,
-        codeInsee: address.properties.citycode,
-        codePostal: address.properties.postcode,
-        coordinates: address.geometry.coordinates,
-        departement: address.properties.context.split(",")[0],
-      };
-    });
+    options.value = adresses.map(
+      (address: {
+        properties: {
+          label: string;
+          id: string;
+          citycode: string;
+          postcode: string;
+          context: string;
+        };
+        geometry: { coordinates: number[] };
+      }) => {
+        return {
+          label: address.properties.label,
+          cleInsee: address.properties.id,
+          codeInsee: address.properties.citycode,
+          codePostal: address.properties.postcode,
+          coordinates: address.geometry.coordinates,
+          departement: address.properties.context.split(",")[0],
+        };
+      },
+    );
     isLoading.value = false;
     log.d("searchAddress - DONE", { adresses });
   } catch (error) {
@@ -97,13 +110,13 @@ const searchAddressDebounced = debounce(async function (queryString) {
   log.d("searchAddressDebounced - DONE", { queryString });
 }, 500);
 
-function select(_value, option) {
-  log.i("select", unref(option));
-  emits("select", unref(option));
+function select(_value: string | null, option: AddressOption) {
+  log.i("select", option);
+  emits("select", option);
   canShowClear.value = true;
 }
 
-function onManualChooseAddress(adresse) {
+function onManualChooseAddress(adresse: AddressOption) {
   options.value = [{ ...adresse }];
   onCloseModal();
   select(null, adresse);
@@ -173,12 +186,13 @@ function onCloseModal() {
                   :is-pointed="isPointed(option)"
                 />
               </template>
-              <template #no-result> Pas de résultat</template>
+              <template #noresults> Pas de résultat</template>
               <template #afterlist>
                 <div class="fr-multiselect-adress--free">
                   <span>Vous ne trouvez pas votre adresse ?</span>
                   <DsfrButton
                     label="Saisir une adresse libre"
+                    type="bouton"
                     icon="fr-icon-edit-line"
                     always-visible
                     secondary
