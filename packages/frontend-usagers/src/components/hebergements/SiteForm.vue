@@ -1,5 +1,15 @@
 <template>
   <form novalidate @submit.prevent="onSubmit">
+    <div class="fr-grid-row">
+      <div class="fr-pb-3w fr-col-12">
+        <h1 ref="pageHeadingRef" tabindex="-1">
+          Ajouter un nouvel hébergement
+        </h1>
+        <p class="fr-mb-2w">
+          Sauf mention contraire, tous les champs sont obligatoires.
+        </p>
+      </div>
+    </div>
     <div class="fr-fieldset fr-mb-6w">
       <h2 class="fr-h3 fr-mt-0">Coordonnées du site</h2>
       <div class="fr-col-12">

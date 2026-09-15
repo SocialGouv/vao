@@ -1,16 +1,6 @@
 <template>
   <div class="fr-container">
-    <div class="fr-grid-row">
-      <div class="fr-pb-3w fr-col-12">
-        <DsfrBreadcrumb :links="links" />
-        <h1 ref="pageHeadingRef" tabindex="-1">
-          Ajouter un nouvel hébergement
-        </h1>
-        <p class="fr-mb-2w">
-          Sauf mention contraire, tous les champs sont obligatoires.
-        </p>
-      </div>
-    </div>
+    <DsfrBreadcrumb :links="links" />
     <div class="fr-grid-row">
       <div class="fr-col">
         <HebergementsStepper :step="hash" class="fr-mb-2w" />
@@ -88,7 +78,7 @@ const hash = computed(() => {
     return route.hash.slice(1);
   }
   useHead({
-    title: titles.value["#agrement-coordonnees"],
+    title: titles.value["#site-coordonnees"],
   });
   return hebergementSiteMenu.menus?.[0]?.id ?? "site-coordonnees";
 });
