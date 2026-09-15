@@ -168,38 +168,38 @@ export const HebergementServiceShared = {
     hebergementId: number,
     tx: PoolClient,
   ): Promise<LegacyUniteContextEntity> {
-    return await HebergementsRepositoryShared.getLegacyUniteContext(
+    return HebergementsRepositoryShared.getLegacyUniteContext(
       tx,
       hebergementId,
     );
   },
 
   async getSiteById(siteId: string): Promise<SiteDto | null> {
-    return await SitesRepositoryShared.getSiteById(siteId);
+    return SitesRepositoryShared.getSiteById(siteId);
   },
 
   async getSiteOrganisme(
     siteId: string,
     organismeId: number,
   ): Promise<SiteOrganismeDto | null> {
-    return await SitesRepositoryShared.getSiteOrganisme(siteId, organismeId);
+    return SitesRepositoryShared.getSiteOrganisme(siteId, organismeId);
   },
 
   async getSitesByOrganismeId(organismeId: number): Promise<SiteDto[]> {
-    return await SitesRepositoryShared.getSitesByOrganismeId(organismeId);
+    return SitesRepositoryShared.getSitesByOrganismeId(organismeId);
   },
 
   async getStatutId(
     statutValue: string,
     tx: PoolClient,
   ): Promise<number | null> {
-    return await HebergementsRepositoryShared.getStatutId(tx, statutValue);
+    return HebergementsRepositoryShared.getStatutId(tx, statutValue);
   },
 
   async getUniteHebergementByHebergementId(
     hebergementId: string,
   ): Promise<UniteHebergementDto | null> {
-    return await HebergementsRepositoryShared.getUniteHebergementsByHebergementId(
+    return HebergementsRepositoryShared.getUniteHebergementsByHebergementId(
       hebergementId,
     );
   },
@@ -208,7 +208,7 @@ export const HebergementServiceShared = {
     uniteHebergementId: number,
     tx: PoolClient,
   ): Promise<UniteHebergementDto | null> {
-    return await HebergementsRepositoryShared.getUniteHebergementById(
+    return HebergementsRepositoryShared.getUniteHebergementById(
       uniteHebergementId,
       tx,
     );
