@@ -7,10 +7,10 @@ const {
 const knex = require("knex")({
   client: "pg",
   connection: {
-    database: process.env.POSTGRES_DB,
-    host: process.env.POSTGRES_HOST,
+    database: process.env.POSTGRES_DOCUMENT_DB,
+    host: process.env.POSTGRES_DOCUMENT_HOST,
     password: process.env.PG_VAO_SUPERPASSWORD,
-    port: process.env.POSTGRES_PORT,
+    port: process.env.POSTGRES_DOCUMENT_PORT,
     ssl: process.env.PGSSLMODE
       ? {
           rejectUnauthorized: false, // to authorize CNPG self-signed certificates

@@ -7,6 +7,9 @@ declare global {
       SENTRY_ENVIRONMENT: string;
       SENTRY_RELEASE: string;
       POSTGRES_DB: string;
+      POSTGRES_DOCUMENT_DB: string;
+      POSTGRES_DOCUMENT_HOST: string;
+      POSTGRES_DOCUMENT_PORT: string;
       PG_VAO_DOCUMENT_PASSWORD: string;
       PG_VAO_DOCUMENT_USER: string;
       PG_VAO_CIPHER_DATA: string;

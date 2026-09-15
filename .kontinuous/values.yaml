@@ -60,6 +60,9 @@ external-api:
     POSTGRES_HOST: "$(PGHOST)"
     POSTGRES_PORT: "$(PGPORT)"
     POSTGRES_DB: "$(PGDATABASE)"
+    POSTGRES_DOCUMENT_HOST: "$(PGHOST)"
+    POSTGRES_DOCUMENT_PORT: "$(PGPORT)"
+    POSTGRES_DOCUMENT_DB: "$(PGDATABASE)"
     S3_BUCKET_ENDPOINT: "$(bucket_endpoint)"
     S3_BUCKET_NAME: "$(bucket_name)"
     S3_BUCKET_REGION: "$(bucket_region)"
@@ -119,6 +122,9 @@ backend:
     POSTGRES_HOST: "$(PGHOST)"
     POSTGRES_PORT: "$(PGPORT)"
     POSTGRES_DB: "$(PGDATABASE)"
+    POSTGRES_DOCUMENT_HOST: "$(PGHOST)"
+    POSTGRES_DOCUMENT_PORT: "$(PGPORT)"
+    POSTGRES_DOCUMENT_DB: "$(PGDATABASE)"
 
     S3_BUCKET_ENDPOINT: "$(bucket_endpoint)"
     S3_BUCKET_NAME: "$(bucket_name)"
@@ -171,6 +177,9 @@ cron:
     POSTGRES_HOST: "$(PGHOST)"
     POSTGRES_PORT: "$(PGPORT)"
     POSTGRES_DB: "$(PGDATABASE)"
+    POSTGRES_DOCUMENT_HOST: "$(PGHOST)"
+    POSTGRES_DOCUMENT_PORT: "$(PGPORT)"
+    POSTGRES_DOCUMENT_DB: "$(PGDATABASE)"
 
 frontend-usagers:
   ~chart: app
@@ -392,6 +401,21 @@ migrate-s3:
           name: pg-superuser
           key: port
     - name: POSTGRES_DB
+      valueFrom:
+        secretKeyRef:
+          name: pg-app
+          key: PGDATABASE
+    - name: POSTGRES_DOCUMENT_HOST
+      valueFrom:
+        secretKeyRef:
+          name: pg-superuser
+          key: host
+    - name: POSTGRES_DOCUMENT_PORT
+      valueFrom:
+        secretKeyRef:
+          name: pg-superuser
+          key: port
+    - name: POSTGRES_DOCUMENT_DB
       valueFrom:
         secretKeyRef:
           name: pg-app

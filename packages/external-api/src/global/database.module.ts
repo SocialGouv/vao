@@ -41,11 +41,11 @@ import { Pool } from "pg";
       inject: [ConfigService],
       provide: "PG_CONNECTION_DOC",
       useFactory: async (config: ConfigService) => {
-        const database = config.get<string>("postgres.database");
-        const host = config.get<string>("postgres.host");
+        const database = config.get<string>("postgres.document.database");
+        const host = config.get<string>("postgres.document.host");
         const password = config.get<string>("postgres.document.password");
         const port = parseInt(
-          config.get<string>("postgres.port") || "5432",
+          config.get<string>("postgres.document.port") || "5432",
           10,
         );
         const user = config.get<string>("postgres.document.user");

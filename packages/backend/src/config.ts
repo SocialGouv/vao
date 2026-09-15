@@ -83,7 +83,10 @@ export const config = {
     cipherData: process.env.PG_VAO_CIPHER_DATA,
     database: process.env.POSTGRES_DB,
     document: {
+      database: process.env.POSTGRES_DOCUMENT_DB,
+      host: process.env.POSTGRES_DOCUMENT_HOST,
       password: process.env.PG_VAO_DOCUMENT_PASSWORD,
+      port: process.env.POSTGRES_DOCUMENT_PORT,
       user: process.env.PG_VAO_DOCUMENT_USER,
     },
     host: process.env.POSTGRES_HOST,

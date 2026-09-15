@@ -7,12 +7,12 @@ const log = logger(module.filename);
 let pool: pg.Pool | undefined;
 
 const configPool = {
-  database: config.postgres.database,
-  host: config.postgres.host,
+  database: config.postgres.document.database,
+  host: config.postgres.document.host,
   idleTimeoutMillis: 30000,
   max: 15,
   password: config.postgres.document.password,
-  port: Number(config.postgres.port),
+  port: Number(config.postgres.document.port),
   ssl: config.postgres.ssl,
   user: config.postgres.document.user,
 };
