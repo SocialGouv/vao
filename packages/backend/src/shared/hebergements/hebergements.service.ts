@@ -1,5 +1,6 @@
 import {
-  AdresseDto,
+  FUNCTIONAL_ERRORS,
+  FunctionalException,
   InformationsLocauxDto,
   SiteDto,
   SiteOrganismeDto,
@@ -9,25 +10,74 @@ import {
 import { PoolClient } from "pg";
 
 import { saveAdresse } from "../../services/adresse";
-import { withTransaction } from "../../utils/pgpool";
 import { LegacyUniteContextEntity } from "./hebergements.entity";
 import { buildUniteWriteData } from "./hebergements.mapping";
 import { HebergementsRepositoryShared } from "./hebergements.repository";
+import { SitesRepositoryShared } from "./hebergementsSite.repository";
 
-const withTx = async <T>(
-  tx: PoolClient | undefined,
-  // eslint-disable-next-line no-unused-vars -- paramètre typé d'une fonction-callback
-  callback: (client: PoolClient) => Promise<T>,
-): Promise<T> => {
-  if (tx) {
-    return callback(tx);
-  }
-  return withTransaction(callback);
+type CreateSiteInput = Pick<
+  SiteDto,
+  | "adresseId"
+  | "createdBy"
+  | "descriptif"
+  | "hebergementTypeId"
+  | "nomSiteOfficiel"
+  | "organismeId"
+> &
+  Partial<Pick<SiteDto, "adresse">> &
+  Partial<
+    Pick<
+      SiteOrganismeDto,
+      | "deplacementProximiteDescription"
+      | "excursionDescription"
+      | "respEmail"
+      | "respNomPrenom"
+      | "respTelephone"
+      | "vehiculesAdaptes"
+    >
+  > & { hebergementTypeValue?: string | null };
+
+type UpdateSiteInput = Omit<CreateSiteInput, "createdBy" | "adresseId"> & {
+  editedBy: number;
+  adresseId: number | null;
+};
+
+type CreateUniteHebergementInput = Pick<
+  UniteHebergementDto,
+  "id" | "hebergementId" | "organismeId" | "siteId" | "statutId"
+> & {
+  createdBy: number;
+  informationsLocaux: InformationsLocauxDto;
+  typePensions: string[];
+  uniteData?: UniteHebergementPayloadDto;
+};
+
+type UpdateUniteHebergementInput = Pick<
+  UniteHebergementDto,
+  "id" | "hebergementId" | "statutId"
+> & {
+  editedBy: number;
+  informationsLocaux: InformationsLocauxDto;
+  typePensions: string[];
+  uniteData?: UniteHebergementPayloadDto;
+};
+
+type UpdateUniteHebergementInPlaceInput = Pick<
+  UniteHebergementDto,
+  "statutId"
+> & {
+  editedBy: number;
+  informationsLocaux: InformationsLocauxDto;
+  typePensions: string[];
+  uniteData?: UniteHebergementPayloadDto;
 };
 
 export const HebergementServiceShared = {
   async createSite(
-    {
+    { ...input }: CreateSiteInput,
+    tx: PoolClient,
+  ): Promise<Pick<SiteDto, "siteId">> {
+    const {
       adresse,
       adresseId,
       createdBy,
@@ -42,59 +92,42 @@ export const HebergementServiceShared = {
       respNomPrenom,
       respTelephone,
       vehiculesAdaptes,
-    }: {
-      adresse?: AdresseDto | null;
-      adresseId: number | null;
-      createdBy: number;
-      deplacementProximiteDescription?: string | null;
-      descriptif: string | null;
-      excursionDescription?: string | null;
-      hebergementTypeId: number | null;
-      hebergementTypeValue?: string | null;
-      nomSiteOfficiel: string | null;
-      organismeId: number;
-      respEmail?: string | null;
-      respNomPrenom?: string | null;
-      respTelephone?: string | null;
-      vehiculesAdaptes?: boolean | null;
-    },
-    tx?: PoolClient,
-  ): Promise<string> {
-    return withTx(tx, async (client) => {
-      const resolvedAdresseId = adresse
-        ? await saveAdresse(client, adresse)
-        : adresseId;
-      const resolvedTypeId = hebergementTypeValue
-        ? await HebergementsRepositoryShared.getHebergementTypeId(
-            client,
-            hebergementTypeValue,
-          )
-        : hebergementTypeId;
-      const siteId = await HebergementsRepositoryShared.createSite(client, {
-        adresseId: resolvedAdresseId,
-        createdBy,
-        descriptif,
-        hebergementTypeId: resolvedTypeId,
-        nomSiteOfficiel,
-      });
-      await HebergementsRepositoryShared.createSiteOrganisme(client, {
-        deplacementProximiteDescription:
-          deplacementProximiteDescription ?? null,
-        excursionDescription: excursionDescription ?? null,
-        nomSite: nomSiteOfficiel,
-        organismeId,
-        respEmail: respEmail ?? null,
-        respNomPrenom: respNomPrenom ?? null,
-        respTelephone: respTelephone ?? null,
-        siteId,
-        vehiculesAdaptes: vehiculesAdaptes ?? null,
-      });
-      return siteId;
+    } = input;
+    const resolvedAdresseId = adresse
+      ? await saveAdresse(tx, adresse)
+      : adresseId;
+    const resolvedTypeId = hebergementTypeValue
+      ? await HebergementsRepositoryShared.getHebergementTypeId(
+          tx,
+          hebergementTypeValue,
+        )
+      : hebergementTypeId;
+    const siteId = await SitesRepositoryShared.create(tx, {
+      adresseId: resolvedAdresseId,
+      createdBy,
+      descriptif,
+      hebergementTypeId: resolvedTypeId,
+      nomSiteOfficiel,
     });
+    await SitesRepositoryShared.createSiteOrganisme(tx, {
+      deplacementProximiteDescription: deplacementProximiteDescription ?? null,
+      excursionDescription: excursionDescription ?? null,
+      nomSite: nomSiteOfficiel,
+      organismeId,
+      respEmail: respEmail ?? null,
+      respNomPrenom: respNomPrenom ?? null,
+      respTelephone: respTelephone ?? null,
+      siteId,
+      vehiculesAdaptes: vehiculesAdaptes ?? null,
+    });
+    return { siteId };
   },
 
   async createUniteHebergement(
-    {
+    { ...input }: CreateUniteHebergementInput,
+    tx: PoolClient,
+  ): Promise<Pick<UniteHebergementDto, "id">> {
+    const {
       createdBy,
       hebergementId,
       id,
@@ -104,93 +137,78 @@ export const HebergementServiceShared = {
       statutId,
       typePensions,
       uniteData,
-    }: {
-      createdBy: number;
-      hebergementId: string;
-      id: number;
-      informationsLocaux: InformationsLocauxDto;
-      organismeId: number;
-      siteId: string;
-      statutId: number | null;
-      typePensions: string[];
-      uniteData?: UniteHebergementPayloadDto;
-    },
-    tx?: PoolClient,
-  ): Promise<number> {
-    return withTx(tx, async (client) => {
-      const data =
-        uniteData ??
-        buildUniteWriteData({
-          informationsLocaux,
-        });
-      const uniteId = await HebergementsRepositoryShared.createUniteHebergement(
-        client,
-        {
-          ...data,
-          createdBy,
-          editedBy: createdBy,
-          hebergementId,
-          id,
-          organismeId,
-          siteId,
-          statutId,
-        },
-      );
-      await HebergementsRepositoryShared.setUniteHebergementTypePensions(
-        client,
-        uniteId,
-        typePensions,
-      );
-      return uniteId;
-    });
+    } = input;
+    const data =
+      uniteData ??
+      buildUniteWriteData({
+        informationsLocaux,
+      });
+    const uniteId = await HebergementsRepositoryShared.createUniteHebergement(
+      tx,
+      {
+        ...data,
+        createdBy,
+        editedBy: createdBy,
+        hebergementId,
+        id,
+        organismeId,
+        siteId,
+        statutId,
+      },
+    );
+    await HebergementsRepositoryShared.setUniteHebergementTypePensions(
+      tx,
+      uniteId,
+      typePensions,
+    );
+    return { id: uniteId };
   },
 
   async getLegacyUniteContext(
     hebergementId: number,
-    tx?: PoolClient,
+    tx: PoolClient,
   ): Promise<LegacyUniteContextEntity> {
-    return withTx(tx, (client) =>
-      HebergementsRepositoryShared.getLegacyUniteContext(client, hebergementId),
+    return await HebergementsRepositoryShared.getLegacyUniteContext(
+      tx,
+      hebergementId,
     );
   },
 
   async getSiteById(siteId: string): Promise<SiteDto | null> {
-    return HebergementsRepositoryShared.getSiteById(siteId);
+    return await SitesRepositoryShared.getSiteById(siteId);
   },
 
   async getSiteOrganisme(
     siteId: string,
     organismeId: number,
   ): Promise<SiteOrganismeDto | null> {
-    return HebergementsRepositoryShared.getSiteOrganisme(siteId, organismeId);
+    return await SitesRepositoryShared.getSiteOrganisme(siteId, organismeId);
   },
 
   async getSitesByOrganismeId(organismeId: number): Promise<SiteDto[]> {
-    return HebergementsRepositoryShared.getSitesByOrganismeId(organismeId);
+    return await SitesRepositoryShared.getSitesByOrganismeId(organismeId);
   },
 
   async getStatutId(
     statutValue: string,
-    tx?: PoolClient,
+    tx: PoolClient,
   ): Promise<number | null> {
-    return withTx(tx, (client) =>
-      HebergementsRepositoryShared.getStatutId(client, statutValue),
-    );
+    return await HebergementsRepositoryShared.getStatutId(tx, statutValue);
   },
 
   async getUniteHebergementByHebergementId(
     hebergementId: string,
   ): Promise<UniteHebergementDto | null> {
-    return HebergementsRepositoryShared.getUniteHebergementsByHebergementId(
+    return await HebergementsRepositoryShared.getUniteHebergementsByHebergementId(
       hebergementId,
     );
   },
 
   async getUniteHebergementById(
     uniteHebergementId: number,
-    tx?: PoolClient,
+    tx: PoolClient,
   ): Promise<UniteHebergementDto | null> {
-    return HebergementsRepositoryShared.getUniteHebergementById(
+    return await HebergementsRepositoryShared.getUniteHebergementById(
       uniteHebergementId,
       tx,
     );
@@ -203,38 +221,37 @@ export const HebergementServiceShared = {
   },
 
   async linkHebergementToSite(
-    tx: PoolClient | undefined,
+    tx: PoolClient,
     hebergementId: number,
     siteId: string,
   ): Promise<void> {
-    return withTx(tx, async (client) => {
-      await HebergementsRepositoryShared.linkHebergementToSite(
-        client,
-        hebergementId,
-        siteId,
-      );
-    });
+    await HebergementsRepositoryShared.linkHebergementToSite(
+      tx,
+      hebergementId,
+      siteId,
+    );
   },
 
   async setUniteHebergementStatut(
     uniteHebergementId: number,
     statutId: number,
     editedBy: number,
-    tx?: PoolClient,
+    tx: PoolClient,
   ): Promise<void> {
-    return withTx(tx, (client) =>
-      HebergementsRepositoryShared.setUniteHebergementStatut(
-        client,
-        uniteHebergementId,
-        statutId,
-        editedBy,
-      ),
+    await HebergementsRepositoryShared.setUniteHebergementStatut(
+      tx,
+      uniteHebergementId,
+      statutId,
+      editedBy,
     );
   },
 
   async updateSite(
     siteId: string,
-    {
+    { ...input }: UpdateSiteInput,
+    tx: PoolClient,
+  ): Promise<void> {
+    const {
       adresse,
       adresseId,
       deplacementProximiteDescription,
@@ -249,59 +266,42 @@ export const HebergementServiceShared = {
       respNomPrenom,
       respTelephone,
       vehiculesAdaptes,
-    }: {
-      adresse?: AdresseDto | null;
-      adresseId: number | null;
-      deplacementProximiteDescription?: string | null;
-      descriptif: string | null;
-      editedBy: number;
-      excursionDescription?: string | null;
-      hebergementTypeId: number | null;
-      hebergementTypeValue?: string | null;
-      nomSiteOfficiel: string | null;
-      organismeId: number;
-      respEmail?: string | null;
-      respNomPrenom?: string | null;
-      respTelephone?: string | null;
-      vehiculesAdaptes?: boolean | null;
-    },
-    tx?: PoolClient,
-  ): Promise<void> {
-    return withTx(tx, async (client) => {
-      const resolvedAdresseId = adresse
-        ? await saveAdresse(client, adresse)
-        : adresseId;
-      const resolvedTypeId = hebergementTypeValue
-        ? await HebergementsRepositoryShared.getHebergementTypeId(
-            client,
-            hebergementTypeValue,
-          )
-        : hebergementTypeId;
-      await HebergementsRepositoryShared.updateSite(client, siteId, {
-        adresseId: resolvedAdresseId,
-        descriptif,
-        editedBy,
-        hebergementTypeId: resolvedTypeId,
-        nomSiteOfficiel,
-      });
-      await HebergementsRepositoryShared.createSiteOrganisme(client, {
-        deplacementProximiteDescription:
-          deplacementProximiteDescription ?? null,
-        excursionDescription: excursionDescription ?? null,
-        nomSite: nomSiteOfficiel,
-        organismeId,
-        respEmail: respEmail ?? null,
-        respNomPrenom: respNomPrenom ?? null,
-        respTelephone: respTelephone ?? null,
-        siteId,
-        vehiculesAdaptes: vehiculesAdaptes ?? null,
-      });
+    } = input;
+    const resolvedAdresseId = adresse
+      ? await saveAdresse(tx, adresse)
+      : adresseId;
+    const resolvedTypeId = hebergementTypeValue
+      ? await HebergementsRepositoryShared.getHebergementTypeId(
+          tx,
+          hebergementTypeValue,
+        )
+      : hebergementTypeId;
+    await SitesRepositoryShared.update(tx, siteId, {
+      adresseId: resolvedAdresseId,
+      descriptif,
+      editedBy,
+      hebergementTypeId: resolvedTypeId,
+      nomSiteOfficiel,
+    });
+    await SitesRepositoryShared.createSiteOrganisme(tx, {
+      deplacementProximiteDescription: deplacementProximiteDescription ?? null,
+      excursionDescription: excursionDescription ?? null,
+      nomSite: nomSiteOfficiel,
+      organismeId,
+      respEmail: respEmail ?? null,
+      respNomPrenom: respNomPrenom ?? null,
+      respTelephone: respTelephone ?? null,
+      siteId,
+      vehiculesAdaptes: vehiculesAdaptes ?? null,
     });
   },
 
   async updateUniteHebergement(
     uniteHebergementId: number,
-    {
+    { ...input }: UpdateUniteHebergementInput,
+    tx: PoolClient,
+  ): Promise<void> {
+    const {
       editedBy,
       hebergementId,
       id,
@@ -309,90 +309,69 @@ export const HebergementServiceShared = {
       statutId,
       typePensions,
       uniteData,
-    }: {
-      editedBy: number;
-      hebergementId: string;
-      id: number;
-      informationsLocaux: InformationsLocauxDto;
-      statutId: number | null;
-      typePensions: string[];
-      uniteData?: UniteHebergementPayloadDto;
-    },
-    tx?: PoolClient,
-  ): Promise<void> {
-    return withTx(tx, async (client) => {
-      const currentUnit =
-        await HebergementsRepositoryShared.getUniteHebergementById(
-          uniteHebergementId,
-          client,
-        );
-      if (!currentUnit) {
-        return;
-      }
-      const data =
-        uniteData ??
-        buildUniteWriteData({
-          informationsLocaux,
-        });
-      await HebergementsRepositoryShared.unsetUniteHebergementCurrent(
-        client,
+    } = input;
+    const currentUnit =
+      await HebergementsRepositoryShared.getUniteHebergementById(
         uniteHebergementId,
+        tx,
       );
-      await HebergementsRepositoryShared.createUniteHebergement(client, {
-        ...data,
-        createdBy: currentUnit.createdBy ?? editedBy,
-        editedBy,
-        hebergementId,
-        id,
-        organismeId: currentUnit.organismeId,
-        siteId: currentUnit.siteId,
-        statutId,
+    if (!currentUnit) {
+      throw new FunctionalException(
+        FUNCTIONAL_ERRORS.HEBERGEMENT_CURRENT_NOT_FOUND,
+        { hebergementId },
+      );
+    }
+    const data =
+      uniteData ??
+      buildUniteWriteData({
+        informationsLocaux,
       });
-      await HebergementsRepositoryShared.setUniteHebergementTypePensions(
-        client,
-        id,
-        typePensions,
-      );
+    await HebergementsRepositoryShared.unsetUniteHebergementCurrent(
+      tx,
+      uniteHebergementId,
+    );
+    await HebergementsRepositoryShared.createUniteHebergement(tx, {
+      ...data,
+      createdBy: currentUnit.createdBy ?? editedBy,
+      editedBy,
+      hebergementId,
+      id,
+      organismeId: currentUnit.organismeId,
+      siteId: currentUnit.siteId,
+      statutId,
     });
+    await HebergementsRepositoryShared.setUniteHebergementTypePensions(
+      tx,
+      id,
+      typePensions,
+    );
   },
 
   async updateUniteHebergementInPlace(
     uniteHebergementId: number,
-    {
-      editedBy,
-      informationsLocaux,
-      statutId,
-      typePensions,
-      uniteData,
-    }: {
-      editedBy: number;
-      informationsLocaux: InformationsLocauxDto;
-      statutId: number | null;
-      typePensions: string[];
-      uniteData?: UniteHebergementPayloadDto;
-    },
-    tx?: PoolClient,
+    { ...input }: UpdateUniteHebergementInPlaceInput,
+    tx: PoolClient,
   ): Promise<void> {
-    return withTx(tx, async (client) => {
-      const data =
-        uniteData ??
-        buildUniteWriteData({
-          informationsLocaux,
-        });
-      await HebergementsRepositoryShared.updateUniteHebergement(
-        client,
-        uniteHebergementId,
-        {
-          ...data,
-          editedBy,
-          statutId,
-        },
-      );
-      await HebergementsRepositoryShared.setUniteHebergementTypePensions(
-        client,
-        uniteHebergementId,
-        typePensions,
-      );
-    });
+    const { editedBy, informationsLocaux, statutId, typePensions, uniteData } =
+      input;
+    const data =
+      uniteData ??
+      buildUniteWriteData({
+        informationsLocaux,
+      });
+    await HebergementsRepositoryShared.updateUniteHebergement(
+      tx,
+      uniteHebergementId,
+      {
+        ...data,
+        editedBy,
+        statutId,
+      },
+    );
+    await HebergementsRepositoryShared.setUniteHebergementTypePensions(
+      tx,
+      uniteHebergementId,
+      typePensions,
+    );
   },
 };

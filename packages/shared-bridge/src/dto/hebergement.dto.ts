@@ -39,11 +39,13 @@ export interface InformationsTransportDto {
   vehiculesAdaptes: boolean | null;
 }
 
-export interface SiteDto {
+export interface SiteDto extends SiteOrganismeDto {
   id: number;
   siteId: string;
   current: boolean;
   adresseId: number | null;
+  adresse: AdresseDto | null;
+  organismeId: number;
   nomSiteOfficiel: string | null;
   hebergementTypeId: number | null;
   descriptif: string | null;

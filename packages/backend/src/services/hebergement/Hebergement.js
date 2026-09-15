@@ -1,4 +1,5 @@
 const { logger } = require("../../utils/logger");
+const { withTransaction } = require("../../utils/pgpool");
 const {
   saveAdresse,
   getById: getAdressById,
@@ -420,14 +421,14 @@ const preserveLegacyUniteContext = (hebergement, legacyContext) => {
 };
 
 const syncSiteAndUniteOnCreate = async (
-  client,
+  tx,
   userId,
   organismeId,
   statut,
   hebergement,
   created,
 ) => {
-  const siteId = await HebergementServiceShared.createSite(
+  const site = await HebergementServiceShared.createSite(
     {
       adresse: hebergement.coordonnees?.adresse ?? null,
       adresseId: null,
@@ -448,12 +449,12 @@ const syncSiteAndUniteOnCreate = async (
       vehiculesAdaptes:
         hebergement.informationsTransport?.vehiculesAdaptes ?? null,
     },
-    client,
+    tx,
   );
   await HebergementServiceShared.linkHebergementToSite(
-    client,
+    tx,
     created.hebergementId,
-    siteId,
+    site.siteId,
   );
   await HebergementServiceShared.createUniteHebergement(
     {
@@ -462,25 +463,21 @@ const syncSiteAndUniteOnCreate = async (
       id: created.hebergementId,
       informationsLocaux: hebergement.informationsLocaux,
       organismeId,
-      siteId,
-      statutId: await HebergementServiceShared.getStatutId(statut, client),
+      siteId: site.siteId,
+      statutId: await HebergementServiceShared.getStatutId(statut, tx),
       typePensions: hebergement.informationsLocaux?.pension
         ? [hebergement.informationsLocaux.pension]
         : [],
       uniteData: hebergement.uniteData ?? undefined,
     },
-    client,
+    tx,
   );
 };
 
 module.exports.create = async (userId, organismeId, statut, hebergement) => {
-  const client = await getPool().connect();
-  let created;
-
-  try {
-    await client.query("BEGIN");
-    created = await create(
-      client,
+  return withTransaction(async (tx) => {
+    const created = await create(
+      tx,
       {
         createdAt: new Date(),
         createdBy: userId,
@@ -491,22 +488,16 @@ module.exports.create = async (userId, organismeId, statut, hebergement) => {
       hebergement,
     );
     await syncSiteAndUniteOnCreate(
-      client,
+      tx,
       userId,
       organismeId,
       statut,
       hebergement,
       created,
     );
-    await client.query("COMMIT");
-  } catch (error) {
-    await client.query("ROLLBACK");
-    throw error;
-  } finally {
-    client.release();
-  }
 
-  return created.hebergementId;
+    return created.hebergementId;
+  });
 };
 
 // Utilisée par exemple lorsque l'on modifie un hebergement en statut brouillon

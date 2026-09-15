@@ -6,7 +6,8 @@ import { partOrganisme } from "../../helpers/org-part";
 import Hebergement from "../../services/hebergement/Hebergement";
 import { HebergementsRepositoryShared } from "../../shared/hebergements/hebergements.repository";
 import { HebergementServiceShared } from "../../shared/hebergements/hebergements.service";
-import { getPool } from "../../utils/pgpool";
+import { SitesRepositoryShared } from "../../shared/hebergements/hebergementsSite.repository";
+import { getPool, withTransaction } from "../../utils/pgpool";
 import { buildHebergementFixture } from "../fixtures/hebergementFixture";
 import { getFoAppHelper } from "../helpers/appHelper";
 import { setFeatureFlagEnabled } from "../helpers/featureFlagHelper";
@@ -262,11 +263,11 @@ describe("POST /hebergement", () => {
       HebergementStatuts.ACTIF,
     );
 
-    const site = await HebergementsRepositoryShared.getSiteById(unite!.siteId!);
+    const site = await SitesRepositoryShared.getSiteById(unite!.siteId!);
     expect(site).not.toBeNull();
     expect(site!.nomSiteOfficiel).toBe("Hebergement fixture");
 
-    const siteOrganisme = await HebergementsRepositoryShared.getSiteOrganisme(
+    const siteOrganisme = await SitesRepositoryShared.getSiteOrganisme(
       unite!.siteId!,
       organismeId,
     );
@@ -350,7 +351,7 @@ describe("POST /hebergement/:id", () => {
       HebergementStatuts.ACTIF,
     );
 
-    const site = await HebergementsRepositoryShared.getSiteById(
+    const site = await SitesRepositoryShared.getSiteById(
       uniteCourante!.siteId!,
     );
     expect(site!.nomSiteOfficiel).toBe("Hebergement corrige");
@@ -614,9 +615,7 @@ describe("PUT /hebergement/:id/brouillon", () => {
       HebergementStatuts.BROUILLON,
     );
 
-    const site = await HebergementsRepositoryShared.getSiteById(
-      uniteApres!.siteId!,
-    );
+    const site = await SitesRepositoryShared.getSiteById(uniteApres!.siteId!);
     expect(site!.nomSiteOfficiel).toBe("Hebergement fixture");
   });
 });
@@ -692,8 +691,9 @@ describe("module site/unite : lectures partagées du référentiel", () => {
     expect(site).not.toBeNull();
     expect(site!.id).toEqual(expect.any(Number));
 
-    const siteParIdentifiant =
-      await HebergementsRepositoryShared.getSiteByIdentifier(site!.id);
+    const siteParIdentifiant = await SitesRepositoryShared.getSiteByIdentifier(
+      site!.id,
+    );
     expect(siteParIdentifiant!.siteId).toBe(unite!.siteId);
 
     const sites = await HebergementServiceShared.getSitesByOrganismeId(
@@ -731,53 +731,56 @@ describe("module site/unite : lectures partagées du référentiel", () => {
 
     const client = await getPool().connect();
     try {
-      await HebergementsRepositoryShared.unsetSiteCurrent(
-        client,
-        unite!.siteId!,
-      );
+      await SitesRepositoryShared.unsetSiteCurrent(client, unite!.siteId!);
     } finally {
       client.release();
     }
 
-    expect(
-      await HebergementsRepositoryShared.getSiteById(unite!.siteId!),
-    ).toBeNull();
+    expect(await SitesRepositoryShared.getSiteById(unite!.siteId!)).toBeNull();
   });
 
   it("gère un type d'hébergement inconnu lors de la création d'un site", async () => {
     const organismeId = await createUserAndOrganisme();
-    const siteId = await HebergementServiceShared.createSite(
-      {
-        adresseId: null,
-        createdBy: authUser.id,
-        deplacementProximiteDescription: null,
-        descriptif: null,
-        excursionDescription: null,
-        hebergementTypeId: null,
-        hebergementTypeValue: "type_inconnu",
-        nomSiteOfficiel: "Site secondaire",
-        organismeId,
-        respEmail: null,
-        respNomPrenom: null,
-        respTelephone: null,
-        vehiculesAdaptes: null,
-      },
-      undefined,
+    const siteId = await withTransaction(async (tx) =>
+      HebergementServiceShared.createSite(
+        {
+          adresseId: null,
+          createdBy: authUser.id,
+          deplacementProximiteDescription: null,
+          descriptif: null,
+          excursionDescription: null,
+          hebergementTypeId: null,
+          hebergementTypeValue: "type_inconnu",
+          nomSiteOfficiel: "Site secondaire",
+          organismeId,
+          respEmail: null,
+          respNomPrenom: null,
+          respTelephone: null,
+          vehiculesAdaptes: null,
+        },
+        tx,
+      ),
     );
 
-    expect(siteId).toEqual(expect.any(String));
+    expect(siteId.siteId).toEqual(expect.any(String));
   });
 
   it("ignore la mise à jour d'une unité inconnue", async () => {
     await createUserAndOrganisme();
 
     await expect(
-      HebergementServiceShared.updateUniteHebergementInPlace(999999, {
-        editedBy: authUser.id,
-        informationsLocaux: buildHebergementFixture().informationsLocaux,
-        statutId: null,
-        typePensions: [],
-      }),
+      withTransaction(async (tx) =>
+        HebergementServiceShared.updateUniteHebergementInPlace(
+          999999,
+          {
+            editedBy: authUser.id,
+            informationsLocaux: buildHebergementFixture().informationsLocaux,
+            statutId: null,
+            typePensions: [],
+          },
+          tx,
+        ),
+      ),
     ).resolves.toBeUndefined();
   });
 });
@@ -813,8 +816,8 @@ it("POST /hebergement/:id avec uniteData préserve le contexte legacy", async ()
   expect(uniteCouranteId).not.toBeNull();
   expect(uniteCouranteId).not.toBe(hebergementId);
 
-  const uniteCourante = await HebergementServiceShared.getUniteHebergementById(
-    uniteCouranteId!,
+  const uniteCourante = await withTransaction(async (tx) =>
+    HebergementServiceShared.getUniteHebergementById(uniteCouranteId!, tx),
   );
   expect(uniteCourante!.litsSuperposes).toBe(false);
   expect(uniteCourante!.accessibilitePmr).toBe(false);

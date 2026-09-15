@@ -22,17 +22,26 @@ const required = <T>(value: T | null | undefined, field: string): T => {
 export const SiteMapper = {
   toModel: (entity: SiteEntity): SiteDto => {
     return {
+      adresse: null,
       adresseId: entity.adresse_id ?? null,
       createdAt: required(entity.created_at, "site.created_at"),
       createdBy: entity.created_by ?? null,
       current: entity.current ?? true,
+      deplacementProximiteDescription: null,
       descriptif: entity.descriptif ?? null,
       editedAt: entity.edited_at ?? null,
       editedBy: entity.edited_by ?? null,
+      excursionDescription: null,
       hebergementTypeId: entity.hebergement_type_id ?? null,
       id: required(entity.id, "site.id"),
+      nomSite: null,
       nomSiteOfficiel: entity.nom_site_officiel ?? null,
+      organismeId: 0,
+      respEmail: null,
+      respNomPrenom: null,
+      respTelephone: null,
       siteId: required(entity.site_id, "site.site_id"),
+      vehiculesAdaptes: null,
     };
   },
   toModels: (entities: SiteEntity[]): SiteDto[] => {
