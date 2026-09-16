@@ -68,7 +68,7 @@ fileignoreconfig:
 - filename: e2e/register-personne-physique.spec.ts
   checksum: 2def9cd46ba58e8b1a354a0594e2f13c9ac7b3bcdb1f265f1225ab1af484e7ee
 - filename: e2e/utils/helper.ts
-  checksum: 15cc40212e476bc94c1a62a2dde6314c29e80e359c72cfd386b652b2451beda5
+  checksum: d570df24f9f37a189e8c40ce4b294e3feb3ea796baf19bcfb57aa19a51fc2b72
 - filename: e2e/utils/urls.ts
   checksum: 97d350cc0a59f6813cdac634260e248b46eeb485c416f3cf96eb49872600e7c4
 - filename: e2e/utils/users.ts
@@ -266,7 +266,7 @@ fileignoreconfig:
 - filename: packages/frontend-bo/src/components/agrements/ActionsStatut.vue
   checksum: 96abad70d81827bd5b437e10b18f1c8d7fdea467a7a81cff76db01ecce2deffa
 - filename: packages/frontend-bo/src/components/agrements/Coordonnees.vue
-  checksum: cd5072a1d920ef6934c55a2d3d7ebef4cef348e437d9870b326a6485b6a5c5ef
+  checksum: 27522738515af0feed33a94214ac9433af0dcadaebe3af1398cac2b119700d74
 - filename: packages/frontend-bo/src/components/agrements/ModaleConfirmations.vue
   checksum: f6e179f870c68a775863b1503387cb12c8a0d3d7a299b4de94ef58528ab47437
 - filename: packages/frontend-bo/src/components/agrements/bilan/Hebergements.vue
@@ -324,7 +324,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/components/DS/hebergements-sejour-detail.vue
   checksum: ea2516289eea24b6cf226322360163f840249383a5b30f5766ac730e52463162
 - filename: packages/frontend-usagers/src/components/DS/hebergements-sejour.vue
-  checksum: 05f89fea5fe28ef4ffdc0a1d949c4292971804132cc8b1a45569dd00613cac29
+  checksum: 325c442576faf818f509bd641578c813a5ed322dc61d66a1dafa590f258472fd
 - filename: packages/frontend-usagers/src/components/DS/synthese.vue
   checksum: 1745df4066b3957901ec41d0b0e546cb5ed32dcc2abadcd1e825e06d092bd031
 - filename: packages/frontend-usagers/src/components/EIG/Recap.vue
