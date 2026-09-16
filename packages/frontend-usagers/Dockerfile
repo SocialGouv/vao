@@ -1,4 +1,4 @@
-ARG NODE_VERSION=22.20.0-bullseye-slim
+ARG NODE_VERSION=24.20.0-bookworm-slim
 FROM node:${NODE_VERSION} AS builder
 
 RUN apt-get update \
