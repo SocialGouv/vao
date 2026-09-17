@@ -1,5 +1,7 @@
 const yup = require("yup");
 
+const AppError = require("../utils/error").default;
+
 const telephoneSchema = require("./parts/telephone");
 const adresseSchema = require("./parts/adresse.js")({ isFromAPIAdresse: true });
 
@@ -8,11 +10,18 @@ const coordonneesSchema = (isBrouillon = false) => ({
     is: () => isBrouillon,
     then: (schema) => schema.notRequired(),
   }),
-  email: yup.string().email("Format de l'adresse courriel invalide").nullable(),
-  nomGestionnaire: yup.string().when([], {
-    is: () => isBrouillon,
-    then: (schema) => schema.notRequired(),
-  }),
+  email: yup
+    .string()
+    .email("Format de l'adresse courriel invalide")
+    .max(320, "L'adresse courriel ne doit pas dépasser 320 caractères")
+    .nullable(),
+  nomGestionnaire: yup
+    .string()
+    .max(320, "Le nom du gestionnaire ne doit pas dépasser 320 caractères")
+    .when([], {
+      is: () => isBrouillon,
+      then: (schema) => schema.notRequired(),
+    }),
   numTelephone1: telephoneSchema().when([], {
     is: () => isBrouillon,
     then: (schema) => schema.notRequired(),
@@ -21,15 +30,22 @@ const coordonneesSchema = (isBrouillon = false) => ({
 });
 
 const informationsLocauxSchema = (isBrouillon = false) => ({
-  accessibilite: yup.string().when([], {
-    else: (schema) =>
-      schema.required("Le choix d'un niveau d'accessibilté est obligatoire"),
-    is: () => isBrouillon,
-    then: (schema) => schema.notRequired(),
-  }),
+  accessibilite: yup
+    .string()
+    .max(100, "Le niveau d'accessibilité ne doit pas dépasser 100 caractères")
+    .when([], {
+      else: (schema) =>
+        schema.required("Le choix d'un niveau d'accessibilté est obligatoire"),
+      is: () => isBrouillon,
+      then: (schema) => schema.notRequired(),
+    }),
   accessibilitePrecision: yup
     .string()
     .nullable()
+    .max(
+      1000,
+      "La précision sur l'accessibilité ne doit pas dépasser 1000 caractères",
+    )
     .when("accessibilite", {
       is: (accessibilite) => {
         return accessibilite !== "commentaires";
@@ -68,12 +84,20 @@ const informationsLocauxSchema = (isBrouillon = false) => ({
     is: () => isBrouillon,
     then: (schema) => schema.notRequired(),
   }),
-  descriptionLieuHebergement: yup.string().when([], {
-    else: (schema) =>
-      schema.required("Une description du lieu d'hébergement est obligatoire"),
-    is: () => isBrouillon,
-    then: (schema) => schema.notRequired(),
-  }),
+  descriptionLieuHebergement: yup
+    .string()
+    .max(
+      1000,
+      "La description du lieu d'hébergement ne doit pas dépasser 1000 caractères",
+    )
+    .when([], {
+      else: (schema) =>
+        schema.required(
+          "Une description du lieu d'hébergement est obligatoire",
+        ),
+      is: () => isBrouillon,
+      then: (schema) => schema.notRequired(),
+    }),
   fileDernierArreteAutorisationMaire: yup.mixed().when("reglementationErp", {
     is: true,
     otherwise: (schema) => schema.nullable().strip(),
@@ -146,14 +170,21 @@ const informationsLocauxSchema = (isBrouillon = false) => ({
     is: () => isBrouillon,
     then: (schema) => schema.notRequired(),
   }),
-  pension: yup.string().when([], {
-    else: (schema) =>
-      schema.required("Le choix d'un type de pension est obligatoire"),
-    is: () => isBrouillon,
-    then: (schema) => schema.notRequired(),
-  }),
+  pension: yup
+    .string()
+    .max(100, "Le type de pension ne doit pas dépasser 100 caractères")
+    .when([], {
+      else: (schema) =>
+        schema.required("Le choix d'un type de pension est obligatoire"),
+      is: () => isBrouillon,
+      then: (schema) => schema.notRequired(),
+    }),
   precisionAmenagementsSpecifiques: yup
     .string()
+    .max(
+      1000,
+      "La précision des aménagements spécifiques ne doit pas dépasser 1000 caractères",
+    )
     .when("amenagementsSpecifiques", {
       is: (amenagementsSpecifiques) => !!amenagementsSpecifiques,
       otherwise: (schema) => schema.nullable().strip(),
@@ -191,12 +222,17 @@ const informationsLocauxSchema = (isBrouillon = false) => ({
     is: () => isBrouillon,
     then: (schema) => schema.notRequired(),
   }),
-  type: yup.string().when([], {
-    else: (schema) =>
-      schema.required("Il est impératif de renseigner le type d'hébergement)"),
-    is: () => isBrouillon,
-    then: (schema) => schema.notRequired(),
-  }),
+  type: yup
+    .string()
+    .max(100, "Le type d'hébergement ne doit pas dépasser 100 caractères")
+    .when([], {
+      else: (schema) =>
+        schema.required(
+          "Il est impératif de renseigner le type d'hébergement)",
+        ),
+      is: () => isBrouillon,
+      then: (schema) => schema.notRequired(),
+    }),
   visiteLocaux: yup.boolean().when([], {
     else: (schema) =>
       schema.required(
@@ -217,28 +253,40 @@ const informationsLocauxSchema = (isBrouillon = false) => ({
 });
 
 const informationsTransportSchema = (isBrouillon = false) => ({
-  deplacementProximite: yup.string().when([], {
-    else: (schema) =>
-      schema
-        .min(
-          1,
-          "Il est impératif de préciser le mode de transport utilisé pour les déplacements à proximité",
-        )
-        .required(),
-    is: () => isBrouillon,
-    then: (schema) => schema.notRequired(),
-  }),
-  excursion: yup.string().when([], {
-    else: (schema) =>
-      schema
-        .min(
-          1,
-          "Il est impératif de préciser le mode de transport utilisé pour les excursions",
-        )
-        .required(),
-    is: () => isBrouillon,
-    then: (schema) => schema.notRequired(),
-  }),
+  deplacementProximite: yup
+    .string()
+    .max(
+      1000,
+      "Le mode de transport pour les déplacements à proximité ne doit pas dépasser 1000 caractères",
+    )
+    .when([], {
+      else: (schema) =>
+        schema
+          .min(
+            1,
+            "Il est impératif de préciser le mode de transport utilisé pour les déplacements à proximité",
+          )
+          .required(),
+      is: () => isBrouillon,
+      then: (schema) => schema.notRequired(),
+    }),
+  excursion: yup
+    .string()
+    .max(
+      1000,
+      "Le mode de transport pour les excursions ne doit pas dépasser 1000 caractères",
+    )
+    .when([], {
+      else: (schema) =>
+        schema
+          .min(
+            1,
+            "Il est impératif de préciser le mode de transport utilisé pour les excursions",
+          )
+          .required(),
+      is: () => isBrouillon,
+      then: (schema) => schema.notRequired(),
+    }),
   vehiculesAdaptes: yup.boolean().when([], {
     else: (schema) =>
       schema.required(
@@ -253,12 +301,23 @@ const schema = (isBrouillon = false) => ({
   coordonnees: yup.object(coordonneesSchema(isBrouillon)),
   informationsLocaux: yup.object(informationsLocauxSchema(isBrouillon)),
   informationsTransport: yup.object(informationsTransportSchema(isBrouillon)),
-  nom: yup.string().required(),
+  nom: yup
+    .string()
+    .max(80, "Le nom de l'hébergement ne doit pas dépasser 80 caractères")
+    .required(),
 });
+
+const validationError = (error) =>
+  new AppError(error?.errors?.[0] || "Une erreur a été détectée dans le body", {
+    cause: error,
+    name: "ValidationError",
+    statusCode: 400,
+  });
 
 module.exports = {
   coordonneesSchema,
   informationsLocauxSchema,
   informationsTransportSchema,
   schema,
+  validationError,
 };
