@@ -10,6 +10,9 @@ Emplacement : `.claude/skills/<name>/SKILL.md`
 
 | Skill                     | Quand l'appliquer                         | Fichier                                                                                              |
 | ------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `dev-back`                | Implémenter / modifier l'API backend      | [`.claude/skills/dev-back/SKILL.md`](.claude/skills/dev-back/SKILL.md)                               |
+| `dev-front`               | Implémenter / modifier le front Nuxt/Vue  | [`.claude/skills/dev-front/SKILL.md`](.claude/skills/dev-front/SKILL.md)                             |
+| `review-rgaa`             | Review accessibilité RGAA 4.1.2           | [`.claude/skills/review-rgaa/SKILL.md`](.claude/skills/review-rgaa/SKILL.md)                         |
 | `branch-review`           | Review de branche / PR vs `origin/main`   | [`.claude/skills/branch-review/SKILL.md`](.claude/skills/branch-review/SKILL.md)                     |
 | `write-unit-tests`        | Écrire / modifier des TU (`.spec.ts`)     | [`.claude/skills/write-unit-tests/SKILL.md`](.claude/skills/write-unit-tests/SKILL.md)               |
 | `write-integration-tests` | Écrire / modifier des TI API (`.test.ts`) | [`.claude/skills/write-integration-tests/SKILL.md`](.claude/skills/write-integration-tests/SKILL.md) |
