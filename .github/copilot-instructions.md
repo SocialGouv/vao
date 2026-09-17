@@ -6,6 +6,9 @@ Source de vérité : [`AGENTS.md`](../AGENTS.md). Config détaillée : [`.claude
 
 Quand la demande correspond, **lire et suivre** le fichier :
 
+- Backend / API → [`.claude/skills/dev-back/SKILL.md`](../.claude/skills/dev-back/SKILL.md)
+- Front Nuxt / Vue / DSFR → [`.claude/skills/dev-front/SKILL.md`](../.claude/skills/dev-front/SKILL.md)
+- Review RGAA / accessibilité → [`.claude/skills/review-rgaa/SKILL.md`](../.claude/skills/review-rgaa/SKILL.md)
 - Review de branche / PR vs `origin/main` → [`.claude/skills/branch-review/SKILL.md`](../.claude/skills/branch-review/SKILL.md)
 - Tests unitaires (`.spec.ts`) → [`.claude/skills/write-unit-tests/SKILL.md`](../.claude/skills/write-unit-tests/SKILL.md)
 - Tests d'intégration API → [`.claude/skills/write-integration-tests/SKILL.md`](../.claude/skills/write-integration-tests/SKILL.md)
