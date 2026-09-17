@@ -7,7 +7,8 @@ import {
   apiModel,
   useToaster,
 } from "@vao/shared-ui";
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted, watch } from "vue";
+
 const apiTypes = apiModel.apiTypes;
 
 const useExternalApi = useExternalApiStore();
@@ -20,18 +21,21 @@ const log = logger("components/search-address");
 
 const props = defineProps({
   label: { type: String, required: true },
+  hint: { type: String, required: false, default: null },
   initialAdress: { type: String, default: null },
   value: { type: Object, default: null },
   errorMessage: { type: String, default: null },
   validMessage: { type: String, default: null },
   modifiable: { type: Boolean, default: true },
+  freeAddressModale: { type: Boolean, default: true },
 });
 
-const emits = defineEmits(["select"]);
+const emits = defineEmits(["select", "clear"]);
 
 const NB_CAR_ADDRESSE_MIN = 5;
 
 type AddressOption = {
+  id: string;
   label: string;
   cleInsee?: string;
   codeInsee?: string;
@@ -40,80 +44,191 @@ type AddressOption = {
   departement?: string;
 };
 
+type AddressApiDto = {
+  properties: {
+    label: string;
+    id: string;
+    citycode: string;
+    postcode: string;
+    context: string;
+  };
+  geometry: {
+    coordinates: number[];
+  };
+};
+
+function toAddressOption(address: AddressApiDto): AddressOption {
+  return {
+    id: address.properties.id,
+    label: address.properties.label,
+    cleInsee: address.properties.id,
+    codeInsee: address.properties.citycode,
+    codePostal: address.properties.postcode,
+    coordinates: address.geometry.coordinates,
+    departement: address.properties.context.split(",")[0],
+  };
+}
+
 const options = ref<AddressOption[]>([]);
 const isLoading = ref(false);
+const searchQuery = ref("");
 
 const isModalOpen = ref(false);
 const multiselectRef = ref<Multiselect | null>(null);
+const multiselectWrapperRef = ref<HTMLElement | null>(null);
 
 const canShowClear = ref(false);
+const isPublishingSelection = ref(false);
 
 const message = computed(() => props.errorMessage || props.validMessage);
+
 const messageClass = computed(() =>
   props.errorMessage ? "fr-error-text" : "fr-valid-text",
 );
 
-async function searchAddress(queryString: string) {
-  if (queryString.length > NB_CAR_ADDRESSE_MIN && isLoading.value === false) {
-    await searchAddressDebounced(queryString);
-    canShowClear.value = true;
-  }
-  if (multiselectRef.value?.input.value.length === 0) {
-    canShowClear.value = false;
+const selectedLabel = computed(() => props.value?.label ?? undefined);
+
+function setPointerAtIndex(index: number) {
+  const option = options.value[index];
+  if (option) {
+    multiselectRef.value?.setPointer(option);
   }
 }
 
+let searchId = 0;
+
+let abortController: AbortController | null = null;
+
+function resetSearch() {
+  searchId++;
+  abortController?.abort();
+  abortController = null;
+  searchQuery.value = "";
+  options.value = [];
+  canShowClear.value = false;
+  isLoading.value = false;
+}
+
+function isRequestUpToDate(queryString: string, currentSearchId: number): boolean {
+  return currentSearchId === searchId && searchQuery.value === queryString;
+}
+
+function searchAddress(queryString: string) {
+  if (isPublishingSelection.value) {
+    return;
+  }
+
+  searchQuery.value = queryString;
+
+  if (queryString.length === 0 || queryString.length <= NB_CAR_ADDRESSE_MIN) {
+    resetSearch();
+    return;
+  }
+
+  canShowClear.value = true;
+  searchAddressDebounced(queryString);
+}
 const searchAddressDebounced = debounce(async function (queryString: string) {
-  log.d("searchAddressDebounced - IN", { queryString });
+  const currentSearchId = ++searchId;
+  log.d("searchAddressDebounced - IN", {
+    queryString,
+    searchId: currentSearchId,
+  });
+  abortController?.abort();
+  const controller = new AbortController();
+  abortController = controller;
+
   try {
     isLoading.value = true;
     options.value = [];
-    const url = "/geo/adresse/";
-    const { adresses } = await $fetchBackend(url, {
+    const { adresses } = await $fetchBackend("/geo/adresse/", {
       body: { queryString },
       method: "POST",
       credentials: "include",
+      signal: controller.signal,
     });
-    log.d("searchAddress", { adresses });
-    options.value = adresses.map(
-      (address: {
-        properties: {
-          label: string;
-          id: string;
-          citycode: string;
-          postcode: string;
-          context: string;
-        };
-        geometry: { coordinates: number[] };
-      }) => {
-        return {
-          label: address.properties.label,
-          cleInsee: address.properties.id,
-          codeInsee: address.properties.citycode,
-          codePostal: address.properties.postcode,
-          coordinates: address.geometry.coordinates,
-          departement: address.properties.context.split(",")[0],
-        };
-      },
+
+    if (!isRequestUpToDate(queryString, currentSearchId)) {
+      log.d("Recherche ignorée car obsolète", {
+        queryString,
+        currentSearchId,
+        searchId,
+      });
+
+      return;
+    }
+
+    options.value = adresses.map((address: AddressApiDto) =>
+      toAddressOption(address),
     );
-    isLoading.value = false;
-    log.d("searchAddress - DONE", { adresses });
+
+    log.d("searchAddress - DONE", {
+      adresses,
+      queryString,
+      searchId: currentSearchId,
+    });
   } catch (error) {
+    if (controller.signal.aborted || !isRequestUpToDate(queryString, currentSearchId)) {
+      log.d("Recherche annulée", {
+        queryString,
+        searchId: currentSearchId,
+      });
+
+      return;
+    }
+
     log.w("searchAddress", error);
-    isLoading.value = false;
     toaster.error({
       titleTag: "h2",
       description: "erreur lors de l'appel à l'API adresse",
       role: "alert",
     });
+  } finally {
+    if (currentSearchId === searchId) {
+      isLoading.value = false;
+    }
+
+    if (abortController === controller) {
+      abortController = null;
+    }
+
+    log.d("searchAddressDebounced - DONE", {
+      queryString,
+      searchId: currentSearchId,
+    });
   }
-  log.d("searchAddressDebounced - DONE", { queryString });
 }, 500);
 
 function select(_value: string | null, option: AddressOption) {
   log.i("select", option);
   emits("select", option);
   canShowClear.value = true;
+  applyEditableLabel(option.label);
+}
+
+function applyEditableLabel(label: string) {
+  isPublishingSelection.value = true;
+  multiselectRef.value?.update(null);
+  if (multiselectRef.value) {
+    multiselectRef.value.search = label;
+  }
+  requestAnimationFrame(() => {
+    multiselectRef.value?.close();
+    isPublishingSelection.value = false;
+  });
+}
+
+function onClear() {
+  log.d("onClear");
+  resetSearch();
+  if (multiselectRef.value) {
+    isPublishingSelection.value = true;
+    multiselectRef.value.search = "";
+    requestAnimationFrame(() => {
+      isPublishingSelection.value = false;
+    });
+  }
+  emits("clear");
 }
 
 function onManualChooseAddress(adresse: AddressOption) {
@@ -125,6 +240,96 @@ function onManualChooseAddress(adresse: AddressOption) {
 function onCloseModal() {
   isModalOpen.value = false;
 }
+
+function focusOption(el: HTMLElement) {
+  el.tabIndex = 0;
+  el.focus();
+  const index = Array.from(el.parentElement?.children ?? []).indexOf(el);
+  if (index >= 0) {
+    setPointerAtIndex(index);
+  }
+}
+
+function onListKeydown(event: KeyboardEvent) {
+  if (event.key !== "Tab" || options.value.length === 0) {
+    return;
+  }
+
+  const focused = document.activeElement as HTMLElement | null;
+  if (!focused) {
+    return;
+  }
+
+  const optionEls = Array.from(
+    multiselectWrapperRef.value?.querySelectorAll<HTMLElement>(
+      ".multiselect-option",
+    ) ?? [],
+  );
+  const isInput = focused === multiselectRef.value?.input;
+  const isOption = focused.classList.contains("multiselect-option");
+  const index = optionEls.indexOf(focused);
+  const lastIndex = optionEls.length - 1;
+
+  if (!isInput && !isOption) {
+    return;
+  }
+
+  if (event.shiftKey) {
+    if (isOption && index === 0) {
+      event.preventDefault();
+      multiselectRef.value?.focus();
+      return;
+    }
+    if (isOption && index > 0) {
+      const previous = optionEls[index - 1];
+      if (previous) {
+        event.preventDefault();
+        focusOption(previous);
+      }
+    }
+    return;
+  }
+
+  if (isInput) {
+    const first = optionEls[0];
+    if (first) {
+      event.preventDefault();
+      focusOption(first);
+    }
+    return;
+  }
+
+  if (index < lastIndex) {
+    const next = optionEls[index + 1];
+    if (next) {
+      event.preventDefault();
+      focusOption(next);
+    }
+  } else if (index === lastIndex) {
+    event.preventDefault();
+    document.getElementById("btn-saisir-adresse-libre")?.focus();
+  }
+}
+
+onMounted(() => {
+  document.addEventListener("keydown", onListKeydown);
+  if (props.value?.label) {
+    applyEditableLabel(props.value.label);
+  }
+});
+
+watch(
+  () => props.value?.label,
+  (label) => {
+    if (label) {
+      applyEditableLabel(label);
+    }
+  },
+);
+
+onUnmounted(() => {
+  document.removeEventListener("keydown", onListKeydown);
+});
 </script>
 
 <template>
@@ -146,7 +351,7 @@ function onCloseModal() {
         <ApiUnavailable
           :api-unavailable-types="useExternalApi.apisUnavailable"
           :display-types="[apiTypes.ADRESSE]"
-        ></ApiUnavailable>
+        />
       </div>
 
       <div class="fr-input-group fr-col-12">
@@ -159,26 +364,30 @@ function onCloseModal() {
         >
           <label class="fr-label">
             {{ label }}
+            <span v-if="hint" class="fr-hint-text">
+              {{ hint }}
+            </span>
           </label>
-          <div class="fr-multiselect-adress">
+          <div ref="multiselectWrapperRef" class="fr-multiselect-adress">
             <Multiselect
               ref="multiselectRef"
-              :value="props.value?.label"
+              :value="selectedLabel"
               value-prop="label"
               track-by="label"
               mode="single"
               :close-on-select="true"
+              :clear-on-blur="false"
               :searchable="true"
               :internal-search="true"
               :loading="isLoading"
               no-options-text="Rechercher une adresse"
               :options="options"
               autocomplete="off"
-              :can-clear="true"
+              :can-clear="canShowClear"
               :filter-results="false"
               @search-change="searchAddress"
               @select="select"
-              @clear="() => (canShowClear = false)"
+              @clear="onClear"
             >
               <template #option="{ option, isPointed }">
                 <MultiSelectOption
@@ -186,11 +395,21 @@ function onCloseModal() {
                   :is-pointed="isPointed(option)"
                 />
               </template>
-              <template #noresults> Pas de résultat</template>
+              <template #nooptions>
+                <span v-if="searchQuery.length > NB_CAR_ADDRESSE_MIN">
+                  Pas de résultat
+                </span>
+                <span v-else>
+                  Rechercher une adresse (saisissez au moins
+                  {{ NB_CAR_ADDRESSE_MIN }} caractères)
+                </span>
+              </template>
+              <template #noresults> Pas de résultat </template>
               <template #afterlist>
                 <div class="fr-multiselect-adress--free">
                   <span>Vous ne trouvez pas votre adresse ?</span>
                   <DsfrButton
+                    id="btn-saisir-adresse-libre"
                     label="Saisir une adresse libre"
                     type="button"
                     icon="fr-icon-edit-line"
@@ -209,18 +428,37 @@ function onCloseModal() {
           </div>
         </div>
       </div>
-      <DsfrModal
-        ref="modal-search-address-municipality"
-        name="modal-search-address-municipality"
-        :opened="isModalOpen"
-        title="Ajouter une adresse"
-        size="md"
-        @close="onCloseModal"
-      >
-        <AddressSearchAddressMunicipality
-          @choose-manual-address="onManualChooseAddress"
-        />
-      </DsfrModal>
+      <div v-if="!props.freeAddressModale" class="fr-fieldset__element">
+        <div v-if="isModalOpen" class="address-municipality">
+          <span class="fr-text--lg fr-text--bold"
+            >Saisir une adresse libre</span
+          >
+          <span class="fr-text--sm">
+            Vérifiez l'exactitude avec l'hébergeur
+          </span>
+          <AddressSearchAddressMunicipality
+            :label-voie="`Numéro et libellé  de la voie`"
+            :hint-voie="`Exemple : 123 route des oiseaux`"
+            :label-cp="`Code postal et ville`"
+            :hint-cp="`Exemple : 17800 Saint-Mauret`"
+            @choose-manual-address="onManualChooseAddress"
+          />
+        </div>
+      </div>
+      <div v-else class="fr-multiselect-adress--free">
+        <DsfrModal
+          ref="modal-search-address-municipality"
+          name="modal-search-address-municipality"
+          :opened="isModalOpen"
+          title="Ajouter une adresse"
+          size="md"
+          @close="onCloseModal"
+        >
+          <AddressSearchAddressMunicipality
+            @choose-manual-address="onManualChooseAddress"
+          />
+        </DsfrModal>
+      </div>
     </div>
   </div>
 </template>
@@ -228,6 +466,10 @@ function onCloseModal() {
 <style lang="scss" scoped>
 .fr-multiselect-adress {
   position: relative;
+}
+.address-municipality {
+  padding: 1rem;
+  border: 1px solid var(--border-default-grey, #ddd);
 }
 .fr-multiselect-adress--free {
   position: sticky;
@@ -244,6 +486,16 @@ function onCloseModal() {
   width: auto;
   flex: 0 0 auto;
 }
+.fr-multiselect-adress--pointer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+.fr-multiselect-adress--pointer input {
+  width: 4rem;
+  padding: 0.25rem 0.5rem;
+}
 .btn-multiselect-clear {
   position: absolute;
   display: block;
@@ -259,5 +511,15 @@ function onCloseModal() {
 .fr-multiselect-adress :deep(.multiselect-options) {
   max-height: none !important;
   overflow-y: visible !important;
+}
+
+.fr-multiselect-adress :deep(.multiselect-option) {
+  padding: 0.75rem 1rem;
+}
+
+.fr-multiselect-adress :deep(.multiselect-option.is-pointed) {
+  background-color: var(--background-contrast-blue-france, #f5f5fe);
+  box-shadow: inset 0.25rem 0 0 0 var(--artwork-major-blue-france, #000091);
+  outline: none;
 }
 </style>

@@ -1,8 +1,11 @@
 <template>
   <div class="fr-container">
     <DsfrBreadcrumb :links="links" />
-    <div class="fr-grid-row">
+    <div class="fr-grid-row fr-mb-2w">
       <div class="fr-col">
+        <h1 ref="pageHeadingRef" tabindex="-1">
+          Ajouter un nouvel hébergement
+        </h1>
         <HebergementsStepper :step="hash" class="fr-mb-2w" />
         <div v-if="hash === 'site-coordonnees'">
           <HebergementsSiteForm

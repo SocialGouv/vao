@@ -1,17 +1,9 @@
 <template>
   <form novalidate @submit.prevent="onSubmit">
-    <div class="fr-grid-row">
-      <div class="fr-pb-3w fr-col-12">
-        <h1 ref="pageHeadingRef" tabindex="-1">
-          Ajouter un nouvel hébergement
-        </h1>
-        <p class="fr-mb-2w">
-          Sauf mention contraire, tous les champs sont obligatoires.
-        </p>
-      </div>
+    <div class="fr-pb-3w fr-col-12">
+      Sauf mention contraire, tous les champs sont obligatoires.
     </div>
     <div class="fr-fieldset fr-mb-6w">
-      <h2 class="fr-h3 fr-mt-0">Coordonnées du site</h2>
       <div class="fr-col-12">
         <DsfrAlert
           class="fr-grid-row fr-my-3v"
@@ -27,7 +19,7 @@
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
           name="nomSiteOfficiel"
-          label="Nom du site officiel"
+          label="Nom officiel du lieu"
           :label-visible="true"
           placeholder=""
           hint="Saisir le nom officiel tel qu’indiqué par l’hébergeur. Exemple : Gîte des Pins"
@@ -41,7 +33,7 @@
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
           name="nomSiteOrganisme"
-          label="Nom officiel du lieu (optionnel)"
+          label="Nom utilisé par votre organisme (optionnel)"
           hint="Exemple : Gîte de mon séjour n°5"
           :label-visible="true"
           placeholder=""
@@ -57,22 +49,32 @@
           name="adresse"
           :value="(adresse as unknown as Record<string, unknown>) ?? undefined"
           label="Adresse"
-          hint="Exemple : 123 route des oiseaux, 17800 Saint-Mauret"
+          :free-address-modale="false"
           :initial-adress="initialAdresse"
           :error-message="adresseErrorMessage"
+          hint="Exemple : 123 route des oiseaux, 17800 Saint-Mauret"
           :modifiable="props.modifiable"
           @select="onAdresseChange"
         />
       </div>
     </div>
-
+    <div v-if="markers" class="fr-fieldset__element fr-col-12">
+      <div style="height: 50vh">
+        <MglMap
+          :map-style="`https://api.maptiler.com/maps/streets/style.json?key=${config.public.apiMapTiler}`"
+          :zoom="zoom"
+          :center="markers"
+        >
+          <MglNavigationControl />
+          <MglMarker :coordinates="markers" />
+        </MglMap>
+      </div>
+    </div>
     <div class="site-form-actions fr-mt-2w">
       <NuxtLink :to="defaultBackRoute" class="no-background-image">
         <DsfrButton type="button" secondary>Retour</DsfrButton>
       </NuxtLink>
-      <DsfrButton v-if="props.modifiable" type="submit" :disabled="!meta.valid">
-        Continuer
-      </DsfrButton>
+      <DsfrButton v-if="props.modifiable" type="submit"> Continuer </DsfrButton>
     </div>
   </form>
 </template>
@@ -83,11 +85,15 @@ import * as yup from "yup";
 import { DsfrButton, DsfrInputGroup } from "@gouvminint/vue-dsfr";
 import type { AdresseDto } from "@vao/shared-bridge";
 
+const config = useRuntimeConfig();
+
 interface SiteFormValues {
   nomSiteOfficiel: string;
   nomSiteOrganisme: string;
   adresse: AdresseDto | null;
 }
+
+const zoom = 15;
 
 const props = withDefaults(
   defineProps<{
@@ -106,11 +112,24 @@ const emit = defineEmits<{
 }>();
 
 const validationSchema = yup.object({
-  nomSiteOfficiel: yup.string().required("Le nom du site est obligatoire"),
+  nomSiteOfficiel: yup
+    .string()
+    .required("Le nom officiel du lieu est obligatoire. Veuillez le remplir.")
+    .max(
+      120,
+      "Le nom officiel du lieu ne doit pas dépasser 120 caractères. Veuillez corriger.",
+    ),
+  nomSiteOrganisme: yup
+    .string()
+    .optional()
+    .max(
+      120,
+      "Le nom du site de l'organisme ne doit pas dépasser 120 caractères. Veuillez corriger.",
+    ),
   adresse: yup
     .object()
     .nullable()
-    .required("L’adresse du site est obligatoire"),
+    .required("L’adresse du lieu est obligatoire. Veuillez la remplir."),
 });
 
 const initialValues = {
@@ -145,6 +164,7 @@ const {
 const initialAdresse = computed<string | undefined>(
   () => props.initSite?.adresse?.label ?? undefined,
 );
+const markers = computed(() => adresse.value?.coordinates ?? null);
 
 const onSubmit = handleSubmit((values) => {
   emit("submit", { ...values });

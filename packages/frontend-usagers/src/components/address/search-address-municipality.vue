@@ -5,10 +5,10 @@
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
             name="voie"
-            label="Indiquer la voie"
+            :label="props.labelVoie"
             :label-visible="true"
             :model-value="voie"
-            hint="Saisissez la voie. Exemple: 18 rue de la république / lieudit des Trois-Chênes"
+            :hint="props.hintVoie"
             @update:model-value="
               voie = $event;
               setAdresse();
@@ -18,7 +18,10 @@
       </div>
       <div class="fr-input-group fr-col-12">
         <div class="fr-fieldset__element">
-          <label class="fr-label"> Sélectionner un code postal </label>
+          <label class="fr-label">
+            {{ props.labelCp }}
+            <span class="fr-hint-text">{{ props.hintCp }}</span>
+          </label>
           <Multiselect
             value-prop="label"
             mode="single"
@@ -70,6 +73,30 @@ import * as yup from "yup";
 const { adresseSchema } = eigSchema;
 
 const emits = defineEmits(["choose-manual-address"]);
+
+const props = defineProps({
+  labelVoie: {
+    type: String,
+    required: false,
+    default: "Indiquer la voie",
+  },
+  hintVoie: {
+    type: String,
+    required: false,
+    default:
+      "Saisissez la voie. Exemple: 18 rue de la république / lieudit des Trois-Chênes",
+  },
+  labelCp: {
+    type: String,
+    required: false,
+    default: "Sélectionner un code postal",
+  },
+  hintCp: {
+    type: String,
+    required: false,
+    default: "",
+  },
+});
 
 const toaster = useToaster();
 const log = logger("components/search-address-municipality");

@@ -45,6 +45,7 @@
           :value="adresse as AdresseDto"
           :error-message="adresseErrorMessage"
           @select="onAdresseSelect"
+          @clear="onAdresseClear"
         />
       </div>
       <div class="fr-mt-6v">
@@ -167,6 +168,10 @@ function handleMonths(monthsArray: number[]) {
 
 function onAdresseSelect(selectedAddress: AdresseDto) {
   adresse.value = selectedAddress;
+}
+
+function onAdresseClear() {
+  adresse.value = undefined as unknown as AdresseDto;
 }
 
 const onSubmitAddSejour = handleSubmit(
