@@ -2,6 +2,8 @@ fileignoreconfig:
 
 - filename: .claude/product.md
   checksum: 60eb40f72aaa7536bf2ab4e233f5dd9f97c1be0b167664512f88d6bf321ee3b4
+- filename: .claude/skills/dev-front/SKILL.md
+  checksum: 2ea515b9369291d129690852527ec79274955722345f79650cca58d2b9f0ef42
 - filename: .env.dev.example.env
   checksum: 0d4dd5735338844f93598e7241aceed039bee97d07a8bbb9303f43cd22735959
 - filename: .github/workflows/e2e.yaml
