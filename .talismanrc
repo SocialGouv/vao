@@ -1,4 +1,5 @@
 fileignoreconfig:
+
 - filename: .claude/product.md
   checksum: 60eb40f72aaa7536bf2ab4e233f5dd9f97c1be0b167664512f88d6bf321ee3b4
 - filename: .env.dev.example.env
@@ -527,4 +528,4 @@ fileignoreconfig:
   checksum: 02a2dbfd1e8ee33508cfe0c1549876cad19b65eb07c3857d9c2bc97311c2533e
 - filename: s/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
-version: "1.0"
+  version: "1.0"

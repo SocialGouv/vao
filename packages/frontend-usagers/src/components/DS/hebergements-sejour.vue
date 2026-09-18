@@ -279,9 +279,10 @@ const {
 const { value: hebergements, handleChange: onHebergementsChange } =
   useField<DemandeSejourHebergementItemDto[]>("hebergements");
 
-hebergementStore.fetch({
+await hebergementStore.fetch({
   organismeId: demandeSejourStore.demandeCourante.organismeId,
   statut: hebergementUtils.statut.ACTIF,
+  limit: -1,
 });
 
 const tableData = computed(() => {
