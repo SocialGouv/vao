@@ -1,8 +1,8 @@
 <template>
-  <h3 id="animation-activites" class="fr-text--lead">
+  <component :is="`h${props.titleLevel}`" id="animation-activites" class="fr-text--lead">
     <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
     Animation et activités prévues
-  </h3>
+  </component>
   <fieldset class="no-border" aria-labelledby="animation-activites">
     <div class="flex flex-col">
       <div>
@@ -67,6 +67,7 @@ const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
   modifiable: { type: Boolean, default: false },
+  titleLevel: { type: Number, default: 3 },
 });
 
 onMounted(async () => {
