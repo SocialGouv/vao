@@ -5,24 +5,28 @@
       :init-agrement="props.initAgrement ?? {}"
       :cdn-url="props.cdnUrl"
       :modifiable="props.modifiable"
+      :title-level="titreNiveau"
     />
     <AgrementBilanSejours
       ref="sejoursRef"
       :init-agrement="props.initAgrement ?? {}"
       :cdn-url="props.cdnUrl"
       :modifiable="props.modifiable"
+      :title-level="titreNiveau"
     />
     <AgrementBilanQualitatif
       ref="qualitatifRef"
       :init-agrement="props.initAgrement ?? {}"
       :cdn-url="props.cdnUrl"
       :modifiable="props.modifiable"
+      :title-level="titreNiveau"
     />
     <div class="separator fr-mt-8v"></div>
     <AgrementBilanFinancier
       ref="financierRef"
       :init-agrement="props.initAgrement ?? {}"
       :modifiable="props.modifiable"
+      :title-level="titreNiveau"
     />
     <div v-if="props.showButtons && props.modifiable">
       <div class="fr-fieldset__element">
@@ -40,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import type { Ref } from "vue";
 import { useToaster } from "@vao/shared-ui";
 import { AGREMENT_STATUTS_PERMISSIFS } from "@vao/shared-bridge";
@@ -63,6 +67,8 @@ const props = defineProps({
 });
 
 const toaster = useToaster();
+
+const titreNiveau = computed(() => (props.modifiable ? 3 : 4));
 
 const log = logger("AgrementBilan");
 
