@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@nuxt/eslint-config": "catalog:",
-    "@types/debug": "^4.1.12",
+    "@types/debug": "^4.1.13",
     "eslint": "catalog:",
     "eslint-config-prettier": "catalog:",
     "prettier": "catalog:",
