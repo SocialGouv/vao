@@ -9,7 +9,7 @@ catalog:
   "@gouvminint/vue-dsfr": "^8.19.0"
   "@iconify/vue": "^5.0.1"
   "@nuxt/eslint-config": "1.9.0"
-  "@nuxt/test-utils": "^3.23.0"
+  "@nuxt/test-utils": "^4.1.0"
   "@pinia/nuxt": "^0.11.3"
   "@popperjs/core": "^2.11.8"
   "@sentry/nestjs": "^10.68.0"
