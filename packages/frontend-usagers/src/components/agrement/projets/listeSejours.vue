@@ -42,7 +42,7 @@
       <div class="fr-mt-6v">
         <SearchAddress
           label="Adresse de l'hébergement"
-          :value="adresse as AdresseDto"
+          :value="adresse"
           :error-message="adresseErrorMessage"
           @select="onAdresseSelect"
           @clear="onAdresseClear"
@@ -154,7 +154,7 @@ const {
   meta: nbVacanciersMeta,
 } = useField<number>("nbVacanciers");
 const { value: adresse, errorMessage: adresseErrorMessage } =
-  useField<AdresseDto>("adresse");
+  useField<AdresseDto | undefined>("adresse");
 
 const {
   value: mois,
@@ -171,7 +171,7 @@ function onAdresseSelect(selectedAddress: AdresseDto) {
 }
 
 function onAdresseClear() {
-  adresse.value = undefined as unknown as AdresseDto;
+  adresse.value = undefined;
 }
 
 const onSubmitAddSejour = handleSubmit(

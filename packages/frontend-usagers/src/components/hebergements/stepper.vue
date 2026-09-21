@@ -13,7 +13,7 @@ const props = defineProps({
 
 const steps = computed(() => hebergementSiteMenu.menus.map((o) => o.text));
 
-const currentStep = computed(() =>
-  hebergementSiteMenu.menus.findIndex((o) => o.id === props.step),
+const currentStep = computed(
+  () => hebergementSiteMenu.menus.findIndex((o) => o.id === props.step) ?? 0,
 );
 </script>

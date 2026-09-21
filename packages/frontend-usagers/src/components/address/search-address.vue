@@ -109,7 +109,10 @@ function resetSearch() {
   isLoading.value = false;
 }
 
-function isRequestUpToDate(queryString: string, currentSearchId: number): boolean {
+function isRequestUpToDate(
+  queryString: string,
+  currentSearchId: number,
+): boolean {
   return currentSearchId === searchId && searchQuery.value === queryString;
 }
 
@@ -168,7 +171,10 @@ const searchAddressDebounced = debounce(async function (queryString: string) {
       searchId: currentSearchId,
     });
   } catch (error) {
-    if (controller.signal.aborted || !isRequestUpToDate(queryString, currentSearchId)) {
+    if (
+      controller.signal.aborted ||
+      !isRequestUpToDate(queryString, currentSearchId)
+    ) {
       log.d("Recherche annulée", {
         queryString,
         searchId: currentSearchId,
@@ -241,6 +247,11 @@ function onCloseModal() {
   isModalOpen.value = false;
 }
 
+function openFreeAddressModal() {
+  isModalOpen.value = true;
+  multiselectRef.value?.deactivate();
+}
+
 function focusOption(el: HTMLElement) {
   el.tabIndex = 0;
   el.focus();
@@ -265,47 +276,80 @@ function onListKeydown(event: KeyboardEvent) {
       ".multiselect-option",
     ) ?? [],
   );
+
   const isInput = focused === multiselectRef.value?.input;
   const isOption = focused.classList.contains("multiselect-option");
-  const index = optionEls.indexOf(focused);
-  const lastIndex = optionEls.length - 1;
 
   if (!isInput && !isOption) {
     return;
   }
 
-  if (event.shiftKey) {
-    if (isOption && index === 0) {
-      event.preventDefault();
-      multiselectRef.value?.focus();
-      return;
-    }
-    if (isOption && index > 0) {
-      const previous = optionEls[index - 1];
-      if (previous) {
-        event.preventDefault();
-        focusOption(previous);
-      }
-    }
+  if (isInput) {
+    focusFirstOption(event, optionEls);
     return;
   }
 
-  if (isInput) {
-    const first = optionEls[0];
-    if (first) {
-      event.preventDefault();
-      focusOption(first);
-    }
+  const index = optionEls.indexOf(focused);
+
+  if (event.shiftKey) {
+    focusPreviousOption(event, optionEls, index);
     return;
   }
+
+  focusNextOption(event, optionEls, index);
+}
+
+function focusFirstOption(event: KeyboardEvent, optionEls: HTMLElement[]) {
+  const first = optionEls[0];
+
+  if (!first) {
+    return;
+  }
+
+  event.preventDefault();
+  focusOption(first);
+}
+
+function focusPreviousOption(
+  event: KeyboardEvent,
+  optionEls: HTMLElement[],
+  index: number,
+) {
+  if (index === 0) {
+    event.preventDefault();
+    multiselectRef.value?.focus();
+    return;
+  }
+
+  const previous = optionEls[index - 1];
+
+  if (!previous) {
+    return;
+  }
+
+  event.preventDefault();
+  focusOption(previous);
+}
+
+function focusNextOption(
+  event: KeyboardEvent,
+  optionEls: HTMLElement[],
+  index: number,
+) {
+  const lastIndex = optionEls.length - 1;
 
   if (index < lastIndex) {
     const next = optionEls[index + 1];
+
     if (next) {
       event.preventDefault();
       focusOption(next);
     }
-  } else if (index === lastIndex) {
+
+    return;
+  }
+
+  if (index === lastIndex) {
     event.preventDefault();
     document.getElementById("btn-saisir-adresse-libre")?.focus();
   }
@@ -415,7 +459,7 @@ onUnmounted(() => {
                     icon="fr-icon-edit-line"
                     always-visible
                     secondary
-                    @click="isModalOpen = true"
+                    @click="openFreeAddressModal"
                   />
                 </div>
               </template>

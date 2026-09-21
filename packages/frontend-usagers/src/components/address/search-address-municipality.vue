@@ -9,10 +9,7 @@
             :label-visible="true"
             :model-value="voie"
             :hint="props.hintVoie"
-            @update:model-value="
-              voie = $event;
-              setAdresse();
-            "
+            @update:model-value="onVoieUpdate"
           />
         </div>
       </div>
@@ -47,7 +44,7 @@
                 :is-pointed="isPointed(option)"
               />
             </template>
-            <template #no-result> Pas de résultat</template>
+            <template #noresults> Pas de résultat</template>
           </Multiselect>
         </div>
       </div>
@@ -64,12 +61,13 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
 import { MultiSelectOption, eigSchema, useToaster } from "@vao/shared-ui";
 import { useForm } from "vee-validate";
 import * as yup from "yup";
+import type { MunicipalityOption, ApiAdresseResult } from "@vao/shared-ui";
 const { adresseSchema } = eigSchema;
 
 const emits = defineEmits(["choose-manual-address"]);
@@ -103,11 +101,11 @@ const log = logger("components/search-address-municipality");
 
 const NB_CAR_ADDRESSE_MIN = 3;
 
-const options = ref([]);
+const options = ref<MunicipalityOption[]>([]);
 const isLoading = ref(false);
 
 const voie = ref("");
-const municipality = ref({
+const municipality = ref<MunicipalityOption>({
   label: "",
   codeInsee: "",
   codePostal: "",
@@ -120,33 +118,48 @@ const { values, meta, setValues, resetForm } = useForm({
   validationSchema,
 });
 
-async function searchAddress(queryString) {
+function onVoieUpdate(value: string | number | undefined) {
+  voie.value =
+    typeof value === "string"
+      ? value
+      : value === undefined
+        ? ""
+        : String(value);
+  setAdresse();
+}
+
+async function searchAddress(queryString: string) {
   if (queryString?.length >= NB_CAR_ADDRESSE_MIN && isLoading.value === false) {
     await searchAddressDebounced(queryString + "&type=municipality");
   }
 }
 
-const searchAddressDebounced = debounce(async function (queryString) {
+const searchAddressDebounced = debounce(async function (queryString: string) {
   log.d("searchAddressDebounced - IN", { queryString });
   try {
     isLoading.value = true;
     options.value = [];
     const url = "/geo/adresse/";
-    const { adresses } = await $fetchBackend(url, {
-      body: { queryString },
-      method: "POST",
-      credentials: "include",
-    });
+    const { adresses } = await $fetchBackend<{ adresses: ApiAdresseResult[] }>(
+      url,
+      {
+        body: { queryString },
+        method: "POST",
+        credentials: "include",
+      },
+    );
     log.d("searchAddress", { adresses });
-    options.value = adresses.map((address) => {
-      return {
-        label: address.properties.label,
-        codeInsee: address.properties.citycode,
-        codePostal: address.properties.postcode,
-        coordinates: address.geometry.coordinates,
-        departement: address.properties.context.split(",")[0],
-      };
-    });
+    options.value = adresses.map(
+      (address: ApiAdresseResult): MunicipalityOption => {
+        return {
+          label: address.properties.label,
+          codeInsee: address.properties.citycode,
+          codePostal: address.properties.postcode,
+          coordinates: address.geometry.coordinates,
+          departement: address.properties.context?.split(",")[0] ?? "",
+        };
+      },
+    );
     isLoading.value = false;
     log.d("searchAddress - DONE", { adresses });
   } catch (error) {
@@ -161,7 +174,7 @@ const searchAddressDebounced = debounce(async function (queryString) {
   log.d("searchAddressDebounced - DONE", { queryString });
 }, 500);
 
-function selectMunicipality(_value, option) {
+function selectMunicipality(_value: unknown, option: MunicipalityOption) {
   municipality.value = {
     label: option.label,
     codeInsee: option.codeInsee,
