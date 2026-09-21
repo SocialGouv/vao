@@ -1,5 +1,9 @@
 <template>
-  <component :is="`h${props.titleLevel}`" id="sejours-par-annee" class="fr-text--lead">
+  <component
+    :is="`h${props.titleLevel}`"
+    id="sejours-par-annees"
+    class="fr-text--lead"
+  >
     <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
     Séjours (par années)
   </component>
