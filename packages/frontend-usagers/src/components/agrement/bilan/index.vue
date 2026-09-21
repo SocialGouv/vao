@@ -7,6 +7,7 @@
       :modifiable="props.modifiable"
       :title-level="titreNiveau"
     />
+    <div class="separator fr-my-8v"></div>
     <AgrementBilanSejours
       ref="sejoursRef"
       :init-agrement="props.initAgrement ?? {}"
@@ -21,7 +22,7 @@
       :modifiable="props.modifiable"
       :title-level="titreNiveau"
     />
-    <div class="separator fr-mt-8v"></div>
+    <div class="separator fr-my-8v"></div>
     <AgrementBilanFinancier
       ref="financierRef"
       :init-agrement="props.initAgrement ?? {}"

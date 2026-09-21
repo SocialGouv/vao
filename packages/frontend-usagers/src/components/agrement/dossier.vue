@@ -37,7 +37,12 @@
       />
     </div>
   </fieldset>
-  <component :is="`h${titreNiveau}`" id="immatriculations" class="fr-text--lead">
+  <div class="separator fr-my-4v"></div>
+  <component
+    :is="`h${titreNiveau}`"
+    id="immatriculations"
+    class="fr-text--lead fr-mt-8v"
+  >
     <span class="fr-icon-briefcase-fill" aria-hidden="true"></span>
     Immatriculation
   </component>
@@ -102,7 +107,13 @@
     </div>
   </fieldset>
 
-  <component :is="`h${titreNiveau}`" id="attestations" class="fr-text--lead">
+  <div class="separator fr-my-4v"></div>
+
+  <component
+    :is="`h${titreNiveau}`"
+    id="attestations"
+    class="fr-text--lead fr-mt-8v"
+  >
     <span class="fr-icon-file-text-fill" aria-hidden="true"></span>
     Attestations
   </component>
