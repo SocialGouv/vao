@@ -42,12 +42,19 @@
     </div>
     <div class="fr-fieldset__element">
       <DsfrCheckbox
+        v-if="props.modifiable"
         v-model="bilanAucunChangementEvolution"
         name="checkbox-required-custom"
         label="Aucun changement ou évolution à déclarer."
-        :readonly="!props.modifiable"
         :error-message="bilanAucunChangementEvolutionErrorMessage"
         :value="true"
+      />
+      <UtilsDisplayCheckbox
+        v-else
+        name="bilanAucunChangementEvolution"
+        label="Aucun changement ou évolution à déclarer."
+        :checked="bilanAucunChangementEvolution"
+        :is-valid="true"
       />
     </div>
   </fieldset>
