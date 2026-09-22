@@ -111,6 +111,13 @@
         :error-message="nbTotalJoursVacancesErrorMessage"
         @update:model-value="onNbTotalJoursVacancesChange"
       />
+      <UtilsDisplayInput
+        v-else
+        :value="nbTotalJoursVacances"
+        :input="displayInput.AgrementBilanAnnuelInput['nbTotalJoursVacances']"
+        :is-valid="nbTotalJoursVacancesMeta.valid"
+        :error-message="nbTotalJoursVacancesErrorMessage"
+      />
     </div>
   </div>
 </template>
