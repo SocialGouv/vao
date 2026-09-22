@@ -150,6 +150,10 @@ const AgrementBilanAnnuelInput = {
     inputType: InputTypes.NUMBER,
     label: "Nombre de femmes",
   },
+  nbTotalJoursVacances: {
+    inputType: InputTypes.NUMBER,
+    label: "Nombre total de jours de vacances",
+  },
   trancheAge: {
     ...multi("Tranches d’âge", AGE_RANGE_OPTIONS),
   },
