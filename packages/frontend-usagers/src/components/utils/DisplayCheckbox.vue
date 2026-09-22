@@ -37,4 +37,8 @@ const props = defineProps({
 .container :deep(.fr-label) {
   color: var(--text-default-grey);
 }
+
+.container :deep(.fr-checkbox-group input[type="checkbox"]:not(:checked):disabled ~ label) {
+  --background-disabled-grey: #929292;
+}
 </style>
