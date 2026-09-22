@@ -8,15 +8,15 @@
       Personne morale
     </TitleWithIcon>
     <dl class="fr-text--sm fr-pl-0">
-      <dt>Dénomination sociale:</dt>
-      <dd>{{ personneMorale.raisonSociale || "-" }}</dd>
-      <dt>Statut, forme juridique:</dt>
-      <dd>{{ personneMorale.statut || "-" }}</dd>
+      <dt class="read-only-label">Dénomination sociale:</dt>
+      <dd class="read-only-value">{{ personneMorale.raisonSociale || "—" }}</dd>
+      <dt class="read-only-label">Statut, forme juridique:</dt>
+      <dd class="read-only-value">{{ personneMorale.statut || "—" }}</dd>
 
       <template v-if="!isEditingTelephone">
-        <dt>Téléphone :</dt>
-        <dd>
-          {{ personneMorale.telephone || "-" }}
+        <dt class="read-only-label">Téléphone :</dt>
+        <dd class="read-only-value">
+          {{ personneMorale.telephone || "—" }}
           <DsfrLinkV2
             v-if="modifiable"
             as="button"
@@ -50,9 +50,9 @@
       </template>
 
       <template v-if="!isEditingEmail">
-        <dt>Email :</dt>
-        <dd>
-          {{ personneMorale.email || "-" }}
+        <dt class="read-only-label">Email :</dt>
+        <dd class="read-only-value">
+          {{ personneMorale.email || "—" }}
           <DsfrLinkV2
             v-if="modifiable"
             as="button"
@@ -84,8 +84,8 @@
           </fieldset>
         </dd>
       </template>
-      <dt>Adresse du siège social :</dt>
-      <dd>{{ personneMorale.adresse || "-" }}</dd>
+      <dt class="read-only-label">Adresse du siège social :</dt>
+      <dd class="read-only-value">{{ personneMorale.adresse || "—" }}</dd>
     </dl>
 
     <AgrementRepresentants
@@ -216,9 +216,6 @@ dl {
 }
 dd {
   padding-left: 0;
-}
-dt {
-  font-weight: bold;
 }
 .full-width {
   grid-column: 1 / span 2;
