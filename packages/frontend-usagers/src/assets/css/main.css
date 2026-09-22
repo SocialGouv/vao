@@ -30,7 +30,8 @@
 }
 
 .read-only-label {
-  color: grey;
+  color: var(--text-default);
+  font-weight: bold;
 }
 
 .read-only-value {
