@@ -8,19 +8,19 @@
       Personne physique
     </TitleWithIcon>
     <dl>
-      <dt>Prénom:</dt>
-      <dd>{{ personnePhysique.prenom || "-" }}</dd>
-      <dt>Nom de naissance:</dt>
-      <dd>{{ personnePhysique.nomNaissance || "-" }}</dd>
-      <dt>Nom d'usage:</dt>
-      <dd>{{ personnePhysique.nomUsage || "-" }}</dd>
-      <dt>Profession:</dt>
-      <dd>{{ personnePhysique.profession || "-" }}</dd>
+      <dt class="read-only-label">Prénom:</dt>
+      <dd class="read-only-value">{{ personnePhysique.prenom || "—" }}</dd>
+      <dt class="read-only-label">Nom de naissance:</dt>
+      <dd class="read-only-value">{{ personnePhysique.nomNaissance || "—" }}</dd>
+      <dt class="read-only-label">Nom d'usage:</dt>
+      <dd class="read-only-value">{{ personnePhysique.nomUsage || "—" }}</dd>
+      <dt class="read-only-label">Profession:</dt>
+      <dd class="read-only-value">{{ personnePhysique.profession || "—" }}</dd>
 
       <template v-if="!isEditingTelephone">
-        <dt>Téléphone:</dt>
-        <dd>
-          {{ personnePhysique.telephone || "-" }}
+        <dt class="read-only-label">Téléphone:</dt>
+        <dd class="read-only-value">
+          {{ personnePhysique.telephone || "—" }}
           <DsfrLinkV2
             v-if="modifiable"
             as="button"
@@ -53,10 +53,10 @@
         </dd>
       </template>
 
-      <dt>Adresse du siège de ses activité:</dt>
-      <dd>{{ personnePhysique.adresseDomicile.label || "-" }}</dd>
-      <dt>Adresse de ses activités:</dt>
-      <dd>{{ personnePhysique.adresseSiege.label || "-" }}</dd>
+      <dt class="read-only-label">Adresse du siège de ses activité:</dt>
+      <dd class="read-only-value">{{ personnePhysique.adresseDomicile.label || "—" }}</dd>
+      <dt class="read-only-label">Adresse de ses activités:</dt>
+      <dd class="read-only-value">{{ personnePhysique.adresseSiege.label || "—" }}</dd>
     </dl>
   </div>
   <DsfrAlert
@@ -168,9 +168,6 @@ dl {
 }
 dd {
   padding-left: 0;
-}
-dt {
-  font-weight: bold;
 }
 .full-width {
   grid-column: 1 / span 2;
