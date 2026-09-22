@@ -124,12 +124,12 @@
     </template>
     <template v-else>
       <dl class="fr-text--sm fr-pl-0">
-        <dt>Prénom:</dt>
-        <dd>{{ representant.prenom || "-" }}</dd>
-        <dt>Nom:</dt>
-        <dd>{{ representant.nom || "-" }}</dd>
-        <dt>Fonction:</dt>
-        <dd>{{ representant.fonction || "-" }}</dd>
+        <dt class="read-only-label">Prénom:</dt>
+        <dd class="read-only-value">{{ representant.prenom || "—" }}</dd>
+        <dt class="read-only-label">Nom:</dt>
+        <dd class="read-only-value">{{ representant.nom || "—" }}</dd>
+        <dt class="read-only-label">Fonction:</dt>
+        <dd class="read-only-value">{{ representant.fonction || "—" }}</dd>
       </dl>
       <!-- Affichage des erreurs de validation si présentes -->
       <ul
@@ -406,9 +406,6 @@ dl {
 }
 dd {
   padding-left: 0;
-}
-dt {
-  font-weight: bold;
 }
 .errors-list {
   list-style: none;
