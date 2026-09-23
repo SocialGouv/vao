@@ -234,7 +234,7 @@ const AgrementProjetsInput = {
   },
   activitesSelectionnees: {
     inputType: InputTypes.MULTISELECT,
-    label: "",
+    label: "Activités prévues",
   },
   nomHebergement: {
     inputType: InputTypes.TEXT,

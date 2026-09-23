@@ -38,10 +38,20 @@
       :statut="props.initAgrement.statut || AGREMENT_STATUT.BROUILLON"
     />
     <div class="separator fr-mb-6v"></div>
-    <fieldset class="no-border">
-      <legend class="fr-fieldset__legend fr-text--lg">
+    <component
+      :is="props.modifiable ? 'fieldset' : 'div'"
+      class="no-border"
+    >
+      <component
+        :is="props.modifiable ? 'legend' : 'h4'"
+        :class="
+          props.modifiable
+            ? 'fr-fieldset__legend fr-text--lg'
+            : 'fr-my-2w fr-text--lg fr-text--bold'
+        "
+      >
         Informations complémentaires
-      </legend>
+      </component>
       <div class="fr-col-6 fr-mb-4v">
         <DsfrInput
           v-if="props.modifiable"
@@ -88,7 +98,7 @@
           :modifiable="props.modifiable"
         />
       </div>
-    </fieldset>
+    </component>
     <div class="fr-p-4v fr-mt-6v bg-light-blue">
       <p>
         <span class="fr-text--bold"

@@ -15,10 +15,20 @@
       >. L’un des deux est requis.
     </p>
     <div class="border fr-p-4v">
-      <fieldset class="no-border">
-        <legend class="fr-fieldset__legend fr-text--lead">
+      <component
+        :is="props.modifiable ? 'fieldset' : 'div'"
+        class="no-border"
+      >
+        <component
+          :is="props.modifiable ? 'legend' : 'h4'"
+          :class="
+            props.modifiable
+              ? 'fr-fieldset__legend fr-text--lead'
+              : 'fr-my-2w fr-text--lead fr-text--bold'
+          "
+        >
           Perception et ressenti des vacanciers sur les séjours réalisés
-        </legend>
+        </component>
         <div class="fr-fieldset__element">
           <p
             id="bilanQualPerceptionSensibilite-desc"
@@ -70,14 +80,24 @@
             {{ filesBilanQualitPerceptionError }}
           </p>
         </div>
-      </fieldset>
+      </component>
     </div>
     <div class="border fr-p-4v fr-mt-6v">
-      <fieldset class="no-border fr-p-4v">
-        <legend class="fr-fieldset__legend fr-text--lead">
+      <component
+        :is="props.modifiable ? 'fieldset' : 'div'"
+        class="no-border fr-p-4v"
+      >
+        <component
+          :is="props.modifiable ? 'legend' : 'h4'"
+          :class="
+            props.modifiable
+              ? 'fr-fieldset__legend fr-text--lead'
+              : 'fr-my-2w fr-text--lead fr-text--bold'
+          "
+        >
           Évolutions prévues des activités VAO et perspectives de développement
           à venir
-        </legend>
+        </component>
         <div class="fr-fieldset__element">
           <p
             id="bilanQualPerspectiveEvol-desc"
@@ -128,13 +148,23 @@
             {{ filesBilanQualitPerspectivesError }}
           </p>
         </div>
-      </fieldset>
+      </component>
     </div>
     <div class="border fr-p-4v fr-mt-6v">
-      <fieldset class="no-border fr-p-4v">
-        <legend class="fr-fieldset__legend fr-text--lead">
+      <component
+        :is="props.modifiable ? 'fieldset' : 'div'"
+        class="no-border fr-p-4v"
+      >
+        <component
+          :is="props.modifiable ? 'legend' : 'h4'"
+          :class="
+            props.modifiable
+              ? 'fr-fieldset__legend fr-text--lead'
+              : 'fr-my-2w fr-text--lead fr-text--bold'
+          "
+        >
           Eléments marquants autour des activités VAO
-        </legend>
+        </component>
         <div class="fr-fieldset__element">
           <p
             id="bilanQualElementsMarquants-desc"
@@ -163,7 +193,7 @@
             />
             <UtilsDisplayInput
               v-else
-              :value="bilanQualPerspectiveEvol"
+              :value="bilanQualElementsMarquants"
               :input="
                 displayInput.AgrementBilanAnnuelInput[
                   'bilanQualElementsMarquants'
@@ -188,7 +218,7 @@
             {{ filesBilanQualitElementsMarquantsError }}
           </p>
         </div>
-      </fieldset>
+      </component>
     </div>
     <div class="fr-fieldset__element fr-mt-6v">
       <UtilsMultiFilesUpload

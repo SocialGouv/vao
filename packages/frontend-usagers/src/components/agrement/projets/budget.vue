@@ -1,9 +1,17 @@
 <template>
-  <component :is="`h${props.titleLevel}`" id="budget-personnes" class="fr-text--lead">
+  <component
+    :is="`h${props.titleLevel}`"
+    id="budget-personnes"
+    class="fr-text--lead"
+  >
     <span class="fr-icon-bank-card-fill" aria-hidden="true"></span>
     Budget des personnes prévu
   </component>
-  <fieldset class="no-border" aria-labelledby="budget-personnes">
+  <component
+    :is="props.modifiable ? 'fieldset' : 'div'"
+    class="no-border"
+    :aria-labelledby="props.modifiable ? 'budget-personnes' : undefined"
+  >
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup
@@ -67,7 +75,7 @@
         label="Ajouter des fichiers (optionnel)"
       />
     </div>
-  </fieldset>
+  </component>
 </template>
 
 <script setup lang="ts">
