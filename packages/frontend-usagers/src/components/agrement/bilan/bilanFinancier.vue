@@ -1,9 +1,19 @@
 <template>
-  <component :is="`h${props.titleLevel}`" id="bilan-financier-dernieres-annee" class="fr-text--lead">
+  <component
+    :is="`h${props.titleLevel}`"
+    id="bilan-financier-dernieres-annee"
+    class="fr-text--lead"
+  >
     <span class="fr-icon-bank-card-fill" aria-hidden="true"></span>
     Bilan financier sur les 4 dernières années
   </component>
-  <fieldset class="no-border" aria-labelledby="bilan-financier-dernieres-annee">
+  <component
+    :is="props.modifiable ? 'fieldset' : 'div'"
+    class="no-border"
+    :aria-labelledby="
+      props.modifiable ? 'bilan-financier-dernieres-annee' : undefined
+    "
+  >
     <div class="fr-mt-8v">
       <div class="fr-fieldset__element">
         <div class="fr-col-12">
@@ -126,7 +136,7 @@
         </div>
       </div>
     </div>
-  </fieldset>
+  </component>
   <div class="fr-fieldset__element fr-mt-6v fr-mb-10v">
     <UtilsMultiFilesUpload
       v-model="filesBilanFinancierQuatreAnnees"
