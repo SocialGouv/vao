@@ -1,7 +1,16 @@
 <template>
   <div class="modal-container">
+    <button
+      type="button"
+      class="close-button"
+      aria-label="Fermer"
+      title="Fermer"
+      @click="closeModal"
+    >
+      ✕
+    </button>
     <div class="fr-fieldset">
-      <div class="fr-fieldset__element">
+      <div class="fr-fieldset__element fr-col-12">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
             name="voie"
@@ -13,8 +22,8 @@
           />
         </div>
       </div>
-      <div class="fr-input-group fr-col-12">
-        <div class="fr-fieldset__element">
+      <div class="fr-fieldset__element fr-col-12">
+        <div class="fr-input-group fr-col-12">
           <label class="fr-label">
             {{ props.labelCp }}
             <span class="fr-hint-text">{{ props.hintCp }}</span>
@@ -51,13 +60,7 @@
     </div>
     <label class="fr-label"> Adresse selectionnée : </label>
     <DsfrHighlight small>{{ adresseLabel }}</DsfrHighlight>
-    <DsfrButton
-      type="button"
-      label="Valider"
-      primary
-      :disabled="!meta.valid"
-      @click="validate"
-    />
+    <DsfrButton type="button" label="Valider" primary @click="validate" />
   </div>
 </template>
 
@@ -70,7 +73,7 @@ import * as yup from "yup";
 import type { MunicipalityOption, ApiAdresseResult } from "@vao/shared-ui";
 const { adresseSchema } = eigSchema;
 
-const emits = defineEmits(["choose-manual-address"]);
+const emits = defineEmits(["choose-manual-address", "close"]);
 
 const props = defineProps({
   labelVoie: {
@@ -198,18 +201,27 @@ const adresseLabel = computed(() => {
 });
 
 function setAdresse() {
+  const hasVoie = voie.value.trim().length > 0;
+  const hasMunicipality =
+    municipality.value.label?.trim().length > 0 &&
+    municipality.value.codePostal?.trim().length > 0;
+
   setValues({
     codeInsee: municipality.value.codeInsee,
     codePostal: municipality.value.codePostal,
     coordinates: municipality.value.coordinates,
     departement: municipality.value.departement,
-    label:
-      voie.value?.length &&
-      municipality.value.label?.length &&
-      municipality.value.codePostal?.length
+    label: hasMunicipality
+      ? hasVoie
         ? adresseLabel.value
-        : "",
+        : `${municipality.value.codePostal} ${municipality.value.label}`.trim()
+      : "",
   });
+}
+
+function closeModal() {
+  emits("close");
+  resetForm();
 }
 
 function validate() {
@@ -223,7 +235,32 @@ function validate() {
 
 <style scoped>
 .modal-container {
+  position: relative;
   padding-top: 1rem;
+}
+
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-title-grey);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fr-fieldset {
+  width: 100%;
+}
+
+.fr-fieldset__element,
+.fr-input-group,
+:deep(.multiselect),
+:deep(.multiselect-input),
+:deep(.multiselect-wrapper) {
+  width: 100%;
 }
 
 .fr-fieldset > div {

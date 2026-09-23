@@ -30,7 +30,12 @@ const props = defineProps({
   freeAddressModale: { type: Boolean, default: true },
 });
 
-const emits = defineEmits(["select", "clear"]);
+const emits = defineEmits([
+  "select",
+  "clear",
+  "update:query",
+  "manual-address",
+]);
 
 const NB_CAR_ADDRESSE_MIN = 5;
 
@@ -122,6 +127,7 @@ function searchAddress(queryString: string) {
   }
 
   searchQuery.value = queryString;
+  emits("update:query", queryString);
 
   if (queryString.length === 0 || queryString.length <= NB_CAR_ADDRESSE_MIN) {
     resetSearch();
@@ -227,6 +233,7 @@ function applyEditableLabel(label: string) {
 function onClear() {
   log.d("onClear");
   resetSearch();
+  emits("update:query", "");
   if (multiselectRef.value) {
     isPublishingSelection.value = true;
     multiselectRef.value.search = "";
@@ -240,6 +247,7 @@ function onClear() {
 function onManualChooseAddress(adresse: AddressOption) {
   options.value = [{ ...adresse }];
   onCloseModal();
+  emits("manual-address", adresse);
   select(null, adresse);
 }
 
@@ -472,21 +480,27 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
-      <div v-if="!props.freeAddressModale" class="fr-fieldset__element">
-        <div v-if="isModalOpen" class="address-municipality">
-          <span class="fr-text--lg fr-text--bold"
-            >Saisir une adresse libre</span
-          >
-          <span class="fr-text--sm">
-            Vérifiez l'exactitude avec l'hébergeur
-          </span>
-          <AddressSearchAddressMunicipality
-            :label-voie="`Numéro et libellé  de la voie`"
-            :hint-voie="`Exemple : 123 route des oiseaux`"
-            :label-cp="`Code postal et ville`"
-            :hint-cp="`Exemple : 17800 Saint-Mauret`"
-            @choose-manual-address="onManualChooseAddress"
-          />
+      <div v-if="!props.freeAddressModale">
+        <div v-if="isModalOpen">
+          <fieldset>
+            <legend>
+              <span class="fr-text--lg fr-text--bold"
+                >Saisir une adresse libre</span
+              >
+              <span class="fr-text--sm">
+                Vérifiez l'exactitude avec l'hébergeur
+              </span>
+            </legend>
+
+            <AddressSearchAddressMunicipality
+              :label-voie="`Numéro et libellé  de la voie`"
+              :hint-voie="`Exemple : 123 route des oiseaux`"
+              :label-cp="`Code postal et ville`"
+              :hint-cp="`Exemple : 17800 Saint-Mauret`"
+              @choose-manual-address="onManualChooseAddress"
+              @close="onCloseModal"
+            />
+          </fieldset>
         </div>
       </div>
       <div v-else class="fr-multiselect-adress--free">
@@ -500,6 +514,7 @@ onUnmounted(() => {
         >
           <AddressSearchAddressMunicipality
             @choose-manual-address="onManualChooseAddress"
+            @close="onCloseModal"
           />
         </DsfrModal>
       </div>
