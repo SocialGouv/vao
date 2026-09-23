@@ -4,6 +4,7 @@
     :cdn-url="props.cdnUrl"
     :init-agrement="props.initAgrement"
     :modifiable="props.modifiable"
+    :title-level="titreNiveau"
   />
   <div class="fr-my-4w separator"></div>
   <AgrementProjetsAnimationsActivites
@@ -11,6 +12,7 @@
     :cdn-url="props.cdnUrl"
     :init-agrement="props.initAgrement"
     :modifiable="props.modifiable"
+    :title-level="titreNiveau"
   />
   <div class="fr-my-4w separator"></div>
   <AgrementProjetsAccompagnantsResponsables
@@ -18,6 +20,7 @@
     :cdn-url="props.cdnUrl"
     :init-agrement="props.initAgrement"
     :modifiable="props.modifiable"
+    :title-level="titreNiveau"
   />
   <div class="fr-my-4w separator"></div>
   <AgrementProjetsCasierJudiciaire
@@ -25,6 +28,7 @@
     :cdn-url="props.cdnUrl"
     :init-agrement="props.initAgrement"
     :modifiable="props.modifiable"
+    :title-level="titreNiveau"
   />
   <div class="fr-my-4w separator"></div>
   <AgrementProjetsOrganisationTransports
@@ -32,6 +36,7 @@
     :cdn-url="props.cdnUrl"
     :init-agrement="props.initAgrement"
     :modifiable="props.modifiable"
+    :title-level="titreNiveau"
   />
   <div class="fr-my-4w separator"></div>
   <AgrementProjetsSuiviMedical
@@ -39,6 +44,7 @@
     :cdn-url="props.cdnUrl"
     :init-agrement="props.initAgrement"
     :modifiable="props.modifiable"
+    :title-level="titreNiveau"
   />
   <div class="fr-my-4w separator"></div>
   <AgrementProjetsProtocole
@@ -46,6 +52,7 @@
     :cdn-url="props.cdnUrl"
     :init-agrement="props.initAgrement"
     :modifiable="props.modifiable"
+    :title-level="titreNiveau"
   />
   <div class="fr-my-4w separator"></div>
   <AgrementProjetsBudget
@@ -53,6 +60,7 @@
     :cdn-url="props.cdnUrl"
     :init-agrement="props.initAgrement"
     :modifiable="props.modifiable"
+    :title-level="titreNiveau"
   />
   <div v-if="props.showButtons && props.modifiable">
     <div class="fr-fieldset__element">
@@ -69,6 +77,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { useToaster } from "@vao/shared-ui";
 import { AGREMENT_STATUTS_PERMISSIFS } from "@vao/shared-bridge";
 
@@ -91,6 +100,8 @@ interface FormulaireItem {
 
 const toaster = useToaster();
 const log = logger("AgrementProjets");
+
+const titreNiveau = computed(() => (props.modifiable ? 3 : 4));
 
 const emit = defineEmits(["update:valid", "update", "previous"]);
 

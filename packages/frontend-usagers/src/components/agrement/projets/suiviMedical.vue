@@ -1,8 +1,8 @@
 <template>
-  <h3 id="suivi-medical" class="fr-text--lead">
+  <component :is="`h${props.titleLevel}`" id="suivi-medical" class="fr-text--lead">
     <span class="fr-icon-capsule-fill" aria-hidden="true"></span>
     Suivi médical prévu
-  </h3>
+  </component>
   <fieldset class="no-border" aria-labelledby="suivi-medical">
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
@@ -77,6 +77,7 @@ const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
   modifiable: { type: Boolean, default: false },
+  titleLevel: { type: Number, default: 3 },
 });
 
 const log = logger("components/agrement/projets/suiviMedical");

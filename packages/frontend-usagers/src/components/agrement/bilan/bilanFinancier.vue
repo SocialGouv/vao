@@ -1,8 +1,8 @@
 <template>
-  <h3 id="bilan-financier-dernieres-annee" class="fr-text--lead">
+  <component :is="`h${props.titleLevel}`" id="bilan-financier-dernieres-annee" class="fr-text--lead">
     <span class="fr-icon-bank-card-fill" aria-hidden="true"></span>
     Bilan financier sur les 4 dernières années
-  </h3>
+  </component>
   <fieldset class="no-border" aria-labelledby="bilan-financier-dernieres-annee">
     <div class="fr-mt-8v">
       <div class="fr-fieldset__element">
@@ -148,6 +148,7 @@ import displayInput from "../../../utils/display-input";
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   modifiable: { type: Boolean, default: false },
+  titleLevel: { type: Number, default: 3 },
 });
 
 const log = logger("components/agrement/bilan/bilanFinancier");

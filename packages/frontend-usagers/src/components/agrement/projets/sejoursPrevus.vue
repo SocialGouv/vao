@@ -2,7 +2,7 @@
   <div>
     <TitleWithIcon
       icon="fr-icon-map-pin-2-fill"
-      :level="3"
+      :level="props.titleLevel"
       title-class="fr-text--lead fr-mb-0"
     >
       Séjours prévus
@@ -125,6 +125,7 @@ const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
   modifiable: { type: Boolean, default: false },
+  titleLevel: { type: Number, default: 3 },
 });
 
 const log = logger("components/agrement/projets/sejoursPrevus");
