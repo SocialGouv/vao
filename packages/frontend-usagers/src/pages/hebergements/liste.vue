@@ -18,7 +18,7 @@
           <div class="fr-fieldset">
             <NuxtLink
               class="fr-btn fr-btn--secondary fr-btn--md inline-flex"
-              to="/hebergements"
+              :to="nouvelHebergementRoute"
               icon
               @click="handleNouvelHebergementClick"
             >
@@ -33,9 +33,21 @@
 </template>
 
 <script setup lang="ts">
-import { HebergementFunnelOrigin } from "@vao/shared-bridge";
+import { HebergementFunnelOrigin, FeatureFlagName } from "@vao/shared-bridge";
 
 const hebergementStore = useHebergementStore();
+const userStore = useUserStore();
+
+const isModuleHebergementEnabled = computed(
+  () =>
+    !!userStore.user?.featureFlags?.[
+      FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT
+    ],
+);
+
+const nouvelHebergementRoute = computed(() =>
+  isModuleHebergementEnabled.value ? "/hebergements/site" : "/hebergements",
+);
 
 useHead({
   title: "Mes hébergements | Vacances Adaptées Organisées",
@@ -57,6 +69,9 @@ const links = [
 ];
 
 function handleNouvelHebergementClick() {
+  if (isModuleHebergementEnabled.value) {
+    return;
+  }
   hebergementStore.setFunnelOrigin(HebergementFunnelOrigin.MES_HEBERGEMENTS);
 }
 </script>

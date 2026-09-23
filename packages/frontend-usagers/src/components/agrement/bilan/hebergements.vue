@@ -52,8 +52,10 @@
         <SearchAddress
           label="Adresse de l'hébergement"
           :value="adresse"
+          :hint="`Exemple : 123 route des oiseaux, 17800 Saint-Mauret`"
           :error-message="adresseErrorMessage"
           @select="onAdresseSelect"
+          @clear="onAdresseClear"
         />
       </div>
       <div class="fr-mt-6v">
@@ -251,6 +253,11 @@ function onAdresseSelect(
 ): void {
   adresse.value = selectedAddress.label || "";
   selectedAdresseObject.value = selectedAddress;
+}
+
+function onAdresseClear(): void {
+  adresse.value = "";
+  selectedAdresseObject.value = null;
 }
 
 const onSubmitAddSejour = handleSubmit(

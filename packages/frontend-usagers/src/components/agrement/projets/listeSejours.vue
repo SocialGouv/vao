@@ -42,9 +42,10 @@
       <div class="fr-mt-6v">
         <SearchAddress
           label="Adresse de l'hébergement"
-          :value="adresse as AdresseDto"
+          :value="adresse"
           :error-message="adresseErrorMessage"
           @select="onAdresseSelect"
+          @clear="onAdresseClear"
         />
       </div>
       <div class="fr-mt-6v">
@@ -153,7 +154,7 @@ const {
   meta: nbVacanciersMeta,
 } = useField<number>("nbVacanciers");
 const { value: adresse, errorMessage: adresseErrorMessage } =
-  useField<AdresseDto>("adresse");
+  useField<AdresseDto | undefined>("adresse");
 
 const {
   value: mois,
@@ -167,6 +168,10 @@ function handleMonths(monthsArray: number[]) {
 
 function onAdresseSelect(selectedAddress: AdresseDto) {
   adresse.value = selectedAddress;
+}
+
+function onAdresseClear() {
+  adresse.value = undefined;
 }
 
 const onSubmitAddSejour = handleSubmit(
