@@ -1,8 +1,8 @@
 <template>
-  <h3 id="motivations" class="fr-text--lead">
+  <component :is="`h${titreNiveau}`" id="motivations" class="fr-text--lead">
     <span class="fr-icon-award-fill" aria-hidden="true"></span>
     Motivations
-  </h3>
+  </component>
   <fieldset class="no-border" aria-labelledby="motivations">
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
@@ -37,10 +37,15 @@
       />
     </div>
   </fieldset>
-  <h3 id="immatriculations" class="fr-text--lead">
+  <div class="separator fr-my-4v"></div>
+  <component
+    :is="`h${titreNiveau}`"
+    id="immatriculations"
+    class="fr-text--lead fr-mt-8v"
+  >
     <span class="fr-icon-briefcase-fill" aria-hidden="true"></span>
     Immatriculation
-  </h3>
+  </component>
   <fieldset class="no-border" aria-labelledby="immatriculations">
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
@@ -102,10 +107,16 @@
     </div>
   </fieldset>
 
-  <h3 id="attestations" class="fr-text--lead">
+  <div class="separator fr-my-4v"></div>
+
+  <component
+    :is="`h${titreNiveau}`"
+    id="attestations"
+    class="fr-text--lead fr-mt-8v"
+  >
     <span class="fr-icon-file-text-fill" aria-hidden="true"></span>
     Attestations
-  </h3>
+  </component>
   <fieldset class="no-border" aria-labelledby="attestations">
     <div class="fr-fieldset__element">
       <FileUpload
@@ -153,7 +164,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useForm, useField } from "vee-validate";
 import { FileUpload, TitleWithIcon, useToaster } from "@vao/shared-ui";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
@@ -187,6 +198,8 @@ const props = defineProps({
 });
 
 const dateDDMMYYYYRegex = regex.dateDDMMYYYYRegex;
+
+const titreNiveau = computed(() => (props.modifiable ? 3 : 4));
 
 const toaster = useToaster();
 

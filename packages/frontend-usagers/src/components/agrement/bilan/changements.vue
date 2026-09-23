@@ -1,8 +1,8 @@
 <template>
-  <h3 id="changement-evolution-title" class="fr-text--lead">
+  <component :is="`h${props.titleLevel}`" id="changement-evolution-title" class="fr-text--lead">
     <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
     Changement ou évolution
-  </h3>
+  </component>
   <fieldset class="no-border" aria-labelledby="changement-evolution-title">
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
@@ -65,6 +65,7 @@ const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
   modifiable: { type: Boolean, default: true },
+  titleLevel: { type: Number, default: 3 },
 });
 
 const log = logger("components/agrement/bilan/changements");

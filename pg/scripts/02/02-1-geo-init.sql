@@ -6,8 +6,6 @@
 DROP SCHEMA IF EXISTS geo CASCADE;          -- données géographiques communes aux 3 portails
 CREATE SCHEMA geo;
 
-GRANT USAGE ON SCHEMA geo TO vao_u;
-
 
 /*==============================================================*/
 /* Table : territoires                                          */
@@ -33,6 +31,3 @@ create table geo.communes (
    date_fin         timestamp            NULL,
    constraint pk_communes primary key (id)
 );
-
-GRANT SELECT ON ALL TABLES IN SCHEMA geo TO vao_u;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA geo TO vao_u;

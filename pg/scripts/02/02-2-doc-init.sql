@@ -13,8 +13,3 @@ CREATE TABLE doc.documents (
     created_at  TIMESTAMP       DEFAULT current_timestamp NOT NULL,
    	constraint pk_identites primary key (uuid)
 );
-
-GRANT USAGE ON SCHEMA doc TO vao_doc;
-
-GRANT ALL ON ALL TABLES IN SCHEMA doc TO vao_doc;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA doc TO vao_doc;

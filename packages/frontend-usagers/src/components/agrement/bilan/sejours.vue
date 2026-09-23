@@ -1,8 +1,12 @@
 <template>
-  <h3 id="sejours-par-annee" class="fr-text--lead">
+  <component
+    :is="`h${props.titleLevel}`"
+    id="sejours-par-annees"
+    class="fr-text--lead"
+  >
     <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
     Séjours (par années)
-  </h3>
+  </component>
   <fieldset class="no-border" aria-labelledby="sejours-par-annees">
     <p class="light-decisions-text-text-default-info fr-text--xs">
       <span class="fr-icon-info-fill" aria-hidden="true"></span>
@@ -48,12 +52,14 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from "vue";
 import { useToaster } from "@vao/shared-ui";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
   modifiable: { type: Boolean, default: true },
+  titleLevel: { type: Number, default: 3 },
 });
 
 const toaster = useToaster();

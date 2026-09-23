@@ -1,8 +1,8 @@
 <template>
-  <h3 id="casier-judiciaire" class="fr-text--lead">
+  <component :is="`h${props.titleLevel}`" id="casier-judiciaire" class="fr-text--lead">
     <span class="fr-icon-check-line" aria-hidden="true"></span>
     Casier judiciaire
-  </h3>
+  </component>
   <fieldset class="no-border" aria-labelledby="casier-judiciaire">
     <DsfrCheckbox
       v-model="accompRespAttestHono"
@@ -43,6 +43,7 @@ const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
   modifiable: { type: Boolean, default: false },
+  titleLevel: { type: Number, default: 3 },
 });
 
 const log = logger("components/agrement/projets/casierJudiciaire");
