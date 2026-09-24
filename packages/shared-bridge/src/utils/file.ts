@@ -51,8 +51,8 @@ export const getFileUploadErrorMessage = (
     case "FileExtensionError":
       description = `Le type de fichier ${fileName} n'est pas supporté. Veuillez télécharger un fichier PDF, PNG, JPG ou JPEG.`;
       break;
-    case "FileContainsJavaScriptError":
-      description = `Le fichier ${fileName} a été rejeté car il semble contenir du code JavaScript.`;
+    case "PDFSanitizeError":
+      description = `Le fichier ${fileName} n'a pas pu être sécurisé. Veuillez le remplacer par un fichier PDF valide.`;
       break;
     default:
       description = `${description} ${fileName}`;

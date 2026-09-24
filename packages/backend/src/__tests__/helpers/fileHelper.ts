@@ -2,13 +2,40 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { PDFDocument } from "pdf-lib";
+import { PDFDocument, PDFName } from "pdf-lib";
 
 export async function createMinimalPdf(): Promise<Buffer> {
   const pdfDoc = await PDFDocument.create();
   pdfDoc.addPage();
   const pdfBytes = await pdfDoc.save();
   return Buffer.from(pdfBytes);
+}
+
+export async function createPdfWithJavaScript(): Promise<Buffer> {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage();
+
+  // Action JavaScript vide, représentative des générateurs de PDF fautifs.
+  const jsAction = pdfDoc.context.register(
+    pdfDoc.context.obj({ JS: "", S: "JavaScript" }),
+  );
+
+  // 1. `/OpenAction` au niveau du catalogue racine
+  pdfDoc.catalog.set(PDFName.of("OpenAction"), page.ref);
+  // 2. `/JavaScript` au niveau du catalogue racine
+  pdfDoc.catalog.set(PDFName.of("JavaScript"), jsAction);
+  // 3. `/AA` (actions additionnelles) au niveau d'une page
+  page.node.set(PDFName.of("AA"), jsAction);
+
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
+}
+
+export function createCorruptPdf(): Buffer {
+  // Préfixe `%PDF` pour passer la détection de type (mockée via detectFileType),
+  // mais structure trop incomplète pour être chargée par pdf-lib (ni objet, ni
+  // trailer/xref valide) => sanitizePdf doit échouer.
+  return Buffer.from("%PDF-1.4\n");
 }
 
 export function createMinimalPng(): Buffer {

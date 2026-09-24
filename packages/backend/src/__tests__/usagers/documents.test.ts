@@ -1,4 +1,5 @@
 import { NextFunction, Response } from "express";
+import { PDFDocument, PDFName } from "pdf-lib";
 import request from "supertest";
 
 import * as DocumentService from "../../services/Document";
@@ -7,10 +8,12 @@ import { getFileTypeFromBuffer } from "../../utils/file";
 import { getPoolDoc } from "../../utils/pgpoolDoc";
 import { getFoAppHelper } from "../helpers/appHelper";
 import {
+  createCorruptPdf,
   createLargePdf,
   createMinimalGif,
   createMinimalPdf,
   createMinimalPng,
+  createPdfWithJavaScript,
   detectFileType,
 } from "../helpers/fileHelper";
 import {
@@ -230,6 +233,51 @@ describe("POST /documents", () => {
 
     expect(response.status).toBe(413);
     expect(response.body.name).toBe("FileIsTooLargeError");
+  });
+
+  it("devrait accepter un PDF contenant du JavaScript et stocker un fichier nettoyé", async () => {
+    const user = await createUsagersUser();
+    const pdfBuffer = await createPdfWithJavaScript();
+
+    const response = await request(getFoAppHelper(user))
+      .post("/documents")
+      .field("category", "declaration")
+      .attach("file", pdfBuffer, "javascript.pdf");
+
+    expect(response.status).toBe(200);
+    expect(response.body.uuid).toBeDefined();
+
+    const storedResponse = await request(getFoAppHelper()).get(
+      `/documents/${response.body.uuid}`,
+    );
+
+    expect(storedResponse.status).toBe(200);
+
+    const storedDoc = await PDFDocument.load(storedResponse.body, {
+      ignoreEncryption: true,
+      throwOnInvalidObject: false,
+    });
+
+    expect(storedDoc.catalog.has(PDFName.of("JavaScript"))).toBe(false);
+    expect(storedDoc.catalog.has(PDFName.of("OpenAction"))).toBe(false);
+    expect(storedDoc.catalog.has(PDFName.of("AA"))).toBe(false);
+
+    for (const page of storedDoc.getPages()) {
+      expect(page.node.has(PDFName.of("AA"))).toBe(false);
+    }
+  });
+
+  it("devrait retourner 415 (PDFSanitizeError) pour un PDF corrompu non nettoyable", async () => {
+    const user = await createUsagersUser();
+    const pdfBuffer = createCorruptPdf();
+
+    const response = await request(getFoAppHelper(user))
+      .post("/documents")
+      .field("category", "declaration")
+      .attach("file", pdfBuffer, "corrompu.pdf");
+
+    expect(response.status).toBe(415);
+    expect(response.body.name).toBe("PDFSanitizeError");
   });
 });
 

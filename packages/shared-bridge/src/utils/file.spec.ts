@@ -222,14 +222,11 @@ describe("file utils", () => {
       );
     });
 
-    it("should handle FileContainsJavaScriptError", () => {
+    it("should handle PDFSanitizeError", () => {
       const fileName = "malicious.pdf";
-      const result = getFileUploadErrorMessage(
-        fileName,
-        "FileContainsJavaScriptError",
-      );
+      const result = getFileUploadErrorMessage(fileName, "PDFSanitizeError");
       expect(result).toBe(
-        "Le fichier malicious.pdf a été rejeté car il semble contenir du code JavaScript.",
+        "Le fichier malicious.pdf n'a pas pu être sécurisé. Veuillez le remplacer par un fichier PDF valide.",
       );
     });
 
