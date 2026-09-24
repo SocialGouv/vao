@@ -2,9 +2,6 @@
 # vao — CI + CD sur GitLab PIC (migration Atlas v2, phase preprod).
 # Source de vérité du code : GitHub SocialGouv/vao (resync manuel vers ce dépôt).
 #   build   : 7 images (monorepo pnpm) via DinD ci-common, en parallel:matrix
-#   publish : chart Helm charts/vao en OCI (version=0.0.0-sha.<short>, appVersion=sha-<sha>)
-#   deploy  : DÉCLENCHE le pipeline vao-gitops (trigger multi-projet, CI_JOB_TOKEN
-#             + allowlist inbound côté gitops) -> commit + render côté gitops.
 # Déploiement : Atlas v2 (zone dev) via ArgoCD synchronisant vao-gitops (branche rendered).
 #
 # Frontends Nuxt statiques, principe "build-once" : le Dockerfile écrit des marqueurs
@@ -18,19 +15,20 @@ include:
   - project: socialgouv/commun/studio-tech-commun/sdpsn-devops-ci-utils
     ref: main
     file: ci-common/image-build.yml
-  - project: socialgouv/commun/studio-tech-commun/sdpsn-devops-ci-utils
-    ref: main
-    file: ci-common/publish-chart.yml
-
-variables:
-  CHART_DIR: charts/vao
-  # Version immuable par-commit : héritée par publish-chart ET par le trigger de déploiement.
-  CHART_VERSION: "0.0.0-sha.${CI_COMMIT_SHORT_SHA}"
+  - component: $CI_SERVER_FQDN/socialgouv/produits-dnum/studio-tech/devops/components/gitops-cd-component/trigger_app@0.2.0
+    inputs:
+      job_name: deploy-preprod
+      stage: deploy
+      gitops_project: socialgouv/produits-dnum/citoyens/vao/vao-gitops
+      deploy_action: preprod
+      image_tag: "sha-$CI_COMMIT_SHA"
+      rules:
+        - if: $CI_COMMIT_BRANCH == "feat/ci-atlas-v2"
+        - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 stages:
   - check
   - build
-  - publish
   - deploy
   - e2e
 
@@ -40,7 +38,6 @@ workflow:
   rules:
     - if: $CI_COMMIT_BRANCH
 
-# build/publish : branche de migration + branche par défaut (image déployable)
 .build-rules: &build-rules
   - if: $CI_COMMIT_BRANCH =~ /^(feat|fix|chore|migration)\//
   - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
@@ -112,36 +109,8 @@ build-frontends:
       NUXT_PUBLIC_API_MAP_TILER=g9IvoA8h0Ow8I9szhdzW
   rules: *build-rules
 
-# Publier le chart Helm en artefact OCI (snapshot SHA) via la brique mutualisée ci-common.
-# appVersion = sha-<sha complet> = tag des images (le chart pilote chart ET images par-sha).
-publish-chart:
-  extends: .publish-chart
-  needs: ["build", "build-frontends"]
-  rules: *build-rules
-
-# ---------------------------------------------------------------------------
-# DEPLOY : l'app ne pousse pas sur le gitops, elle DÉCLENCHE son pipeline
-# (CI_JOB_TOKEN + allowlist inbound côté vao-gitops). CHART_VERSION = variable globale.
-# ---------------------------------------------------------------------------
-.deploy-trigger:
-  stage: deploy
-  variables:
-    SLUG: "$CI_COMMIT_REF_SLUG"
-  trigger:
-    project: socialgouv/produits-dnum/citoyens/vao-gitops
-    branch: main
-    strategy: depend       # le job app suit le statut du pipeline gitops
-
-# Env PREPROD (statique) : bump de la version du chart (côté gitops) -> render -> ArgoCD.
-# Pendant la migration : déclenché par la branche feat/ci-atlas-v2 ; à la bascule, main prend le relais.
 deploy-preprod:
-  extends: .deploy-trigger
-  needs: ["publish-chart"]
-  rules:
-    - if: $CI_COMMIT_BRANCH == "feat/ci-atlas-v2"
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-  variables:
-    DEPLOY_ACTION: preprod
+  needs: ["build", "build-frontends"]
   environment:
     name: preprod
 
