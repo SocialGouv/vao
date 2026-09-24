@@ -525,22 +525,6 @@ fileignoreconfig:
   checksum: 02a2dbfd1e8ee33508cfe0c1549876cad19b65eb07c3857d9c2bc97311c2533e
 - filename: s/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
-- filename: charts/vao/templates/ingress-backend.yaml
-  checksum: a07d89c7dd421c4400a432f517487622a41c0b00f83077db0fdbe02e53bce309
-- filename: charts/vao/templates/ingress-external-api.yaml
-  checksum: 27d508b0acf6b62a568016942563cd7e9398746b9246944bbf0711952f579222
-- filename: charts/vao/templates/ingress-frontend-bo.yaml
-  checksum: 0e8d034e8e992ed5bdf8df1eb3e87ddd1374efd4a7361683a48de008b47c362f
-- filename: charts/vao/templates/ingress-frontend-usagers.yaml
-  checksum: 8cc0b4c2e3ad9b25eacf69c77b0d9a5bd5a64917410ebfb42b622c18ea834bc3
-- filename: charts/vao/values.yaml
-  checksum: 78569ad63d8013d145897428c259fa5cfa04d7683747f9311ebec412fd56b312
-- filename: charts/vao/templates/deployment-cron.yaml
-  checksum: 31e96a9508ee6f984b94b189f7a80527ce17a18f86ff5e27d2d125b46bd3c035
-- filename: charts/vao/templates/deployment-backend.yaml
-  checksum: c151166e0feea27ef5c8d4ddf34171aad316359cdabd76c58b134f33d390077f
-- filename: charts/vao/templates/deployment-external-api.yaml
-  checksum: ca4bad8fab832c164682a67a43e5d4831c5fb53940df5ea38bdfc5daeec35b95
 scopeconfig:
 - scope: node
 version: "1.0"
