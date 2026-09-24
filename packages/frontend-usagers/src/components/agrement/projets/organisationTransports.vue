@@ -1,9 +1,17 @@
 <template>
-  <component :is="`h${props.titleLevel}`" id="organisation-transports" class="fr-text--lead">
+  <component
+    :is="`h${props.titleLevel}`"
+    id="organisation-transports"
+    class="fr-text--lead"
+  >
     <span class="fr-icon-bus-fill" aria-hidden="true"></span>
     Organisation des transports prévus
   </component>
-  <fieldset class="no-border" aria-labelledby="organisation-transports">
+  <component
+    :is="props.modifiable ? 'fieldset' : 'div'"
+    class="no-border"
+    :aria-labelledby="props.modifiable ? 'organisation-transports' : undefined"
+  >
     <div class="fr-col-12">
       <DsfrInputGroup
         v-if="props.modifiable"
@@ -53,7 +61,7 @@
         label="Ajouter des fichiers (optionnel)"
       />
     </div>
-  </fieldset>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -154,7 +162,6 @@ defineExpose({
   validateForm,
 });
 </script>
-
 <style scoped>
 fieldset.no-border {
   border: none;

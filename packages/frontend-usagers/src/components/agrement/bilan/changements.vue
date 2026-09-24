@@ -1,9 +1,17 @@
 <template>
-  <component :is="`h${props.titleLevel}`" id="changement-evolution-title" class="fr-text--lead">
+  <component
+    :is="`h${props.titleLevel}`"
+    id="changement-evolution-title"
+    class="fr-text--lead"
+  >
     <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
     Changement ou évolution
   </component>
-  <fieldset class="no-border" aria-labelledby="changement-evolution-title">
+  <component
+    :is="modifiable ? 'fieldset' : 'div'"
+    class="no-border"
+    :aria-labelledby="modifiable ? 'changement-evolution-title' : undefined"
+  >
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup
@@ -42,15 +50,22 @@
     </div>
     <div class="fr-fieldset__element">
       <DsfrCheckbox
+        v-if="props.modifiable"
         v-model="bilanAucunChangementEvolution"
         name="checkbox-required-custom"
         label="Aucun changement ou évolution à déclarer."
-        :readonly="!props.modifiable"
         :error-message="bilanAucunChangementEvolutionErrorMessage"
         :value="true"
       />
+      <UtilsDisplayCheckbox
+        v-else
+        name="bilanAucunChangementEvolution"
+        label="Aucun changement ou évolution à déclarer."
+        :checked="bilanAucunChangementEvolution"
+        :is-valid="true"
+      />
     </div>
-  </fieldset>
+  </component>
 </template>
 
 <script setup lang="ts">

@@ -32,13 +32,23 @@
     fichier joint. L’un des deux est requis.
   </p>
   <div class="border fr-p-4v">
-    <fieldset class="no-border">
-      <legend class="fr-fieldset__legend fr-text--lead">
+    <component
+      :is="props.modifiable ? 'fieldset' : 'div'"
+      class="no-border"
+    >
+      <component
+        :is="props.modifiable ? 'legend' : 'h4'"
+        :class="
+          props.modifiable
+            ? 'fr-fieldset__legend fr-text--lead'
+            : 'fr-my-2w fr-text--lead fr-text--bold'
+        "
+      >
         Compétences et expériences des accompagnants prévus par lieu de
         vacances, notamment pour ce qui concerne l’encadrement de certaines
         activités sportives. Ou expériences du responsable du déroulement du
         séjour sur le lieu de vacances.
-      </legend>
+      </component>
 
       <div class="fr-fieldset__element">
         <div class="fr-col-12">
@@ -77,14 +87,24 @@
           {{ filesProjetsSejoursCompetencesExperienceError }}
         </p>
       </div>
-    </fieldset>
+    </component>
   </div>
   <div class="border fr-p-4v fr-mt-6v">
-    <fieldset class="no-border">
-      <legend class="fr-fieldset__legend fr-text--lead">
+    <component
+      :is="props.modifiable ? 'fieldset' : 'div'"
+      class="no-border"
+    >
+      <component
+        :is="props.modifiable ? 'legend' : 'h4'"
+        :class="
+          props.modifiable
+            ? 'fr-fieldset__legend fr-text--lead'
+            : 'fr-my-2w fr-text--lead fr-text--bold'
+        "
+      >
         Mesures envisagées au cas où des accompagnants supplémentaires devraient
         être recrutés en urgence
-      </legend>
+      </component>
 
       <div class="fr-fieldset__element">
         <div class="fr-col-12">
@@ -122,7 +142,7 @@
           {{ filesProjetsSejoursMesuresError }}
         </p>
       </div>
-    </fieldset>
+    </component>
   </div>
   <!-- <div class="fr-fieldset__element fr-mt-6v">
     <UtilsMultiFilesUpload
