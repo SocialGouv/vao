@@ -59,6 +59,11 @@ export type { EigUsagersRoutes } from "./usagers/eig";
 export { EigUsagersRoutesSchema } from "./usagers/eig";
 export type { HebergementUsagersRoutes } from "./usagers/hebergement";
 export { HebergementUsagersRoutesSchema } from "./usagers/hebergement";
+export type {
+  CheckSiteSimilaritesBody,
+  SiteSimilariteResult,
+  SiteSimilariteType,
+} from "./usagers/hebergement/checkSimilarites";
 export type { SejourUsagersRoutes } from "./usagers/sejour";
 export { SejourUsagersRoutesSchema } from "./usagers/sejour";
 export type { SiretRoutes } from "./usagers/siret";

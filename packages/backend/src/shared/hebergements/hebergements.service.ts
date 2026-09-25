@@ -1,18 +1,21 @@
 import {
+  CheckSiteSimilaritesBody,
   FUNCTIONAL_ERRORS,
   FunctionalException,
   InformationsLocauxDto,
   SiteDto,
   SiteOrganismeDto,
+  SiteSimilariteResult,
   UniteHebergementDto,
   UniteHebergementPayloadDto,
 } from "@vao/shared-bridge";
 import { PoolClient } from "pg";
 
-import { saveAdresse } from "../../services/adresse";
+import { getByIds as getAddresses, saveAdresse } from "../../services/adresse";
 import { LegacyUniteContextEntity } from "./hebergements.entity";
 import { buildUniteWriteData } from "./hebergements.mapping";
 import { HebergementsRepositoryShared } from "./hebergements.repository";
+import { classifySiteSimilarite } from "./hebergements.similarites";
 import { SitesRepositoryShared } from "./hebergementsSite.repository";
 
 type CreateSiteInput = Pick<
@@ -73,6 +76,48 @@ type UpdateUniteHebergementInPlaceInput = Pick<
 };
 
 export const HebergementServiceShared = {
+  async checkSiteSimilarites(
+    site: CheckSiteSimilaritesBody,
+  ): Promise<SiteSimilariteResult[]> {
+    const siteSimilaires =
+      await SitesRepositoryShared.findSiteSimilaritesCandidates({
+        adresse: {
+          codePostal: site.adresse?.codePostal ?? "",
+          label: site.adresse?.label ?? "",
+        },
+        nomSiteOfficiel: site.nomSiteOfficiel ?? "",
+      });
+
+    const adresseIds = siteSimilaires
+      .map(({ adresseId }) => adresseId)
+      .filter((adresseId): adresseId is number => adresseId !== null);
+    const adressesById = new Map(
+      (await getAddresses(adresseIds)).map((adresse) => [adresse.id, adresse]),
+    );
+
+    return siteSimilaires.map((siteDetail) => {
+      const adresse = siteDetail.adresseId
+        ? (adressesById.get(siteDetail.adresseId) ?? null)
+        : null;
+
+      return {
+        ...siteDetail,
+        adresse,
+        similarite: classifySiteSimilarite(
+          {
+            adresse: site.adresse,
+            nomSiteOfficiel: site.nomSiteOfficiel,
+          },
+          {
+            adresse,
+            nomSite: siteDetail.nomSite,
+            nomSiteOfficiel: siteDetail.nomSiteOfficiel,
+          },
+        ),
+      } satisfies SiteSimilariteResult;
+    });
+  },
+
   async createSite(
     { ...input }: CreateSiteInput,
     tx: PoolClient,

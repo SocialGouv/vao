@@ -1,20 +1,8 @@
 <template>
-  <form novalidate @submit.prevent="onSubmit">
+  <form novalidate @submit.prevent="onCheckAddressConfirm">
     <p class="fr-pb-3w fr-col-12">
       Sauf mention contraire, tous les champs sont obligatoires.
     </p>
-    <DsfrModal
-      :title="`Nous ne parvenons pas à localiser l’adresse : ${adresse?.label ?? ''}`"
-      :opened="showConfirmationModal"
-      :closeable="true"
-      @close="onAddressEdit"
-    >
-      <SearchAddressConfirm
-        :address="typedAddress"
-        @confirm="onAddressConfirm"
-        @edit="onAddressEdit"
-      />
-    </DsfrModal>
     <div class="fr-fieldset fr-mb-6w">
       <div class="fr-col-12">
         <DsfrAlert
@@ -70,11 +58,6 @@
           @manual-address="onManualAddressSelection"
           @update:query="onTypedAddressChange"
         />
-        <pre class="test-debug">
-adresse saisie (texte): "{{ typedAddress }}"
-adresse sélectionnée: {{ adresse?.label ?? "null" }}
-markers : {{ markers ?? "null" }}
-        </pre>
       </div>
     </div>
     <div v-if="markers" class="fr-fieldset__element fr-col-12">
@@ -90,27 +73,64 @@ markers : {{ markers ?? "null" }}
           <MglMarker :coordinates="markers" />
         </MglMap>
       </div>
+      <p v-if="adresse?.label" class="fr-my-2w">
+        <span class="fr-text--bold">Localisation de l’adresse :</span>
+        {{ adresse?.label }}
+      </p>
     </div>
     <div class="site-form-actions fr-mt-2w">
-      <NuxtLink :to="defaultBackRoute" class="no-background-image">
-        <DsfrButton type="button" secondary>Retour</DsfrButton>
-      </NuxtLink>
-      <DsfrButton
-        v-if="props.modifiable"
-        type="button"
-        @click="onCheckAddressConfirm"
+      <NuxtLink
+        :to="defaultBackRoute"
+        class="fr-btn fr-btn--secondary no-background-image"
       >
+        Retour
+      </NuxtLink>
+      <DsfrButton v-if="props.modifiable" type="submit">
         Confirmer la localisation
       </DsfrButton>
     </div>
   </form>
+  <DsfrModal
+    name="modal-confirmation-adresse"
+    title="Nous ne parvenons pas à localiser l’adresse :"
+    :opened="showConfirmationModal"
+    :closeable="true"
+    @close="onAddressEdit"
+  >
+    <SearchAddressConfirm
+      :address="typedAddress"
+      @confirm="onAddressConfirm"
+      @edit="onAddressEdit"
+    />
+  </DsfrModal>
+  <DsfrModal
+    name="modal-similarite-adresse"
+    title="Vérification des informations saisies"
+    :opened="showSimilarityModal"
+    :closeable="true"
+    @close="onReturnToSaisie"
+  >
+    <SearchAddressSimilarity
+      v-if="saisie"
+      :saisie="saisie"
+      :similarites="similarites"
+      @continue="onContinueWithoutModifying"
+      @edit="onReturnToSaisie"
+    />
+  </DsfrModal>
 </template>
 
 <script setup lang="ts">
 import { useForm, useField } from "vee-validate";
 import { DsfrButton, DsfrInputGroup } from "@gouvminint/vue-dsfr";
-import { HEBERGEMENT_STATUT, type AdresseDto } from "@vao/shared-bridge";
+import {
+  HEBERGEMENT_STATUT,
+  type AdresseDto,
+  type SiteDto,
+  type SiteSimilariteResult,
+} from "@vao/shared-bridge";
 import SearchAddressConfirm from "~/components/address/search-address-confirm.vue";
+import SearchAddressSimilarity from "~/components/address/search-address-similarity.vue";
 import {
   buildSiteFormValidationSchema,
   requiresAddressConfirmation,
@@ -118,6 +138,7 @@ import {
 } from "./siteFormValidation";
 
 const config = useRuntimeConfig();
+const hebergementStore = useHebergementStore();
 
 const zoom = 15;
 
@@ -174,6 +195,14 @@ const showConfirmationModal = ref(false);
 const typedAddress = ref("");
 const requiresManualAddressConfirmation = ref(false);
 
+const similarites = ref<SiteSimilariteResult[]>([]);
+const showSimilarityModal = ref(false);
+const saisie = ref<{
+  nomSiteOfficiel: string;
+  adresse: AdresseDto | null;
+} | null>(null);
+let pendingSubmit: SiteFormValidationValues | null = null;
+
 const hasCoordinates = (value: AdresseDto | null | undefined) =>
   Array.isArray(value?.coordinates) && value.coordinates.length > 0;
 
@@ -226,6 +255,7 @@ function onCheckAddressConfirm() {
 
 function onAddressConfirm() {
   requiresManualAddressConfirmation.value = false;
+
   showConfirmationModal.value = false;
   onSubmit();
 }
@@ -234,9 +264,43 @@ function onAddressEdit() {
   showConfirmationModal.value = false;
 }
 
-const onSubmit = handleSubmit((values) => {
-  emit("submit", { ...values, statut: initialValues.statut });
+const onSubmit = handleSubmit(async (values) => {
+  if (!values.adresse) {
+    return;
+  }
+
+  const submitValues = { ...values, statut: initialValues.statut };
+  pendingSubmit = submitValues;
+  saisie.value = {
+    nomSiteOfficiel: submitValues.nomSiteOfficiel,
+    adresse: submitValues.adresse,
+  };
+
+  similarites.value = await hebergementStore.checkSiteSimilarites(
+    submitValues as unknown as SiteDto,
+  );
+
+  if (similarites.value.length === 0) {
+    emit("submit", submitValues);
+    pendingSubmit = null;
+    return;
+  }
+
+  showSimilarityModal.value = true;
 });
+
+function onContinueWithoutModifying() {
+  showSimilarityModal.value = false;
+  if (pendingSubmit) {
+    emit("submit", pendingSubmit);
+    pendingSubmit = null;
+  }
+}
+
+function onReturnToSaisie() {
+  showSimilarityModal.value = false;
+  pendingSubmit = null;
+}
 </script>
 
 <style scoped>
