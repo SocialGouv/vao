@@ -33,7 +33,7 @@ export default async function upload(
   try {
     const { path, originalname } = file;
     const filename = normalizeFilename(originalname);
-    let fileBuffer = await fs.readFile(path);
+    let fileBuffer: Buffer = await fs.readFile(path);
     const fileType = await getFileTypeFromBuffer(fileBuffer);
 
     if (!fileType) {
