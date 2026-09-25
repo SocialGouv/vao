@@ -6,6 +6,7 @@ import {
   PDFDocument,
   PDFName,
   PDFObject,
+  PDFPage,
   PDFRef,
 } from "pdf-lib";
 
@@ -95,20 +96,7 @@ function removeJavaScriptFromDict(dict: PDFDict): void {
 
   const action = dict.get(A_KEY);
   if (action instanceof PDFArray) {
-    // Tableau d'actions : on retire uniquement les éléments JavaScript, en
-    // conservant les actions légitimes non-JS présentes dans le même tableau.
-    for (let i = action.size() - 1; i >= 0; i -= 1) {
-      const entry = action.get(i);
-      const resolved =
-        entry instanceof PDFDict
-          ? entry
-          : entry instanceof PDFRef
-            ? dict.context.lookup(entry)
-            : undefined;
-      if (resolved instanceof PDFDict && isJavaScriptAction(resolved)) {
-        action.remove(i);
-      }
-    }
+    removeJavaScriptFromArray(dict, action);
   } else if (
     action &&
     toActionDicts(dict.context, action).some(isJavaScriptAction)
@@ -116,24 +104,54 @@ function removeJavaScriptFromDict(dict: PDFDict): void {
     dict.delete(A_KEY);
   }
 
-  // /AA peut être stocké inline (dict directement présent) ou indirectement
-  // (une PDFRef à résoudre) ; on le résout pour couvrir les deux cas.
-  const additionalActionsRaw = dict.get(AA_KEY);
-  const additionalActions =
-    additionalActionsRaw instanceof PDFDict
-      ? additionalActionsRaw
-      : additionalActionsRaw instanceof PDFRef
-        ? dict.context.lookup(additionalActionsRaw)
-        : undefined;
+  const additionalActions = resolveDictionary(dict.get(AA_KEY), dict.context);
   if (additionalActions instanceof PDFDict) {
-    for (const trigger of additionalActions.keys()) {
-      if (
-        toActionDicts(dict.context, additionalActions.get(trigger)).some(
-          isJavaScriptAction,
-        )
-      ) {
-        additionalActions.delete(trigger);
-      }
+    removeJavaScriptTriggers(dict, additionalActions);
+  }
+}
+
+/**
+ * Résout une valeur PDF (implicitement un dictionnaire, voire une référence)
+ * vers le dictionnaire qu'elle désigne. Retourne undefined si la valeur n'est
+ * pas (ou ne référence pas) un dictionnaire.
+ */
+function resolveDictionary(
+  value: PDFObject | undefined,
+  context: PDFContext,
+): PDFDict | undefined {
+  if (value instanceof PDFDict) return value;
+  if (value instanceof PDFRef) {
+    const resolved = context.lookup(value);
+    return resolved instanceof PDFDict ? resolved : undefined;
+  }
+  return undefined;
+}
+
+/**
+ * Retire les actions JavaScript d'un tableau d'actions, en conservant les
+ * actions légitimes non-JS présentes dans le même tableau.
+ */
+function removeJavaScriptFromArray(dict: PDFDict, array: PDFArray): void {
+  for (let i = array.size() - 1; i >= 0; i -= 1) {
+    const resolved = resolveDictionary(array.get(i), dict.context);
+    if (resolved instanceof PDFDict && isJavaScriptAction(resolved)) {
+      array.remove(i);
+    }
+  }
+}
+
+/**
+ * Supprime chaque déclencheur d'actions additionnelles (/AA) dont l'action est
+ * une action JavaScript.
+ */
+function removeJavaScriptTriggers(dict: PDFDict, triggers: PDFDict): void {
+  for (const trigger of triggers.keys()) {
+    if (
+      toActionDicts(dict.context, triggers.get(trigger)).some(
+        isJavaScriptAction,
+      )
+    ) {
+      triggers.delete(trigger);
     }
   }
 }
@@ -153,19 +171,7 @@ function removeJavaScriptFromAcroForm(pdfDoc: PDFDocument): void {
 
   // Annotations de chaque page (widgets hors formulaire / annotations liées).
   for (const page of pdfDoc.getPages()) {
-    const annots = page.node.get(PDFName.of("Annots"));
-    if (annots instanceof PDFArray) {
-      for (let i = 0; i < annots.size(); i += 1) {
-        const annotation = annots.get(i);
-        const dict =
-          annotation instanceof PDFDict
-            ? annotation
-            : annotation instanceof PDFRef
-              ? page.node.context.lookup(annotation)
-              : undefined;
-        if (dict instanceof PDFDict) removeJavaScriptFromDict(dict);
-      }
-    }
+    removeJavaScriptFromPage(page);
   }
 
   // Champs du formulaire enregistré dans l'AcroForm racine.
@@ -174,6 +180,19 @@ function removeJavaScriptFromAcroForm(pdfDoc: PDFDocument): void {
     for (const [field] of acroForm.getAllFields()) {
       removeJavaScriptFromDict(field.dict);
     }
+  }
+}
+
+/**
+ * Épingle les annotations d'une page (widgets hors formulaire ou annotations
+ * liées) qui portent un déclencheur JavaScript.
+ */
+function removeJavaScriptFromPage(page: PDFPage): void {
+  const annots = page.node.get(PDFName.of("Annots"));
+  if (!(annots instanceof PDFArray)) return;
+  for (let i = 0; i < annots.size(); i += 1) {
+    const dict = resolveDictionary(annots.get(i), page.node.context);
+    if (dict instanceof PDFDict) removeJavaScriptFromDict(dict);
   }
 }
 
