@@ -4,6 +4,8 @@ import uploadFile from "~/utils/UploadFile";
 import type {
   HebergementDto,
   HebergementFunnelOrigin,
+  SiteDto,
+  SiteSimilariteResult,
 } from "@vao/shared-bridge";
 import { HebergementService } from "~/services/hebergementService";
 
@@ -89,6 +91,17 @@ export const useHebergementStore = defineStore("hebergement", {
       } catch (err: unknown) {
         this.hebergementCourant = null;
         log.i("fetchById - DONE with error", err);
+      }
+    },
+    async checkSiteSimilarites(site: SiteDto): Promise<SiteSimilariteResult[]> {
+      try {
+        log.i("checkSiteSimilarites - IN", { site });
+        const similarites = await HebergementService.checkSiteSimilarites(site);
+        log.d("checkSiteSimilarites - DONE", similarites);
+        return similarites;
+      } catch (err: unknown) {
+        log.i("checkSiteSimilarites - DONE with error", err);
+        return [];
       }
     },
     async updateOrCreate(

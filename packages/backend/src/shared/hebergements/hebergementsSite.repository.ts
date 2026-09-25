@@ -90,7 +90,35 @@ export const SitesRepositoryShared = {
     ]);
     log.i("createSiteOrganisme - DONE");
   },
+  async findSiteSimilaritesCandidates({
+    adresse,
+    nomSiteOfficiel,
+  }: {
+    adresse: { label: string; codePostal: string };
+    nomSiteOfficiel: string;
+  }): Promise<SiteDto[]> {
+    log.i("findSiteSimilaritesCandidates - IN");
+    const query = `
+      SELECT DISTINCT s.id, s.site_id, s."current", s.adresse_id, s.nom_site_officiel,
+             s.hebergement_type_id, s.descriptif, s.created_at, s.edited_at,
+             s.created_by, s.edited_by
+      FROM front.site s
+      LEFT JOIN front.adresse a ON a.id = s.adresse_id
+      WHERE s."current" IS TRUE AND a.code_postal = $2
+      AND (similarity(a.label, $1) >= 0.6
+      OR (a.label ilike '%' || $1 || '%')
+      OR (s.nom_site_officiel ilike '%' || $3 || '%')
+      OR similarity(s.nom_site_officiel, $3) >= 0.6);
+    `;
+    const result = await getPool().query(query, [
+      adresse.label,
+      adresse.codePostal,
+      nomSiteOfficiel,
+    ]);
+    log.i("findSiteSimilaritesCandidates - DONE");
 
+    return SiteMapper.toModels(result.rows as SiteEntity[]);
+  },
   async getSiteById(siteId: string): Promise<SiteDto | null> {
     log.i("getSiteById - IN");
     const query = `

@@ -1,9 +1,5 @@
 <template>
   <div class="fr-p-4w fr-background-alt--blue-france">
-    <p class="fr-text--lead fr-mb-2w">
-      Nous ne parvenons pas à localiser cette adresse
-    </p>
-
     <p class="fr-mb-1w">{{ props.address }}</p>
     <p class="fr-text--bold fr-mb-3w">Est-elle correcte ?</p>
 
