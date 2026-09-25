@@ -27,8 +27,8 @@ export function handleDocumentUploadError(
         "L'extension du fichier n'est pas supportée. Seuls les fichiers PDF, JPG et PNG sont autorisés.",
       FileTypePdfOnlyError:
         "Seuls les fichiers PDF sont autorisés pour cette catégorie.",
-      FileContainsJavaScriptError:
-        "Le fichier PDF contient du JavaScript, ce qui n'est pas autorisé.",
+      PDFSanitizeError:
+        "Le fichier PDF n'a pas pu être sécurisé. Veuillez le remplacer par un fichier PDF valide.",
     };
     toaster.error({
       role: "alert",

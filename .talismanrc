@@ -1,5 +1,4 @@
 fileignoreconfig:
-
 - filename: .claude/product.md
   checksum: 60eb40f72aaa7536bf2ab4e233f5dd9f97c1be0b167664512f88d6bf321ee3b4
 - filename: .env.dev.example.env
@@ -220,6 +219,10 @@ fileignoreconfig:
   checksum: 9e58840c352b67fb278a7409352b7afc6c8a628fb30d19d13f0d52993a5d9463
 - filename: packages/backend/src/utils/regex.ts
   checksum: 37980111f65aa47d942a24532df417df7c8b7520f009aba83e65388fb88aa0b9
+- filename: packages/backend/src/utils/sanitizePdf.spec.ts
+  checksum: 3a2165e5f396e3a4e8af4b31a6120d5225c758c4debf88c67c1d9f9e8da8f504
+- filename: packages/backend/src/utils/sanitizePdf.ts
+  checksum: bb79df6307ac1ecdd3026ee3036405eb658f129d267d26ee173d71f78a677bbd
 - filename: packages/backend/src/utils/validation-error.ts
   checksum: 4bec11a784b24d563235f78e271db6c1a9a7f2ebd0bf06544899c3da4f15b533
 - filename: packages/cron/src/notifySuppressionCompteInactif/notifySuppressionCompteInactif.email.ts
@@ -524,4 +527,4 @@ fileignoreconfig:
   checksum: 02a2dbfd1e8ee33508cfe0c1549876cad19b65eb07c3857d9c2bc97311c2533e
 - filename: s/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
-  version: "1.0"
+version: "1.0"

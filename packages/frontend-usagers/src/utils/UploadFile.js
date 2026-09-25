@@ -8,13 +8,18 @@ export default async function UploadFile(category, file) {
   body.append("category", category);
   body.append("file", file);
   const url = `/documents`;
-  const { uuid } = await $fetchBackend(url, {
-    method: "post",
-    credentials: "include",
-    body,
-  });
-  log.i("uploadFile - DONE");
-  return uuid;
+  try {
+    const { uuid } = await $fetchBackend(url, {
+      method: "post",
+      credentials: "include",
+      body,
+    });
+    log.i("uploadFile - DONE");
+    return uuid;
+  } catch (error) {
+    error.fileName = file.name;
+    throw error;
+  }
 }
 
 export function checkFormatFile(file) {

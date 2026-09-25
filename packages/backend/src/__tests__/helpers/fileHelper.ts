@@ -2,13 +2,96 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { PDFDocument } from "pdf-lib";
+import { PDFDict, PDFDocument, PDFName } from "pdf-lib";
 
 export async function createMinimalPdf(): Promise<Buffer> {
   const pdfDoc = await PDFDocument.create();
   pdfDoc.addPage();
   const pdfBytes = await pdfDoc.save();
   return Buffer.from(pdfBytes);
+}
+
+export async function createPdfWithJavaScript(): Promise<Buffer> {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage();
+
+  // Action JavaScript représentative d'un générateur de PDF fautif/malveillant.
+  const jsAction = pdfDoc.context.obj({
+    JS: "app.alert('javascript');",
+    S: "JavaScript",
+  });
+
+  // 1. `/OpenAction` au niveau du catalogue racine -> action JavaScript
+  pdfDoc.catalog.set(PDFName.of("OpenAction"), jsAction);
+  // 2. `/AA` (actions additionnelles) au niveau d'une page : déclencheur
+  // d'ouverture (/O) portant une action JavaScript
+  page.node.set(PDFName.of("AA"), pdfDoc.context.obj({ O: jsAction }));
+
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
+}
+
+export async function createPdfWithAcroFormJavaScript(): Promise<Buffer> {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage();
+
+  // Action JavaScript attachée au champ de formulaire (déclencheur de frappe
+  // /K). Le /AA est stocké indirectement (référence) pour couvrir aussi ce cas.
+  const jsAction = pdfDoc.context.obj({
+    JS: "this.getField('dropdown1').setItems([]);",
+    S: "JavaScript",
+  });
+  const aaDict = pdfDoc.context.obj({ K: jsAction });
+  const aaRef = pdfDoc.context.register(aaDict);
+
+  const fieldDict = pdfDoc.context.obj({
+    FT: "Tx",
+    P: page.ref,
+    Rect: [0, 0, 200, 100],
+    Subtype: "Widget",
+    T: "dropdown1",
+    Type: "Annot",
+  }) as PDFDict;
+  fieldDict.set(PDFName.of("AA"), aaRef);
+  const fieldRef = pdfDoc.context.register(fieldDict);
+
+  pdfDoc.catalog.set(
+    PDFName.of("AcroForm"),
+    pdfDoc.context.obj({ Fields: [fieldRef] }),
+  );
+
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
+}
+
+export async function createPdfWithAcroFormNoJs(): Promise<Buffer> {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage();
+
+  const fieldDict = pdfDoc.context.obj({
+    FT: "Tx",
+    P: page.ref,
+    Rect: [0, 0, 200, 100],
+    Subtype: "Widget",
+    T: "plain",
+    Type: "Annot",
+  }) as PDFDict;
+  const fieldRef = pdfDoc.context.register(fieldDict);
+
+  pdfDoc.catalog.set(
+    PDFName.of("AcroForm"),
+    pdfDoc.context.obj({ Fields: [fieldRef] }),
+  );
+
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
+}
+
+export function createCorruptPdf(): Buffer {
+  // Préfixe `%PDF` pour passer la détection de type (mockée via detectFileType),
+  // mais structure trop incomplète pour être chargée par pdf-lib (ni objet, ni
+  // trailer/xref valide) => sanitizePdf doit échouer.
+  return Buffer.from("%PDF-1.4\n");
 }
 
 export function createMinimalPng(): Buffer {
