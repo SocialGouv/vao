@@ -1,5 +1,5 @@
 import { NextFunction, Response } from "express";
-import { PDFDocument, PDFName } from "pdf-lib";
+import { PDFDocument } from "pdf-lib";
 import request from "supertest";
 
 import * as DocumentService from "../../services/Document";
@@ -13,6 +13,8 @@ import {
   createMinimalGif,
   createMinimalPdf,
   createMinimalPng,
+  createPdfWithAcroFormJavaScript,
+  createPdfWithAcroFormNoJs,
   createPdfWithJavaScript,
   detectFileType,
 } from "../helpers/fileHelper";
@@ -258,13 +260,90 @@ describe("POST /documents", () => {
       throwOnInvalidObject: false,
     });
 
-    expect(storedDoc.catalog.has(PDFName.of("JavaScript"))).toBe(false);
-    expect(storedDoc.catalog.has(PDFName.of("OpenAction"))).toBe(false);
-    expect(storedDoc.catalog.has(PDFName.of("AA"))).toBe(false);
+    const jsHits = [...storedDoc.context.enumerateIndirectObjects()].some(
+      ([, obj]) => {
+        const str = obj.toString();
+        return (
+          str.includes("/S /JavaScript") ||
+          /\/JS\b/.test(str) ||
+          str.includes("getField(") ||
+          str.includes("setItems(")
+        );
+      },
+    );
 
-    for (const page of storedDoc.getPages()) {
-      expect(page.node.has(PDFName.of("AA"))).toBe(false);
-    }
+    expect(jsHits).toBe(false);
+  });
+
+  it("devrait accepter un PDF avec JS de formulaire et stocker un fichier nettoyé", async () => {
+    const user = await createUsagersUser();
+    const pdfBuffer = await createPdfWithAcroFormJavaScript();
+
+    const response = await request(getFoAppHelper(user))
+      .post("/documents")
+      .field("category", "declaration")
+      .attach("file", pdfBuffer, "form-javascript.pdf");
+
+    expect(response.status).toBe(200);
+    expect(response.body.uuid).toBeDefined();
+
+    const storedResponse = await request(getFoAppHelper()).get(
+      `/documents/${response.body.uuid}`,
+    );
+
+    expect(storedResponse.status).toBe(200);
+
+    const storedDoc = await PDFDocument.load(storedResponse.body, {
+      ignoreEncryption: true,
+      throwOnInvalidObject: false,
+    });
+
+    const jsHits = [...storedDoc.context.enumerateIndirectObjects()].some(
+      ([, obj]) => {
+        const str = obj.toString();
+        return (
+          str.includes("/S /JavaScript") ||
+          /\/JS\b/.test(str) ||
+          str.includes("getField(") ||
+          str.includes("setItems(")
+        );
+      },
+    );
+
+    expect(jsHits).toBe(false);
+
+    // L'AcroForm et ses champs (non-JS) sont conservés.
+    const acroForm = storedDoc.catalog.getAcroForm();
+    expect(acroForm).toBeDefined();
+    expect(acroForm!.getAllFields().length).toBeGreaterThan(0);
+  });
+
+  it("devrait préserver un formulaire sans JavaScript", async () => {
+    const user = await createUsagersUser();
+    const pdfBuffer = await createPdfWithAcroFormNoJs();
+
+    const response = await request(getFoAppHelper(user))
+      .post("/documents")
+      .field("category", "declaration")
+      .attach("file", pdfBuffer, "form.pdf");
+
+    expect(response.status).toBe(200);
+    expect(response.body.uuid).toBeDefined();
+
+    const storedResponse = await request(getFoAppHelper()).get(
+      `/documents/${response.body.uuid}`,
+    );
+
+    expect(storedResponse.status).toBe(200);
+
+    const storedDoc = await PDFDocument.load(storedResponse.body, {
+      ignoreEncryption: true,
+      throwOnInvalidObject: false,
+    });
+
+    const acroForm = storedDoc.catalog.getAcroForm();
+    expect(acroForm).toBeDefined();
+    expect(acroForm!.getAllFields().length).toBeGreaterThan(0);
   });
 
   it("devrait retourner 415 (PDFSanitizeError) pour un PDF corrompu non nettoyable", async () => {

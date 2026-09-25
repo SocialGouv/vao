@@ -54,6 +54,10 @@ export const getFileUploadErrorMessage = (
     case "PDFSanitizeError":
       description = `Le fichier ${fileName} n'a pas pu être sécurisé. Veuillez le remplacer par un fichier PDF valide.`;
       break;
+    case "file.scan-antivirus":
+      description =
+        "Le fichier contient un code malveillant et ne peut pas être déposé.";
+      break;
     default:
       description = `${description} ${fileName}`;
       break;

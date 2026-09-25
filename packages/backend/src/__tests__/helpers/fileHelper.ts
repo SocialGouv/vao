@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { PDFDocument, PDFName } from "pdf-lib";
+import { PDFDict, PDFDocument, PDFName } from "pdf-lib";
 
 export async function createMinimalPdf(): Promise<Buffer> {
   const pdfDoc = await PDFDocument.create();
@@ -15,17 +15,73 @@ export async function createPdfWithJavaScript(): Promise<Buffer> {
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage();
 
-  // Action JavaScript vide, représentative des générateurs de PDF fautifs.
-  const jsAction = pdfDoc.context.register(
-    pdfDoc.context.obj({ JS: "", S: "JavaScript" }),
+  // Action JavaScript représentative d'un générateur de PDF fautif/malveillant.
+  const jsAction = pdfDoc.context.obj({
+    JS: "app.alert('javascript');",
+    S: "JavaScript",
+  });
+
+  // 1. `/OpenAction` au niveau du catalogue racine -> action JavaScript
+  pdfDoc.catalog.set(PDFName.of("OpenAction"), jsAction);
+  // 2. `/AA` (actions additionnelles) au niveau d'une page : déclencheur
+  // d'ouverture (/O) portant une action JavaScript
+  page.node.set(PDFName.of("AA"), pdfDoc.context.obj({ O: jsAction }));
+
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
+}
+
+export async function createPdfWithAcroFormJavaScript(): Promise<Buffer> {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage();
+
+  // Action JavaScript attachée au champ de formulaire (déclencheur de frappe
+  // /K). Le /AA est stocké indirectement (référence) pour couvrir aussi ce cas.
+  const jsAction = pdfDoc.context.obj({
+    JS: "this.getField('dropdown1').setItems([]);",
+    S: "JavaScript",
+  });
+  const aaDict = pdfDoc.context.obj({ K: jsAction });
+  const aaRef = pdfDoc.context.register(aaDict);
+
+  const fieldDict = pdfDoc.context.obj({
+    FT: "Tx",
+    P: page.ref,
+    Rect: [0, 0, 200, 100],
+    Subtype: "Widget",
+    T: "dropdown1",
+    Type: "Annot",
+  }) as PDFDict;
+  fieldDict.set(PDFName.of("AA"), aaRef);
+  const fieldRef = pdfDoc.context.register(fieldDict);
+
+  pdfDoc.catalog.set(
+    PDFName.of("AcroForm"),
+    pdfDoc.context.obj({ Fields: [fieldRef] }),
   );
 
-  // 1. `/OpenAction` au niveau du catalogue racine
-  pdfDoc.catalog.set(PDFName.of("OpenAction"), page.ref);
-  // 2. `/JavaScript` au niveau du catalogue racine
-  pdfDoc.catalog.set(PDFName.of("JavaScript"), jsAction);
-  // 3. `/AA` (actions additionnelles) au niveau d'une page
-  page.node.set(PDFName.of("AA"), jsAction);
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
+}
+
+export async function createPdfWithAcroFormNoJs(): Promise<Buffer> {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage();
+
+  const fieldDict = pdfDoc.context.obj({
+    FT: "Tx",
+    P: page.ref,
+    Rect: [0, 0, 200, 100],
+    Subtype: "Widget",
+    T: "plain",
+    Type: "Annot",
+  }) as PDFDict;
+  const fieldRef = pdfDoc.context.register(fieldDict);
+
+  pdfDoc.catalog.set(
+    PDFName.of("AcroForm"),
+    pdfDoc.context.obj({ Fields: [fieldRef] }),
+  );
 
   const pdfBytes = await pdfDoc.save();
   return Buffer.from(pdfBytes);

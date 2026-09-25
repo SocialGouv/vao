@@ -230,6 +230,14 @@ describe("file utils", () => {
       );
     });
 
+    it("should handle file.scan-antivirus", () => {
+      const fileName = "threat.pdf";
+      const result = getFileUploadErrorMessage(fileName, "file.scan-antivirus");
+      expect(result).toBe(
+        "Le fichier contient un code malveillant et ne peut pas être déposé.",
+      );
+    });
+
     it("should handle unknown error code", () => {
       const fileName = "test.pdf";
       const result = getFileUploadErrorMessage(fileName, "UnknownError");

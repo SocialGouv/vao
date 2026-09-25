@@ -221,6 +221,8 @@ fileignoreconfig:
   checksum: 37980111f65aa47d942a24532df417df7c8b7520f009aba83e65388fb88aa0b9
 - filename: packages/backend/src/utils/sanitizePdf.spec.ts
   checksum: 3a2165e5f396e3a4e8af4b31a6120d5225c758c4debf88c67c1d9f9e8da8f504
+- filename: packages/backend/src/utils/sanitizePdf.ts
+  checksum: c906bf0ed018984eae8232a863ac6395e556c0aea58136aa0b0dc226bd1bd3e7
 - filename: packages/backend/src/utils/validation-error.ts
   checksum: 4bec11a784b24d563235f78e271db6c1a9a7f2ebd0bf06544899c3da4f15b533
 - filename: packages/cron/src/notifySuppressionCompteInactif/notifySuppressionCompteInactif.email.ts
