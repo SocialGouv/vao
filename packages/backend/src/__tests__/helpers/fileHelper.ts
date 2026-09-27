@@ -94,6 +94,73 @@ export function createCorruptPdf(): Buffer {
   return Buffer.from("%PDF-1.4\n");
 }
 
+/**
+ * Retourne le contenu d'un PDF réellement chiffré (security handler Standard,
+ * mot de passe utilisateur vide). pdf-lib le charge avec `ignoreEncryption`
+ * en le signalant via `isEncrypted` — il doit donc être rejeté par
+ * sanitizePdf (415) plutôt que stocké corrompu.
+ */
+export function readEncryptedPdfFixture(): Buffer {
+  return fs.readFileSync(
+    path.join(__dirname, "../fixtures/encrypted-example.pdf"),
+  );
+}
+
+/**
+ * Construit un PDF portant des scripts JavaScript nommés dans
+ * catalogue[/Names][/JavaScript], dont une valeur **directe (inline)** dans
+ * une feuille de l'arbre (cas qui échappait au sweep des objets indirects),
+ * invoquée via une action /OpenAction /Named conservée.
+ */
+export async function createPdfWithNamedJavaScript(): Promise<Buffer> {
+  const pdfDoc = await PDFDocument.create();
+  pdfDoc.addPage();
+
+  const inlineJsAction = pdfDoc.context.obj({
+    JS: "app.alert('named-inline');",
+    S: "JavaScript",
+  });
+  const leaf = pdfDoc.context.obj({
+    Names: [PDFName.of("doIt"), inlineJsAction],
+  });
+  const root = pdfDoc.context.obj({
+    Kids: [pdfDoc.context.register(leaf)],
+  });
+  pdfDoc.catalog.set(PDFName.of("Names"), root);
+  pdfDoc.catalog.set(
+    PDFName.of("OpenAction"),
+    pdfDoc.context.obj({ N: "doIt", S: "Named" }),
+  );
+
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
+}
+
+/**
+ * Construit un PDF dont le /OpenAction (GoTo légitime) possède une suite
+ * d'actions /Next pointant vers une action JavaScript **inline** : seul le
+ * /Next doit être retiré, pas le /OpenAction.
+ */
+export async function createPdfWithNextJavaScript(): Promise<Buffer> {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage();
+
+  pdfDoc.catalog.set(
+    PDFName.of("OpenAction"),
+    pdfDoc.context.obj({
+      D: [page.ref, "XYZ", null, null, null],
+      Next: pdfDoc.context.obj({
+        JS: "app.alert('via next');",
+        S: "JavaScript",
+      }),
+      S: "GoTo",
+    }),
+  );
+
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
+}
+
 export function createMinimalPng(): Buffer {
   // PNG magic bytes + minimal valid PNG structure
   return Buffer.from([

@@ -1,5 +1,5 @@
 import { NextFunction, Response } from "express";
-import { PDFDocument } from "pdf-lib";
+import { PDFDocument, PDFName } from "pdf-lib";
 import request from "supertest";
 
 import * as DocumentService from "../../services/Document";
@@ -16,7 +16,9 @@ import {
   createPdfWithAcroFormJavaScript,
   createPdfWithAcroFormNoJs,
   createPdfWithJavaScript,
+  createPdfWithNamedJavaScript,
   detectFileType,
+  readEncryptedPdfFixture,
 } from "../helpers/fileHelper";
 import {
   createTestContainer,
@@ -357,6 +359,48 @@ describe("POST /documents", () => {
 
     expect(response.status).toBe(415);
     expect(response.body.name).toBe("PDFSanitizeError");
+  });
+
+  it("devrait retourner 415 (PDFSanitizeError) pour un PDF chiffré (non stocké)", async () => {
+    const user = await createUsagersUser();
+    const encryptedPdf = readEncryptedPdfFixture();
+
+    const response = await request(getFoAppHelper(user))
+      .post("/documents")
+      .field("category", "declaration")
+      .attach("file", encryptedPdf, "chiffre.pdf");
+
+    expect(response.status).toBe(415);
+    expect(response.body.name).toBe("PDFSanitizeError");
+  });
+
+  it("devrait accepter un PDF aux scripts nommés et stocker un fichier nettoyé (arbre /Names)", async () => {
+    const user = await createUsagersUser();
+    const pdfBuffer = await createPdfWithNamedJavaScript();
+
+    const response = await request(getFoAppHelper(user))
+      .post("/documents")
+      .field("category", "declaration")
+      .attach("file", pdfBuffer, "noms-js.pdf");
+
+    expect(response.status).toBe(200);
+    expect(response.body.uuid).toBeDefined();
+
+    const storedResponse = await request(getFoAppHelper()).get(
+      `/documents/${response.body.uuid}`,
+    );
+
+    expect(storedResponse.status).toBe(200);
+
+    const storedDoc = await PDFDocument.load(storedResponse.body, {
+      ignoreEncryption: true,
+      throwOnInvalidObject: false,
+    });
+
+    // Plus aucune action /S /JavaScript dans l'arbre catalogue[/Names][/JavaScript].
+    const names = storedDoc.catalog.get(PDFName.of("Names"));
+    expect(names).toBeDefined();
+    expect(names!.toString()).not.toContain("/S /JavaScript");
   });
 });
 
