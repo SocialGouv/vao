@@ -1,6 +1,8 @@
 FROM postgres:17.5-alpine
 
-COPY ./ /pg/
+COPY entrypoint.sh /pg/
+COPY scripts/ /pg/scripts/
+COPY seeds/ /pg/seeds/
 
 WORKDIR /pg
 
