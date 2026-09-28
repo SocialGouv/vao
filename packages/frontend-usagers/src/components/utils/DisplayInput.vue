@@ -6,7 +6,7 @@
       </dt>
       <dd class="read-only-value" :class="{ 'is-empty': !displayValue }">
         <slot :value="displayValue">
-          {{ displayValue || "—" }}
+          <DisplayEmpty :value="displayValue" />
         </slot>
       </dd>
     </dl>
@@ -19,6 +19,7 @@
 
 <script setup>
 import displayInput from "../../utils/display-input";
+import { DisplayEmpty } from "@vao/shared-ui";
 
 defineEmits(["emitComment"]);
 

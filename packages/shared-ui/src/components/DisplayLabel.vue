@@ -11,7 +11,7 @@
             À compléter
           </span>
           <template v-else>
-            {{ displayValue ? displayValue : "-" }}
+            <DisplayEmpty :value="displayValue" />
           </template>
         </dd>
       </dl>
@@ -26,6 +26,7 @@
 import { computed } from "vue";
 import type { PropType } from "vue";
 import { InputTypes } from "../constantes/input-types";
+import DisplayEmpty from "./DisplayEmpty.vue";
 
 defineEmits(["emitComment"]);
 

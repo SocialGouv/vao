@@ -9,14 +9,14 @@
     </TitleWithIcon>
     <dl class="fr-text--sm fr-pl-0">
       <dt class="read-only-label">Dénomination sociale:</dt>
-      <dd class="read-only-value">{{ personneMorale.raisonSociale || "—" }}</dd>
+      <dd class="read-only-value"><DisplayEmpty :value="personneMorale.raisonSociale" /></dd>
       <dt class="read-only-label">Statut, forme juridique:</dt>
-      <dd class="read-only-value">{{ personneMorale.statut || "—" }}</dd>
+      <dd class="read-only-value"><DisplayEmpty :value="personneMorale.statut" /></dd>
 
       <template v-if="!isEditingTelephone">
         <dt class="read-only-label">Téléphone :</dt>
         <dd class="read-only-value">
-          {{ personneMorale.telephone || "—" }}
+          <DisplayEmpty :value="personneMorale.telephone" />
           <DsfrLinkV2
             v-if="modifiable"
             as="button"
@@ -52,7 +52,7 @@
       <template v-if="!isEditingEmail">
         <dt class="read-only-label">Email :</dt>
         <dd class="read-only-value">
-          {{ personneMorale.email || "—" }}
+          <DisplayEmpty :value="personneMorale.email" />
           <DsfrLinkV2
             v-if="modifiable"
             as="button"
@@ -85,7 +85,7 @@
         </dd>
       </template>
       <dt class="read-only-label">Adresse du siège social :</dt>
-      <dd class="read-only-value">{{ personneMorale.adresse || "—" }}</dd>
+      <dd class="read-only-value"><DisplayEmpty :value="personneMorale.adresse" /></dd>
     </dl>
 
     <AgrementRepresentants
@@ -101,7 +101,7 @@
 import { ref, computed } from "vue";
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
-import { TitleWithIcon, DsfrLinkV2, useToaster } from "@vao/shared-ui";
+import { TitleWithIcon, DsfrLinkV2, DisplayEmpty, useToaster } from "@vao/shared-ui";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import { telephoneYupNullable } from "@/utils/telephoneValidators";

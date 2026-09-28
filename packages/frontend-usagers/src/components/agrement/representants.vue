@@ -125,11 +125,11 @@
     <template v-else>
       <dl class="fr-text--sm fr-pl-0">
         <dt class="read-only-label">Prénom:</dt>
-        <dd class="read-only-value">{{ representant.prenom || "—" }}</dd>
+        <dd class="read-only-value"><DisplayEmpty :value="representant.prenom" /></dd>
         <dt class="read-only-label">Nom:</dt>
-        <dd class="read-only-value">{{ representant.nom || "—" }}</dd>
+        <dd class="read-only-value"><DisplayEmpty :value="representant.nom" /></dd>
         <dt class="read-only-label">Fonction:</dt>
-        <dd class="read-only-value">{{ representant.fonction || "—" }}</dd>
+        <dd class="read-only-value"><DisplayEmpty :value="representant.fonction" /></dd>
       </dl>
       <!-- Affichage des erreurs de validation si présentes -->
       <ul
@@ -165,7 +165,7 @@ import type { RepresentantUi, RepresentantLegalDto } from "@vao/shared-bridge";
 import { computed, ref } from "vue";
 import * as yup from "yup";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
-import { DsfrLinkV2 } from "@vao/shared-ui";
+import { DsfrLinkV2, DisplayEmpty } from "@vao/shared-ui";
 import { useOrganismeStore } from "@/stores/organisme";
 
 const organismeStore = useOrganismeStore();
