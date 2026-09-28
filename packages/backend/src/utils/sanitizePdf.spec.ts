@@ -1,4 +1,4 @@
-import { PDFDocument, PDFName } from "pdf-lib";
+import { PDFArray, PDFDict, PDFDocument, PDFName } from "pdf-lib";
 
 import {
   createCorruptPdf,
@@ -6,6 +6,9 @@ import {
   createPdfWithAcroFormJavaScript,
   createPdfWithAcroFormNoJs,
   createPdfWithJavaScript,
+  createPdfWithNamedJavaScript,
+  createPdfWithNextJavaScript,
+  readEncryptedPdfFixture,
 } from "../__tests__/helpers/fileHelper";
 import { sanitizePdf } from "./sanitizePdf";
 
@@ -97,4 +100,63 @@ describe("sanitizePdf", () => {
   it("devrait rejeter un PDF corrompu/illisible", async () => {
     await expect(sanitizePdf(createCorruptPdf())).rejects.toThrow();
   });
+
+  it("devrait rejeter un PDF chiffré (au lieu de stocker un fichier corrompu)", async () => {
+    await expect(sanitizePdf(readEncryptedPdfFixture())).rejects.toThrow();
+  });
+
+  it("devrait neutraliser les scripts JavaScript nommés catalogue[/Names][/JavaScript] (valeurs inline)", async () => {
+    const output = await sanitizePdf(await createPdfWithNamedJavaScript());
+    const doc = await PDFDocument.load(output);
+
+    // Plus aucun /S /JavaScript sur les valeurs de l'arbre de noms.
+    expect(nameTreeContainsJavaScript(doc)).toBe(false);
+    // L'action /OpenAction /Named (non-JS) est conservée.
+    expect(catalogHas(doc, "OpenAction")).toBe(true);
+  });
+
+  it("devrait retirer une action /Next JavaScript en préservant le /OpenAction GoTo", async () => {
+    const output = await sanitizePdf(await createPdfWithNextJavaScript());
+    const doc = await PDFDocument.load(output);
+
+    const openActionValue = doc.catalog.get(PDFName.of("OpenAction"));
+    expect(openActionValue).toBeInstanceOf(PDFDict);
+    const openAction = openActionValue as PDFDict;
+    expect(openAction.get(PDFName.of("S"))?.toString()).toBe("/GoTo");
+    expect(openAction.get(PDFName.of("Next"))).toBeUndefined();
+  });
 });
+
+/**
+ * Parcourt l'arbre de noms catalogue[/Names][/JavaScript] et retourne true si
+ * l'un de ses dictionnaires de valeur est (encore) une action /S /JavaScript.
+ */
+function nameTreeContainsJavaScript(doc: PDFDocument): boolean {
+  const walk = (node: PDFDict): boolean => {
+    const kids = node.get(PDFName.of("Kids"));
+    if (kids instanceof PDFArray) {
+      for (let i = 0; i < kids.size(); i += 1) {
+        const child = kids.get(i);
+        if (child instanceof PDFDict && walk(child)) return true;
+      }
+    }
+    const namesEntry = node.get(PDFName.of("Names"));
+    if (namesEntry instanceof PDFArray) {
+      for (let i = 1; i < namesEntry.size(); i += 2) {
+        const value = namesEntry.get(i);
+        if (
+          value instanceof PDFDict &&
+          value.get(PDFName.of("S"))?.toString() === "/JavaScript"
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  const names = doc.catalog.get(PDFName.of("Names"));
+  if (!(names instanceof PDFDict)) return false;
+  const jsTree = names.get(PDFName.of("JavaScript"));
+  return jsTree instanceof PDFDict && walk(jsTree);
+}
