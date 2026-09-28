@@ -25,6 +25,13 @@ const JAVASCRIPT_KEY = PDFName.of("JavaScript");
 const KIDS_KEY = PDFName.of("Kids");
 const JAVASCRIPT_VALUE = "/JavaScript";
 
+// Drapeau indiquant qu'une mutation a été réalisée pendant le nettoyage. Reseté
+// à chaque appel de sanitizePdf.
+let modified = false;
+const markModified = (): void => {
+  modified = true;
+};
+
 /**
  * Retourne true si le dictionnaire est une action de type JavaScript
  * (dictionnaire d'action portant /S /JavaScript).
@@ -79,6 +86,7 @@ function toActionDicts(
 function removeActionIfJavaScript(dict: PDFDict, key: PDFName): void {
   const value = dict.get(key);
   if (value && toActionDicts(dict.context, value).some(isJavaScriptAction)) {
+    markModified();
     dict.delete(key);
   }
 }
@@ -107,6 +115,7 @@ function removeJavaScriptFromDictRec(
   visited.add(dict);
 
   if (isJavaScriptAction(dict)) {
+    markModified();
     dict.delete(JS_KEY);
     dict.delete(S_KEY);
   }
@@ -138,6 +147,7 @@ function removeJavaScriptActionKey(
   } else if (action) {
     const actionDicts = toActionDicts(dict.context, action);
     if (actionDicts.some(isJavaScriptAction)) {
+      markModified();
       dict.delete(key);
     } else {
       for (const subAction of actionDicts) {
@@ -177,6 +187,7 @@ function removeJavaScriptFromArray(
   for (let i = array.size() - 1; i >= 0; i -= 1) {
     const resolved = resolveDictionary(array.get(i), dict.context);
     if (resolved instanceof PDFDict && isJavaScriptAction(resolved)) {
+      markModified();
       array.remove(i);
     } else if (resolved instanceof PDFDict) {
       removeJavaScriptFromDictRec(resolved, visited);
@@ -195,6 +206,7 @@ function removeJavaScriptTriggers(dict: PDFDict, triggers: PDFDict): void {
         isJavaScriptAction,
       )
     ) {
+      markModified();
       triggers.delete(trigger);
     }
   }
@@ -285,6 +297,7 @@ function neutralizeJavaScriptNameTreeNode(
   for (let i = 1; i < names.size(); i += 2) {
     const dict = resolveDictionary(names.get(i), context);
     if (dict instanceof PDFDict && isJavaScriptAction(dict)) {
+      markModified();
       dict.delete(S_KEY);
       dict.delete(JS_KEY);
     }
@@ -302,6 +315,12 @@ function neutralizeJavaScriptNameTreeNode(
  * les structures couvertes (objets indirects, /A, /Next, /AA, annotations de
  * page, champs AcroForm et script nommés catalogue[/Names][/JavaScript]).
  *
+ * Si aucune action JavaScript n'est trouvée, le buffer d'entrée est renvoyé
+ * tel quel (byte-identical), sans resérialisation : on évite ainsi de réécrire
+ * inutilement un PDF sain (le save() de pdf-lib peut altérer la structure
+ * binaire - xref, compression, ordre des objets - d'un fichier inchangé).
+ * La resérialisation n'a lieu que si une modification réelle a été apportée.
+ *
  * Limites assumées : le JavaScript hébergé dans les flux XFA (formulaires XML
  * Acrobat, `<script>`) n'est pas analysé ici — vecteur résiduel, principalement
  * couvert par la couche de scan antivirus (ClamAV) ; son exécution requiert de
@@ -314,6 +333,7 @@ function neutralizeJavaScriptNameTreeNode(
  */
 export async function sanitizePdf(fileBuffer: Buffer): Promise<Buffer> {
   log.i("sanitizePdf - IN");
+  modified = false;
   try {
     const pdfDoc = await PDFDocument.load(fileBuffer, {
       // Certains PDF générés automatiquement ont une structure légèrement
@@ -375,6 +395,11 @@ export async function sanitizePdf(fileBuffer: Buffer): Promise<Buffer> {
     // dictionnaires d'action /S /JavaScript enregistrés dans l'arbre de noms,
     // y compris les valeurs directes inline qui échappent au sweep.
     removeJavaScriptFromNameTree(pdfDoc);
+
+    if (!modified) {
+      log.i("sanitizePdf - OK (aucune modification, fichier inchangé)");
+      return fileBuffer;
+    }
 
     const pdfBytes = await pdfDoc.save();
 

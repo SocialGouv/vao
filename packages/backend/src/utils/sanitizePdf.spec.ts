@@ -97,6 +97,21 @@ describe("sanitizePdf", () => {
     await expect(hasJavaScriptAction(output)).resolves.toBe(false);
   });
 
+  it("devrait renvoyer le buffer d'origine inchangé si aucune modification", async () => {
+    const original = await createMinimalPdf();
+    const output = await sanitizePdf(original);
+
+    expect(output).toEqual(original);
+  });
+
+  it("devrait réécrire le buffer si une action JavaScript a été retirée", async () => {
+    const original = await createPdfWithJavaScript();
+    const output = await sanitizePdf(original);
+
+    expect(output.equals(original)).toBe(false);
+    await expect(hasJavaScriptAction(output)).resolves.toBe(false);
+  });
+
   it("devrait rejeter un PDF corrompu/illisible", async () => {
     await expect(sanitizePdf(createCorruptPdf())).rejects.toThrow();
   });
