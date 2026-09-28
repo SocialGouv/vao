@@ -18,7 +18,7 @@
       déclarations de séjour. Veuillez les vérifier et les corriger si
       nécessaire.
     </p>
-    <p>Sélectionner les années</p>
+    <p class="fr-text--bold">Sélectionner les années:</p>
     <p class="fr-hint-text">Toutes les années doivent être renseignées</p>
     <DsfrTabs
       v-model="selectedTabIndex"

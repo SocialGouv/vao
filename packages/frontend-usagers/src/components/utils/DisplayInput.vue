@@ -114,6 +114,7 @@ const displayValue = computed(() => {
 
 dl {
   margin: 0;
+  padding-inline-start: 0;
 }
 
 dt {

@@ -102,3 +102,8 @@ const showRequiredEmpty = computed(
       displayValue.value === ""),
 );
 </script>
+<style scoped>
+dt {
+  font-weight: bold;
+}
+</style>

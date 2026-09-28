@@ -6,11 +6,11 @@
   >
     Bilan qualitatif sur les 4 dernières années
   </TitleWithIcon>
-  <div class="border fr-p-4v">
+  <div class="border fr-mt-6v">
     <h4 class="fr-text fr-text--lg fr-text--bold">
       Perception et ressenti des vacanciers sur les séjours réalisés.
     </h4>
-    <div class="fr-fieldset__element">
+    <div class="fr-fieldset__element fr-pl-0">
       <p
         id="bilanQualPerceptionSensibilite-desc"
         class="light-decisions-text-text-mention-grey"
@@ -30,7 +30,7 @@
         />
       </div>
     </div>
-    <div class="fr-fieldset__element">
+    <div class="fr-fieldset__element fr-pl-0">
       <MultiFilesUpload
         v-model="filesBilanQualitPerception"
         label="Document(s) relatif(s) à la perception globale du public accueilli"
@@ -40,12 +40,12 @@
       />
     </div>
   </div>
-  <div class="border fr-p-4v fr-mt-6v">
+  <div class="border fr-mt-6v">
     <h4 class="fr-text fr-text--lg fr-text--bold">
       Évolutions prévues des activités VAO et perspectives de développement à
       venir
     </h4>
-    <div class="fr-fieldset__element">
+    <div class="fr-fieldset__element fr-pl-0">
       <p
         id="bilanQualPerspectiveEvol-desc"
         class="light-decisions-text-text-mention-grey"
@@ -65,7 +65,7 @@
         />
       </div>
     </div>
-    <div class="fr-fieldset__element">
+    <div class="fr-fieldset__element fr-pl-0">
       <MultiFilesUpload
         v-model="filesBilanQualitPerspectives"
         label="Document(s) relatif(s) aux perspectives d'évolution"
@@ -75,11 +75,11 @@
       />
     </div>
   </div>
-  <div class="border fr-p-4v fr-mt-6v">
+  <div class="border fr-mt-6v">
     <h4 class="fr-text fr-text--lg">
       <strong>Eléments marquants autour des activités VAO</strong>
     </h4>
-    <div class="fr-fieldset__element">
+    <div class="fr-fieldset__element fr-pl-0">
       <p
         id="bilanQualElementsMarquants-desc"
         class="light-decisions-text-text-mention-grey"
@@ -99,7 +99,7 @@
         />
       </div>
     </div>
-    <div class="fr-fieldset__element">
+    <div class="fr-fieldset__element fr-pl-0">
       <MultiFilesUpload
         v-model="filesBilanQualitElementsMarquants"
         label="Document(s) relatif(s) aux éléments marquants"
@@ -109,7 +109,7 @@
       />
     </div>
   </div>
-  <div class="fr-fieldset__element fr-mt-6v">
+  <div class="fr-fieldset__element fr-mt-6v fr-pl-0">
     <MultiFilesUpload
       v-model="filesBilanQualitComplementaires"
       label="Document(s) complémentaire(s) relatif(s) au bilan qualitatif sur les quatre dernières années (optionnel)"
