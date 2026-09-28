@@ -1,8 +1,8 @@
 <template>
-  <div class="fr-fieldset__element">
+  <div class="fr-fieldset__element fr-pl-0">
     <div v-if="!props.modifiable">
       <dl class="fr-text--sm fr-pl-0">
-        <dt v-if="props.label">{{ props.label }}</dt>
+        <dt v-if="props.label" class="fr-text--bold">{{ props.label }}:</dt>
         <dd>
           <DsfrTable
             v-if="rows.length > 0"

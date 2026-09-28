@@ -15,7 +15,7 @@
     "
   >
     <div class="fr-mt-8v">
-      <div class="fr-fieldset__element">
+      <div class="fr-fieldset__element fr-pl-0">
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
@@ -48,7 +48,7 @@
       </div>
     </div>
     <div class="fr-mt-8v">
-      <div class="fr-fieldset__element">
+      <div class="fr-fieldset__element fr-pl-0">
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
@@ -78,7 +78,7 @@
       </div>
     </div>
     <div class="fr-mt-8v">
-      <div class="fr-fieldset__element">
+      <div class="fr-fieldset__element fr-pl-0">
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
@@ -111,7 +111,7 @@
       </div>
     </div>
     <div class="fr-mt-8v">
-      <div class="fr-fieldset__element">
+      <div class="fr-fieldset__element fr-pl-0">
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"

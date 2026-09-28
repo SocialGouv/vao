@@ -7,10 +7,7 @@
     Protocole de réorientation, évacuation, rapatriement prévu
   </TitleWithIcon>
   <div>
-    <component
-      :is="props.modifiable ? 'fieldset' : 'div'"
-      class="no-border"
-    >
+    <component :is="props.modifiable ? 'fieldset' : 'div'" class="no-border">
       <component
         :is="props.modifiable ? 'legend' : 'h4'"
         :class="
@@ -21,7 +18,7 @@
       >
         Réorientation, évacuation
       </component>
-      <div class="fr-fieldset__element">
+      <div class="fr-fieldset__element fr-pl-0">
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
@@ -44,7 +41,7 @@
           />
         </div>
       </div>
-      <div class="fr-fieldset__element fr-mt-8v">
+      <div class="fr-fieldset__element fr-pl-0 fr-mt-8v">
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
@@ -81,10 +78,7 @@
     </component>
   </div>
   <div class="fr-my-4w separator"></div>
-  <component
-    :is="props.modifiable ? 'fieldset' : 'div'"
-    class="no-border"
-  >
+  <component :is="props.modifiable ? 'fieldset' : 'div'" class="no-border">
     <component
       :is="props.modifiable ? 'legend' : 'h4'"
       :class="
@@ -118,7 +112,7 @@
         :error-message="protocoleRapatEtrangerErrorMessage"
       />
     </div>
-    <div class="fr-fieldset__element fr-mt-8v">
+    <div class="fr-fieldset__element fr-mt-8v fr-pl-0">
       <div class="fr-col-12">
         <DsfrInputGroup
           v-if="props.modifiable"

@@ -55,7 +55,7 @@
     class="no-border"
     :aria-labelledby="modifiable ? 'immatriculations' : undefined"
   >
-    <div class="fr-fieldset__element">
+    <div class="fr-fieldset__element fr-pl-0">
       <div class="fr-col-12">
         <FileUpload
           :model-value="fileImmatriculation"
@@ -130,7 +130,7 @@
     class="no-border"
     :aria-labelledby="modifiable ? 'attestations' : undefined"
   >
-    <div class="fr-fieldset__element">
+    <div class="fr-fieldset__element fr-pl-0">
       <FileUpload
         :model-value="fileAttestationsRespCivile"
         :cdn-url="props.cdnUrl"
