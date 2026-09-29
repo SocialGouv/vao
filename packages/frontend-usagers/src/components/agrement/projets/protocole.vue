@@ -7,11 +7,18 @@
     Protocole de réorientation, évacuation, rapatriement prévu
   </TitleWithIcon>
   <div>
-    <fieldset class="no-border">
-      <legend class="fr-fieldset__legend fr-text--lg">
+    <component :is="props.modifiable ? 'fieldset' : 'div'" class="no-border">
+      <component
+        :is="props.modifiable ? 'legend' : 'h4'"
+        :class="
+          props.modifiable
+            ? 'fr-fieldset__legend fr-text--lg'
+            : 'fr-my-2w fr-text--lg fr-text--bold'
+        "
+      >
         Réorientation, évacuation
-      </legend>
-      <div class="fr-fieldset__element">
+      </component>
+      <div class="fr-fieldset__element fr-pl-0">
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
@@ -34,7 +41,7 @@
           />
         </div>
       </div>
-      <div class="fr-fieldset__element fr-mt-8v">
+      <div class="fr-fieldset__element fr-pl-0 fr-mt-8v">
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
@@ -68,11 +75,20 @@
           label="Ajouter des fichiers (optionnel)"
         />
       </div>
-    </fieldset>
+    </component>
   </div>
   <div class="fr-my-4w separator"></div>
-  <fieldset class="no-border">
-    <legend class="fr-fieldset__legend fr-text--lg">Rapatriement</legend>
+  <component :is="props.modifiable ? 'fieldset' : 'div'" class="no-border">
+    <component
+      :is="props.modifiable ? 'legend' : 'h4'"
+      :class="
+        props.modifiable
+          ? 'fr-fieldset__legend fr-text--lg'
+          : 'fr-my-2w fr-text--lg fr-text--bold'
+      "
+    >
+      Rapatriement
+    </component>
     <div class="fr-col-12">
       <DsfrInputGroup
         v-if="props.modifiable"
@@ -96,7 +112,7 @@
         :error-message="protocoleRapatEtrangerErrorMessage"
       />
     </div>
-    <div class="fr-fieldset__element fr-mt-8v">
+    <div class="fr-fieldset__element fr-mt-8v fr-pl-0">
       <div class="fr-col-12">
         <DsfrInputGroup
           v-if="props.modifiable"
@@ -129,7 +145,7 @@
         label="Ajouter des fichiers (optionnel)"
       />
     </div>
-  </fieldset>
+  </component>
 </template>
 
 <script setup lang="ts">

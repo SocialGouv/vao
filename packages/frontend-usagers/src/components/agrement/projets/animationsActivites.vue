@@ -1,9 +1,17 @@
 <template>
-  <component :is="`h${props.titleLevel}`" id="animation-activites" class="fr-text--lead">
+  <component
+    :is="`h${props.titleLevel}`"
+    id="animation-activites"
+    class="fr-text--lead"
+  >
     <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
     Animation et activités prévues
   </component>
-  <fieldset class="no-border" aria-labelledby="animation-activites">
+  <component
+    :is="props.modifiable ? 'fieldset' : 'div'"
+    class="no-border"
+    :aria-labelledby="props.modifiable ? 'animation-activites' : undefined"
+  >
     <div class="flex flex-col">
       <div>
         <DsfrMultiselect
@@ -48,7 +56,7 @@
         />
       </div>
     </div>
-  </fieldset>
+  </component>
 </template>
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
@@ -227,7 +235,6 @@ defineExpose({
   validateForm,
 });
 </script>
-
 <style scoped>
 fieldset.no-border {
   border: none;

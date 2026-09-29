@@ -7,14 +7,18 @@
     <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
     Séjours (par années)
   </component>
-  <fieldset class="no-border" aria-labelledby="sejours-par-annees">
+  <component
+    :is="props.modifiable ? 'fieldset' : 'div'"
+    class="no-border"
+    :aria-labelledby="props.modifiable ? 'sejours-par-annee' : undefined"
+  >
     <p class="light-decisions-text-text-default-info fr-text--xs">
       <span class="fr-icon-info-fill" aria-hidden="true"></span>
       Ces informations ont été automatiquement remplies à partir de vos
       déclarations de séjour. Veuillez les vérifier et les corriger si
       nécessaire.
     </p>
-    <p>Sélectionner les années</p>
+    <p class="fr-text--bold">Sélectionner les années:</p>
     <p class="fr-hint-text">Toutes les années doivent être renseignées</p>
     <DsfrTabs
       v-model="selectedTabIndex"
@@ -48,7 +52,7 @@
         </p>
       </DsfrTabContent>
     </DsfrTabs>
-  </fieldset>
+  </component>
 </template>
 
 <script setup lang="ts">

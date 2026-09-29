@@ -7,7 +7,7 @@
     Budget des personnes prévu
   </TitleWithIcon>
 
-  <div class="fr-fieldset__element">
+  <div class="fr-fieldset__element fr-pl-0">
     <div class="fr-col-12">
       <DisplayLabel
         :value="props.initAgrement?.budgetGestionPerso"
@@ -17,7 +17,7 @@
     </div>
   </div>
 
-  <div class="fr-fieldset__element fr-mt-8v">
+  <div class="fr-fieldset__element fr-mt-8v fr-pl-0">
     <div class="fr-col-12">
       <DisplayLabel
         :value="props.initAgrement?.budgetPersoGestionComplementaire"
@@ -30,7 +30,7 @@
     </div>
   </div>
 
-  <div class="fr-fieldset__element fr-mt-8v">
+  <div class="fr-fieldset__element fr-mt-8v fr-pl-0">
     <MultiFilesUpload
       v-model="filesProjSejoursBudgetPersonnes"
       :modifiable="false"

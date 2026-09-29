@@ -3,7 +3,11 @@
     <span class="fr-icon-award-fill" aria-hidden="true"></span>
     Motivations
   </component>
-  <fieldset class="no-border" aria-labelledby="motivations">
+  <component
+    :is="modifiable ? 'fieldset' : 'div'"
+    class="no-border"
+    :aria-labelledby="modifiable ? 'motivations' : undefined"
+  >
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup
@@ -36,7 +40,7 @@
         label="Ajouter des fichiers (optionnel)"
       />
     </div>
-  </fieldset>
+  </component>
   <div class="separator fr-my-4v"></div>
   <component
     :is="`h${titreNiveau}`"
@@ -46,8 +50,12 @@
     <span class="fr-icon-briefcase-fill" aria-hidden="true"></span>
     Immatriculation
   </component>
-  <fieldset class="no-border" aria-labelledby="immatriculations">
-    <div class="fr-fieldset__element">
+  <component
+    :is="modifiable ? 'fieldset' : 'div'"
+    class="no-border"
+    :aria-labelledby="modifiable ? 'immatriculations' : undefined"
+  >
+    <div class="fr-fieldset__element fr-pl-0">
       <div class="fr-col-12">
         <FileUpload
           :model-value="fileImmatriculation"
@@ -105,7 +113,7 @@
         </div>
       </div>
     </div>
-  </fieldset>
+  </component>
 
   <div class="separator fr-my-4v"></div>
 
@@ -117,8 +125,12 @@
     <span class="fr-icon-file-text-fill" aria-hidden="true"></span>
     Attestations
   </component>
-  <fieldset class="no-border" aria-labelledby="attestations">
-    <div class="fr-fieldset__element">
+  <component
+    :is="modifiable ? 'fieldset' : 'div'"
+    class="no-border"
+    :aria-labelledby="modifiable ? 'attestations' : undefined"
+  >
+    <div class="fr-fieldset__element fr-pl-0">
       <FileUpload
         :model-value="fileAttestationsRespCivile"
         :cdn-url="props.cdnUrl"
@@ -148,7 +160,7 @@
         @update:model-value="setFileAttestationsRapatriement"
       />
     </div>
-  </fieldset>
+  </component>
   <div v-if="props.showButtons && props.modifiable">
     <div class="fr-fieldset__element">
       <UtilsNavigationButtons
@@ -166,7 +178,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useForm, useField } from "vee-validate";
-import { FileUpload, TitleWithIcon, useToaster } from "@vao/shared-ui";
+import { FileUpload, useToaster } from "@vao/shared-ui";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
 import {
   isValidFrShort,

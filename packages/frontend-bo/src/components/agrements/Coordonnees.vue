@@ -11,28 +11,26 @@
         </TitleWithIcon>
         <dl>
           <dt>Prénom:</dt>
-          <dd>{{ props.initOrganisme?.personnePhysique.prenom || "-" }}</dd>
+          <dd><DisplayEmpty :value="props.initOrganisme?.personnePhysique.prenom" /></dd>
           <dt>Nom d'usage:</dt>
-          <dd>{{ props.initOrganisme?.personnePhysique.nom || "-" }}</dd>
+          <dd><DisplayEmpty :value="props.initOrganisme?.personnePhysique.nom" /></dd>
           <dt>Nom de naissance:</dt>
           <dd>
-            {{ props.initOrganisme?.personnePhysique.nomNaissance || "-" }}
+            <DisplayEmpty :value="props.initOrganisme?.personnePhysique.nomNaissance" />
           </dd>
           <dt>Profession:</dt>
-          <dd>{{ props.initOrganisme?.personnePhysique.profession || "-" }}</dd>
+          <dd><DisplayEmpty :value="props.initOrganisme?.personnePhysique.profession" /></dd>
           <dt>Téléphone:</dt>
           <dd>
-            {{ props.initOrganisme?.personnePhysique.telephone || "-" }}
+            <DisplayEmpty :value="props.initOrganisme?.personnePhysique.telephone" />
           </dd>
           <dt>Adresse du siège de ses activité:</dt>
           <dd>
-            {{
-              props.initOrganisme?.personnePhysique.adresseDomicileLabel || "-"
-            }}
+            <DisplayEmpty :value="props.initOrganisme?.personnePhysique.adresseDomicileLabel" />
           </dd>
           <dt>Adresse de ses activités:</dt>
           <dd>
-            {{ props.initOrganisme?.personnePhysique.adresseSiegeLabel || "-" }}
+            <DisplayEmpty :value="props.initOrganisme?.personnePhysique.adresseSiegeLabel" />
           </dd>
         </dl>
       </div>
@@ -47,21 +45,21 @@
         <dl class="fr-text--sm fr-pl-0">
           <dt>Dénomination sociale:</dt>
           <dd>
-            {{ props.initOrganisme?.personneMorale?.raisonSociale || "-" }}
+            <DisplayEmpty :value="props.initOrganisme?.personneMorale?.raisonSociale" />
           </dd>
           <dt>Statut, forme juridique:</dt>
-          <dd>{{ props.initOrganisme?.personneMorale?.statut || "-" }}</dd>
+          <dd><DisplayEmpty :value="props.initOrganisme?.personneMorale?.statut" /></dd>
 
           <dt>Téléphone:</dt>
           <dd>
-            {{ props.initOrganisme?.personneMorale?.telephone || "-" }}
+            <DisplayEmpty :value="props.initOrganisme?.personneMorale?.telephone" />
           </dd>
           <dt>Email:</dt>
           <dd>
-            {{ props.initOrganisme?.personneMorale?.email || "-" }}
+            <DisplayEmpty :value="props.initOrganisme?.personneMorale?.email" />
           </dd>
           <dt>Adresse du siège social:</dt>
-          <dd>{{ props.initOrganisme?.personneMorale?.adresse || "-" }}</dd>
+          <dd><DisplayEmpty :value="props.initOrganisme?.personneMorale?.adresse" /></dd>
         </dl>
 
         <h4 class="fr-text--lg fr-mt-4w">Représentant légal</h4>
@@ -78,22 +76,24 @@
           </template>
           <dl class="fr-text--sm fr-pl-0">
             <dt>Prénom :</dt>
-            <dd>{{ rep.prenom || "-" }}</dd>
+            <dd><DisplayEmpty :value="rep.prenom" /></dd>
             <dt>Nom :</dt>
-            <dd>{{ rep.nom || "-" }}</dd>
+            <dd><DisplayEmpty :value="rep.nom" /></dd>
             <dt>Téléphone :</dt>
-            <dd>{{ rep.telephoneRepresentant || "-" }}</dd>
+            <dd><DisplayEmpty :value="rep.telephoneRepresentant" /></dd>
             <dt>Email :</dt>
-            <dd>{{ rep.emailRepresentant || "-" }}</dd>
+            <dd><DisplayEmpty :value="rep.emailRepresentant" /></dd>
             <dt>Adresse du domicile :</dt>
             <dd>
-              {{
-                rep.adresseDomicile && rep.adresseDomicile.label
-                  ? rep.adresseDomicile.label
-                  : rep.adresseDomicile
-                    ? rep.adresseDomicile
-                    : "-"
-              }}
+              <DisplayEmpty
+                :value="
+                  rep.adresseDomicile && rep.adresseDomicile.label
+                    ? rep.adresseDomicile.label
+                    : rep.adresseDomicile
+                      ? rep.adresseDomicile
+                      : null
+                "
+              />
             </dd>
           </dl>
         </div>
@@ -127,6 +127,7 @@ import {
   FileUpload,
   TitleWithIcon,
   DisplayLabel,
+  DisplayEmpty,
   AgrementDisplayInput,
   DsfrPaginationV2,
 } from "@vao/shared-ui";

@@ -5,7 +5,7 @@
       id="months-select"
       v-model="selectedLabels"
       label="sélectionnez un ou plusieurs mois"
-      aria-label="sélectionnez un ou plusieurs mois"
+      label-class="fr-sr-only"
       :button-label="buttonLabel"
       :options="months"
       size="small"
