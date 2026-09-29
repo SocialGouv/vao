@@ -2,7 +2,7 @@
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
 import { MultiSelectOption, ApiUnavailable, apiModel, useToaster } from "@vao/shared-ui";
-import { ref } from "vue";
+import { ref, useId } from "vue";
 const apiTypes = apiModel.apiTypes;
 
 const useExternalApi = useExternalApiStore();
@@ -31,6 +31,7 @@ const isLoading = ref(false);
 
 const isModalOpen = ref(false);
 const multiselectRef = ref(null);
+const inputId = useId();
 
 const canShowClear = ref(false);
 
@@ -139,11 +140,12 @@ function onCloseModal() {
             'fr-input-group--valid': validMessage,
           }"
         >
-          <label class="fr-label">
+          <label class="fr-label" :for="inputId">
             {{ label }}
           </label>
           <div class="fr-multiselect-adress">
             <Multiselect
+              :id="inputId"
               ref="multiselectRef"
               :value="props.value?.label"
               value-prop="label"

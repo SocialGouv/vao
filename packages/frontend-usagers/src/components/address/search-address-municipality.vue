@@ -18,8 +18,11 @@
       </div>
       <div class="fr-input-group fr-col-12">
         <div class="fr-fieldset__element">
-          <label class="fr-label"> Sélectionner un code postal </label>
+          <label class="fr-label" for="codePostal">
+            Sélectionner un code postal
+          </label>
           <Multiselect
+            id="codePostal"
             value-prop="label"
             mode="single"
             :close-on-select="true"
@@ -49,7 +52,7 @@
         </div>
       </div>
     </div>
-    <label class="fr-label"> Adresse selectionnée : </label>
+    <p class="fr-label"> Adresse selectionnée : </p>
     <DsfrHighlight small>{{ adresseLabel }}</DsfrHighlight>
     <DsfrButton
       type="button"

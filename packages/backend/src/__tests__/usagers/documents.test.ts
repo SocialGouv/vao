@@ -1,4 +1,5 @@
 import { NextFunction, Response } from "express";
+import { PDFDocument, PDFName } from "pdf-lib";
 import request from "supertest";
 
 import * as DocumentService from "../../services/Document";
@@ -7,11 +8,17 @@ import { getFileTypeFromBuffer } from "../../utils/file";
 import { getPoolDoc } from "../../utils/pgpoolDoc";
 import { getFoAppHelper } from "../helpers/appHelper";
 import {
+  createCorruptPdf,
   createLargePdf,
   createMinimalGif,
   createMinimalPdf,
   createMinimalPng,
+  createPdfWithAcroFormJavaScript,
+  createPdfWithAcroFormNoJs,
+  createPdfWithJavaScript,
+  createPdfWithNamedJavaScript,
   detectFileType,
+  readEncryptedPdfFixture,
 } from "../helpers/fileHelper";
 import {
   createTestContainer,
@@ -230,6 +237,170 @@ describe("POST /documents", () => {
 
     expect(response.status).toBe(413);
     expect(response.body.name).toBe("FileIsTooLargeError");
+  });
+
+  it("devrait accepter un PDF contenant du JavaScript et stocker un fichier nettoyé", async () => {
+    const user = await createUsagersUser();
+    const pdfBuffer = await createPdfWithJavaScript();
+
+    const response = await request(getFoAppHelper(user))
+      .post("/documents")
+      .field("category", "declaration")
+      .attach("file", pdfBuffer, "javascript.pdf");
+
+    expect(response.status).toBe(200);
+    expect(response.body.uuid).toBeDefined();
+
+    const storedResponse = await request(getFoAppHelper()).get(
+      `/documents/${response.body.uuid}`,
+    );
+
+    expect(storedResponse.status).toBe(200);
+
+    const storedDoc = await PDFDocument.load(storedResponse.body, {
+      ignoreEncryption: true,
+      throwOnInvalidObject: false,
+    });
+
+    const jsHits = [...storedDoc.context.enumerateIndirectObjects()].some(
+      ([, obj]) => {
+        const str = obj.toString();
+        return (
+          str.includes("/S /JavaScript") ||
+          /\/JS\b/.test(str) ||
+          str.includes("getField(") ||
+          str.includes("setItems(")
+        );
+      },
+    );
+
+    expect(jsHits).toBe(false);
+  });
+
+  it("devrait accepter un PDF avec JS de formulaire et stocker un fichier nettoyé", async () => {
+    const user = await createUsagersUser();
+    const pdfBuffer = await createPdfWithAcroFormJavaScript();
+
+    const response = await request(getFoAppHelper(user))
+      .post("/documents")
+      .field("category", "declaration")
+      .attach("file", pdfBuffer, "form-javascript.pdf");
+
+    expect(response.status).toBe(200);
+    expect(response.body.uuid).toBeDefined();
+
+    const storedResponse = await request(getFoAppHelper()).get(
+      `/documents/${response.body.uuid}`,
+    );
+
+    expect(storedResponse.status).toBe(200);
+
+    const storedDoc = await PDFDocument.load(storedResponse.body, {
+      ignoreEncryption: true,
+      throwOnInvalidObject: false,
+    });
+
+    const jsHits = [...storedDoc.context.enumerateIndirectObjects()].some(
+      ([, obj]) => {
+        const str = obj.toString();
+        return (
+          str.includes("/S /JavaScript") ||
+          /\/JS\b/.test(str) ||
+          str.includes("getField(") ||
+          str.includes("setItems(")
+        );
+      },
+    );
+
+    expect(jsHits).toBe(false);
+
+    // L'AcroForm et ses champs (non-JS) sont conservés.
+    const acroForm = storedDoc.catalog.getAcroForm();
+    expect(acroForm).toBeDefined();
+    expect(acroForm!.getAllFields().length).toBeGreaterThan(0);
+  });
+
+  it("devrait préserver un formulaire sans JavaScript", async () => {
+    const user = await createUsagersUser();
+    const pdfBuffer = await createPdfWithAcroFormNoJs();
+
+    const response = await request(getFoAppHelper(user))
+      .post("/documents")
+      .field("category", "declaration")
+      .attach("file", pdfBuffer, "form.pdf");
+
+    expect(response.status).toBe(200);
+    expect(response.body.uuid).toBeDefined();
+
+    const storedResponse = await request(getFoAppHelper()).get(
+      `/documents/${response.body.uuid}`,
+    );
+
+    expect(storedResponse.status).toBe(200);
+
+    const storedDoc = await PDFDocument.load(storedResponse.body, {
+      ignoreEncryption: true,
+      throwOnInvalidObject: false,
+    });
+
+    const acroForm = storedDoc.catalog.getAcroForm();
+    expect(acroForm).toBeDefined();
+    expect(acroForm!.getAllFields().length).toBeGreaterThan(0);
+  });
+
+  it("devrait retourner 415 (PDFSanitizeError) pour un PDF corrompu non nettoyable", async () => {
+    const user = await createUsagersUser();
+    const pdfBuffer = createCorruptPdf();
+
+    const response = await request(getFoAppHelper(user))
+      .post("/documents")
+      .field("category", "declaration")
+      .attach("file", pdfBuffer, "corrompu.pdf");
+
+    expect(response.status).toBe(415);
+    expect(response.body.name).toBe("PDFSanitizeError");
+  });
+
+  it("devrait retourner 415 (PDFSanitizeError) pour un PDF chiffré (non stocké)", async () => {
+    const user = await createUsagersUser();
+    const encryptedPdf = readEncryptedPdfFixture();
+
+    const response = await request(getFoAppHelper(user))
+      .post("/documents")
+      .field("category", "declaration")
+      .attach("file", encryptedPdf, "chiffre.pdf");
+
+    expect(response.status).toBe(415);
+    expect(response.body.name).toBe("PDFSanitizeError");
+  });
+
+  it("devrait accepter un PDF aux scripts nommés et stocker un fichier nettoyé (arbre /Names)", async () => {
+    const user = await createUsagersUser();
+    const pdfBuffer = await createPdfWithNamedJavaScript();
+
+    const response = await request(getFoAppHelper(user))
+      .post("/documents")
+      .field("category", "declaration")
+      .attach("file", pdfBuffer, "noms-js.pdf");
+
+    expect(response.status).toBe(200);
+    expect(response.body.uuid).toBeDefined();
+
+    const storedResponse = await request(getFoAppHelper()).get(
+      `/documents/${response.body.uuid}`,
+    );
+
+    expect(storedResponse.status).toBe(200);
+
+    const storedDoc = await PDFDocument.load(storedResponse.body, {
+      ignoreEncryption: true,
+      throwOnInvalidObject: false,
+    });
+
+    // Plus aucune action /S /JavaScript dans l'arbre catalogue[/Names][/JavaScript].
+    const names = storedDoc.catalog.get(PDFName.of("Names"));
+    expect(names).toBeDefined();
+    expect(names!.toString()).not.toContain("/S /JavaScript");
   });
 });
 
