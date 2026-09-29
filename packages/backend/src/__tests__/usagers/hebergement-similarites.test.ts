@@ -76,6 +76,16 @@ beforeAll(async () => {
   await createTestContainer();
 });
 
+beforeEach(async () => {
+  const client = await getPool().connect();
+  try {
+    await client.query(`DELETE FROM front.site_organisme`);
+    await client.query(`DELETE FROM front.site`);
+  } finally {
+    client.release();
+  }
+});
+
 afterAll(async () => {
   await removeTestContainer();
 });
@@ -270,7 +280,7 @@ describe("POST /hebergement/site/similarites", () => {
     );
   });
 
-  it("renvoie une similarité 'adresseComplete' quand l'adresse est identique mais le nom diffère", async () => {
+  it("renvoie une similarité 'nomLieu' quand l'adresse est identique mais le nom diffère", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     await createSite(
@@ -289,7 +299,7 @@ describe("POST /hebergement/site/similarites", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.similarites).toHaveLength(1);
-    expect(response.body.similarites[0].similarite).toBe("adresseComplete");
+    expect(response.body.similarites[0].similarite).toBe("nomLieu");
     expect(response.body.similarites[0].nomSiteOfficiel).toBe("Gîte A");
   });
 
