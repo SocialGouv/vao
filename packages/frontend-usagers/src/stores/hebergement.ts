@@ -101,7 +101,7 @@ export const useHebergementStore = defineStore("hebergement", {
         return similarites;
       } catch (err: unknown) {
         log.i("checkSiteSimilarites - DONE with error", err);
-        return [];
+        throw err;
       }
     },
     async updateOrCreate(

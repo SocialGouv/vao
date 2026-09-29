@@ -112,12 +112,14 @@ export const parseAddressLabel = (
   const ville = cpVilleMatch
     ? normalize(`${cpVilleMatch[1]} ${cpVilleMatch[2]}`.trim())
     : normalize(lastPart);
-  const addressPart =
-    parts.length > 1
-      ? parts[0]
-      : cpVilleMatch
-        ? lastPart.slice(0, cpVilleMatch.index).trim()
-        : lastPart;
+  let addressPart;
+  if (parts.length > 1) {
+    addressPart = parts[0];
+  } else if (cpVilleMatch) {
+    addressPart = lastPart.slice(0, cpVilleMatch.index).trim();
+  } else {
+    addressPart = lastPart;
+  }
   if (!addressPart) {
     return { ...EMPTY_ADDRESS, ville };
   }

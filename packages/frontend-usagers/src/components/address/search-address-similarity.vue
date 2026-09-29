@@ -6,7 +6,7 @@
     </p>
 
     <div v-for="group in groups" :key="group.type" class="fr-mb-3w">
-      <h3 class="fr-h4 fr-mb-1w">{{ group.title }}</h3>
+      <h2 class="fr-h6 fr-mb-1w">{{ group.title }}</h2>
       <template v-if="group.type === 'nomLieu'">
         <div class="fr-fieldset__element">
           <ul class="fr-mb-0">
@@ -113,7 +113,7 @@ function buildTitle(type: SiteSimilariteType, count: number): string {
     case "numeroVoie":
       return `Le numéro de la voie de l’adresse saisie pour cet hébergement est différente de celle renseignée ${byCount(count)}`;
     case "typeVoie":
-      return `Le type de voie pour l’adresse saisie pour cet hébergement est différente de celle renseignée ${byCount(count)}`;
+      return `Le type de voie pour l’adresse saisie pour cet hébergement est différent de celle renseignée ${byCount(count)}`;
     case "adresseComplete":
       return `L’adresse saisie pour cet hébergement est déjà renseignée ${byCount(count)}`;
     case "nomLieu":

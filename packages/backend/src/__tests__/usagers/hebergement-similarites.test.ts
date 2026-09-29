@@ -127,6 +127,49 @@ describe("POST /hebergement/site/similarites", () => {
     expect(response.status).toBe(200);
   });
 
+  it("résulte en similarités quand nomSiteOfficiel non fourni dans le body", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    await createSite(
+      authUser.id,
+      organismeId,
+      "Gîte distant",
+      "5 avenue des Champs, 75001 Paris",
+    );
+
+    const response = await request(getFoAppHelper(authUser))
+      .post("/hebergement/site/similarites")
+      .send({
+        adresse: buildAdresse("5 avenue des Champs, 75001 Paris"),
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.similarites).toHaveLength(1);
+    expect(response.body.similarites[0].similarite).toBe("nomLieu");
+  });
+
+  it("résulte en similarités quand la voie n'a pas de numéro", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    await createSite(
+      authUser.id,
+      organismeId,
+      "Gîte d'ici",
+      "5 avenue des Champs, 75001 Paris",
+    );
+
+    const response = await request(getFoAppHelper(authUser))
+      .post("/hebergement/site/similarites")
+      .send({
+        adresse: buildAdresse("avenue des Champs, 75001 Paris"),
+        nomSiteOfficiel: "Gîte d'ici",
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.similarites).toHaveLength(1);
+    expect(response.body.similarites[0].similarite).toBe("numeroVoie");
+  });
+
   it("détecte un numéro de voie différent d'un autre site", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
@@ -225,5 +268,49 @@ describe("POST /hebergement/site/similarites", () => {
         }),
       ]),
     );
+  });
+
+  it("renvoie une similarité 'adresseComplete' quand l'adresse est identique mais le nom diffère", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    await createSite(
+      authUser.id,
+      organismeId,
+      "Gîte A",
+      "134 rue Gilles de Montal, 67730 La Vancelle",
+    );
+
+    const response = await request(getFoAppHelper(authUser))
+      .post("/hebergement/site/similarites")
+      .send({
+        adresse: buildAdresse("134 rue Gilles de Montal, 67730 La Vancelle"),
+        nomSiteOfficiel: "Gîte B",
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.similarites).toHaveLength(1);
+    expect(response.body.similarites[0].similarite).toBe("adresseComplete");
+    expect(response.body.similarites[0].nomSiteOfficiel).toBe("Gîte A");
+  });
+
+  it("retombe sur 'nomLieu' quand l'adresse ne comporte pas de numéro de voie", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    await createSite(
+      authUser.id,
+      organismeId,
+      "Gîte sans numéro",
+      "rue Gilles de Montal, 67730 La Vancelle",
+    );
+
+    const response = await request(getFoAppHelper(authUser))
+      .post("/hebergement/site/similarites")
+      .send({
+        adresse: buildAdresse("rue Gilles de Montal, 67730 La Vancelle"),
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.similarites).toHaveLength(1);
+    expect(response.body.similarites[0].similarite).toBe("nomLieu");
   });
 });

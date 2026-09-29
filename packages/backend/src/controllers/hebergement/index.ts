@@ -1,5 +1,4 @@
 export { default as activate } from "./activate";
-export { default as checkSimilarites } from "./check-similarites";
 export { default as desactivate } from "./desactivate";
 export { default as get } from "./get";
 export { default as getByDepartements } from "./getByDepartements";

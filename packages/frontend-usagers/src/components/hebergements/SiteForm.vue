@@ -95,6 +95,7 @@
     title="Nous ne parvenons pas à localiser l’adresse :"
     :opened="showConfirmationModal"
     :closeable="true"
+    size="lg"
     @close="onAddressEdit"
   >
     <SearchAddressConfirm
@@ -108,6 +109,7 @@
     title="Vérification des informations saisies"
     :opened="showSimilarityModal"
     :closeable="true"
+    size="lg"
     @close="onReturnToSaisie"
   >
     <SearchAddressSimilarity
@@ -136,6 +138,9 @@ import {
   requiresAddressConfirmation,
   type SiteFormValidationValues,
 } from "./siteFormValidation";
+import { useToaster } from "@vao/shared-ui";
+
+const toaster = useToaster();
 
 const config = useRuntimeConfig();
 const hebergementStore = useHebergementStore();
@@ -276,9 +281,19 @@ const onSubmit = handleSubmit(async (values) => {
     adresse: submitValues.adresse,
   };
 
-  similarites.value = await hebergementStore.checkSiteSimilarites(
-    submitValues as unknown as SiteDto,
-  );
+  try {
+    similarites.value = await hebergementStore.checkSiteSimilarites(
+      submitValues as unknown as SiteDto,
+    );
+  } catch (err: unknown) {
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "Une erreur est survenue lors de la vérification des similarités",
+      role: "alert",
+    });
+    return;
+  }
 
   if (similarites.value.length === 0) {
     emit("submit", submitValues);
