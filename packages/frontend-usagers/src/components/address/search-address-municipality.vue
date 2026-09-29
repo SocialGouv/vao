@@ -23,12 +23,13 @@
         </div>
       </div>
       <div class="fr-fieldset__element fr-col-12">
-        <div class="fr-input-group fr-col-12">
+        <div class="fr-input-group">
           <label class="fr-label">
             {{ props.labelCp }}
             <span class="fr-hint-text">{{ props.hintCp }}</span>
           </label>
           <Multiselect
+            id="codePostal"
             value-prop="label"
             mode="single"
             :close-on-select="true"
@@ -58,7 +59,7 @@
         </div>
       </div>
     </div>
-    <label class="fr-label"> Adresse selectionnée : </label>
+    <p class="fr-label">Adresse selectionnée :</p>
     <DsfrHighlight small>{{ adresseLabel }}</DsfrHighlight>
     <DsfrButton type="button" label="Valider" primary @click="validate" />
   </div>

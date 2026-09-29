@@ -109,6 +109,7 @@ const links = [
 const uploadFiles = async (hebergement) => {
   try {
     await hebergementStore.uploadAllFiles(hebergement);
+    return true;
   } catch (error) {
     const description = getFileUploadErrorMessage(
       error?.fileName,
@@ -120,7 +121,7 @@ const uploadFiles = async (hebergement) => {
       role: "alert",
     });
     resetApiStatut();
-    return;
+    return false;
   }
 };
 
@@ -130,7 +131,7 @@ async function updateOrCreate(hebergement) {
     `${hebergementId.value ? "Modification" : "création"} de l'hébergement en cours`,
   );
 
-  await uploadFiles(hebergement);
+  if (!(await uploadFiles(hebergement))) return;
   // Sauvegarde de l'hébergement
   try {
     await hebergementStore.updateOrCreate(hebergement, hebergementId.value);
@@ -157,9 +158,9 @@ async function updateOrCreateBrouillon(hebergement) {
     `${hebergementId.value ? "Modification" : "création"} de l'hébergement en mode brouillon`,
   );
 
-  await uploadFiles(hebergement);
+  if (!(await uploadFiles(hebergement))) return;
 
-  // Sauvegarde de l'hébergement
+  // Sauvegarde de l'hébergement en mode brouillon
   try {
     const res = await hebergementStore.updateOrCreateBrouillon(
       hebergement,
@@ -188,7 +189,7 @@ async function activate(hebergement) {
   setApiStatut(
     `${hebergementId.value ? "Modification" : "création"} de l'hébergement en mode brouillon`,
   );
-  await uploadFiles(hebergement);
+  if (!(await uploadFiles(hebergement))) return;
 
   try {
     await hebergementStore.activate(hebergement, hebergementId.value);
