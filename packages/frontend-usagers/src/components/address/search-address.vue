@@ -19,6 +19,8 @@ const toaster = useToaster();
 
 const log = logger("components/search-address");
 
+const addressFieldId = "recherche-adresse";
+
 const props = defineProps({
   label: { type: String, required: true },
   hint: { type: String, required: false, default: null },
@@ -40,7 +42,7 @@ const emits = defineEmits([
 const NB_CAR_ADDRESSE_MIN = 5;
 
 type AddressOption = {
-  id: string;
+  id?: number | null;
   label: string;
   cleInsee?: string;
   codeInsee?: string;
@@ -64,7 +66,6 @@ type AddressApiDto = {
 
 function toAddressOption(address: AddressApiDto): AddressOption {
   return {
-    id: address.properties.id,
     label: address.properties.label,
     cleInsee: address.properties.id,
     codeInsee: address.properties.citycode,
@@ -261,7 +262,9 @@ function openFreeAddressModal() {
 }
 
 function focusOption(el: HTMLElement) {
-  el.tabIndex = 0;
+  el.parentElement?.querySelectorAll<HTMLElement>(".multiselect-option").forEach((opt) => {
+    opt.tabIndex = opt === el ? 0 : -1;
+  });
   el.focus();
   const index = Array.from(el.parentElement?.children ?? []).indexOf(el);
   if (index >= 0) {
@@ -414,7 +417,7 @@ onUnmounted(() => {
             'fr-input-group--valid': validMessage,
           }"
         >
-          <label class="fr-label">
+          <label class="fr-label" :for="addressFieldId">
             {{ label }}
             <span v-if="hint" class="fr-hint-text">
               {{ hint }}
@@ -422,6 +425,7 @@ onUnmounted(() => {
           </label>
           <div ref="multiselectWrapperRef" class="fr-multiselect-adress">
             <Multiselect
+              :id="addressFieldId"
               ref="multiselectRef"
               :value="selectedLabel"
               value-prop="label"

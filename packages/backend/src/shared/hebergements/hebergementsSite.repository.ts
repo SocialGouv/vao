@@ -90,7 +90,6 @@ export const SitesRepositoryShared = {
     ]);
     log.i("createSiteOrganisme - DONE");
   },
-
   async getSiteById(siteId: string): Promise<SiteDto | null> {
     log.i("getSiteById - IN");
     const query = `

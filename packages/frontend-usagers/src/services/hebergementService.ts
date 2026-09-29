@@ -1,4 +1,7 @@
-import type { HebergementUsagersRoutes } from "@vao/shared-bridge";
+import type {
+  HebergementUsagersRoutes,
+  SiteDto,
+} from "@vao/shared-bridge";
 import { buildRequest } from "~/utils/fetchBackend";
 
 const HebergementService = {
@@ -11,6 +14,16 @@ const HebergementService = {
       params: { id: String(hebergementId) },
     })();
     return hebergement;
+  },
+  checkSiteSimilarites: async (site: SiteDto) => {
+    const { similarites } = await buildRequest<
+      HebergementUsagersRoutes["CheckSimilarites"]
+    >({
+      path: "/hebergement/site/similarites",
+      method: "POST",
+      body: site,
+    })();
+    return similarites;
   },
 };
 

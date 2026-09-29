@@ -22,17 +22,18 @@
 </template>
 
 <script setup lang="ts">
-import { useToaster } from "@vao/shared-ui";
 import { FeatureFlagName } from "@vao/shared-bridge";
+import { useToaster } from "@vao/shared-ui";
+import type { SiteFormValidationValues } from "~/components/hebergements/siteFormValidation";
 
 definePageMeta({
   middleware: ["is-connected"],
 });
 
 const route = useRoute();
-const toaster = useToaster();
 const userStore = useUserStore();
 const pageHeadingRef = ref<HTMLHeadingElement | null>(null);
+const toaster = useToaster();
 
 const isModuleHebergementEnabled = computed(
   () =>
@@ -75,14 +76,8 @@ const links = [
 
 const hash = computed(() => {
   if (route.hash) {
-    useHead({
-      title: titles.value[route.hash as keyof typeof titles.value],
-    });
     return route.hash.slice(1);
   }
-  useHead({
-    title: titles.value["#site-coordonnees"],
-  });
   return hebergementSiteMenu.menus?.[0]?.id ?? "site-coordonnees";
 });
 
@@ -98,15 +93,12 @@ watch(
   { immediate: true },
 );
 
-function onSubmit() {
-  toaster.info({
-    titleTag: "h2",
-    description:
-      "Cet écran est en cours de construction, l’enregistrement n’est pas encore disponible.",
-  });
-}
+async function onStep1Submit(site: SiteFormValidationValues) {
+  if (!site.adresse) {
+    return;
+  }
 
-function onStep1Submit() {
-  onSubmit();
+  toaster.success({ titleTag: "h2", description: "Adresse validée" });
+  return;
 }
 </script>
