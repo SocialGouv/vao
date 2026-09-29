@@ -67,7 +67,10 @@ export default defineNuxtConfig({
   security: {
     headers: {
       crossOriginEmbedderPolicy: "unsafe-none",
+      referrerPolicy: "no-referrer",
+      xXSSProtection: "0",
       contentSecurityPolicy: {
+        "object-src": ["'none'"],
         "img-src": ["'self'", "*.openstreetmap.org", "data:"],
         "script-src": [
           "'self'",
