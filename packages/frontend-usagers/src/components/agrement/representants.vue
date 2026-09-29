@@ -1,5 +1,7 @@
 <template>
-  <h4 class="fr-text--lg fr-mt-4w">Représentant legal</h4>
+  <component :is="`h${representantsTitleLevel}`" class="fr-text--lg fr-mt-4w">
+    Représentant legal
+  </component>
 
   <div
     v-for="(representant, idx) in representantsList"
@@ -8,7 +10,9 @@
   >
     <div class="fr-mb-2w">
       <div class="container-flex-between">
-        <h4 class="fr-text--md fr-mb-0">Représentant n°{{ idx + 1 }}</h4>
+        <component :is="`h${propTitleLevel}`" class="fr-text--md fr-mb-0">
+          Représentant n°{{ idx + 1 }}
+        </component>
         <div class="container-flex-between">
           <template v-if="props.modifiable">
             <DsfrLinkV2
@@ -158,7 +162,7 @@
 
 <script setup lang="ts">
 import type { RepresentantUi, RepresentantLegalDto } from "@vao/shared-bridge";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import * as yup from "yup";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import { DsfrLinkV2 } from "@vao/shared-ui";
@@ -169,7 +173,11 @@ const organismeStore = useOrganismeStore();
 const props = defineProps<{
   modifiable?: boolean;
   statut?: string;
+  titleLevel?: number;
 }>();
+
+const representantsTitleLevel = computed(() => props.titleLevel ?? 4);
+const propTitleLevel = computed(() => representantsTitleLevel.value + 1);
 
 const representantSchema = yup.object({
   statut: yup.string(),

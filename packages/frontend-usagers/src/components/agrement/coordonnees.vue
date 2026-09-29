@@ -22,7 +22,9 @@
     </div>
 
     <div v-if="isPersonneMorale">
-      <h3 class="fr-text--lg fr-mt-4w">Procès verbal</h3>
+      <component :is="`h${titreProcesVerbal}`" class="fr-text--lg fr-mt-4w">
+        Procès verbal
+      </component>
       <FileUpload
         v-model="fileProcesVerbal"
         :cdn-url="props.cdnUrl"
@@ -76,14 +78,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { FileUpload, useToaster } from "@vao/shared-ui";
 import {
   FILE_CATEGORY,
   AGREMENT_STATUT,
   ORGANISME_TYPE,
 } from "@vao/shared-bridge";
-
 const props = defineProps({
   valid: { type: Boolean, default: true },
   initAgrement: { type: Object, required: true },
@@ -126,6 +127,8 @@ const isPersonneMorale = computed(
     organismeStore.organismeCourant?.typeOrganisme ===
     ORGANISME_TYPE.PERSONNE_MORALE,
 );
+
+const titreProcesVerbal = computed(() => (props.modifiable ? 3 : 4));
 
 async function saveAgrement() {
   fileProcesVerbalError.value = "";

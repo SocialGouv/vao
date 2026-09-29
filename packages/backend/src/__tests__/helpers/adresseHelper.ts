@@ -23,7 +23,7 @@ export const createAdresse = async ({
     },
     ...adresse,
   };
-  const client = getPool();
+  const client = await getPool().connect();
   await client.query("BEGIN");
   const adresseId = await saveAdresse(client, fixture.adresse);
   await client.query("COMMIT");

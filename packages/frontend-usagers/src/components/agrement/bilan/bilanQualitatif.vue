@@ -2,7 +2,7 @@
   <div class="fr-mt-8v">
     <TitleWithIcon
       icon="fr-icon-edit-box-fill"
-      :level="3"
+      :level="props.titleLevel"
       title-class="fr-text--lead fr-mb-0"
     >
       Bilan qualitatif sur les 4 dernières années
@@ -214,6 +214,7 @@ const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
   modifiable: { type: Boolean, default: true },
+  titleLevel: { type: Number, default: 3 },
 });
 
 const log = logger("components/agrement/bilan/bilanQualitatif");

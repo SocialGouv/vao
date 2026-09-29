@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h2 class="fr-mb-0">Etapes d'avancement</h2>
-    <p>A chaque étape vous recevez un e-mail sur {{ user.email }}</p>
+    <h2 class="fr-mb-0">Étapes d'avancement</h2>
+    <p>À chaque étape vous recevez un e-mail sur {{ user.email }}</p>
     <div class="stepper-container">
       <div class="stepper">
         <div class="line"></div>

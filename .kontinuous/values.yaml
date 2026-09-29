@@ -342,6 +342,30 @@ jobs:
           psql -d $PGDATABASE -f /workspace/pg/scripts/02/02-4-front-init.sql
           echo "02-5-front-init : "
           psql -d $PGDATABASE -f /workspace/pg/scripts/02/02-5-ref-init.sql
+
+          echo "Grants : "
+          psql -d "$PGDATABASE" -v ON_ERROR_STOP=1 <<SQL
+          GRANT USAGE ON SCHEMA geo TO "${PG_VAO_USER}";
+          GRANT SELECT ON ALL TABLES IN SCHEMA geo TO "${PG_VAO_USER}";
+          GRANT ALL ON ALL SEQUENCES IN SCHEMA geo TO "${PG_VAO_USER}";
+
+          GRANT USAGE ON SCHEMA doc TO "${PG_VAO_DOCUMENT_USER}";
+          GRANT ALL ON ALL TABLES IN SCHEMA doc TO "${PG_VAO_DOCUMENT_USER}";
+          GRANT ALL ON ALL SEQUENCES IN SCHEMA doc TO "${PG_VAO_DOCUMENT_USER}";
+
+          GRANT USAGE ON SCHEMA back TO "${PG_VAO_USER}";
+          GRANT ALL ON ALL TABLES IN SCHEMA back TO "${PG_VAO_USER}";
+          GRANT ALL ON ALL SEQUENCES IN SCHEMA back TO "${PG_VAO_USER}";
+
+          GRANT USAGE ON SCHEMA front TO "${PG_VAO_USER}";
+          GRANT ALL ON ALL TABLES IN SCHEMA front TO "${PG_VAO_USER}";
+          GRANT ALL ON ALL SEQUENCES IN SCHEMA front TO "${PG_VAO_USER}";
+
+          GRANT USAGE ON SCHEMA referentiel TO "${PG_VAO_USER}";
+          GRANT ALL ON ALL TABLES IN SCHEMA referentiel TO "${PG_VAO_USER}";
+          GRANT ALL ON ALL SEQUENCES IN SCHEMA referentiel TO "${PG_VAO_USER}";
+        SQL
+
           echo "03-1-geo-data : "
           psql -d $PGDATABASE -f /workspace/pg/scripts/03/03-1-geo-data.sql
           echo "03-2-back-data : "

@@ -945,6 +945,8 @@ async function addHebergement(hebergement) {
   }
   await hebergementStore.fetch({
     organismeId: demandeSejourStore.demandeCourante.organismeId,
+    statut: hebergementUtils.statut.ACTIF,
+    limit: -1,
   });
   handleHebergementIdChange(id);
   resetApiStatut();

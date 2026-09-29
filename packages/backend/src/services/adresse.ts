@@ -1,4 +1,5 @@
 import { AdresseDto } from "@vao/shared-bridge";
+import { PoolClient } from "pg";
 
 import { getPool } from "../utils/pgpool";
 
@@ -56,7 +57,7 @@ interface DBAdresseSearchResult {
 }
 
 const getByCleInseeOrLabel = async (
-  client: any,
+  client: PoolClient,
   params: { cleInsee: string | null; label: string | null },
 ): Promise<DBAdresseSearchResult | null> => {
   const { rows } = await client.query(query.getByCleInseeOrLabel, [
@@ -67,7 +68,7 @@ const getByCleInseeOrLabel = async (
 };
 
 export const saveAdresse = async (
-  client: any,
+  client: PoolClient,
   adresse: AdresseDto,
 ): Promise<number> => {
   const existing = await getByCleInseeOrLabel(client, {

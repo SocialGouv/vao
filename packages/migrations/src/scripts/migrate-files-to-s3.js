@@ -9,14 +9,14 @@ const knex = require("knex")({
   connection: {
     database: process.env.POSTGRES_DOCUMENT_DB,
     host: process.env.POSTGRES_DOCUMENT_HOST,
-    password: process.env.PG_VAO_SUPERPASSWORD,
+    password: process.env.PG_VAO_DOCUMENT_PASSWORD,
     port: process.env.POSTGRES_DOCUMENT_PORT,
     ssl: process.env.PGSSLMODE
       ? {
           rejectUnauthorized: false, // to authorize CNPG self-signed certificates
         }
       : false,
-    user: process.env.PG_VAO_SUPERUSER,
+    user: process.env.PG_VAO_DOCUMENT_USER,
   },
 });
 

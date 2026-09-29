@@ -1,8 +1,8 @@
 <template>
-  <h3 id="organisation-transports" class="fr-text--lead">
+  <component :is="`h${props.titleLevel}`" id="organisation-transports" class="fr-text--lead">
     <span class="fr-icon-bus-fill" aria-hidden="true"></span>
     Organisation des transports prévus
-  </h3>
+  </component>
   <fieldset class="no-border" aria-labelledby="organisation-transports">
     <div class="fr-col-12">
       <DsfrInputGroup
@@ -67,6 +67,7 @@ const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
   modifiable: { type: Boolean, default: false },
+  titleLevel: { type: Number, default: 3 },
 });
 
 const log = logger("components/agrement/projets/organisationTransports");

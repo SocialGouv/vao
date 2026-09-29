@@ -2,7 +2,6 @@ const yup = require("yup");
 
 const Hebergement = require("../../services/hebergement/Hebergement");
 const { logger } = require("../../utils/logger");
-const ValidationAppError = require("../../utils/validation-error").default;
 const HebergementHelper = require("../../helpers/hebergement");
 const HebergementSchema = require("../../schemas/hebergement");
 const AppError = require("../../utils/error").default;
@@ -47,7 +46,7 @@ module.exports = async function post(req, res, next) {
       },
     );
   } catch (error) {
-    return next(new ValidationAppError(error));
+    return next(HebergementSchema.validationError(error));
   }
 
   try {

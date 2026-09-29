@@ -55,7 +55,7 @@
             AGREMENT_STATUT.VALIDE
           "
         >
-          <h2 class="fr-mb-0">
+          <h2 class="fr-mb-0 fr-mt-2w">
             {{
               !agrementStore.agrementCourant
                 ? "Formulaire de la première demande d'agrément"

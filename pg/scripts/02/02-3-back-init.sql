@@ -49,9 +49,3 @@ CREATE TABLE back.user_roles (
    rol_id             INT               NOT NULL REFERENCES back.roles(id) ON DELETE CASCADE,
    CONSTRAINT pk_user_roles PRIMARY KEY (use_id,rol_id)
 );
-
-
-GRANT USAGE ON SCHEMA back TO vao_u;
-
-GRANT ALL ON ALL TABLES IN SCHEMA back TO vao_u;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA back TO vao_u;

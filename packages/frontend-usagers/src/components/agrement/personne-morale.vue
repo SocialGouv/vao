@@ -2,7 +2,7 @@
   <div class="fr-col-10">
     <TitleWithIcon
       icon="fr-icon-building-line"
-      :level="3"
+      :level="titleLevel"
       title-class="fr-text--lead fr-mb-0"
     >
       Personne morale
@@ -91,6 +91,7 @@
     <AgrementRepresentants
       ref="representantsRef"
       :modifiable="props.modifiable"
+      :title-level="titleLevel + 1"
       :statut="props.initAgrement.statut || 'BROUILLON'"
     />
   </div>
@@ -110,6 +111,8 @@ const props = defineProps({
   initAgrement: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
 });
+
+const titleLevel = computed(() => (props.modifiable ? 3 : 4));
 
 const representantsRef = ref();
 const isEditingTelephone = ref(false);
