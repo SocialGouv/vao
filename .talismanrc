@@ -58,7 +58,7 @@ fileignoreconfig:
 - filename: docker-compose.prod.yaml
   checksum: a9495759b787f06a1d8d5ff1bdb5fad2c9f3cf40e6fad67cad8dddf6fd3e6d15
 - filename: docker-compose.yaml
-  checksum: c9749cbb6dc02437d7c2d00f7754b7a8a40c07d03a7b58a6e5340211eba5eb2c
+  checksum: 7ea243ae0b23adf6bccc1892bb354e993881241798fecaa98a0ab3c61e69707b
 - filename: docs/tests/E2E_TESTS.md
   checksum: 0adc319cd11812fb5212400d1affb907aca01c6aa7e834a0a391578e15234c9a
 - filename: e2e/personne-physique-2-hebergement.spec.ts
