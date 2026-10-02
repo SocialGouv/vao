@@ -26,7 +26,9 @@ export const requiresAddressConfirmation = (
     return true;
   }
 
-  return !Array.isArray(adresse.coordinates) || adresse.coordinates.length === 0;
+  return (
+    !Array.isArray(adresse.coordinates) || adresse.coordinates.length === 0
+  );
 };
 
 export const buildSiteFormValidationSchema = (

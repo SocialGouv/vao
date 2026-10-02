@@ -98,7 +98,10 @@ async function onStep1Submit(site: SiteFormValidationValues) {
     return;
   }
 
-  toaster.success({ titleTag: "h2", description: "Adresse validée" });
+  toaster.success({
+    titleTag: "h2",
+    description: "Succès: Localisation confirmée.",
+  });
   return;
 }
 </script>
