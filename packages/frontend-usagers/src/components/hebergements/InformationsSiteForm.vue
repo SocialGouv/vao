@@ -83,7 +83,7 @@
           label="Téléphone"
           :label-visible="true"
           placeholder=""
-          hint="Format attendu : (+33) 1 22 33 44 55"
+          hint="Format attendu : 06 22 33 44 55"
           :model-value="responsableTelephone"
           :error-message="telephoneErrorMessage"
           :is-valid="telephoneMeta.valid"

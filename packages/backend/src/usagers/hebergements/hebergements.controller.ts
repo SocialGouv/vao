@@ -28,4 +28,22 @@ export const HebergementController = {
       next(error);
     }
   },
+  async postSite(
+    req: RouteRequest<HebergementUsagersRoutes["PostSite"]>,
+    res: RouteResponse<HebergementUsagersRoutes["PostSite"]>,
+    next: NextFunction,
+  ) {
+    log.i("postSite - IN");
+    const { id: usagerUserId } = req.decoded!;
+    const site = req.validatedBody!;
+
+    try {
+      const siteId = await HebergementService.postSite(site, usagerUserId);
+      log.d("siteId", siteId);
+      res.status(201).json({ siteId });
+    } catch (error) {
+      log.w("postSite - DONE with error");
+      next(error);
+    }
+  },
 };

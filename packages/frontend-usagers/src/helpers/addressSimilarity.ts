@@ -144,13 +144,13 @@ export function buildSimilarityGroups(
 
   return SIMILARITY_TYPE_ORDER.filter((type) => byType.has(type)).map(
     (type) => {
-    const items = byType.get(type) ?? [];
-    const names =
-      type === "nomLieu"
-        ? Array.from(new Set(items.map((item) => officialName(item)))).filter(
-            Boolean,
-          )
-        : [];
+      const items = byType.get(type) ?? [];
+      const names =
+        type === "nomLieu"
+          ? Array.from(new Set(items.map((item) => officialName(item)))).filter(
+              Boolean,
+            )
+          : [];
       return {
         type,
         title: buildTitle(type, items.length),
