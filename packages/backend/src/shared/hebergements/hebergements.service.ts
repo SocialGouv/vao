@@ -120,6 +120,23 @@ export const HebergementServiceShared = {
     });
   },
 
+  async createSiteOrganisme(
+    tx: PoolClient,
+    input: {
+      deplacementProximiteDescription: string | null;
+      excursionDescription: string | null;
+      nomSite: string | null;
+      organismeId: number;
+      respEmail: string | null;
+      respNomPrenom: string | null;
+      respTelephone: string | null;
+      siteId: string;
+      vehiculesAdaptes: boolean | null;
+    },
+  ): Promise<void> {
+    return SitesRepositoryShared.createSiteOrganisme(tx, input);
+  },
+
   async createUniteHebergement(
     { ...input }: CreateUniteHebergementInput,
     tx: PoolClient,
@@ -211,6 +228,14 @@ export const HebergementServiceShared = {
     }
 
     return site as PostSiteResponse;
+  },
+
+  async getSiteWithOrganisme(
+    tx: PoolClient,
+    siteId: string,
+    organismeId: number,
+  ): Promise<PostSiteResponse | null> {
+    return SitesRepositoryShared.getSiteWithOrganisme(tx, siteId, organismeId);
   },
 
   async getSitesByOrganismeId(organismeId: number): Promise<SiteDto[]> {

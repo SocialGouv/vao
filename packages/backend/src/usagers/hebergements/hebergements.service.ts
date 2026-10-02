@@ -103,7 +103,6 @@ export const HebergementService = {
         await HebergementServiceShared.createSiteOrganisme(tx, {
           deplacementProximiteDescription:
             site.deplacementProximiteDescription ?? null,
-          descriptif: site.descriptif ?? null,
           excursionDescription: site.excursionDescription ?? null,
           hebergementTypeId: site.hebergementTypeId ?? null,
           nomSite: site.nomSite ?? site.nomSiteOfficiel,
