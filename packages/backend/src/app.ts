@@ -97,8 +97,8 @@ app.use(`/admin/agrements`, adminAgrementsRoute);
 
 app.use(`/organisme`, routes.organisme);
 app.use(`/sejour`, routes.sejour);
-app.use(`/hebergement`, routes.hebergement);
 app.use(`/hebergement`, hebergementsRoute);
+app.use(`/hebergement`, routes.hebergement);
 app.use(`/siret`, routes.siret);
 app.use(`/documents`, routes.documents);
 app.use(`/geo`, routes.geo);

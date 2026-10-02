@@ -30,11 +30,16 @@
 </template>
 
 <script setup lang="ts">
-import { FeatureFlagName } from "@vao/shared-bridge";
+import {
+  FeatureFlagName,
+  getFunctionalErrorMessage,
+  type PostSiteResponse,
+} from "@vao/shared-bridge";
 import type {
   InformationsSiteFormValues,
   SiteFormValidationValues,
 } from "~/components/hebergements/siteFormValidation";
+import { useToaster } from "@vao/shared-ui";
 
 definePageMeta({
   middleware: ["is-connected"],
@@ -42,10 +47,13 @@ definePageMeta({
 
 const route = useRoute();
 const userStore = useUserStore();
+const hebergementStore = useHebergementStore();
+const toaster = useToaster();
 const pageHeadingRef = ref<HTMLHeadingElement | null>(null);
 
 const step1Site = ref<SiteFormValidationValues | null>(null);
 const siteInfoLieu = ref<InformationsSiteFormValues | null>(null);
+const createdSiteId = ref<string | null>(null);
 
 const isModuleHebergementEnabled = computed(
   () =>
@@ -110,13 +118,59 @@ async function onStep1Submit(site: SiteFormValidationValues) {
     return;
   }
 
-  step1Site.value = site;
+  let createdSite: PostSiteResponse;
+  try {
+    createdSite = await hebergementStore.postSite(site);
+    step1Site.value = site;
+  } catch (err: unknown) {
+    toaster.error({
+      titleTag: "h2",
+      description:
+        err instanceof Error && "code" in err
+          ? getFunctionalErrorMessage((err as { code: string }).code)
+          : "Une erreur est survenue lors de l'enregistrement du site.",
+      role: "alert",
+    });
+    return;
+  }
+
+  createdSiteId.value = createdSite.siteId;
+  siteInfoLieu.value = mapSiteToInformationsSiteForm(createdSite);
   await goToStep("site-info-lieu");
 }
 
 async function onStep2Submit(values: InformationsSiteFormValues) {
   siteInfoLieu.value = values;
+
+  if (createdSiteId.value) {
+    try {
+      await hebergementStore.patchSite(createdSiteId.value, values);
+    } catch {
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "Une erreur est survenue lors de l'enregistrement des informations du site.",
+        role: "alert",
+      });
+      return;
+    }
+  }
+
   await goToStep("site-hebergement-detail");
+}
+
+function mapSiteToInformationsSiteForm(
+  site: PostSiteResponse,
+): InformationsSiteFormValues {
+  return {
+    typeHebergement: site.hebergementTypeValue ?? "",
+    description: site.descriptif ?? "",
+    responsable: {
+      nomPrenom: site.respNomPrenom ?? "",
+      telephone: site.respTelephone ?? "",
+      email: site.respEmail ?? "",
+    },
+  };
 }
 
 async function goToStep(stepId: string) {

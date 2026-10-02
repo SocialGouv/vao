@@ -16,11 +16,15 @@ export type PostSiteBody = Omit<
   | "editedBy"
 > & { adresse: AdresseDto };
 
+export type PostSiteResponse = SiteDto & {
+  hebergementTypeValue: string | null;
+};
+
 export interface PostSiteRoute extends BasicRoute {
   method: "POST";
   path: "/hebergement/site";
   body: PostSiteBody;
-  response: RouteResponseBody<{ siteId: string }>;
+  response: RouteResponseBody<PostSiteResponse>;
 }
 
 const adresseSchema = yup.object({

@@ -451,6 +451,19 @@ const syncSiteAndUniteOnCreate = async (
     },
     tx,
   );
+  await HebergementServiceShared.createSiteOrganisme(tx, {
+    deplacementProximiteDescription:
+      hebergement.informationsTransport?.deplacementProximite ?? null,
+    excursionDescription: hebergement.informationsTransport?.excursion ?? null,
+    nomSite: hebergement.nom,
+    organismeId,
+    respEmail: hebergement.coordonnees?.email ?? null,
+    respNomPrenom: hebergement.coordonnees?.nomGestionnaire ?? null,
+    respTelephone: hebergement.coordonnees?.numTelephone1 ?? null,
+    siteId: site.siteId,
+    vehiculesAdaptes:
+      hebergement.informationsTransport?.vehiculesAdaptes ?? null,
+  });
   await HebergementServiceShared.linkHebergementToSite(
     tx,
     created.hebergementId,

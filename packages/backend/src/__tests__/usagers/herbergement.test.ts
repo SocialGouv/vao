@@ -740,23 +740,16 @@ describe("module site/unite : lectures partagées du référentiel", () => {
   });
 
   it("gère un type d'hébergement inconnu lors de la création d'un site", async () => {
-    const organismeId = await createUserAndOrganisme();
+    await createUserAndOrganisme();
     const siteId = await withTransaction(async (tx) =>
       HebergementServiceShared.createSite(
         {
           adresseId: null,
           createdBy: authUser.id,
-          deplacementProximiteDescription: null,
           descriptif: null,
-          excursionDescription: null,
           hebergementTypeId: null,
           hebergementTypeValue: "type_inconnu",
           nomSiteOfficiel: "Site secondaire",
-          organismeId,
-          respEmail: null,
-          respNomPrenom: null,
-          respTelephone: null,
-          vehiculesAdaptes: null,
         },
         tx,
       ),

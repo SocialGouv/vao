@@ -24,6 +24,12 @@ export interface SiteOrganismeEntity {
   vehicules_adaptes: boolean | null;
 }
 
+export interface SiteWithOrganismeEntity
+  extends SiteEntity,
+    SiteOrganismeEntity {
+  hebergement_type_value: string | null;
+}
+
 export interface UniteHebergementEntity {
   id: number | null;
   site_id: string | null;

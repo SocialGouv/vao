@@ -16,6 +16,14 @@ router.post(
   HebergementController.postSite,
 );
 
+router.patch(
+  "/site/:siteId",
+  checkJWT,
+  requestValidatorMiddleware(HebergementUsagersRoutesSchema["PatchSite"]),
+  checkPermissionOrganisme,
+  HebergementController.patchSite,
+);
+
 router.post(
   "/site/similarites",
   checkJWT,

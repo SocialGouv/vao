@@ -89,5 +89,139 @@ describe("POST /hebergement/site", () => {
     expect(site).not.toBeNull();
     expect(site?.nomSiteOfficiel).toBe("Gîte des Pins");
     expect(site?.createdBy).toBe(authUser.id);
+
+    expect(response.body.organismeId).toBe(organismeId);
+    expect(response.body.nomSite).toBe("Gîte des Pins");
+    expect(response.body.adresseId).toBe(site?.adresseId);
+  });
+
+  it("renvoie les données du site et du lien organisme même quand le site est réutilisé", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+
+    const first = await request(getFoAppHelper(authUser))
+      .post("/hebergement/site")
+      .send(buildBody(organismeId));
+    expect(first.status).toBe(201);
+
+    const second = await request(getFoAppHelper(authUser))
+      .post("/hebergement/site")
+      .send(buildBody(organismeId));
+
+    expect(second.status).toBe(201);
+    expect(second.body.siteId).toBe(first.body.siteId);
+    expect(second.body.organismeId).toBe(organismeId);
+    expect(second.body.nomSite).toBe("Gîte des Pins");
+  });
+
+  it("réutilise le site existant quand le nom officiel et l'adresse correspondent", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+
+    const first = await request(getFoAppHelper(authUser))
+      .post("/hebergement/site")
+      .send(buildBody(organismeId));
+    expect(first.status).toBe(201);
+
+    const second = await request(getFoAppHelper(authUser))
+      .post("/hebergement/site")
+      .send(buildBody(organismeId));
+
+    expect(second.status).toBe(201);
+    expect(second.body.siteId).toBe(first.body.siteId);
+
+    const link = await HebergementServiceShared.getSiteOrganisme(
+      second.body.siteId,
+      organismeId,
+    );
+    expect(link).not.toBeNull();
+  });
+
+  it("crée un nouveau site quand seul le nom officiel diffère", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+
+    const first = await request(getFoAppHelper(authUser))
+      .post("/hebergement/site")
+      .send(buildBody(organismeId, { nomSiteOfficiel: "Gîte des Pins" }));
+    expect(first.status).toBe(201);
+
+    const second = await request(getFoAppHelper(authUser))
+      .post("/hebergement/site")
+      .send(buildBody(organismeId, { nomSiteOfficiel: "Gîte des Épines" }));
+
+    expect(second.status).toBe(201);
+    expect(second.body.siteId).not.toBe(first.body.siteId);
+  });
+});
+
+const buildPatchBody = (organismeId: number, overrides: object = {}) => ({
+  description: "Un gîte confortable et accessible",
+  hebergementTypeValue: "hotel",
+  organismeId,
+  responsable: {
+    email: "resp@example.fr",
+    nomPrenom: "DUPONT Nicolas",
+    telephone: "0612345678",
+  },
+  ...overrides,
+});
+
+describe("PATCH /hebergement/site/:siteId", () => {
+  it("retourne 400 si le body est invalide", async () => {
+    authUser = await createUsagersUser();
+
+    const response = await request(getFoAppHelper(authUser))
+      .patch("/hebergement/site/some-site-id")
+      .send({ description: "sera rejeté car organismeId manquant" });
+
+    expect(response.status).toBe(400);
+  });
+
+  it("retourne 404 si le site ne dépend pas de l'organisme de l'utilisateur", async () => {
+    authUser = await createUsagersUser();
+    const ownerUser = await createUsagersUser();
+    const ownerOrganismeId = await createOrganisme({ userId: ownerUser.id });
+
+    const { body } = await request(getFoAppHelper(ownerUser))
+      .post("/hebergement/site")
+      .send(buildBody(ownerOrganismeId));
+    expect(body.siteId).toBeDefined();
+
+    const userOrganismeId = await createOrganisme({ userId: authUser.id });
+    const response = await request(getFoAppHelper(authUser))
+      .patch(`/hebergement/site/${body.siteId}`)
+      .send(buildPatchBody(userOrganismeId));
+
+    expect(response.status).toBe(404);
+  });
+
+  it("met à jour le site et le site_organisme", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+
+    const { body } = await request(getFoAppHelper(authUser))
+      .post("/hebergement/site")
+      .send(buildBody(organismeId));
+    expect(body.siteId).toBeDefined();
+
+    const response = await request(getFoAppHelper(authUser))
+      .patch(`/hebergement/site/${body.siteId}`)
+      .send(buildPatchBody(organismeId));
+
+    expect(response.status).toBe(200);
+
+    const site = await HebergementServiceShared.getSiteById(body.siteId);
+    expect(site?.descriptif).toBe("Un gîte confortable et accessible");
+    expect(site?.hebergementTypeId).not.toBeNull();
+
+    const organismeLink = await HebergementServiceShared.getSiteOrganisme(
+      body.siteId,
+      organismeId,
+    );
+    expect(organismeLink).not.toBeNull();
+    expect(organismeLink?.respNomPrenom).toBe("DUPONT Nicolas");
+    expect(organismeLink?.respTelephone).toBe("0612345678");
+    expect(organismeLink?.respEmail).toBe("resp@example.fr");
   });
 });

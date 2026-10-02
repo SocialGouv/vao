@@ -3,8 +3,16 @@ import { PoolClient } from "pg";
 
 import { logger } from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
-import { SiteEntity, SiteOrganismeEntity } from "./hebergements.entity";
-import { SiteMapper, SiteOrganismeMapper } from "./hebergements.mapper";
+import {
+  SiteEntity,
+  SiteOrganismeEntity,
+  SiteWithOrganismeEntity,
+} from "./hebergements.entity";
+import {
+  SiteMapper,
+  SiteOrganismeMapper,
+  SiteWithOrganismeMapper,
+} from "./hebergements.mapper";
 
 const log = logger(module.filename);
 
@@ -120,6 +128,32 @@ export const SitesRepositoryShared = {
     return SiteMapper.toModel(result.rows[0] as SiteEntity);
   },
 
+  async getSiteByNomOfficielAndAdresseLabel(
+    nomSiteOfficiel: string,
+    adresseLabel: string,
+  ): Promise<SiteDto | null> {
+    log.i("getSiteByNomOfficielAndAdresseLabel - IN");
+    const query = `
+      SELECT s.id, s.site_id, s."current", s.adresse_id, s.nom_site_officiel,
+             s.hebergement_type_id, s.descriptif, s.created_at, s.edited_at,
+             s.created_by, s.edited_by
+      FROM front.site s
+      JOIN front.adresse a ON a.id = s.adresse_id
+      WHERE s."current" IS TRUE
+        AND s.nom_site_officiel = $1
+        AND a.label = $2
+      ORDER BY s.id
+      LIMIT 1;
+    `;
+    const result = await getPool().query(query, [
+      nomSiteOfficiel,
+      adresseLabel,
+    ]);
+    log.i("getSiteByNomOfficielAndAdresseLabel - DONE");
+    if (!result.rows?.length) return null;
+    return SiteMapper.toModel(result.rows[0] as SiteEntity);
+  },
+
   async getSiteOrganisme(
     siteId: string,
     organismeId: number,
@@ -136,6 +170,34 @@ export const SitesRepositoryShared = {
     log.i("getSiteOrganisme - DONE");
     if (!result.rows?.length) return null;
     return SiteOrganismeMapper.toModel(result.rows[0] as SiteOrganismeEntity);
+  },
+
+  async getSiteWithOrganisme(
+    tx: PoolClient,
+    siteId: string,
+    organismeId: number,
+  ): Promise<ReturnType<typeof SiteWithOrganismeMapper.toModel> | null> {
+    log.i("getSiteWithOrganisme - IN");
+    const query = `
+      SELECT s.id, s.site_id, s."current", s.adresse_id, s.nom_site_officiel,
+             s.hebergement_type_id, s.descriptif, s.created_at, s.edited_at,
+             s.created_by, s.edited_by,
+             ht.value AS hebergement_type_value,
+             so.organisme_id, so.nom_site, so.resp_nom_prenom,
+             so.resp_telephone, so.resp_email, so.excursion_description,
+             so.deplacement_proximite_description, so.vehicules_adaptes
+      FROM front.site s
+      LEFT JOIN front.hebergement_type ht ON ht.id = s.hebergement_type_id
+      LEFT JOIN front.site_organisme so
+        ON so.site_id = s.site_id AND so.organisme_id = $2
+      WHERE s.site_id = $1 AND s."current" IS TRUE;
+    `;
+    const result = await tx.query(query, [siteId, organismeId]);
+    log.i("getSiteWithOrganisme - DONE");
+    if (!result.rows?.length) return null;
+    return SiteWithOrganismeMapper.toModel(
+      result.rows[0] as SiteWithOrganismeEntity,
+    );
   },
 
   async getSitesByOrganismeId(organismeId: number): Promise<SiteDto[]> {
@@ -197,5 +259,58 @@ export const SitesRepositoryShared = {
       editedBy,
     ]);
     log.i("updateSite - DONE");
+  },
+
+  async updateOrganismeResp(
+    tx: PoolClient,
+    siteId: string,
+    organismeId: number,
+    {
+      respEmail,
+      respNomPrenom,
+      respTelephone,
+    }: {
+      respEmail: string | null;
+      respNomPrenom: string | null;
+      respTelephone: string | null;
+    },
+  ): Promise<void> {
+    log.i("updateOrganismeResp - IN");
+    const query = `
+      UPDATE front.site_organisme
+      SET resp_email = $1, resp_nom_prenom = $2, resp_telephone = $3
+      WHERE site_id = $4 AND organisme_id = $5;
+    `;
+    await tx.query(query, [
+      respEmail,
+      respNomPrenom,
+      respTelephone,
+      siteId,
+      organismeId,
+    ]);
+    log.i("updateOrganismeResp - DONE");
+  },
+
+  async updateSiteInformation(
+    tx: PoolClient,
+    siteId: string,
+    {
+      descriptif,
+      editedBy,
+      hebergementTypeId,
+    }: {
+      descriptif: string | null;
+      editedBy: number | null;
+      hebergementTypeId: number | null;
+    },
+  ): Promise<void> {
+    log.i("updateSiteInformation - IN");
+    const query = `
+      UPDATE front.site
+      SET hebergement_type_id = $2, descriptif = $3, edited_by = $4, edited_at = NOW()
+      WHERE site_id = $1 AND "current" IS TRUE;
+    `;
+    await tx.query(query, [siteId, hebergementTypeId, descriptif, editedBy]);
+    log.i("updateSiteInformation - DONE");
   },
 };

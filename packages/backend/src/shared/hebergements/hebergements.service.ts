@@ -2,6 +2,7 @@ import {
   FUNCTIONAL_ERRORS,
   FunctionalException,
   InformationsLocauxDto,
+  PostSiteResponse,
   SiteDto,
   SiteOrganismeDto,
   UniteHebergementDto,
@@ -22,9 +23,11 @@ type CreateSiteInput = Pick<
   | "descriptif"
   | "hebergementTypeId"
   | "nomSiteOfficiel"
-  | "organismeId"
 > &
-  Partial<Pick<SiteDto, "adresse">> &
+  Partial<Pick<SiteDto, "adresse">> & { hebergementTypeValue?: string | null };
+
+type UpdateSiteInput = Omit<CreateSiteInput, "createdBy" | "adresseId"> &
+  Pick<SiteDto, "organismeId"> &
   Partial<
     Pick<
       SiteOrganismeDto,
@@ -35,12 +38,10 @@ type CreateSiteInput = Pick<
       | "respTelephone"
       | "vehiculesAdaptes"
     >
-  > & { hebergementTypeValue?: string | null };
-
-type UpdateSiteInput = Omit<CreateSiteInput, "createdBy" | "adresseId"> & {
-  editedBy: number;
-  adresseId: number | null;
-};
+  > & {
+    editedBy: number;
+    adresseId: number | null;
+  };
 
 type CreateUniteHebergementInput = Pick<
   UniteHebergementDto,
@@ -81,17 +82,10 @@ export const HebergementServiceShared = {
       adresse,
       adresseId,
       createdBy,
-      deplacementProximiteDescription,
       descriptif,
-      excursionDescription,
       hebergementTypeId,
       hebergementTypeValue,
       nomSiteOfficiel,
-      organismeId,
-      respEmail,
-      respNomPrenom,
-      respTelephone,
-      vehiculesAdaptes,
     } = input;
     const resolvedAdresseId = adresse
       ? await saveAdresse(tx, adresse)
@@ -109,18 +103,24 @@ export const HebergementServiceShared = {
       hebergementTypeId: resolvedTypeId,
       nomSiteOfficiel,
     });
-    await SitesRepositoryShared.createSiteOrganisme(tx, {
-      deplacementProximiteDescription: deplacementProximiteDescription ?? null,
-      excursionDescription: excursionDescription ?? null,
-      nomSite: nomSiteOfficiel,
-      organismeId,
-      respEmail: respEmail ?? null,
-      respNomPrenom: respNomPrenom ?? null,
-      respTelephone: respTelephone ?? null,
-      siteId,
-      vehiculesAdaptes: vehiculesAdaptes ?? null,
-    });
     return { siteId };
+  },
+
+  async createSiteOrganisme(
+    tx: PoolClient,
+    input: {
+      deplacementProximiteDescription: string | null;
+      excursionDescription: string | null;
+      nomSite: string | null;
+      organismeId: number;
+      respEmail: string | null;
+      respNomPrenom: string | null;
+      respTelephone: string | null;
+      siteId: string;
+      vehiculesAdaptes: boolean | null;
+    },
+  ): Promise<void> {
+    return SitesRepositoryShared.createSiteOrganisme(tx, input);
   },
 
   async createUniteHebergement(
@@ -178,11 +178,29 @@ export const HebergementServiceShared = {
     return SitesRepositoryShared.getSiteById(siteId);
   },
 
+  async getSiteByNomOfficielAndAdresseLabel(
+    nomSiteOfficiel: string,
+    adresseLabel: string,
+  ): Promise<SiteDto | null> {
+    return SitesRepositoryShared.getSiteByNomOfficielAndAdresseLabel(
+      nomSiteOfficiel,
+      adresseLabel,
+    );
+  },
+
   async getSiteOrganisme(
     siteId: string,
     organismeId: number,
   ): Promise<SiteOrganismeDto | null> {
     return SitesRepositoryShared.getSiteOrganisme(siteId, organismeId);
+  },
+
+  async getSiteWithOrganisme(
+    tx: PoolClient,
+    siteId: string,
+    organismeId: number,
+  ): Promise<PostSiteResponse | null> {
+    return SitesRepositoryShared.getSiteWithOrganisme(tx, siteId, organismeId);
   },
 
   async getSitesByOrganismeId(organismeId: number): Promise<SiteDto[]> {
@@ -246,6 +264,24 @@ export const HebergementServiceShared = {
     );
   },
 
+  async updateOrganismeResp(
+    tx: PoolClient,
+    siteId: string,
+    organismeId: number,
+    input: {
+      respEmail: string | null;
+      respNomPrenom: string | null;
+      respTelephone: string | null;
+    },
+  ): Promise<void> {
+    return SitesRepositoryShared.updateOrganismeResp(
+      tx,
+      siteId,
+      organismeId,
+      input,
+    );
+  },
+
   async updateSite(
     siteId: string,
     { ...input }: UpdateSiteInput,
@@ -294,6 +330,18 @@ export const HebergementServiceShared = {
       siteId,
       vehiculesAdaptes: vehiculesAdaptes ?? null,
     });
+  },
+
+  async updateSiteInformation(
+    tx: PoolClient,
+    siteId: string,
+    input: {
+      descriptif: string | null;
+      editedBy: number | null;
+      hebergementTypeId: number | null;
+    },
+  ): Promise<void> {
+    return SitesRepositoryShared.updateSiteInformation(tx, siteId, input);
   },
 
   async updateUniteHebergement(
