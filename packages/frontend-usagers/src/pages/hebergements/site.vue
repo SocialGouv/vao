@@ -9,8 +9,16 @@
         <HebergementsStepper :step="hash" class="fr-mb-2w" />
         <div v-if="hash === 'site-coordonnees'">
           <HebergementsSiteForm
+            :init-site="step1Site ?? undefined"
             :default-back-route="'/hebergements/liste'"
             @submit="onStep1Submit"
+          />
+        </div>
+        <div v-else-if="hash === 'site-info-lieu'">
+          <HebergementsInformationsSiteForm
+            :init-values="siteInfoLieu ?? undefined"
+            @submit="onStep2Submit"
+            @previous="goToStep('site-coordonnees')"
           />
         </div>
         <div v-else class="fr-callout">
@@ -23,8 +31,10 @@
 
 <script setup lang="ts">
 import { FeatureFlagName } from "@vao/shared-bridge";
-import { useToaster } from "@vao/shared-ui";
-import type { SiteFormValidationValues } from "~/components/hebergements/siteFormValidation";
+import type {
+  InformationsSiteFormValues,
+  SiteFormValidationValues,
+} from "~/components/hebergements/siteFormValidation";
 
 definePageMeta({
   middleware: ["is-connected"],
@@ -33,7 +43,9 @@ definePageMeta({
 const route = useRoute();
 const userStore = useUserStore();
 const pageHeadingRef = ref<HTMLHeadingElement | null>(null);
-const toaster = useToaster();
+
+const step1Site = ref<SiteFormValidationValues | null>(null);
+const siteInfoLieu = ref<InformationsSiteFormValues | null>(null);
 
 const isModuleHebergementEnabled = computed(
   () =>
@@ -98,10 +110,18 @@ async function onStep1Submit(site: SiteFormValidationValues) {
     return;
   }
 
-  toaster.success({
-    titleTag: "h2",
-    description: "Succès: Localisation confirmée.",
-  });
-  return;
+  step1Site.value = site;
+  await goToStep("site-info-lieu");
+}
+
+async function onStep2Submit(values: InformationsSiteFormValues) {
+  siteInfoLieu.value = values;
+  await goToStep("site-hebergement-detail");
+}
+
+async function goToStep(stepId: string) {
+  await navigateTo({ hash: `#${stepId}` });
+  await nextTick();
+  pageHeadingRef.value?.focus();
 }
 </script>
