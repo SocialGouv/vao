@@ -6,7 +6,7 @@
   >
     Motivations
   </TitleWithIcon>
-  <div class="fr-fieldset__element">
+  <div class="fr-mb-4v">
     <div class="fr-col-12">
       <DisplayLabel
         :value="props.initAgrement?.motivations"
@@ -16,7 +16,7 @@
     </div>
   </div>
 
-  <div class="fr-fieldset__element">
+  <div class="fr-mb-4v">
     <MultiFilesUpload
       v-model="filesMotivation"
       :modifiable="false"
@@ -34,7 +34,7 @@
     Immatriculation
   </TitleWithIcon>
 
-  <div class="fr-fieldset__element fr-pl-0">
+  <div class="fr-mb-4v">
     <div class="fr-col-12">
       <FileUpload
         v-model="fileImmatriculation"
@@ -46,7 +46,7 @@
     </div>
   </div>
 
-  <div class="fr-fieldset__element fr-pl-0">
+  <div class="fr-mb-4v">
     <div class="fr-col-12">
       <DisplayLabel
         :value="formatFR(props.initAgrement?.dateObtentionCertificat)"
@@ -67,7 +67,7 @@
   >
     Attestations
   </TitleWithIcon>
-  <div class="fr-fieldset__element fr-pl-0">
+  <div class="fr-mb-4v">
     <FileUpload
       v-model="fileAttestationsRespCivile"
       :cdn-url="props.cdnUrl"
@@ -77,7 +77,7 @@
       :optional="false"
     />
   </div>
-  <div class="fr-fieldset__element fr-pl-0">
+  <div class="fr-mb-4v">
     <FileUpload
       v-model="fileAttestationsRapatriement"
       :cdn-url="props.cdnUrl"

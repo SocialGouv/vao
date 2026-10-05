@@ -14,7 +14,7 @@
         >au choix une description texte et/ou un fichier joint</span
       >. L’un des deux est requis.
     </p>
-    <div class="border fr-p-4v">
+    <div :class="props.modifiable ? 'border fr-p-4v' : 'fr-p-4v'">
       <component
         :is="props.modifiable ? 'fieldset' : 'div'"
         class="no-border"
@@ -29,7 +29,7 @@
         >
           Perception et ressenti des vacanciers sur les séjours réalisés
         </component>
-        <div class="fr-fieldset__element">
+        <div class="fr-mb-4v">
           <p
             id="bilanQualPerceptionSensibilite-desc"
             class="light-decisions-text-text-mention-grey"
@@ -69,7 +69,7 @@
             />
           </div>
         </div>
-        <div class="fr-fieldset__element">
+        <div class="fr-mb-4v">
           <UtilsMultiFilesUpload
             v-model="filesBilanQualitPerception"
             label="Ajouter des fichiers"
@@ -82,7 +82,7 @@
         </div>
       </component>
     </div>
-    <div class="border fr-p-4v fr-mt-6v">
+    <div class="fr-mt-6v" :class="props.modifiable ? 'border fr-p-4v' : 'fr-p-4v'">
       <component
         :is="props.modifiable ? 'fieldset' : 'div'"
         class="no-border fr-p-4v"
@@ -98,7 +98,7 @@
           Évolutions prévues des activités VAO et perspectives de développement
           à venir
         </component>
-        <div class="fr-fieldset__element">
+        <div class="fr-mb-4v">
           <p
             id="bilanQualPerspectiveEvol-desc"
             class="light-decisions-text-text-mention-grey"
@@ -137,7 +137,7 @@
             />
           </div>
         </div>
-        <div class="fr-fieldset__element">
+        <div class="fr-mb-4v">
           <UtilsMultiFilesUpload
             v-model="filesBilanQualitPerspectives"
             label="Ajouter des fichiers"
@@ -150,7 +150,7 @@
         </div>
       </component>
     </div>
-    <div class="border fr-p-4v fr-mt-6v">
+    <div class="fr-mt-6v" :class="props.modifiable ? 'border fr-p-4v' : 'fr-p-4v'">
       <component
         :is="props.modifiable ? 'fieldset' : 'div'"
         class="no-border fr-p-4v"
@@ -165,7 +165,7 @@
         >
           Eléments marquants autour des activités VAO
         </component>
-        <div class="fr-fieldset__element">
+        <div class="fr-mb-4v">
           <p
             id="bilanQualElementsMarquants-desc"
             class="light-decisions-text-text-mention-grey"
@@ -204,7 +204,7 @@
             />
           </div>
         </div>
-        <div class="fr-fieldset__element">
+        <div class="fr-mb-4v">
           <UtilsMultiFilesUpload
             v-model="filesBilanQualitElementsMarquants"
             label="Ajouter des fichiers complémentaires"
@@ -220,7 +220,7 @@
         </div>
       </component>
     </div>
-    <div class="fr-fieldset__element fr-mt-6v">
+    <div class="fr-mb-4v">
       <UtilsMultiFilesUpload
         v-model="filesBilanQualitComplementaires"
         label="Ajouter des fichiers complémentaires (optionnel)"

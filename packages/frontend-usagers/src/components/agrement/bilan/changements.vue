@@ -12,7 +12,7 @@
     class="no-border"
     :aria-labelledby="modifiable ? 'changement-evolution-title' : undefined"
   >
-    <div class="fr-fieldset__element fr-pl-0">
+    <div class="fr-mb-4v">
       <div class="fr-col-12">
         <DsfrInputGroup
           v-if="props.modifiable"
@@ -40,7 +40,7 @@
         />
       </div>
     </div>
-    <div class="fr-fieldset__element">
+    <div class="fr-mb-4v">
       <UtilsMultiFilesUpload
         v-model="filesChangeEvol"
         hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
@@ -48,7 +48,7 @@
         :modifiable="props.modifiable"
       />
     </div>
-    <div class="fr-fieldset__element">
+    <div class="fr-mb-4v">
       <DsfrCheckbox
         v-if="props.modifiable"
         v-model="bilanAucunChangementEvolution"

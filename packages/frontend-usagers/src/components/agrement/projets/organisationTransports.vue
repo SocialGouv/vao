@@ -53,7 +53,7 @@
       />
     </div>
 
-    <div class="fr-fieldset__element fr-mt-6v">
+    <div class="fr-mb-4v">
       <UtilsMultiFilesUpload
         v-model="filesProjetsSejoursOrgaTransports"
         hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."

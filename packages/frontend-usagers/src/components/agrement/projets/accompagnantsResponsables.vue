@@ -31,7 +31,7 @@
     Pour chaque section, renseignez au choix une description texte et/ou un
     fichier joint. L’un des deux est requis.
   </p>
-  <div class="border fr-p-4v">
+  <div :class="props.modifiable ? 'border fr-p-4v' : 'fr-p-4v'">
     <component
       :is="props.modifiable ? 'fieldset' : 'div'"
       class="no-border"
@@ -50,7 +50,7 @@
         séjour sur le lieu de vacances.
       </component>
 
-      <div class="fr-fieldset__element">
+      <div class="fr-mb-4v">
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
@@ -73,7 +73,7 @@
           />
         </div>
       </div>
-      <div class="fr-fieldset__element">
+      <div class="fr-mb-4v">
         <UtilsMultiFilesUpload
           v-model="filesProjetsSejoursCompetencesExperience"
           hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
@@ -89,7 +89,7 @@
       </div>
     </component>
   </div>
-  <div class="border fr-p-4v fr-mt-6v">
+  <div class="fr-mt-6v" :class="props.modifiable ? 'border fr-p-4v' : 'fr-p-4v'">
     <component
       :is="props.modifiable ? 'fieldset' : 'div'"
       class="no-border"
@@ -106,7 +106,7 @@
         être recrutés en urgence
       </component>
 
-      <div class="fr-fieldset__element">
+      <div class="fr-mb-4v">
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
@@ -131,7 +131,7 @@
           />
         </div>
       </div>
-      <div class="fr-fieldset__element">
+      <div class="fr-mb-4v">
         <UtilsMultiFilesUpload
           v-model="filesProjetsSejoursMesures"
           :modifiable="props.modifiable"
@@ -144,7 +144,7 @@
       </div>
     </component>
   </div>
-  <!-- <div class="fr-fieldset__element fr-mt-6v">
+  <!-- <div class="fr-mb-4v">
     <UtilsMultiFilesUpload
       v-model="filesProjetsSejoursComplementaires"
       :modifiable="props.modifiable"

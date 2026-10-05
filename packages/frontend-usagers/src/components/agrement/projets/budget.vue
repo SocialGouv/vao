@@ -12,7 +12,7 @@
     class="no-border"
     :aria-labelledby="props.modifiable ? 'budget-personnes' : undefined"
   >
-    <div class="fr-fieldset__element fr-pl-0">
+    <div class="fr-mb-4v">
       <div class="fr-col-12">
         <DsfrInputGroup
           v-if="props.modifiable"
@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <div class="fr-fieldset__element fr-mt-8v fr-pl-0">
+    <div class="fr-mb-4v">
       <div class="fr-col-12">
         <DsfrInputGroup
           v-if="props.modifiable"
@@ -67,7 +67,7 @@
       </div>
     </div>
 
-    <div class="fr-fieldset__element fr-mt-8v">
+    <div class="fr-mb-4v">
       <UtilsMultiFilesUpload
         v-model="filesProjSejoursBudgetPersonnes"
         hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."

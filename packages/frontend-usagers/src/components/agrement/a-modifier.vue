@@ -28,7 +28,7 @@
         : agrementStore.agrementEnTraitement?.commentaireCorrection
     }}
     <br /><br />
-    <div v-if="fileCompletude" class="fr-fieldset__element">
+    <div v-if="fileCompletude" class="fr-mb-4v">
       <FileUpload
         v-model="fileCompletude"
         :cdn-url="`${config.public.backendUrl}/documents`"

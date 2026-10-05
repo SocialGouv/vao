@@ -90,7 +90,7 @@
         :is-valid="commentaireMeta.valid"
         :error-message="commentaireErrorMessage"
       />
-      <div class="fr-fieldset__element">
+      <div class="fr-mb-4v">
         <UtilsMultiFilesUpload
           v-model="filesProjetsSejoursPrevus"
           hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."

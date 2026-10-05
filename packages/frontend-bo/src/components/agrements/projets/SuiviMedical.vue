@@ -7,7 +7,7 @@
     Suivi médical prévu
   </TitleWithIcon>
 
-  <div class="fr-fieldset__element">
+  <div class="fr-mb-4v">
     <div class="fr-col-12">
       <DisplayLabel
         :value="props.initAgrement?.suiviMedDistribution"
@@ -19,7 +19,7 @@
     </div>
   </div>
 
-  <div class="fr-fieldset__element fr-mt-8v">
+  <div class="fr-mb-4v">
     <div class="fr-col-12">
       <DisplayLabel
         :value="props.initAgrement?.suiviMedAccordSejour"
@@ -30,7 +30,7 @@
       />
     </div>
   </div>
-  <div class="fr-fieldset__element">
+  <div class="fr-mb-4v">
     <MultiFilesUpload
       v-model="filesProjetsSejoursSuiviMed"
       :modifiable="false"

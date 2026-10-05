@@ -30,7 +30,7 @@
       :title-level="titreNiveau"
     />
     <div v-if="props.showButtons && props.modifiable">
-      <div class="fr-fieldset__element">
+      <div class="fr-mb-4v">
         <UtilsNavigationButtons
           :show-buttons="props.showButtons"
           :is-downloading="props.isDownloading"

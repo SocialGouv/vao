@@ -30,7 +30,7 @@
     />
   </fieldset>
 
-  <div class="fr-fieldset__element">
+  <div class="fr-mb-4v">
     <FileUpload
       v-model="fileProjetsSejoursCasier"
       hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."

@@ -6,7 +6,7 @@
   >
     Casier judiciaire
   </TitleWithIcon>
-  <div class="fr-fieldset__element">
+  <div class="fr-mb-4v">
     <DsfrCheckbox
       v-model="accompRespAttestHono"
       name="checkbox-required-custom"
@@ -15,7 +15,7 @@
       :value="true"
     />
   </div>
-  <div class="fr-fieldset__element">
+  <div class="fr-mb-4v">
     <FileUpload
       v-model="fileProjetsSejoursCasier"
       :cdn-url="props.cdnUrl"

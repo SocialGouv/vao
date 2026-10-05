@@ -38,7 +38,7 @@
     :value="props.initAgrement.sejourCommentaire"
     :input="AgrementDisplayInput.AgrementProjetsInput['sejourCommentaire']"
   />
-  <div class="fr-fieldset__element">
+  <div class="fr-mb-4v">
     <MultiFilesUpload
       v-model="filesProjetsSejoursPrevus"
       label="Document(s) relatif(s) aux séjours prévus (optionnel)"

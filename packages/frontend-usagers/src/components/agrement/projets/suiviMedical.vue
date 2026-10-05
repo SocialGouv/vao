@@ -12,7 +12,7 @@
     class="no-border"
     :aria-labelledby="props.modifiable ? 'suivi-medical' : undefined"
   >
-    <div class="fr-fieldset__element">
+    <div class="fr-mb-4v">
       <div class="fr-col-12">
         <DsfrInputGroup
           v-if="props.modifiable"
@@ -38,7 +38,7 @@
       </div>
     </div>
 
-    <div class="fr-fieldset__element fr-mt-8v">
+    <div class="fr-mb-4v">
       <div class="fr-col-12">
         <DsfrInputGroup
           v-if="props.modifiable"
@@ -63,7 +63,7 @@
         />
       </div>
     </div>
-    <div class="fr-fieldset__element">
+    <div class="fr-mb-4v">
       <UtilsMultiFilesUpload
         v-model="filesProjetsSejoursSuiviMed"
         hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
