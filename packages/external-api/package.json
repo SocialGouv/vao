@@ -38,7 +38,7 @@
     "magic-bytes.js": "^1.10.0",
     "multer": "catalog:",
     "nestjs-pino": "^4.2.0",
-    "nestjs-zod": "^4.2.0",
+    "nestjs-zod": "^5.5.0",
     "pg": "catalog:",
     "pino-http": "^10.3.0",
     "pino-pretty": "^13.0.0",
