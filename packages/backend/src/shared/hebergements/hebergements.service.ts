@@ -124,7 +124,10 @@ export const HebergementServiceShared = {
     tx: PoolClient,
     input: {
       deplacementProximiteDescription: string | null;
+      descriptif?: string | null;
       excursionDescription: string | null;
+      hebergementTypeId?: number | null;
+      hebergementTypeValue?: string | null;
       nomSite: string | null;
       organismeId: number;
       respEmail: string | null;
@@ -134,7 +137,19 @@ export const HebergementServiceShared = {
       vehiculesAdaptes: boolean | null;
     },
   ): Promise<void> {
-    return SitesRepositoryShared.createSiteOrganisme(tx, input);
+    const { hebergementTypeId, hebergementTypeValue, descriptif, ...rest } =
+      input;
+    const resolvedTypeId = hebergementTypeValue
+      ? await HebergementsRepositoryShared.getHebergementTypeId(
+          tx,
+          hebergementTypeValue,
+        )
+      : (hebergementTypeId ?? null);
+    return SitesRepositoryShared.createSiteOrganisme(tx, {
+      ...rest,
+      descriptif: descriptif ?? null,
+      hebergementTypeId: resolvedTypeId,
+    });
   },
 
   async createUniteHebergement(
