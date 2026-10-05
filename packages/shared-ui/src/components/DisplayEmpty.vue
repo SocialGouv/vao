@@ -1,7 +1,7 @@
 <template>
   <template v-if="displayValue">{{ displayValue }}</template>
   <span v-else>
-    <span aria-hidden="true">—</span>
+    <span class="dash" aria-hidden="true">—</span>
     <span class="fr-sr-only">Non renseigné</span>
   </span>
 </template>
@@ -19,3 +19,9 @@ const displayValue = computed(() => {
   return String(value);
 });
 </script>
+
+<style scoped lang="scss">
+.dash {
+  color: #000;
+}
+</style>

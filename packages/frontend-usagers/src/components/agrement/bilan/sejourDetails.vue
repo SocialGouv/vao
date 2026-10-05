@@ -303,4 +303,7 @@ defineExpose({
   justify-content: flex-start;
   align-items: flex-end;
 }
+.container :deep(.read-only-value.is-empty) {
+  color: #000;
+}
 </style>
