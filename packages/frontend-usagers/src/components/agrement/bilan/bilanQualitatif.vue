@@ -14,11 +14,8 @@
         >au choix une description texte et/ou un fichier joint</span
       >. L’un des deux est requis.
     </p>
-    <div :class="props.modifiable ? 'border fr-p-4v' : 'fr-p-4v'">
-      <component
-        :is="props.modifiable ? 'fieldset' : 'div'"
-        class="no-border"
-      >
+    <div :class="props.modifiable ? 'border fr-p-4v' : ''">
+      <component :is="props.modifiable ? 'fieldset' : 'div'" class="no-border">
         <component
           :is="props.modifiable ? 'legend' : 'h4'"
           :class="
@@ -82,10 +79,10 @@
         </div>
       </component>
     </div>
-    <div class="fr-mt-6v" :class="props.modifiable ? 'border fr-p-4v' : 'fr-p-4v'">
+    <div class="fr-mt-6v" :class="props.modifiable ? 'border fr-p-4v' : ''">
       <component
         :is="props.modifiable ? 'fieldset' : 'div'"
-        class="no-border fr-p-4v"
+        class="no-border"
       >
         <component
           :is="props.modifiable ? 'legend' : 'h4'"
@@ -150,10 +147,10 @@
         </div>
       </component>
     </div>
-    <div class="fr-mt-6v" :class="props.modifiable ? 'border fr-p-4v' : 'fr-p-4v'">
+    <div class="fr-mt-6v" :class="props.modifiable ? 'border fr-p-4v' : ''">
       <component
         :is="props.modifiable ? 'fieldset' : 'div'"
-        class="no-border fr-p-4v"
+        class="no-border"
       >
         <component
           :is="props.modifiable ? 'legend' : 'h4'"

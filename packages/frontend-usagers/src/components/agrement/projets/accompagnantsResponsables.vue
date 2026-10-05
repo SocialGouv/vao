@@ -31,7 +31,7 @@
     Pour chaque section, renseignez au choix une description texte et/ou un
     fichier joint. L’un des deux est requis.
   </p>
-  <div :class="props.modifiable ? 'border fr-p-4v' : 'fr-p-4v'">
+  <div :class="props.modifiable ? 'border fr-pt-4v' : 'fr-p-4v'">
     <component
       :is="props.modifiable ? 'fieldset' : 'div'"
       class="no-border"
@@ -89,7 +89,7 @@
       </div>
     </component>
   </div>
-  <div class="fr-mt-6v" :class="props.modifiable ? 'border fr-p-4v' : 'fr-p-4v'">
+  <div class="fr-mt-6v" :class="props.modifiable ? 'border fr-pt-4v' : 'fr-p-4v'">
     <component
       :is="props.modifiable ? 'fieldset' : 'div'"
       class="no-border"
