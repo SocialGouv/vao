@@ -1,10 +1,13 @@
-import type {
-  HebergementUsagersRoutes,
-  SiteSimilariteResult,
+import {
+  type HebergementUsagersRoutes,
+  type SiteSimilariteResult,
+  FeatureFlagName,
 } from "@vao/shared-bridge";
 import type { NextFunction } from "express";
 
+import { FeatureFlagService } from "../../services/featureFlagService";
 import type { RouteRequest, RouteResponse } from "../../types/request";
+import AppError from "../../utils/error";
 import { logger } from "../../utils/logger";
 import { HebergementService } from "./hebergements.service";
 
@@ -44,6 +47,45 @@ export const HebergementController = {
     } catch (error) {
       log.w("DONE with error");
       next(error);
+    }
+  },
+  async getSites(
+    req: RouteRequest<HebergementUsagersRoutes["GetSites"]>,
+    res: RouteResponse<HebergementUsagersRoutes["GetSites"]>,
+    next: NextFunction,
+  ) {
+    log.i("getSites - IN");
+
+    try {
+      const isFeatureEnabled = await FeatureFlagService.isFeatureAvailable(
+        FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT,
+      );
+      if (!isFeatureEnabled) {
+        log.i("getSites - module désactivé, liste vide");
+        res.json({ rows: [], total: 0 });
+        return;
+      }
+
+      const query = req.validatedQuery ?? {};
+      const result = await HebergementService.getSitesList({
+        adresse: query.adresse,
+        limit: query.limit,
+        nom: query.nom,
+        offset: query.offset,
+        sortBy: query.sortBy,
+        sortDirection: query.sortDirection,
+        statut: query.statut,
+        userId: req.decoded?.id ?? "",
+      });
+      res.json({ rows: result.rows, total: result.total });
+    } catch (error) {
+      log.w("getSites - DONE with error", error);
+      next(
+        new AppError(
+          "Une erreur est survenue lors de la récupération des sites",
+          { cause: error, statusCode: 500 },
+        ),
+      );
     }
   },
   async patchSite(

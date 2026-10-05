@@ -6,10 +6,12 @@ import type {
   PostSiteBody,
   PostSiteResponse,
   SiteSimilariteResult,
+  SitesListeResponse,
 } from "@vao/shared-bridge";
 import type { PoolClient } from "pg";
 
 import { getByIds as getAddresses } from "../../services/adresse";
+import Organisme from "../../services/Organisme";
 import { HebergementsRepositoryShared } from "../../shared/hebergements/hebergements.repository";
 import { HebergementServiceShared } from "../../shared/hebergements/hebergements.service";
 import { classifySiteSimilarite } from "../../shared/hebergements/hebergements.similarites";
@@ -90,6 +92,60 @@ export const HebergementService = {
     };
   },
 
+  async getSitesList({
+    userId,
+    statut,
+    nom,
+    adresse,
+    limit,
+    offset,
+    sortBy,
+    sortDirection,
+  }: {
+    userId: string;
+    statut?: string;
+    nom?: string;
+    adresse?: string;
+    limit?: number;
+    offset?: number;
+    sortBy?: string;
+    sortDirection?: string;
+  }): Promise<SitesListeResponse> {
+    log.i("getSitesList - IN");
+
+    const organismeUserConnected = await Organisme.getOne({ use_id: userId });
+    const siret = organismeUserConnected?.personneMorale?.siret;
+    if (!siret) {
+      return { rows: [], total: 0 };
+    }
+
+    const organismeSiege = await Organisme.getSiege(siret);
+    const siren = organismeSiege?.personneMorale?.siren;
+    if (!siren) {
+      return { rows: [], total: 0 };
+    }
+
+    const organismes = await Organisme.getBySiren(siren);
+    const organismeIds = organismes
+      .map((organisme) => organisme.organismeId)
+      .filter((id): id is number => typeof id === "number");
+
+    if (organismeIds.length === 0) {
+      return { rows: [], total: 0 };
+    }
+
+    return HebergementsRepository.getSitesList({
+      adresse,
+      limit: limit ?? 10,
+      nom,
+      offset: offset ?? 0,
+      organismeIds,
+      sortBy,
+      sortDirection,
+      statut,
+    });
+  },
+
   async postSite(
     site: PostSiteBody,
     usagerUserId: string,
@@ -157,7 +213,6 @@ export const HebergementService = {
       return result;
     });
   },
-
   async updateSiteInformation(
     siteId: string,
     site: PatchSiteBody,

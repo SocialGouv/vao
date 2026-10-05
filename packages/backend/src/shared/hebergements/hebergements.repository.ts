@@ -375,6 +375,17 @@ export const HebergementsRepositoryShared = {
     log.i("unsetUniteHebergementCurrent - DONE");
   },
 
+  /**
+   * Met à jour UNE SEULE unité (l'unité courante, current = TRUE) en place.
+   *
+   * Le paramètre optionnel `id` réalise un « re-key » (voir hebergements.service.ts) :
+   * il ré-affecte la clé primaire de l'unité vers le nouvel id d'hébergement après
+   * versioning. Ce re-key est autorisé car la FK
+   *   fk_uhtp_unite_hebergement (unite_hebergement_to_type_pension.unite_hebergement_id
+   *   → unite_hebergement(id)) est en ON UPDATE CASCADE : les lignes de pension
+   *   suivent automatiquement l'unité (migration dédiée). Sans ON UPDATE CASCADE,
+   *   ce UPDATE échouerait en foreign_key_violation dès qu'une pension existe.
+   */
   async updateUniteHebergement(
     tx: PoolClient,
     uniteHebergementId: number,
@@ -390,6 +401,7 @@ export const HebergementsRepositoryShared = {
       fileDerniereAttestationSecurite,
       fileReponseExploitantOuProprietaire,
       hebergementId,
+      id,
       litsSuperposes,
       nombreCouchageTotal,
       rangementIndividuel,
@@ -410,6 +422,7 @@ export const HebergementsRepositoryShared = {
       fileDerniereAttestationSecurite: string | null;
       fileReponseExploitantOuProprietaire: string | null;
       hebergementId?: string;
+      id?: number;
       litsSuperposes: boolean | null;
       nombreCouchageTotal: number | null;
       rangementIndividuel: boolean | null;
@@ -454,6 +467,7 @@ export const HebergementsRepositoryShared = {
       ...(hebergementId
         ? [{ clause: "hebergement_id", value: hebergementId }]
         : []),
+      ...(id ? [{ clause: "id", value: id }] : []),
     ];
     const setClause = updates
       .map(({ clause }, index) => `${clause} = $${index + 2}`)

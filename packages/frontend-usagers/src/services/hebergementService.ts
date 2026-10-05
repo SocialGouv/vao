@@ -57,6 +57,14 @@ const HebergementService = {
       body,
     })();
   },
+  getSites: async (query: HebergementUsagersRoutes["GetSites"]["query"]) => {
+    const response = await buildRequest<HebergementUsagersRoutes["GetSites"]>({
+      path: "/hebergement/sites",
+      method: "GET",
+      query,
+    })();
+    return response;
+  },
 };
 
 export { HebergementService };

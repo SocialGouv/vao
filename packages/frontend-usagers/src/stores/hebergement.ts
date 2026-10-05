@@ -7,7 +7,9 @@ import type {
   HebergementDto,
   HebergementFunnelOrigin,
   PostSiteResponse,
+  HebergementUsagersRoutes,
   SiteDto,
+  SiteListeDto,
   SiteSimilariteResult,
 } from "@vao/shared-bridge";
 import { FUNCTIONAL_ERRORS, FunctionalException } from "@vao/shared-bridge";
@@ -33,6 +35,8 @@ interface HebergementStoreState {
   hebergementsTotal: number;
   hebergementCourant: HebergementDto | null;
   funnelContext: HebergementFunnelContext | null;
+  sites: SiteListeDto[];
+  sitesTotal: number;
 }
 
 export const useHebergementStore = defineStore("hebergement", {
@@ -41,6 +45,8 @@ export const useHebergementStore = defineStore("hebergement", {
     hebergementsTotal: 0,
     hebergementCourant: null,
     funnelContext: null,
+    sites: [],
+    sitesTotal: 0,
   }),
   actions: {
     setFunnelOrigin(
@@ -87,6 +93,22 @@ export const useHebergementStore = defineStore("hebergement", {
         log.i("fetch - DONE with error", err);
       }
     },
+    async fetchSites(
+      query: HebergementUsagersRoutes["GetSites"]["query"] = {},
+    ) {
+      try {
+        log.i("fetchSites - IN");
+        const { rows, total } = await HebergementService.getSites(query);
+
+        this.sites = rows;
+        this.sitesTotal = total;
+        log.d("fetchSites  - DONE");
+      } catch (err: unknown) {
+        this.sites = [];
+        this.sitesTotal = 0;
+        log.i("fetchSites - DONE with error", err);
+      }
+    },
     async fetchById(id: number) {
       try {
         log.i("fetchById - IN", { id });
@@ -128,8 +150,7 @@ export const useHebergementStore = defineStore("hebergement", {
     ): Promise<CheckTypeHebergementResponse> {
       log.i("checkTypeHebergement - IN", body);
       try {
-        const result =
-          await HebergementService.checkTypeHebergement(body);
+        const result = await HebergementService.checkTypeHebergement(body);
         log.d("checkTypeHebergement - DONE", result);
         return result;
       } catch (err: unknown) {

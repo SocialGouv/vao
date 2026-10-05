@@ -77,7 +77,11 @@ export const useMenuNavItems = () => {
             },
             {
               text: "Mes hébergements",
-              to: "/hebergements/liste",
+              to: userStore.user?.featureFlags?.[
+                FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT
+              ]
+                ? "/hebergements/sites"
+                : "/hebergements/liste",
             },
             ...(userStore.user?.roles?.some((role) =>
               [userRolesRef.EIG_LECTURE, userRolesRef.EIG_ECRITURE].includes(

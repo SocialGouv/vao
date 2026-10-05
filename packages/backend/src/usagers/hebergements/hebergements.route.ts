@@ -44,4 +44,11 @@ router.post(
   HebergementController.checkTypeHebergement,
 );
 
+router.get(
+  "/sites",
+  checkJWT,
+  requestValidatorMiddleware(HebergementUsagersRoutesSchema["GetSites"]),
+  HebergementController.getSites,
+);
+
 export default router;

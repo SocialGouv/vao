@@ -141,3 +141,22 @@ export interface HebergementDto {
   informationsTransport: InformationsTransportDto;
   siteId?: string | null;
 }
+
+export interface SiteListeDto {
+  // id : id numérique partagé hebergement/unite — uniquement pendant la transition
+  // (routes d'action legacy + payload). À supprimer lors du drop de la table legacy,
+  // le siteId (uuid) deviendra l'unique identifiant.
+  id: number;
+  siteId: string;
+  nom: string | null;
+  adresse: string | null;
+  departement: string | null;
+  type: string | null;
+  statut: string;
+  organismeId: number;
+}
+
+export type SitesListeResponse = {
+  rows: SiteListeDto[];
+  total: number;
+};

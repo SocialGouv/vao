@@ -1,0 +1,71 @@
+<template>
+  <div class="fr-container">
+    <div class="fr-grid-row">
+      <div class="fr-col">
+        <DsfrBreadcrumb :links="links" />
+      </div>
+    </div>
+
+    <div class="fr-grid-row">
+      <div class="fr-col">
+        <h1>Mes hébergements</h1>
+      </div>
+    </div>
+    <HebergementsSitesListe />
+    <div class="fr-grid-row">
+      <div class="fr-col">
+        <form>
+          <div class="fr-fieldset">
+            <NuxtLink
+              class="fr-btn fr-btn--secondary fr-btn--md inline-flex"
+              to="/hebergements/site"
+            >
+              <span aria-hidden="true" class="fr-icon-add-line"></span>
+              Ajouter un nouvel hébergement
+            </NuxtLink>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { FeatureFlagName } from "@vao/shared-bridge";
+
+definePageMeta({
+  middleware: ["is-connected"],
+});
+
+const userStore = useUserStore();
+
+const isModuleHebergementEnabled = computed(
+  () =>
+    !!userStore.user?.featureFlags?.[
+      FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT
+    ],
+);
+
+if (!isModuleHebergementEnabled.value) {
+  navigateTo("/hebergements/liste");
+}
+
+useHead({
+  title: "Mes hébergements | Vacances Adaptées Organisées",
+  meta: [
+    {
+      name: "description",
+      content: "Page listant les sites des hébergements.",
+    },
+  ],
+});
+const links = [
+  {
+    to: "/",
+    text: "Accueil",
+  },
+  {
+    text: "Mes hébergements",
+  },
+];
+</script>

@@ -8,6 +8,8 @@ import type { PatchSiteRoute } from "./patchSite";
 import { PatchSiteRouteSchema } from "./patchSite";
 import type { PostSiteRoute } from "./postSite";
 import { PostSiteRouteSchema } from "./postSite";
+import type { GetSitesRoute } from "./getSites";
+import { GetSitesRouteSchema } from "./getSites";
 
 export type HebergementUsagersRoutes = {
   CheckSimilarites: CheckSiteSimilaritesRoute;
@@ -15,6 +17,7 @@ export type HebergementUsagersRoutes = {
   GetOne: GetOneRoute;
   PatchSite: PatchSiteRoute;
   PostSite: PostSiteRoute;
+  GetSites: GetSitesRoute;
 };
 
 export const HebergementUsagersRoutesSchema = {
@@ -23,6 +26,7 @@ export const HebergementUsagersRoutesSchema = {
   GetOne: GetOneRouteSchema,
   PatchSite: PatchSiteRouteSchema,
   PostSite: PostSiteRouteSchema,
+  GetSites: GetSitesRouteSchema,
 };
 
 export type {
@@ -35,3 +39,4 @@ export type {
 } from "./checkTypeHebergement";
 export type { PatchSiteBody, ResponsableDto } from "./patchSite";
 export type { PostSiteBody, PostSiteResponse } from "./postSite";
+export type { SitesUsagersSortColumn } from "./getSites";

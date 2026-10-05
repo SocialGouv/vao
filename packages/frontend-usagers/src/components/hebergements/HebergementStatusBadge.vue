@@ -3,6 +3,7 @@
     :small="small"
     :type="type"
     :label="props.statut"
+    no-icon
     class="pointer"
   />
 </template>
@@ -22,7 +23,7 @@ const props = defineProps({
 const type = computed(() => {
   switch (props.statut) {
     case hebergements.statuts.BROUILLON:
-      return "new";
+      return "info";
     case hebergements.statuts.ACTIF:
       return "success";
     case hebergements.statuts.DESACTIVE:

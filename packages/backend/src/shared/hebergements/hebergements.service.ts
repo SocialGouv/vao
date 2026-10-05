@@ -365,6 +365,28 @@ export const HebergementServiceShared = {
     );
   },
 
+  /**
+   * Synchronise l'unité courante après versioning de l'hébergement.
+   *
+   * Mécanisme de « re-key » :
+   *  - L'activation/désactivation/édition d'un hébergement actif ne modifie pas la
+   *    ligne front.hebergement : elle l'archive (current = FALSE) puis en crée une
+   *    NOUVELLE version avec un NOUVEL id (ex. 93 → 94).
+   *  - Or front.unite_hebergement.id est contraint (fk_unite_hebergement_hebergement)
+   *    à pointer vers un front.hebergement(id) existant, en pratique la version
+   *    COURANTE. On « re-key » donc l'unité : son id est déplacé vers le nouvel id
+   *    d'hébergement. Le site_id (uuid, clé métier stable du site) n'est PAS touché.
+   *    ⇒ l'id technique remonté à l'écran avance à chaque changement de statut ;
+   *      seul le site_id reste stable.
+   *
+   * Le site_id étant inchangé, on garde une seule unité courante par site (pas de
+   * doublon). Les lignes unite_hebergement_to_type_pension (pensions) suivent ce
+   * re-key via la FK ON UPDATE CASCADE (migration dédiée), puis sont purgées et
+   * réinsérées sous `targetId`.
+   *
+   * @param uniteHebergementId id (courant) de l'unité à re-synchroniser
+   * @param input contient `id` (nouvel id d'hébergement) et `hebergementId` (uuid)
+   */
   async updateUniteHebergement(
     uniteHebergementId: number,
     { ...input }: UpdateUniteHebergementInput,
@@ -395,23 +417,25 @@ export const HebergementServiceShared = {
       buildUniteWriteData({
         informationsLocaux,
       });
-    await HebergementsRepositoryShared.unsetUniteHebergementCurrent(
+    // Après re-key de l'unité (désactivation/édition ⇒ nouvel id d'hébergement),
+    // l'unité porte l'id cible `targetId` : il faut à la fois l'appliquer au `id`
+    // et attacher les pensions sous ce nouvel id (les anciennes lignes
+    // unite_hebergement_to_type_pension sont déjà recâblées par ON UPDATE CASCADE).
+    const targetId = id ?? uniteHebergementId;
+    await HebergementsRepositoryShared.updateUniteHebergement(
       tx,
       uniteHebergementId,
+      {
+        ...data,
+        editedBy,
+        ...(hebergementId ? { hebergementId } : {}),
+        ...(id ? { id: targetId } : {}),
+        statutId,
+      },
     );
-    await HebergementsRepositoryShared.createUniteHebergement(tx, {
-      ...data,
-      createdBy: currentUnit.createdBy ?? editedBy,
-      editedBy,
-      hebergementId,
-      id,
-      organismeId: currentUnit.organismeId,
-      siteId: currentUnit.siteId,
-      statutId,
-    });
     await HebergementsRepositoryShared.setUniteHebergementTypePensions(
       tx,
-      id,
+      targetId,
       typePensions,
     );
   },
