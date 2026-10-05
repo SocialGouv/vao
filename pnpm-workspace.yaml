@@ -12,7 +12,7 @@ catalog:
   "@nuxt/test-utils": "^3.23.0"
   "@pinia/nuxt": "^0.11.3"
   "@popperjs/core": "^2.11.8"
-  "@sentry/nestjs": "^10.68.0"
+  "@sentry/nestjs": "^10.75.0"
   "@sentry/node": "^10.68.0"
   "@sentry/profiling-node": "^10.68.0"
   "@sentry/vite-plugin": "^2.21.1"
