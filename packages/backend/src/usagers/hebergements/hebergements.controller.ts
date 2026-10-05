@@ -34,16 +34,11 @@ export const HebergementController = {
     next: NextFunction,
   ) {
     log.i("patchSite - IN");
-    const { id: usagerUserId } = req.decoded!;
     const { siteId } = req.validatedParams!;
     const site = req.validatedBody!;
 
     try {
-      await HebergementService.updateSiteInformation(
-        siteId,
-        site,
-        usagerUserId,
-      );
+      await HebergementService.updateSiteInformation(siteId, site);
       res.status(200).json({});
     } catch (error) {
       log.w("patchSite - DONE with error");

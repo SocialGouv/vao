@@ -211,15 +211,13 @@ describe("PATCH /hebergement/site/:siteId", () => {
 
     expect(response.status).toBe(200);
 
-    const site = await HebergementServiceShared.getSiteById(body.siteId);
-    expect(site?.descriptif).toBe("Un gîte confortable et accessible");
-    expect(site?.hebergementTypeId).not.toBeNull();
-
     const organismeLink = await HebergementServiceShared.getSiteOrganisme(
       body.siteId,
       organismeId,
     );
     expect(organismeLink).not.toBeNull();
+    expect(organismeLink?.descriptif).toBe("Un gîte confortable et accessible");
+    expect(organismeLink?.hebergementTypeId).not.toBeNull();
     expect(organismeLink?.respNomPrenom).toBe("DUPONT Nicolas");
     expect(organismeLink?.respTelephone).toBe("0612345678");
     expect(organismeLink?.respEmail).toBe("resp@example.fr");

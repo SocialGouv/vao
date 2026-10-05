@@ -4,8 +4,6 @@ export interface SiteEntity {
   current: boolean | null;
   adresse_id: number | null;
   nom_site_officiel: string | null;
-  hebergement_type_id: number | null;
-  descriptif: string | null;
   created_at: Date | null;
   edited_at: Date | null;
   created_by: number | null;
@@ -19,6 +17,8 @@ export interface SiteOrganismeEntity {
   resp_nom_prenom: string | null;
   resp_telephone: string | null;
   resp_email: string | null;
+  hebergement_type_id: number | null;
+  descriptif: string | null;
   excursion_description: string | null;
   deplacement_proximite_description: string | null;
   vehicules_adaptes: boolean | null;

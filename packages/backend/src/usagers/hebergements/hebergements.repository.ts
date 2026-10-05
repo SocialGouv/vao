@@ -47,8 +47,7 @@ export const HebergementsRepository = {
 
     let query = `
       SELECT DISTINCT s.id, s.site_id, s."current", s.adresse_id, s.nom_site_officiel,
-             s.hebergement_type_id, s.descriptif, s.created_at, s.edited_at,
-             s.created_by, s.edited_by
+             s.created_at, s.edited_at, s.created_by, s.edited_by
       FROM front.site s
       LEFT JOIN front.adresse a ON a.id = s.adresse_id
       WHERE s."current" IS TRUE

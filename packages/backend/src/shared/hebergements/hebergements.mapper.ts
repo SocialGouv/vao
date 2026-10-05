@@ -29,11 +29,11 @@ export const SiteMapper = {
       createdBy: entity.created_by ?? null,
       current: entity.current ?? true,
       deplacementProximiteDescription: null,
-      descriptif: entity.descriptif ?? null,
+      descriptif: null,
       editedAt: entity.edited_at ?? null,
       editedBy: entity.edited_by ?? null,
       excursionDescription: null,
-      hebergementTypeId: entity.hebergement_type_id ?? null,
+      hebergementTypeId: null,
       id: required(entity.id, "site.id"),
       nomSite: null,
       nomSiteOfficiel: entity.nom_site_officiel ?? null,
@@ -55,7 +55,9 @@ export const SiteOrganismeMapper = {
     return {
       deplacementProximiteDescription:
         entity.deplacement_proximite_description ?? null,
+      descriptif: entity.descriptif ?? null,
       excursionDescription: entity.excursion_description ?? null,
+      hebergementTypeId: entity.hebergement_type_id ?? null,
       nomSite: entity.nom_site ?? null,
       organismeId: required(entity.organisme_id, "site_organisme.organisme_id"),
       respEmail: entity.resp_email ?? null,

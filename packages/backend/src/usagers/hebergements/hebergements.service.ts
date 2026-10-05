@@ -83,8 +83,6 @@ export const HebergementService = {
             adresse: site.adresse,
             adresseId: site.adresse.id ?? null,
             createdBy: Number(usagerUserId),
-            descriptif: site.descriptif ?? null,
-            hebergementTypeId: site.hebergementTypeId ?? null,
             nomSiteOfficiel: site.nomSiteOfficiel,
           },
           tx,
@@ -104,7 +102,9 @@ export const HebergementService = {
         await HebergementServiceShared.createSiteOrganisme(tx, {
           deplacementProximiteDescription:
             site.deplacementProximiteDescription ?? null,
+          descriptif: site.descriptif ?? null,
           excursionDescription: site.excursionDescription ?? null,
+          hebergementTypeId: site.hebergementTypeId ?? null,
           nomSite: site.nomSite ?? site.nomSiteOfficiel,
           organismeId: site.organismeId,
           respEmail: site.respEmail ?? null,
@@ -128,7 +128,6 @@ export const HebergementService = {
   async updateSiteInformation(
     siteId: string,
     site: PatchSiteBody,
-    usagerUserId: string,
   ): Promise<void> {
     log.i("updateSiteInformation - IN", { siteId });
 
@@ -151,11 +150,15 @@ export const HebergementService = {
           site.hebergementTypeValue,
         );
 
-      await HebergementServiceShared.updateSiteInformation(tx, siteId, {
-        descriptif: site.description ?? null,
-        editedBy: Number(usagerUserId),
-        hebergementTypeId,
-      });
+      await HebergementServiceShared.updateSiteInformation(
+        tx,
+        siteId,
+        site.organismeId,
+        {
+          descriptif: site.description ?? null,
+          hebergementTypeId,
+        },
+      );
       await HebergementServiceShared.updateOrganismeResp(
         tx,
         siteId,

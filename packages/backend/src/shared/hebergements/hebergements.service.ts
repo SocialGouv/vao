@@ -18,13 +18,11 @@ import { SitesRepositoryShared } from "./hebergementsSite.repository";
 
 type CreateSiteInput = Pick<
   SiteDto,
-  | "adresseId"
-  | "createdBy"
-  | "descriptif"
-  | "hebergementTypeId"
-  | "nomSiteOfficiel"
+  "adresseId" | "createdBy" | "nomSiteOfficiel"
 > &
-  Partial<Pick<SiteDto, "adresse">> & { hebergementTypeValue?: string | null };
+  Partial<Pick<SiteDto, "adresse" | "descriptif" | "hebergementTypeId">> & {
+    hebergementTypeValue?: string | null;
+  };
 
 type UpdateSiteInput = Omit<CreateSiteInput, "createdBy" | "adresseId"> &
   Pick<SiteDto, "organismeId"> &
@@ -78,29 +76,13 @@ export const HebergementServiceShared = {
     { ...input }: CreateSiteInput,
     tx: PoolClient,
   ): Promise<Pick<SiteDto, "siteId">> {
-    const {
-      adresse,
-      adresseId,
-      createdBy,
-      descriptif,
-      hebergementTypeId,
-      hebergementTypeValue,
-      nomSiteOfficiel,
-    } = input;
+    const { adresse, adresseId, createdBy, nomSiteOfficiel } = input;
     const resolvedAdresseId = adresse
       ? await saveAdresse(tx, adresse)
       : adresseId;
-    const resolvedTypeId = hebergementTypeValue
-      ? await HebergementsRepositoryShared.getHebergementTypeId(
-          tx,
-          hebergementTypeValue,
-        )
-      : hebergementTypeId;
     const siteId = await SitesRepositoryShared.create(tx, {
       adresseId: resolvedAdresseId,
       createdBy,
-      descriptif,
-      hebergementTypeId: resolvedTypeId,
       nomSiteOfficiel,
     });
     return { siteId };
@@ -110,7 +92,10 @@ export const HebergementServiceShared = {
     tx: PoolClient,
     input: {
       deplacementProximiteDescription: string | null;
+      descriptif?: string | null;
       excursionDescription: string | null;
+      hebergementTypeId?: number | null;
+      hebergementTypeValue?: string | null;
       nomSite: string | null;
       organismeId: number;
       respEmail: string | null;
@@ -120,7 +105,19 @@ export const HebergementServiceShared = {
       vehiculesAdaptes: boolean | null;
     },
   ): Promise<void> {
-    return SitesRepositoryShared.createSiteOrganisme(tx, input);
+    const { hebergementTypeId, hebergementTypeValue, descriptif, ...rest } =
+      input;
+    const resolvedTypeId = hebergementTypeValue
+      ? await HebergementsRepositoryShared.getHebergementTypeId(
+          tx,
+          hebergementTypeValue,
+        )
+      : (hebergementTypeId ?? null);
+    return SitesRepositoryShared.createSiteOrganisme(tx, {
+      ...rest,
+      descriptif: descriptif ?? null,
+      hebergementTypeId: resolvedTypeId,
+    });
   },
 
   async createUniteHebergement(
@@ -306,22 +303,21 @@ export const HebergementServiceShared = {
     const resolvedAdresseId = adresse
       ? await saveAdresse(tx, adresse)
       : adresseId;
-    const resolvedTypeId = hebergementTypeValue
-      ? await HebergementsRepositoryShared.getHebergementTypeId(
-          tx,
-          hebergementTypeValue,
-        )
-      : hebergementTypeId;
     await SitesRepositoryShared.update(tx, siteId, {
       adresseId: resolvedAdresseId,
-      descriptif,
       editedBy,
-      hebergementTypeId: resolvedTypeId,
       nomSiteOfficiel,
     });
     await SitesRepositoryShared.createSiteOrganisme(tx, {
       deplacementProximiteDescription: deplacementProximiteDescription ?? null,
+      descriptif: descriptif ?? null,
       excursionDescription: excursionDescription ?? null,
+      hebergementTypeId: hebergementTypeValue
+        ? await HebergementsRepositoryShared.getHebergementTypeId(
+            tx,
+            hebergementTypeValue,
+          )
+        : (hebergementTypeId ?? null),
       nomSite: nomSiteOfficiel,
       organismeId,
       respEmail: respEmail ?? null,
@@ -335,13 +331,18 @@ export const HebergementServiceShared = {
   async updateSiteInformation(
     tx: PoolClient,
     siteId: string,
+    organismeId: number,
     input: {
       descriptif: string | null;
-      editedBy: number | null;
       hebergementTypeId: number | null;
     },
   ): Promise<void> {
-    return SitesRepositoryShared.updateSiteInformation(tx, siteId, input);
+    return SitesRepositoryShared.updateSiteInformation(
+      tx,
+      siteId,
+      organismeId,
+      input,
+    );
   },
 
   async updateUniteHebergement(
