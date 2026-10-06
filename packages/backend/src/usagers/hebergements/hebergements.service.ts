@@ -72,6 +72,7 @@ export const HebergementService = {
     return withTransaction(async (tx: PoolClient) => {
       const existingSite =
         await HebergementServiceShared.getSiteByNomOfficielAndAdresseLabel(
+          tx,
           site.nomSiteOfficiel ?? "",
           site.adresse.label ?? "",
         );
@@ -120,8 +121,13 @@ export const HebergementService = {
         siteId,
         site.organismeId,
       );
+      if (!result) {
+        throw new AppError("Le site n'a pas pu être récupéré après création", {
+          statusCode: 404,
+        });
+      }
       log.i("postSite - DONE");
-      return result!;
+      return result;
     });
   },
 
@@ -131,19 +137,20 @@ export const HebergementService = {
   ): Promise<void> {
     log.i("updateSiteInformation - IN", { siteId });
 
-    const organismeLink = await HebergementServiceShared.getSiteOrganisme(
-      siteId,
-      site.organismeId,
-    );
-    log.d("updateSiteInformation - organismeLink", organismeLink);
-    if (!organismeLink) {
-      throw new AppError(
-        "Le site est introuvable ou ne dépend pas de l'organisme",
-        { statusCode: 404 },
-      );
-    }
-
     return withTransaction(async (tx: PoolClient) => {
+      const organismeLink = await HebergementServiceShared.getSiteOrganisme(
+        tx,
+        siteId,
+        site.organismeId,
+      );
+      log.d("updateSiteInformation - organismeLink", organismeLink);
+      if (!organismeLink) {
+        throw new AppError(
+          "Le site est introuvable ou ne dépend pas de l'organisme",
+          { statusCode: 404 },
+        );
+      }
+
       const hebergementTypeId =
         await HebergementsRepositoryShared.getHebergementTypeId(
           tx,

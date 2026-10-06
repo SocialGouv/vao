@@ -91,7 +91,7 @@ export const SiteWithOrganismeMapper = {
       id: required(entity.id, "site.id"),
       nomSite: entity.nom_site ?? null,
       nomSiteOfficiel: entity.nom_site_officiel ?? null,
-      organismeId: entity.organisme_id ?? 0,
+      organismeId: entity.organisme_id ?? null,
       respEmail: entity.resp_email ?? null,
       respNomPrenom: entity.resp_nom_prenom ?? null,
       respTelephone: entity.resp_telephone ?? null,

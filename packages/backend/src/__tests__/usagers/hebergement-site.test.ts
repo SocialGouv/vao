@@ -1,6 +1,7 @@
 import request from "supertest";
 
 import { HebergementServiceShared } from "../../shared/hebergements/hebergements.service";
+import { withTransaction } from "../../utils/pgpool";
 import { getFoAppHelper } from "../helpers/appHelper";
 import { createOrganisme } from "../helpers/organismeHelper";
 import {
@@ -130,9 +131,12 @@ describe("POST /hebergement/site", () => {
     expect(second.status).toBe(201);
     expect(second.body.siteId).toBe(first.body.siteId);
 
-    const link = await HebergementServiceShared.getSiteOrganisme(
-      second.body.siteId,
-      organismeId,
+    const link = await withTransaction(async (tx) =>
+      HebergementServiceShared.getSiteOrganisme(
+        tx,
+        second.body.siteId,
+        organismeId,
+      ),
     );
     expect(link).not.toBeNull();
   });
@@ -211,9 +215,8 @@ describe("PATCH /hebergement/site/:siteId", () => {
 
     expect(response.status).toBe(200);
 
-    const organismeLink = await HebergementServiceShared.getSiteOrganisme(
-      body.siteId,
-      organismeId,
+    const organismeLink = await withTransaction(async (tx) =>
+      HebergementServiceShared.getSiteOrganisme(tx, body.siteId, organismeId),
     );
     expect(organismeLink).not.toBeNull();
     expect(organismeLink?.descriptif).toBe("Un gîte confortable et accessible");

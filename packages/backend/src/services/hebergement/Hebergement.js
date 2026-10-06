@@ -995,6 +995,7 @@ module.exports.getById = async (id) => {
         );
       }
       const siteOrganisme = await HebergementServiceShared.getSiteOrganisme(
+        getPool(),
         uniteHebergement.siteId,
         uniteHebergement.organismeId,
       );

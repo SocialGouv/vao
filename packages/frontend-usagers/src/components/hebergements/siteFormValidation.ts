@@ -40,12 +40,16 @@ export const buildInformationsSiteFormValidationSchema = () =>
         .required("Le nom et prénom du responsable est obligatoire."),
       telephone: yup
         .string()
-        .required("Le téléphone est obligatoire.")
+        .required(`Le champ "Téléphone" est vide. Veuillez le remplir.`)
         .matches(numTelephoneRegex, "Format de numéro de téléphone invalide."),
       email: yup
         .string()
-        .required("L’e-mail est obligatoire.")
-        .email("Format de l’adresse e-mail invalide."),
+        .required(
+          `Le champ "Adresse e-mail" est vide. Veuillez le remplir. Exemple : nom@domaine.fr`,
+        )
+        .email(
+          `Le champ "Adresse e-mail" est invalide. Vérifiez le format attendu. Exemple : nom@domaine.fr`,
+        ),
     }),
   });
 

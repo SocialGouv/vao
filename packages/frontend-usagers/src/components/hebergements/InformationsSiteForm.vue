@@ -4,8 +4,8 @@
       Sauf mention contraire, tous les champs sont obligatoires.
     </p>
 
-    <div class="fr-fieldset fr-mb-6w">
-      <h2 class="fr-h3 fr-mt-0">Type d’hébergement</h2>
+    <div class="fr-fieldset">
+      <h3 class="fr-h3 fr-mt-0">Type d’hébergement</h3>
       <div class="fr-fieldset__element fr-col-12">
         <fieldset
           class="fr-fieldset"
@@ -41,29 +41,34 @@
     </div>
 
     <div class="fr-fieldset fr-mb-6w">
-      <h2 class="fr-h3 fr-mt-0">Descriptif</h2>
+      <h3 class="fr-h3 fr-mt-0">Descriptif</h3>
       <div class="fr-fieldset__element fr-col-12">
+        <label for="chat-textarea" class="fr-label fr-mb-2v"
+          >Description des parties communes et des équipements</label
+        >
+
+        <span class="fr-hint-text"
+          >Listez chaque espace en précisant ses principaux équipements.<br />
+          Exemple : cuisine accessible en fauteil roulant avec électro-ménager
+          PMR et table escamotable, buanderie avec rampe d’accès et éclairage
+          intelligent, salle de bain aménagée. <br />Nombre de caractères
+          maximum : {{ DESCRIPTION_MAX }}.</span
+        >
         <DsfrInputGroup
           name="description"
-          label="Description des parties communes et des équipements"
           :label-visible="true"
           :is-textarea="true"
           placeholder=""
           :model-value="description"
-          hint="Exemple : cuisine accessible en fauteuil roulant avec électroménager PMR et table escamotable, buanderie avec espace de lavage, salle de bain aménagée."
           :error-message="descriptionErrorMessage"
           :is-valid="descriptionMeta.valid"
           @update:model-value="onDescriptionChange"
         />
-        <p class="fr-hint-text">
-          Nombre de caractères maximum : {{ DESCRIPTION_MAX }}.
-          <span>{{ remainingCharacters }} caractère(s) restant(s).</span>
-        </p>
       </div>
     </div>
 
     <div class="fr-fieldset fr-mb-6w">
-      <h2 class="fr-h3 fr-mt-0">Coordonnées du responsable de l’hébergement</h2>
+      <h3 class="fr-h3 fr-mt-0">Coordonnées du responsable de l’hébergement</h3>
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
           name="nomPrenom"
@@ -202,10 +207,6 @@ const {
   handleChange: onEmailChange,
   meta: emailMeta,
 } = useField<string>("responsable.email");
-
-const remainingCharacters = computed(
-  () => DESCRIPTION_MAX - (description.value?.length ?? 0),
-);
 
 const onSubmit = handleSubmit((values) => {
   emit("submit", values);

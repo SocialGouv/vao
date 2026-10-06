@@ -242,9 +242,9 @@ describe("POST /hebergement", () => {
     const hebergementId = response.body.id;
     expect(hebergementId).toEqual(expect.any(Number));
     expect(organismeId).toEqual(expect.any(Number));
-
-    const unite =
-      await HebergementsRepositoryShared.getUniteHebergementById(hebergementId);
+    const unite = await withTransaction(async (tx) =>
+      HebergementsRepositoryShared.getUniteHebergementById(hebergementId, tx),
+    );
     expect(unite).not.toBeNull();
     expect(unite!.current).toBe(true);
     expect(unite!.hebergementId).toEqual(expect.any(String));
@@ -267,9 +267,8 @@ describe("POST /hebergement", () => {
     expect(site).not.toBeNull();
     expect(site!.nomSiteOfficiel).toBe("Hebergement fixture");
 
-    const siteOrganisme = await SitesRepositoryShared.getSiteOrganisme(
-      unite!.siteId!,
-      organismeId,
+    const siteOrganisme = await withTransaction(async (tx) =>
+      SitesRepositoryShared.getSiteOrganisme(tx, unite!.siteId!, organismeId),
     );
     expect(siteOrganisme).not.toBeNull();
     expect(siteOrganisme!.respNomPrenom).toBe("Gestionnaire fixture");

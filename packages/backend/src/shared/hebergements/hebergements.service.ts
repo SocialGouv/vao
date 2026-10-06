@@ -176,20 +176,23 @@ export const HebergementServiceShared = {
   },
 
   async getSiteByNomOfficielAndAdresseLabel(
+    tx: PoolClient,
     nomSiteOfficiel: string,
     adresseLabel: string,
   ): Promise<SiteDto | null> {
     return SitesRepositoryShared.getSiteByNomOfficielAndAdresseLabel(
+      tx,
       nomSiteOfficiel,
       adresseLabel,
     );
   },
 
   async getSiteOrganisme(
+    tx: PoolClient,
     siteId: string,
     organismeId: number,
   ): Promise<SiteOrganismeDto | null> {
-    return SitesRepositoryShared.getSiteOrganisme(siteId, organismeId);
+    return SitesRepositoryShared.getSiteOrganisme(tx, siteId, organismeId);
   },
 
   async getSiteWithOrganisme(
@@ -197,7 +200,17 @@ export const HebergementServiceShared = {
     siteId: string,
     organismeId: number,
   ): Promise<PostSiteResponse | null> {
-    return SitesRepositoryShared.getSiteWithOrganisme(tx, siteId, organismeId);
+    const site = await SitesRepositoryShared.getSiteWithOrganisme(
+      tx,
+      siteId,
+      organismeId,
+    );
+
+    if (!site || site.organismeId === null) {
+      return null;
+    }
+
+    return site as PostSiteResponse;
   },
 
   async getSitesByOrganismeId(organismeId: number): Promise<SiteDto[]> {

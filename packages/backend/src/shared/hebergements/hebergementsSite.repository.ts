@@ -129,6 +129,7 @@ export const SitesRepositoryShared = {
   },
 
   async getSiteByNomOfficielAndAdresseLabel(
+    tx: PoolClient,
     nomSiteOfficiel: string,
     adresseLabel: string,
   ): Promise<SiteDto | null> {
@@ -144,16 +145,14 @@ export const SitesRepositoryShared = {
       ORDER BY s.id
       LIMIT 1;
     `;
-    const result = await getPool().query(query, [
-      nomSiteOfficiel,
-      adresseLabel,
-    ]);
+    const result = await tx.query(query, [nomSiteOfficiel, adresseLabel]);
     log.i("getSiteByNomOfficielAndAdresseLabel - DONE");
     if (!result.rows?.length) return null;
     return SiteMapper.toModel(result.rows[0] as SiteEntity);
   },
 
   async getSiteOrganisme(
+    tx: PoolClient,
     siteId: string,
     organismeId: number,
   ): Promise<SiteOrganismeDto | null> {
@@ -166,7 +165,7 @@ export const SitesRepositoryShared = {
       FROM front.site_organisme
       WHERE site_id = $1 AND organisme_id = $2;
     `;
-    const result = await getPool().query(query, [siteId, organismeId]);
+    const result = await tx.query(query, [siteId, organismeId]);
     log.i("getSiteOrganisme - DONE");
     if (!result.rows?.length) return null;
     return SiteOrganismeMapper.toModel(result.rows[0] as SiteOrganismeEntity);

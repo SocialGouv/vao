@@ -124,6 +124,13 @@ export const useHebergementStore = defineStore("hebergement", {
           FUNCTIONAL_ERRORS.SITE_ADRESSE_OBLIGATOIRE,
         );
       }
+
+      const organismeId = Number(organismeCourant?.organismeId);
+      if (!Number.isFinite(organismeId) || organismeId <= 0) {
+        throw new FunctionalException(
+          FUNCTIONAL_ERRORS.ORGANISME_COURANT_NOT_FOUND,
+        );
+      }
       try {
         const createdSite = await HebergementService.postSite({
           adresse: site.adresse,
@@ -133,7 +140,7 @@ export const useHebergementStore = defineStore("hebergement", {
           hebergementTypeId: null,
           nomSite: site.nomSiteOrganisme || site.nomSiteOfficiel,
           nomSiteOfficiel: site.nomSiteOfficiel,
-          organismeId: Number(organismeCourant?.organismeId),
+          organismeId,
           respEmail: null,
           respNomPrenom: null,
           respTelephone: null,
