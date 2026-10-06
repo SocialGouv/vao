@@ -31,11 +31,14 @@
       :required="true"
     />
 
-    <DisplayLabel
-      :input="AgrementDisplayInput.AgrementBilanAnnuelInput['typeHandicap']"
-      :value="props.bilanAnnuel?.typeHandicap"
-      :required="true"
-    />
+    <div class="fr-mb-4v">
+      <p class="fr-text--bold">
+        {{
+          AgrementDisplayInput.AgrementBilanAnnuelInput.typeHandicap.label
+        }}
+      </p>
+      <DsfrTags :tags="typeHandicapTags" />
+    </div>
 
     <div class="fr-my-2w separator"></div>
 
@@ -56,6 +59,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { computed } from "vue";
 import { DisplayLabel, AgrementDisplayInput } from "@vao/shared-ui";
 
 const props = defineProps({
@@ -65,4 +69,23 @@ const props = defineProps({
   agrementStatus: { type: String, default: null },
   agrementId: { type: Number, default: null },
 });
+
+const typeHandicapTags = computed(() => {
+  const options =
+    AgrementDisplayInput.AgrementBilanAnnuelInput.typeHandicap.options ?? {};
+  const values = Array.isArray(props.bilanAnnuel?.typeHandicap)
+    ? props.bilanAnnuel?.typeHandicap
+    : [];
+  return values.map((value) => ({
+    label: options[value as keyof typeof options] ?? value,
+    class: "agrement-tag",
+  }));
+});
 </script>
+
+<style scoped>
+:deep(.agrement-tag.fr-tag) {
+  background-color: #ADADF9;
+  color: #000091;
+}
+</style>

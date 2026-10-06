@@ -22,7 +22,7 @@
   />
   <div class="fr-my-2w separator"></div>
   <p class="fr-text--bold">Informations sur les vacanciers</p>
-  <AgrementsTypeDeficiences
+  <AgrementsProjetsTypeDeficiences
     ref="typeDeficiencesRef"
     :type-deficiences="props.initAgrement.sejourTypeHandicap || []"
   />

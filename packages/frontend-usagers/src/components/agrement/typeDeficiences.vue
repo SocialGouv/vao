@@ -16,20 +16,18 @@
         </template>
       </DsfrCheckboxSet>
     </div>
-    <UtilsDisplayInput
-      v-else
-      :legend="displayInput.AgrementBilanAnnuelInput['typeHandicap'].label"
-      :input="displayInput.AgrementBilanAnnuelInput['typeHandicap']"
-      :value="typeDeficiencesField"
-      :error-message="typeDeficiencesErrorMessage"
-      :is-valid="typeDeficiencesMeta.valid"
-    />
+    <div v-else>
+      <p class="fr-text--bold">
+        {{ displayInput.AgrementBilanAnnuelInput["typeHandicap"].label }}
+      </p>
+      <DsfrTags :tags="typedTags" />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useField, useForm } from "vee-validate";
-import { onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import * as yup from "yup";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import displayInput from "../../utils/display-input";
@@ -54,6 +52,14 @@ const handicapOptions = [
   { label: "Moteur", value: "moteur", name: "typeDeficiences" },
   { label: "Polyhandicap", value: "polyhandicap", name: "typeDeficiences" },
 ];
+
+const typedTags = computed(() =>
+  typeDeficiencesField.value.map((value) => ({
+    label:
+      handicapOptions.find((option) => option.value === value)?.label ?? value,
+    class: "agrement-tag",
+  })),
+);
 
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)),
@@ -110,3 +116,10 @@ defineExpose({
   getCurrentValue,
 });
 </script>
+
+<style scoped>
+:deep(.fr-tag) {
+  background-color: #adadf9;
+  color: #000091;
+}
+</style>

@@ -18,13 +18,12 @@
         }}</span>
       </template>
     </DsfrCheckboxSet>
-    <UtilsDisplayInput
-      v-else
-      :input="displayInput.AgrementBilanAnnuelInput['trancheAge']"
-      :value="trancheAgeField"
-      :error-message="trancheAgeErrorMessage"
-      :is-valid="trancheAgeMeta.valid"
-    />
+    <div v-else>
+      <p class="fr-text--bold">
+        {{ displayInput.AgrementBilanAnnuelInput["trancheAge"].label }}
+      </p>
+      <DsfrTags :tags="ageRangeTags" />
+    </div>
   </div>
 </template>
 
@@ -38,7 +37,7 @@ import {
 } from "@vao/shared-bridge";
 import { useToaster } from "@vao/shared-ui";
 import displayInput from "../../../utils/display-input";
-import { onMounted } from "vue";
+import { computed, onMounted } from "vue";
 
 const props = defineProps({
   trancheAge: { type: Array, default: () => [] },
@@ -53,6 +52,14 @@ const ageRangeOptions = [
   { label: "de 40 à 59 ans", value: "40_59", name: "trancheAge" },
   { label: "plus de 59 ans", value: "59_et_plus", name: "trancheAge" },
 ];
+
+const ageRangeTags = computed(() =>
+  trancheAgeField.value.map((value) => ({
+    label:
+      ageRangeOptions.find((option) => option.value === value)?.label ?? value,
+    class: "agrement-tag",
+  })),
+);
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)),
   trancheAge: requiredUnlessBrouillon(
@@ -80,7 +87,7 @@ const {
   meta: trancheAgeMeta,
   errorMessage: trancheAgeErrorMessage,
   handleChange: onTrancheAgeChange,
-} = useField("trancheAge");
+} = useField<string[]>("trancheAge");
 
 const validateTranchesAge = async () => {
   const result = await validate();
@@ -113,3 +120,10 @@ defineExpose({
   getCurrentValue,
 });
 </script>
+
+<style scoped>
+:deep(.fr-tag) {
+  background-color: #adadf9;
+  color: #000091;
+}
+</style>
