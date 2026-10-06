@@ -100,6 +100,27 @@ export const SitesRepositoryShared = {
     ]);
     log.i("createSiteOrganisme - DONE");
   },
+  async getHebergementTypesBySite(
+    siteId: string,
+    organismeId: number,
+  ): Promise<string[]> {
+    log.i("getHebergementTypesBySite - IN");
+    const query = `
+      SELECT DISTINCT ht.value
+      FROM front.site_organisme so
+      JOIN front.hebergement_type ht ON ht.id = so.hebergement_type_id
+      WHERE so.site_id = $1
+        AND so.organisme_id <> $2
+        AND so.hebergement_type_id IS NOT NULL;
+    `;
+    const result = await getPool().query<{ value: string }>(query, [
+      siteId,
+      organismeId,
+    ]);
+    log.i("getHebergementTypesBySite - DONE");
+    return result.rows.map((row) => row.value);
+  },
+
   async getSiteById(siteId: string): Promise<SiteDto | null> {
     log.i("getSiteById - IN");
     const query = `

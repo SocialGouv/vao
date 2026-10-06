@@ -28,6 +28,24 @@ export const HebergementController = {
       next(error);
     }
   },
+  async checkTypeHebergement(
+    req: RouteRequest<HebergementUsagersRoutes["CheckTypeHebergement"]>,
+    res: RouteResponse<HebergementUsagersRoutes["CheckTypeHebergement"]>,
+    next: NextFunction,
+  ) {
+    log.i("IN");
+
+    try {
+      const result = await HebergementService.checkTypeHebergement(
+        req.validatedBody!,
+      );
+      log.d("typeVerification", result);
+      res.json(result);
+    } catch (error) {
+      log.w("DONE with error");
+      next(error);
+    }
+  },
   async patchSite(
     req: RouteRequest<HebergementUsagersRoutes["PatchSite"]>,
     res: RouteResponse<HebergementUsagersRoutes["PatchSite"]>,

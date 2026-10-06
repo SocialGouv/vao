@@ -17,6 +17,8 @@
         <div v-else-if="hash === 'site-info-lieu'">
           <HebergementsInformationsSiteForm
             :init-values="siteInfoLieu ?? undefined"
+            :site-id="createdSiteId"
+            :organisme-id="currentOrganismeId"
             @submit="onStep2Submit"
             @previous="goToStep('site-coordonnees')"
           />
@@ -48,8 +50,13 @@ definePageMeta({
 const route = useRoute();
 const userStore = useUserStore();
 const hebergementStore = useHebergementStore();
+const organismeStore = useOrganismeStore();
 const toaster = useToaster();
 const pageHeadingRef = ref<HTMLHeadingElement | null>(null);
+
+const currentOrganismeId = computed<number | null>(
+  () => Number(organismeStore.organismeCourant?.organismeId) || null,
+);
 
 const step1Site = ref<SiteFormValidationValues | null>(null);
 const siteInfoLieu = ref<InformationsSiteFormValues | null>(null);

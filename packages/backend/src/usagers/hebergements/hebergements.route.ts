@@ -33,4 +33,13 @@ router.post(
   HebergementController.checkSimilarites,
 );
 
+router.post(
+  "/site/type-hebergement-control",
+  checkJWT,
+  requestValidatorMiddleware(
+    HebergementUsagersRoutesSchema["CheckTypeHebergement"],
+  ),
+  HebergementController.checkTypeHebergement,
+);
+
 export default router;

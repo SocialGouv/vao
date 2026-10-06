@@ -120,12 +120,29 @@
       <DsfrButton type="submit"> Suivant </DsfrButton>
     </div>
   </form>
+  <DsfrModal
+    name="modal-verification-type-hebergement-control"
+    title="Vérification des informations saisies"
+    :opened="showVerificationModal"
+    :closeable="true"
+    size="md"
+    @close="onReturnToSaisie"
+  >
+    <InformationsTypeVerificationModal
+      :saisie-type="pendingType"
+      :declare-type="declaredType"
+      @continue="onContinue"
+      @edit="onReturnToSaisie"
+    />
+  </DsfrModal>
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import { useForm, useField } from "vee-validate";
-import { DsfrInputGroup } from "@gouvminint/vue-dsfr";
-import { hebergement } from "@vao/shared-ui";
+import { DsfrInputGroup, DsfrModal } from "@gouvminint/vue-dsfr";
+import { hebergement, useToaster } from "@vao/shared-ui";
+import InformationsTypeVerificationModal from "./InformationsTypeVerificationModal.vue";
 import {
   buildInformationsSiteFormValidationSchema,
   DESCRIPTION_MAX,
@@ -147,9 +164,13 @@ const typeHints: Record<string, string> = {
 const props = withDefaults(
   defineProps<{
     initValues?: Partial<InformationsSiteFormValues>;
+    siteId?: string | null;
+    organismeId?: number | null;
   }>(),
   {
     initValues: () => ({}),
+    siteId: null,
+    organismeId: null,
   },
 );
 
@@ -157,6 +178,9 @@ const emit = defineEmits<{
   (e: "submit", values: InformationsSiteFormValues): void;
   (e: "previous"): void;
 }>();
+
+const toaster = useToaster();
+const hebergementStore = useHebergementStore();
 
 const typeOptions = hebergement.typeOptions;
 
@@ -210,9 +234,59 @@ const {
   meta: emailMeta,
 } = useField<string>("responsable.email");
 
-const onSubmit = handleSubmit((values) => {
+const showVerificationModal = ref(false);
+const pendingType = ref<string>(props.initValues?.typeHebergement ?? "");
+const declaredType = ref<string>("");
+const pendingValues = ref<InformationsSiteFormValues | null>(null);
+
+async function declareType(value: string) {
+  if (!value || !props.siteId || !props.organismeId) {
+    return;
+  }
+
+  try {
+    const result = await hebergementStore.checkTypeHebergement({
+      siteId: props.siteId,
+      organismeId: props.organismeId,
+      hebergementTypeValue: value,
+    });
+    if (result.incoherence && result.typeDeclare) {
+      pendingType.value = value;
+      declaredType.value = result.typeDeclare;
+      showVerificationModal.value = true;
+      return true;
+    }
+  } catch {
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "Une erreur est survenue lors de la vérification du type d’hébergement.",
+      role: "alert",
+    });
+  }
+  return false;
+}
+
+const onSubmit = handleSubmit(async (values) => {
+  const typeValue = values.typeHebergement;
+  const hasIncoherence = await declareType(typeValue);
+  if (hasIncoherence) {
+    pendingValues.value = values;
+    return;
+  }
   emit("submit", values);
 });
+
+function onReturnToSaisie() {
+  showVerificationModal.value = false;
+}
+
+function onContinue() {
+  showVerificationModal.value = false;
+  if (pendingValues.value) {
+    emit("submit", pendingValues.value);
+  }
+}
 </script>
 
 <style scoped>

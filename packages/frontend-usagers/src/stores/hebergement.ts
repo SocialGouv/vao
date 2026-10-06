@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 import { $fetchBackend, logger } from "#imports";
 import uploadFile from "~/utils/UploadFile";
 import type {
+  CheckTypeHebergementBody,
+  CheckTypeHebergementResponse,
   HebergementDto,
   HebergementFunnelOrigin,
   PostSiteResponse,
@@ -108,6 +110,20 @@ export const useHebergementStore = defineStore("hebergement", {
         return similarites;
       } catch (err: unknown) {
         log.i("checkSiteSimilarites - DONE with error", err);
+        throw err;
+      }
+    },
+    async checkTypeHebergement(
+      body: CheckTypeHebergementBody,
+    ): Promise<CheckTypeHebergementResponse> {
+      log.i("checkTypeHebergement - IN", body);
+      try {
+        const result =
+          await HebergementService.checkTypeHebergement(body);
+        log.d("checkTypeHebergement - DONE", result);
+        return result;
+      } catch (err: unknown) {
+        log.i("checkTypeHebergement - DONE with error", err);
         throw err;
       }
     },

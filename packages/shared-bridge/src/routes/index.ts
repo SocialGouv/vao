@@ -65,6 +65,10 @@ export type {
   SiteSimilariteType,
 } from "./usagers/hebergement/checkSimilarites";
 export type {
+  CheckTypeHebergementBody,
+  CheckTypeHebergementResponse,
+} from "./usagers/hebergement/checkTypeHebergement";
+export type {
   PatchSiteBody,
   ResponsableDto,
 } from "./usagers/hebergement/patchSite";

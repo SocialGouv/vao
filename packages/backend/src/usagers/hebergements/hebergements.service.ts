@@ -1,5 +1,7 @@
 import type {
   CheckSiteSimilaritesBody,
+  CheckTypeHebergementBody,
+  CheckTypeHebergementResponse,
   PatchSiteBody,
   PostSiteBody,
   PostSiteResponse,
@@ -61,6 +63,31 @@ export const HebergementService = {
         ),
       } satisfies SiteSimilariteResult;
     });
+  },
+
+  async checkTypeHebergement(
+    input: CheckTypeHebergementBody,
+  ): Promise<CheckTypeHebergementResponse> {
+    log.i("checkTypeHebergement - IN", {
+      hebergementTypeValue: input.hebergementTypeValue,
+      organismeId: input.organismeId,
+      siteId: input.siteId,
+    });
+
+    const typesDeclares =
+      await HebergementServiceShared.getHebergementTypesBySite(
+        input.siteId,
+        input.organismeId,
+      );
+
+    const typeDeclare =
+      typesDeclares.find((type) => type !== input.hebergementTypeValue) ?? null;
+
+    log.i("checkTypeHebergement - DONE", { incoherence: !!typeDeclare });
+    return {
+      incoherence: typeDeclare !== null,
+      typeDeclare,
+    };
   },
 
   async postSite(

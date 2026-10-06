@@ -193,6 +193,13 @@ export const HebergementServiceShared = {
     return { id: uniteId };
   },
 
+  async getHebergementTypesBySite(
+    siteId: string,
+    organismeId: number,
+  ): Promise<string[]> {
+    return SitesRepositoryShared.getHebergementTypesBySite(siteId, organismeId);
+  },
+
   async getLegacyUniteContext(
     hebergementId: number,
     tx: PoolClient,
