@@ -5,12 +5,17 @@
       :name="props.name"
       :label="props.label"
       :value="props.value"
-      :required="props.required"
       :disabled="true"
       :readonly="true"
       :readonly-opacity="1"
       :error-message="isValid ? '' : (errorMessage ?? 'Champ invalide')"
     />
+    <span
+      v-if="props.required && !props.checked"
+      class="fr-mb-4v fr-text--sm fr-error-text"
+    >
+      À compléter
+    </span>
   </div>
 </template>
 

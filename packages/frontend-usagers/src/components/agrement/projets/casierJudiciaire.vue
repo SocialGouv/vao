@@ -75,7 +75,7 @@ const validationSchema = yup.object({
   accompRespAttestHono: yup.boolean().when("statut", {
     is: (val: AGREMENT_STATUT) => val !== AGREMENT_STATUT.BROUILLON,
     then: (schema) =>
-      schema.oneOf([true], "Vous devez cocher cette case pour continuer"),
+      schema.oneOf([true], "Cette case doit être cochée"),
     otherwise: (schema) => schema.notRequired(),
   }),
 });
