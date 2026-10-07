@@ -40,7 +40,7 @@
         />
       </div>
     </div>
-    <div class="fr-mb-4v">
+    <div class="fr-mb-4v fr-mt-6v">
       <UtilsMultiFilesUpload
         v-model="filesChangeEvol"
         hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."

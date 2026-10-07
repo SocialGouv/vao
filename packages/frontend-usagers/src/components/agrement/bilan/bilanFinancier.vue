@@ -14,12 +14,13 @@
       props.modifiable ? 'bilan-financier-dernieres-annee' : undefined
     "
   >
-    <div class="fr-mt-8v">
+    <div>
       <div class="fr-mb-4v">
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
             name="bilanFinancierComptabilite"
+            label-class="fr-text--bold"
             :label="
               displayInput.AgrementBilanAnnuelInput[
                 'bilanFinancierComptabilite'
@@ -36,6 +37,7 @@
           <UtilsDisplayInput
             v-else
             :value="bilanFinancierComptabilite"
+            label-class="fr-text--sm"
             :input="
               displayInput.AgrementBilanAnnuelInput[
                 'bilanFinancierComptabilite'
@@ -53,6 +55,7 @@
           <DsfrInputGroup
             v-if="props.modifiable"
             name="bilanFinancierComparatif"
+            label-class="fr-text--bold"
             :label="
               displayInput.AgrementBilanAnnuelInput['bilanFinancierComparatif']
                 .label
@@ -68,6 +71,7 @@
           <UtilsDisplayInput
             v-else
             :value="bilanFinancierComparatif"
+            label-class="fr-text--sm"
             :input="
               displayInput.AgrementBilanAnnuelInput['bilanFinancierComparatif']
             "
@@ -83,6 +87,7 @@
           <DsfrInputGroup
             v-if="props.modifiable"
             name="bilanFinancierRessourcesHumaines"
+            label-class="fr-text--bold"
             :label="
               displayInput.AgrementBilanAnnuelInput[
                 'bilanFinancierRessourcesHumaines'
@@ -99,6 +104,7 @@
           <UtilsDisplayInput
             v-else
             :value="bilanFinancierRessourcesHumaines"
+            label-class="fr-text--sm"
             :is-valid="bilanFinancierRessourcesHumainesMeta.valid"
             :error-message="bilanFinancierRessourcesHumainesErrorMessage"
             :input="

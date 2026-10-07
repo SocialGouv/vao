@@ -5,7 +5,6 @@
       :model-value="trancheAgeField"
       name="trancheAge"
       :legend="displayInput.AgrementBilanAnnuelInput['trancheAge'].label"
-      hint="Vous pouvez sélectionner une ou plusieurs options."
       :options="ageRangeOptions"
       :inline="true"
       :small="true"
@@ -13,13 +12,16 @@
       @update:model-value="onTrancheAgeChange"
     >
       <template #legend>
-        <span class="fr-text--bold">{{
+        <span>{{
           displayInput.AgrementBilanAnnuelInput["trancheAge"].label
         }}</span>
+        <span class="fr-hint-text"
+          >Vous pouvez sélectionner une ou plusieurs options.</span
+        >
       </template>
     </DsfrCheckboxSet>
     <div v-else>
-      <p class="fr-text--bold">
+      <p class="fr-text--bold fr-text--sm">
         {{ displayInput.AgrementBilanAnnuelInput["trancheAge"].label }}
       </p>
       <DsfrTags :tags="ageRangeTags" />

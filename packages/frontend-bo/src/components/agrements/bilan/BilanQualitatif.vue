@@ -7,7 +7,7 @@
     Bilan qualitatif sur les 4 dernières années
   </TitleWithIcon>
   <div class="border fr-mt-6v">
-    <h4 class="fr-text fr-text--lg fr-text--bold">
+    <h4 class="fr-text fr-text--sm fr-text--bold">
       Perception et ressenti des vacanciers sur les séjours réalisés.
     </h4>
     <div class="fr-mb-4v">
@@ -21,6 +21,7 @@
       <div class="fr-col-12">
         <DisplayLabel
           :value="props.initAgrement?.bilanQualPerceptionSensibilite"
+          label-class="fr-text--regular"
           :input="
             AgrementDisplayInput.AgrementBilanAnnuelInput[
               'bilanQualPerceptionSensibilite'
@@ -41,7 +42,7 @@
     </div>
   </div>
   <div class="border fr-mt-6v">
-    <h4 class="fr-text fr-text--lg fr-text--bold">
+    <h4 class="fr-text fr-text--sm fr-text--bold">
       Évolutions prévues des activités VAO et perspectives de développement à
       venir
     </h4>
@@ -56,6 +57,7 @@
       <div class="fr-col-12">
         <DisplayLabel
           :value="props.initAgrement?.bilanQualPerspectiveEvol"
+          label-class="fr-text--regular"
           :input="
             AgrementDisplayInput.AgrementBilanAnnuelInput[
               'bilanQualPerspectiveEvol'
@@ -76,7 +78,7 @@
     </div>
   </div>
   <div class="border fr-mt-6v">
-    <h4 class="fr-text fr-text--lg">
+    <h4 class="fr-text fr-text--sm">
       <strong>Eléments marquants autour des activités VAO</strong>
     </h4>
     <div class="fr-mb-4v">
@@ -90,6 +92,7 @@
       <div class="fr-col-12">
         <DisplayLabel
           :value="props.initAgrement?.bilanQualElementsMarquants"
+          label-class="fr-text--regular"
           :input="
             AgrementDisplayInput.AgrementBilanAnnuelInput[
               'bilanQualElementsMarquants'

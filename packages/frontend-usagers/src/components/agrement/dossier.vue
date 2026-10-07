@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <div class="fr-mb-4v">
+    <div class="fr-mb-4v fr-mt-6v">
       <UtilsMultiFilesUpload
         v-model="filesMotivation"
         hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
@@ -92,6 +92,7 @@
         <UtilsDisplayInput
           v-else
           label="Date d'obtention du certificat d'immatriculation"
+          label-class="fr-text--sm"
           :value="dateObtentionCertificat"
           :input="displayInput.AgrementInput['dateObtentionCertificat']"
           :error-message="dateObtentionCertificatErrorMessage"

@@ -25,17 +25,10 @@
       :tranche-age="props.bilanAnnuel?.trancheAge"
       :statut="props.agrementStatus"
     />
-    <DisplayLabel
-      :input="AgrementDisplayInput.AgrementBilanAnnuelInput['trancheAge']"
-      :value="props.bilanAnnuel?.trancheAge"
-      :required="true"
-    />
 
     <div class="fr-mb-4v">
-      <p class="fr-text--bold">
-        {{
-          AgrementDisplayInput.AgrementBilanAnnuelInput.typeHandicap.label
-        }}
+      <p class="fr-text--bold fr-text--sm">
+        {{ AgrementDisplayInput.AgrementBilanAnnuelInput.typeHandicap.label }}
       </p>
       <DsfrTags :tags="typeHandicapTags" />
     </div>
@@ -84,8 +77,8 @@ const typeHandicapTags = computed(() => {
 </script>
 
 <style scoped>
-:deep(.agrement-tag.fr-tag) {
-  background-color: #ADADF9;
+:deep(.fr-tag) {
+  background-color: #adadf9;
   color: #000091;
 }
 </style>

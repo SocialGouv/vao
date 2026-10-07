@@ -20,8 +20,8 @@
           :is="props.modifiable ? 'legend' : 'h4'"
           :class="
             props.modifiable
-              ? 'fr-fieldset__legend fr-text--lead'
-              : 'fr-my-2w fr-text--lead fr-text--bold'
+              ? 'fr-fieldset__legend fr-text--md fr-mb-0'
+              : 'fr-my-2w fr-text--sm fr-text--bold'
           "
         >
           Perception et ressenti des vacanciers sur les séjours réalisés
@@ -32,8 +32,7 @@
             class="light-decisions-text-text-mention-grey"
           >
             Objectif : recueillir la perception globale du public accueilli
-            (satisfaction, ressenti, difficultés rencontrées…). Le nombre de
-            caractères est insuffisant.
+            (satisfaction, ressenti, difficultés rencontrées…).
           </p>
           <div class="fr-col-12">
             <DsfrInputGroup
@@ -56,6 +55,7 @@
             <UtilsDisplayInput
               v-else
               :value="bilanQualPerceptionSensibilite"
+              label-class="fr-text--regular"
               :input="
                 displayInput.AgrementBilanAnnuelInput[
                   'bilanQualPerceptionSensibilite'
@@ -80,16 +80,13 @@
       </component>
     </div>
     <div class="fr-mt-6v" :class="props.modifiable ? 'border fr-p-4v' : ''">
-      <component
-        :is="props.modifiable ? 'fieldset' : 'div'"
-        class="no-border"
-      >
+      <component :is="props.modifiable ? 'fieldset' : 'div'" class="no-border">
         <component
           :is="props.modifiable ? 'legend' : 'h4'"
           :class="
             props.modifiable
-              ? 'fr-fieldset__legend fr-text--lead'
-              : 'fr-my-2w fr-text--lead fr-text--bold'
+              ? 'fr-fieldset__legend fr-text--md fr-mb-0'
+              : 'fr-my-2w fr-text--sm fr-text--bold'
           "
         >
           Évolutions prévues des activités VAO et perspectives de développement
@@ -124,6 +121,7 @@
             <UtilsDisplayInput
               v-else
               :value="bilanQualPerspectiveEvol"
+              label-class="fr-text--regular"
               :input="
                 displayInput.AgrementBilanAnnuelInput[
                   'bilanQualPerspectiveEvol'
@@ -148,16 +146,13 @@
       </component>
     </div>
     <div class="fr-mt-6v" :class="props.modifiable ? 'border fr-p-4v' : ''">
-      <component
-        :is="props.modifiable ? 'fieldset' : 'div'"
-        class="no-border"
-      >
+      <component :is="props.modifiable ? 'fieldset' : 'div'" class="no-border">
         <component
           :is="props.modifiable ? 'legend' : 'h4'"
           :class="
             props.modifiable
-              ? 'fr-fieldset__legend fr-text--lead'
-              : 'fr-my-2w fr-text--lead fr-text--bold'
+              ? 'fr-fieldset__legend fr-text--md fr-mb-0'
+              : 'fr-my-2w fr-text--sm fr-text--bold'
           "
         >
           Eléments marquants autour des activités VAO
@@ -191,6 +186,7 @@
             <UtilsDisplayInput
               v-else
               :value="bilanQualElementsMarquants"
+              label-class="fr-text--regular"
               :input="
                 displayInput.AgrementBilanAnnuelInput[
                   'bilanQualElementsMarquants'

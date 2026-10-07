@@ -38,7 +38,7 @@
       </div>
     </div>
 
-    <div class="fr-mb-4v">
+    <div class="fr-mb-4v fr-mt-6v">
       <div class="fr-col-12">
         <DsfrInputGroup
           v-if="props.modifiable"

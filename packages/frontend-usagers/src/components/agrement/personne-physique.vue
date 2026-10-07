@@ -7,15 +7,23 @@
     >
       Personne physique
     </TitleWithIcon>
-    <dl>
+    <dl class="fr-text--sm fr-pl-0 fr-mt-6v">
       <dt class="read-only-label">Prénom:</dt>
-      <dd class="read-only-value"><DisplayEmpty :value="personnePhysique.prenom" /></dd>
+      <dd class="read-only-value">
+        <DisplayEmpty :value="personnePhysique.prenom" />
+      </dd>
       <dt class="read-only-label">Nom de naissance:</dt>
-      <dd class="read-only-value"><DisplayEmpty :value="personnePhysique.nomNaissance" /></dd>
+      <dd class="read-only-value">
+        <DisplayEmpty :value="personnePhysique.nomNaissance" />
+      </dd>
       <dt class="read-only-label">Nom d'usage:</dt>
-      <dd class="read-only-value"><DisplayEmpty :value="personnePhysique.nomUsage" /></dd>
+      <dd class="read-only-value">
+        <DisplayEmpty :value="personnePhysique.nomUsage" />
+      </dd>
       <dt class="read-only-label">Profession:</dt>
-      <dd class="read-only-value"><DisplayEmpty :value="personnePhysique.profession" /></dd>
+      <dd class="read-only-value">
+        <DisplayEmpty :value="personnePhysique.profession" />
+      </dd>
 
       <template v-if="!isEditingTelephone">
         <dt class="read-only-label">Téléphone:</dt>
@@ -54,9 +62,13 @@
       </template>
 
       <dt class="read-only-label">Adresse du siège de ses activité:</dt>
-      <dd class="read-only-value"><DisplayEmpty :value="personnePhysique.adresseDomicile.label" /></dd>
+      <dd class="read-only-value">
+        <DisplayEmpty :value="personnePhysique.adresseDomicile.label" />
+      </dd>
       <dt class="read-only-label">Adresse de ses activités:</dt>
-      <dd class="read-only-value"><DisplayEmpty :value="personnePhysique.adresseSiege.label" /></dd>
+      <dd class="read-only-value">
+        <DisplayEmpty :value="personnePhysique.adresseSiege.label" />
+      </dd>
     </dl>
   </div>
   <DsfrAlert

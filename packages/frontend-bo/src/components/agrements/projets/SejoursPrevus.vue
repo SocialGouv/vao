@@ -8,8 +8,9 @@
   </TitleWithIcon>
   <p class="light-decisions-text-text-default-info fr-text--xs">
     <span class="fr-icon-info-fill" aria-hidden="true"></span>
-    Ces informations sont recueillies à titre indicatif et n'ont pas de valeur
-    contractuelles. <br />
+    Ces informations sont recueillies
+    <span class="fr-text fr-text--bold">à titre indicatif</span> et n'ont pas de
+    valeur contractuelles. <br />
     <span class="fr-ml-6v"
       >Seuls les séjours accueillant plus de 3 vacanciers et ayant une durée
       supérieure à 5 jours doivent être déclarés dans ce formulaire.</span

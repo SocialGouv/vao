@@ -22,13 +22,21 @@
           select-all
           :button-label="buttonLabel"
           label="Vous pouvez sélectionner une ou plusieurs options."
+          label-class="fr-hint-text fr-mb-2v"
         />
-        <UtilsDisplayInput
-          v-else
-          :input="displayInput.AgrementProjetsInput.activitesSelectionnees"
-          :value="activitesSelectionnees"
-          :error-message="activitesSelectionneesErrorMessage"
-        />
+        <div v-else>
+          <div
+            v-for="activite in activitesSelectionnees"
+            :key="activite"
+            class="fr-mb-1v"
+          >
+            <DisplayCheckbox
+              :label="activite"
+              name="activitesSelectionnees"
+              :checked="true"
+            />
+          </div>
+        </div>
         <p
           v-if="activitesSelectionneesErrorMessage"
           class="fr-error-text fr-mt-1v"
@@ -65,6 +73,7 @@ import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import type { ActiviteDto, AgrementAnimationDto } from "@vao/shared-bridge";
 import * as yup from "yup";
+import { DisplayCheckbox } from "@vao/shared-ui";
 
 const agrementStore = useAgrementStore();
 const log = logger("components/agrement/projets/animationsActivites");

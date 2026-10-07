@@ -1,5 +1,5 @@
 <template>
-  <div class="fr-fieldset__element">
+  <div class="fr-mb-4v">
     <div v-if="rows.length > 0">
       <DsfrTable
         title="Fichier(s) téléversé(s)"

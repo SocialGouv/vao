@@ -30,6 +30,7 @@ import MessageEtat from "./messages/MessageEtat.vue";
 import DisplayInput from "./DisplayInput.vue";
 import DisplayLabel from "./DisplayLabel.vue";
 import DisplayEmpty from "./DisplayEmpty.vue";
+import DisplayCheckbox from "./DisplayCheckbox.vue";
 import UserStatusBadge from "./users/UserStatusBadge.vue";
 import RefusCompteModal from "./users/RefusCompteModal.vue";
 import Header from "./Header.vue";
@@ -93,4 +94,5 @@ export {
   DisplayEmpty,
   MultiFilesUpload,
   VerificationOtp,
+  DisplayCheckbox,
 };

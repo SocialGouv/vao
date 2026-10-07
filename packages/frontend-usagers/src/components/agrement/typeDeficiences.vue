@@ -5,19 +5,21 @@
         v-model="typeDeficiencesField"
         name="typeDeficiences"
         :legend="displayInput.AgrementBilanAnnuelInput['typeHandicap'].label"
-        hint="Vous pouvez sélectionner une ou plusieurs options."
         :options="handicapOptions"
         :inline="true"
         :small="true"
         :error-message="typeDeficiencesErrorMessage"
       >
         <template #legend>
-          <span class="fr-text--bold">Type de handicaps</span>
+          <span>Type de handicaps</span>
+          <span class="fr-hint-text"
+            >Vous pouvez sélectionner une ou plusieurs options.</span
+          >
         </template>
       </DsfrCheckboxSet>
     </div>
     <div v-else>
-      <p class="fr-text--bold">
+      <p class="fr-text--bold fr-text--sm">
         {{ displayInput.AgrementBilanAnnuelInput["typeHandicap"].label }}
       </p>
       <DsfrTags :tags="typedTags" />

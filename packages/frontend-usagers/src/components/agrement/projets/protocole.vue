@@ -12,8 +12,8 @@
         :is="props.modifiable ? 'legend' : 'h4'"
         :class="
           props.modifiable
-            ? 'fr-fieldset__legend fr-text--lg'
-            : 'fr-my-2w fr-text--lg fr-text--bold'
+            ? 'fr-fieldset__legend fr-text--md'
+            : 'fr-my-2w fr-text--md fr-text--bold'
         "
       >
         Réorientation, évacuation
@@ -83,8 +83,8 @@
       :is="props.modifiable ? 'legend' : 'h4'"
       :class="
         props.modifiable
-          ? 'fr-fieldset__legend fr-text--lg'
-          : 'fr-my-2w fr-text--lg fr-text--bold'
+          ? 'fr-fieldset__legend fr-text--md'
+          : 'fr-my-2w fr-text--md fr-text--bold'
       "
     >
       Rapatriement

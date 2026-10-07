@@ -1,9 +1,9 @@
 <template>
   <div>
     <p class="fr-text--bold fr-text--sm">
-      {{ AgrementDisplayInput.AgrementBilanAnnuelInput.typeHandicap.label }}
+      {{ AgrementDisplayInput.AgrementBilanAnnuelInput.trancheAge.label }}
     </p>
-    <DsfrTags :tags="typeDeficiencesTags" />
+    <DsfrTags :tags="trancheAgeTags" />
   </div>
 </template>
 
@@ -12,14 +12,14 @@ import { computed } from "vue";
 import { AgrementDisplayInput } from "@vao/shared-ui";
 
 const props = defineProps({
-  typeDeficiences: { type: Array, default: () => [] },
+  trancheAge: { type: Array, default: () => [] },
 });
 
 const options =
-  AgrementDisplayInput.AgrementBilanAnnuelInput.typeHandicap.options ?? {};
+  AgrementDisplayInput.AgrementBilanAnnuelInput.trancheAge.options ?? {};
 
-const typeDeficiencesTags = computed(() =>
-  props.typeDeficiences.map((value) => ({
+const trancheAgeTags = computed(() =>
+  props.trancheAge.map((value) => ({
     label: options[value as keyof typeof options] ?? value,
     class: "agrement-tag",
   })),

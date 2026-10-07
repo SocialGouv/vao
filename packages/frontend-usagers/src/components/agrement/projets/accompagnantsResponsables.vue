@@ -28,20 +28,19 @@
   </div>
   <p class="light-decisions-text-text-default-info fr-text--xs fr-mt-8v">
     <span class="fr-icon-info-fill" aria-hidden="true"></span>
-    Pour chaque section, renseignez au choix une description texte et/ou un
-    fichier joint. L’un des deux est requis.
+    Pour chaque section, renseignez
+    <span class="fr-text--bold"
+      >au choix une description texte et/ou un fichier joint</span
+    >. L’un des deux est requis.
   </p>
-  <div :class="props.modifiable ? 'border fr-pt-4v' : 'fr-p-4v'">
-    <component
-      :is="props.modifiable ? 'fieldset' : 'div'"
-      class="no-border"
-    >
+  <div :class="props.modifiable ? 'border fr-pt-4v' : 'fr-pt-4v'">
+    <component :is="props.modifiable ? 'fieldset' : 'div'" class="no-border">
       <component
         :is="props.modifiable ? 'legend' : 'h4'"
         :class="
           props.modifiable
-            ? 'fr-fieldset__legend fr-text--lead'
-            : 'fr-my-2w fr-text--lead fr-text--bold'
+            ? 'fr-fieldset__legend fr-text--md'
+            : 'fr-my-2w fr-text--sm fr-text--bold'
         "
       >
         Compétences et expériences des accompagnants prévus par lieu de
@@ -89,17 +88,17 @@
       </div>
     </component>
   </div>
-  <div class="fr-mt-6v" :class="props.modifiable ? 'border fr-pt-4v' : 'fr-p-4v'">
-    <component
-      :is="props.modifiable ? 'fieldset' : 'div'"
-      class="no-border"
-    >
+  <div
+    class="fr-mt-6v"
+    :class="props.modifiable ? 'border fr-pt-4v' : 'fr-pt-4v'"
+  >
+    <component :is="props.modifiable ? 'fieldset' : 'div'" class="no-border">
       <component
         :is="props.modifiable ? 'legend' : 'h4'"
         :class="
           props.modifiable
-            ? 'fr-fieldset__legend fr-text--lead'
-            : 'fr-my-2w fr-text--lead fr-text--bold'
+            ? 'fr-fieldset__legend fr-text--md'
+            : 'fr-my-2w fr-text--sm fr-text--bold'
         "
       >
         Mesures envisagées au cas où des accompagnants supplémentaires devraient

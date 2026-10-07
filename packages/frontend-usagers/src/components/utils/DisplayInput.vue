@@ -1,7 +1,11 @@
 <template>
   <div class="container" :class="{ 'container--error': !isValid }">
     <dl>
-      <dt v-if="props.labelVisible" class="read-only-label">
+      <dt
+        v-if="props.labelVisible"
+        class="read-only-label"
+        :class="props.labelClass"
+      >
         {{ input.label }}:
       </dt>
       <dd class="read-only-value" :class="{ 'is-empty': !displayValue }">
@@ -27,6 +31,10 @@ const props = defineProps({
   labelVisible: {
     type: Boolean,
     default: true,
+  },
+  labelClass: {
+    type: String,
+    default: "",
   },
   isValid: {
     type: Boolean,
@@ -119,6 +127,7 @@ dl {
 }
 
 dt {
+  font-size: 14px;
   display: block;
 }
 

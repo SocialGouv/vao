@@ -6,7 +6,7 @@
   <div
     v-for="(representant, idx) in representantsList"
     :key="representant.prenom + representant.nom + idx"
-    class="fr-mb-4w fr-mt-4w"
+    class="fr-mb-4w"
   >
     <div class="fr-mb-2w">
       <div class="container-flex-between">
@@ -19,6 +19,7 @@
               v-if="!representant.isEditing"
               as="button"
               icon-name="icon-edit-line"
+              custom-class="fr-text--sm"
               @click="editRepresentant(idx)"
             >
               Modifier le représentant {{ idx + 1 }}
@@ -125,11 +126,17 @@
     <template v-else>
       <dl class="fr-text--sm fr-pl-0">
         <dt class="read-only-label">Prénom:</dt>
-        <dd class="read-only-value"><DisplayEmpty :value="representant.prenom" /></dd>
+        <dd class="read-only-value">
+          <DisplayEmpty :value="representant.prenom" />
+        </dd>
         <dt class="read-only-label">Nom:</dt>
-        <dd class="read-only-value"><DisplayEmpty :value="representant.nom" /></dd>
+        <dd class="read-only-value">
+          <DisplayEmpty :value="representant.nom" />
+        </dd>
         <dt class="read-only-label">Fonction:</dt>
-        <dd class="read-only-value"><DisplayEmpty :value="representant.fonction" /></dd>
+        <dd class="read-only-value">
+          <DisplayEmpty :value="representant.fonction" />
+        </dd>
       </dl>
       <!-- Affichage des erreurs de validation si présentes -->
       <ul
@@ -153,6 +160,7 @@
       as="button"
       class-names="fr-ml-0"
       icon-name="icon-add-line"
+      custom-class="fr-text--sm"
       @click="addNewRepresentant()"
     >
       Ajouter un représentant légal

@@ -13,8 +13,8 @@
       :required="true"
     />
   </div>
-  <div class="border fr-p-4v">
-    <h4 class="fr-my-2w fr-text--lg fr-text--bold">
+  <div class="border fr-pt-4v fr-mt-6v">
+    <h4 class="fr-my-2w fr-text--sm fr-text--bold">
       Compétences et expériences des accompagnants prévus par lieu de vacances,
       notamment pour ce qui concerne l’encadrement de certaines activités
       sportives. Ou expériences du responsable du déroulement du séjour sur le
@@ -41,8 +41,8 @@
       />
     </div>
   </div>
-  <div class="border fr-p-4v fr-mt-6v">
-    <h4 class="fr-my-2w fr-text--lg fr-text--bold">
+  <div class="border fr-pt-4v fr-mt-6v">
+    <h4 class="fr-my-2w fr-text--sm fr-text--bold">
       Mesures envisagées au cas où des accompagnants supplémentaires devraient
       être recrutés en urgence
     </h4>
