@@ -15,7 +15,17 @@ include:
   - project: socialgouv/commun/studio-tech-commun/sdpsn-devops-ci-utils
     ref: main
     file: ci-common/image-build.yml
-  - component: $CI_SERVER_FQDN/socialgouv/produits-dnum/studio-tech/devops/components/gitops-cd-component/trigger_app@0.2.0
+  - component: $CI_SERVER_FQDN/socialgouv/produits-dnum/studio-tech/devops/components/gitops-cd-component/trigger_app@0.3.1
+    inputs:
+      job_name: deploy-integration
+      stage: deploy
+      gitops_project: socialgouv/produits-dnum/citoyens/vao/vao-gitops
+      deploy_action: integration
+      image_tag: "sha-$CI_COMMIT_SHA"
+      rules:
+        - if: $CI_COMMIT_BRANCH == "feat/ci-atlas-v2"
+        - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  - component: $CI_SERVER_FQDN/socialgouv/produits-dnum/studio-tech/devops/components/gitops-cd-component/trigger_app@0.3.1
     inputs:
       job_name: deploy-preprod
       stage: deploy
@@ -108,6 +118,11 @@ build-frontends:
       NUXT_PUBLIC_APP_VERSION=sha-$CI_COMMIT_SHORT_SHA
       NUXT_PUBLIC_API_MAP_TILER=g9IvoA8h0Ow8I9szhdzW
   rules: *build-rules
+
+deploy-integration:
+  needs: ["build", "build-frontends"]
+  environment:
+    name: integration
 
 deploy-preprod:
   needs: ["build", "build-frontends"]
