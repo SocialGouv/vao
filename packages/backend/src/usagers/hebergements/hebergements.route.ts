@@ -30,6 +30,7 @@ router.post(
   requestValidatorMiddleware(
     HebergementUsagersRoutesSchema["CheckSimilarites"],
   ),
+  checkPermissionOrganisme,
   HebergementController.checkSimilarites,
 );
 
@@ -39,6 +40,7 @@ router.post(
   requestValidatorMiddleware(
     HebergementUsagersRoutesSchema["CheckTypeHebergement"],
   ),
+  checkPermissionOrganisme,
   HebergementController.checkTypeHebergement,
 );
 

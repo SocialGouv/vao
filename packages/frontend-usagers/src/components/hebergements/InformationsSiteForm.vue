@@ -239,43 +239,60 @@ const pendingType = ref<string>(props.initValues?.typeHebergement ?? "");
 const declaredType = ref<string>("");
 const pendingValues = ref<InformationsSiteFormValues | null>(null);
 
-async function declareType(value: string) {
-  if (!value || !props.siteId || !props.organismeId) {
-    return;
-  }
-
+async function onSubmit() {
   try {
-    const result = await hebergementStore.checkTypeHebergement({
-      siteId: props.siteId,
-      organismeId: props.organismeId,
-      hebergementTypeValue: value,
-    });
-    if (result.incoherence && result.typeDeclare) {
-      pendingType.value = value;
-      declaredType.value = result.typeDeclare;
-      showVerificationModal.value = true;
-      return true;
-    }
+    await handleSubmit(async (values) => {
+      const typeValue = values.typeHebergement;
+      if (!props.siteId || !props.organismeId) {
+        toaster.error({
+          titleTag: "h2",
+          description:
+            "Impossible de vérifier le type d’hébergement : des informations sont manquantes.",
+          role: "alert",
+        });
+        return;
+      }
+      if (!typeValue) {
+        emit("submit", values);
+        return;
+      }
+
+      pendingValues.value = values;
+
+      try {
+        const result = await hebergementStore.checkTypeHebergement({
+          siteId: props.siteId,
+          organismeId: props.organismeId,
+          hebergementTypeValue: typeValue,
+        });
+        if (result.incoherence && result.typeDeclare) {
+          pendingType.value = typeValue;
+          declaredType.value = result.typeDeclare;
+          showVerificationModal.value = true;
+          return;
+        }
+      } catch {
+        toaster.error({
+          titleTag: "h2",
+          description:
+            "Une erreur est survenue lors de la vérification du type d’hébergement.",
+          role: "alert",
+        });
+        return;
+      }
+
+      pendingValues.value = null;
+      emit("submit", values);
+    })();
   } catch {
     toaster.error({
       titleTag: "h2",
       description:
-        "Une erreur est survenue lors de la vérification du type d’hébergement.",
+        "Une erreur est survenue lors de l'enregistrement des informations du site.",
       role: "alert",
     });
   }
-  return false;
 }
-
-const onSubmit = handleSubmit(async (values) => {
-  const typeValue = values.typeHebergement;
-  const hasIncoherence = await declareType(typeValue);
-  if (hasIncoherence) {
-    pendingValues.value = values;
-    return;
-  }
-  emit("submit", values);
-});
 
 function onReturnToSaisie() {
   showVerificationModal.value = false;

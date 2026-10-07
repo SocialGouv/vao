@@ -120,38 +120,6 @@ export const HebergementServiceShared = {
     });
   },
 
-  async createSiteOrganisme(
-    tx: PoolClient,
-    input: {
-      deplacementProximiteDescription: string | null;
-      descriptif?: string | null;
-      excursionDescription: string | null;
-      hebergementTypeId?: number | null;
-      hebergementTypeValue?: string | null;
-      nomSite: string | null;
-      organismeId: number;
-      respEmail: string | null;
-      respNomPrenom: string | null;
-      respTelephone: string | null;
-      siteId: string;
-      vehiculesAdaptes: boolean | null;
-    },
-  ): Promise<void> {
-    const { hebergementTypeId, hebergementTypeValue, descriptif, ...rest } =
-      input;
-    const resolvedTypeId = hebergementTypeValue
-      ? await HebergementsRepositoryShared.getHebergementTypeId(
-          tx,
-          hebergementTypeValue,
-        )
-      : (hebergementTypeId ?? null);
-    return SitesRepositoryShared.createSiteOrganisme(tx, {
-      ...rest,
-      descriptif: descriptif ?? null,
-      hebergementTypeId: resolvedTypeId,
-    });
-  },
-
   async createUniteHebergement(
     { ...input }: CreateUniteHebergementInput,
     tx: PoolClient,
@@ -250,14 +218,6 @@ export const HebergementServiceShared = {
     }
 
     return site as PostSiteResponse;
-  },
-
-  async getSiteWithOrganisme(
-    tx: PoolClient,
-    siteId: string,
-    organismeId: number,
-  ): Promise<PostSiteResponse | null> {
-    return SitesRepositoryShared.getSiteWithOrganisme(tx, siteId, organismeId);
   },
 
   async getSitesByOrganismeId(organismeId: number): Promise<SiteDto[]> {

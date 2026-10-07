@@ -30,13 +30,21 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { DsfrButton } from "@gouvminint/vue-dsfr";
-import { getHebergementTypeLabel } from "~/utils/hebergementType";
+import { hebergement } from "@vao/shared-ui";
 
 defineProps<{
   saisieType: string;
   declareType: string;
 }>();
+
+const typeLabelByValue = computed(() =>
+  new Map(hebergement.typeOptions.map((option) => [option.value, option.label])),
+);
+
+const getHebergementTypeLabel = (value: string | null | undefined) =>
+  value ? (typeLabelByValue.value.get(value) ?? value) : "";
 
 const emit = defineEmits<{
   (e: "continue" | "edit"): void;

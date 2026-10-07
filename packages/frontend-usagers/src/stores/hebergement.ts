@@ -103,9 +103,19 @@ export const useHebergementStore = defineStore("hebergement", {
       }
     },
     async checkSiteSimilarites(site: SiteDto): Promise<SiteSimilariteResult[]> {
+      const organismeCourant = useOrganismeStore().organismeCourant;
+      const organismeId = Number(organismeCourant?.organismeId);
+      if (!Number.isFinite(organismeId) || organismeId <= 0) {
+        throw new FunctionalException(
+          FUNCTIONAL_ERRORS.ORGANISME_COURANT_NOT_FOUND,
+        );
+      }
       try {
         log.i("checkSiteSimilarites - IN", { site });
-        const similarites = await HebergementService.checkSiteSimilarites(site);
+        const similarites = await HebergementService.checkSiteSimilarites({
+          ...site,
+          organismeId,
+        });
         log.d("checkSiteSimilarites - DONE", similarites);
         return similarites;
       } catch (err: unknown) {
