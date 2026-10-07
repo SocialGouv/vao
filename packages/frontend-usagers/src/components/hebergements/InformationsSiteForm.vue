@@ -68,11 +68,11 @@
     </div>
 
     <fieldset class="fr-fieldset fr-mb-6w">
+      <legend class="fr-sr-only">
+        Coordonnées du responsable de l’hébergement
+      </legend>
       <h3 class="fr-h3 fr-mt-0">Coordonnées du responsable de l’hébergement</h3>
       <div class="fr-fieldset__element fr-col-12">
-        <legend class="fr-sr-only">
-          Coordonnées du responsable de l’hébergement
-        </legend>
         <DsfrInputGroup
           name="nomPrenom"
           label="Nom et prénom"
@@ -175,7 +175,7 @@ const initialValues: InformationsSiteFormValues = {
 
 const validationSchema = buildInformationsSiteFormValidationSchema();
 
-const { meta, handleSubmit } = useForm<InformationsSiteFormValues>({
+const { handleSubmit } = useForm<InformationsSiteFormValues>({
   validationSchema,
   initialValues,
 });

@@ -29,12 +29,11 @@ const HebergementService = {
     return similarites;
   },
   postSite: async (site: PostSiteBody): Promise<PostSiteResponse> => {
-    const result = await buildRequest<HebergementUsagersRoutes["PostSite"]>({
+    return await buildRequest<HebergementUsagersRoutes["PostSite"]>({
       path: "/hebergement/site",
       method: "POST",
       body: site,
     })();
-    return result;
   },
   patchSite: async (siteId: string, body: PatchSiteBody): Promise<void> => {
     await buildRequest<HebergementUsagersRoutes["PatchSite"]>({
