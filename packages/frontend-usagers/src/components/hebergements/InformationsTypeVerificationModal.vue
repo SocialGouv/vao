@@ -6,7 +6,7 @@
     </p>
     <p class="fr-mb-2w">
       Votre saisie :
-      <strong>{{ getHebergementTypeLabel(saisieType) || "—" }}</strong>
+      <strong>{{ getHebergementTypeLabel(saisieType) }}</strong>
     </p>
     <p>
       Saisie similaire :
@@ -39,8 +39,11 @@ defineProps<{
   declareType: string;
 }>();
 
-const typeLabelByValue = computed(() =>
-  new Map(hebergement.typeOptions.map((option) => [option.value, option.label])),
+const typeLabelByValue = computed(
+  () =>
+    new Map(
+      hebergement.typeOptions.map((option) => [option.value, option.label]),
+    ),
 );
 
 const getHebergementTypeLabel = (value: string | null | undefined) =>

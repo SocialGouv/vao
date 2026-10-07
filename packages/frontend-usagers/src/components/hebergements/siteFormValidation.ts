@@ -31,7 +31,7 @@ export const buildInformationsSiteFormValidationSchema = () =>
       .string()
       .max(
         DESCRIPTION_MAX,
-        `La description ne doit pas dépasser ${DESCRIPTION_MAX} caractères.`,
+        `La description ne doit pas dépasser ${DESCRIPTION_MAX} caractères. Veuillez retirer les caractères excédentaires.`,
       )
       .required("La description est obligatoire."),
     responsable: yup.object({
@@ -41,7 +41,10 @@ export const buildInformationsSiteFormValidationSchema = () =>
       telephone: yup
         .string()
         .required(`Le champ "Téléphone" est vide. Veuillez le remplir.`)
-        .matches(numTelephoneRegex, "Format de numéro de téléphone invalide."),
+        .matches(
+          numTelephoneRegex,
+          `Le champ "Téléphone" est invalide. Format attendu : 06 22 33 44 55`,
+        ),
       email: yup
         .string()
         .required(
