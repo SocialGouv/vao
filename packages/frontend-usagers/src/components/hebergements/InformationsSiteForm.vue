@@ -67,9 +67,12 @@
       </div>
     </div>
 
-    <div class="fr-fieldset fr-mb-6w">
+    <fieldset class="fr-fieldset fr-mb-6w">
       <h3 class="fr-h3 fr-mt-0">Coordonnées du responsable de l’hébergement</h3>
       <div class="fr-fieldset__element fr-col-12">
+        <legend class="fr-sr-only">
+          Coordonnées du responsable de l’hébergement
+        </legend>
         <DsfrInputGroup
           name="nomPrenom"
           label="Nom et prénom"
@@ -108,19 +111,18 @@
           @update:model-value="onEmailChange"
         />
       </div>
-    </div>
+    </fieldset>
 
     <div class="site-form-actions fr-mt-2w">
       <DsfrButton secondary type="button" @click="emit('previous')">
         Précédent
       </DsfrButton>
-      <DsfrButton type="submit" :disabled="!meta.valid"> Suivant </DsfrButton>
+      <DsfrButton type="submit"> Suivant </DsfrButton>
     </div>
   </form>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import { useForm, useField } from "vee-validate";
 import { DsfrInputGroup } from "@gouvminint/vue-dsfr";
 import { hebergement } from "@vao/shared-ui";
