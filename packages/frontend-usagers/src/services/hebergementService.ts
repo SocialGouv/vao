@@ -1,5 +1,8 @@
 import type {
   HebergementUsagersRoutes,
+  PatchSiteBody,
+  PostSiteBody,
+  PostSiteResponse,
   SiteDto,
 } from "@vao/shared-bridge";
 import { buildRequest } from "~/utils/fetchBackend";
@@ -24,6 +27,21 @@ const HebergementService = {
       body: site,
     })();
     return similarites;
+  },
+  postSite: async (site: PostSiteBody): Promise<PostSiteResponse> => {
+    return await buildRequest<HebergementUsagersRoutes["PostSite"]>({
+      path: "/hebergement/site",
+      method: "POST",
+      body: site,
+    })();
+  },
+  patchSite: async (siteId: string, body: PatchSiteBody): Promise<void> => {
+    await buildRequest<HebergementUsagersRoutes["PatchSite"]>({
+      path: "/hebergement/site/{siteId}",
+      method: "PATCH",
+      params: { siteId },
+      body,
+    })();
   },
 };
 

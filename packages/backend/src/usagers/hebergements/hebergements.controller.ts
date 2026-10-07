@@ -28,4 +28,39 @@ export const HebergementController = {
       next(error);
     }
   },
+  async patchSite(
+    req: RouteRequest<HebergementUsagersRoutes["PatchSite"]>,
+    res: RouteResponse<HebergementUsagersRoutes["PatchSite"]>,
+    next: NextFunction,
+  ) {
+    log.i("patchSite - IN");
+    const { siteId } = req.validatedParams!;
+    const site = req.validatedBody!;
+
+    try {
+      await HebergementService.updateSiteInformation(siteId, site);
+      res.status(200).json({});
+    } catch (error) {
+      log.w("patchSite - DONE with error");
+      next(error);
+    }
+  },
+  async postSite(
+    req: RouteRequest<HebergementUsagersRoutes["PostSite"]>,
+    res: RouteResponse<HebergementUsagersRoutes["PostSite"]>,
+    next: NextFunction,
+  ) {
+    log.i("postSite - IN");
+    const { id: usagerUserId } = req.decoded!;
+    const site = req.validatedBody!;
+
+    try {
+      const createdSite = await HebergementService.postSite(site, usagerUserId);
+      log.d("createdSite", createdSite);
+      res.status(201).json(createdSite);
+    } catch (error) {
+      log.w("postSite - DONE with error");
+      next(error);
+    }
+  },
 };

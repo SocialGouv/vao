@@ -9,6 +9,7 @@ import {
   HebergementWithSiteEntity,
   SiteEntity,
   SiteOrganismeEntity,
+  SiteWithOrganismeEntity,
   UniteHebergementEntity,
 } from "./hebergements.entity";
 
@@ -28,11 +29,11 @@ export const SiteMapper = {
       createdBy: entity.created_by ?? null,
       current: entity.current ?? true,
       deplacementProximiteDescription: null,
-      descriptif: entity.descriptif ?? null,
+      descriptif: null,
       editedAt: entity.edited_at ?? null,
       editedBy: entity.edited_by ?? null,
       excursionDescription: null,
-      hebergementTypeId: entity.hebergement_type_id ?? null,
+      hebergementTypeId: null,
       id: required(entity.id, "site.id"),
       nomSite: null,
       nomSiteOfficiel: entity.nom_site_officiel ?? null,
@@ -54,7 +55,9 @@ export const SiteOrganismeMapper = {
     return {
       deplacementProximiteDescription:
         entity.deplacement_proximite_description ?? null,
+      descriptif: entity.descriptif ?? null,
       excursionDescription: entity.excursion_description ?? null,
+      hebergementTypeId: entity.hebergement_type_id ?? null,
       nomSite: entity.nom_site ?? null,
       organismeId: required(entity.organisme_id, "site_organisme.organisme_id"),
       respEmail: entity.resp_email ?? null,
@@ -66,6 +69,35 @@ export const SiteOrganismeMapper = {
   },
   toModels: (entities: SiteOrganismeEntity[]): SiteOrganismeDto[] => {
     return entities.map((entity) => SiteOrganismeMapper.toModel(entity));
+  },
+};
+
+export const SiteWithOrganismeMapper = {
+  toModel: (entity: SiteWithOrganismeEntity) => {
+    return {
+      adresse: null,
+      adresseId: entity.adresse_id ?? null,
+      createdAt: required(entity.created_at, "site.created_at"),
+      createdBy: entity.created_by ?? null,
+      current: entity.current ?? true,
+      deplacementProximiteDescription:
+        entity.deplacement_proximite_description ?? null,
+      descriptif: entity.descriptif ?? null,
+      editedAt: entity.edited_at ?? null,
+      editedBy: entity.edited_by ?? null,
+      excursionDescription: entity.excursion_description ?? null,
+      hebergementTypeId: entity.hebergement_type_id ?? null,
+      hebergementTypeValue: entity.hebergement_type_value ?? null,
+      id: required(entity.id, "site.id"),
+      nomSite: entity.nom_site ?? null,
+      nomSiteOfficiel: entity.nom_site_officiel ?? null,
+      organismeId: entity.organisme_id ?? null,
+      respEmail: entity.resp_email ?? null,
+      respNomPrenom: entity.resp_nom_prenom ?? null,
+      respTelephone: entity.resp_telephone ?? null,
+      siteId: required(entity.site_id, "site.site_id"),
+      vehiculesAdaptes: entity.vehicules_adaptes ?? null,
+    };
   },
 };
 

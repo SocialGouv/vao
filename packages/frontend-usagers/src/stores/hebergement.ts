@@ -4,10 +4,17 @@ import uploadFile from "~/utils/UploadFile";
 import type {
   HebergementDto,
   HebergementFunnelOrigin,
+  PostSiteResponse,
   SiteDto,
   SiteSimilariteResult,
 } from "@vao/shared-bridge";
+import { FUNCTIONAL_ERRORS, FunctionalException } from "@vao/shared-bridge";
 import { HebergementService } from "~/services/hebergementService";
+import type {
+  InformationsSiteFormValues,
+  SiteFormValidationValues,
+} from "~/components/hebergements/siteFormValidation";
+import { useOrganismeStore } from "~/stores/organisme";
 
 const log = logger("stores/hebergement");
 
@@ -101,6 +108,71 @@ export const useHebergementStore = defineStore("hebergement", {
         return similarites;
       } catch (err: unknown) {
         log.i("checkSiteSimilarites - DONE with error", err);
+        throw err;
+      }
+    },
+    async postSite(site: SiteFormValidationValues): Promise<PostSiteResponse> {
+      log.i("postSite - IN", { site });
+      const organismeCourant = useOrganismeStore().organismeCourant;
+      if (!site.nomSiteOfficiel) {
+        throw new FunctionalException(
+          FUNCTIONAL_ERRORS.SITE_NOM_OFFICIEL_OBLIGATOIRE,
+        );
+      }
+      if (!site.adresse) {
+        throw new FunctionalException(
+          FUNCTIONAL_ERRORS.SITE_ADRESSE_OBLIGATOIRE,
+        );
+      }
+
+      const organismeId = Number(organismeCourant?.organismeId);
+      if (!Number.isFinite(organismeId) || organismeId <= 0) {
+        throw new FunctionalException(
+          FUNCTIONAL_ERRORS.ORGANISME_COURANT_NOT_FOUND,
+        );
+      }
+      try {
+        const createdSite = await HebergementService.postSite({
+          adresse: site.adresse,
+          deplacementProximiteDescription: null,
+          descriptif: null,
+          excursionDescription: null,
+          hebergementTypeId: null,
+          nomSite: site.nomSiteOrganisme || site.nomSiteOfficiel,
+          nomSiteOfficiel: site.nomSiteOfficiel,
+          organismeId,
+          respEmail: null,
+          respNomPrenom: null,
+          respTelephone: null,
+          vehiculesAdaptes: null,
+        });
+        log.d("postSite - DONE", { siteId: createdSite.siteId });
+        return createdSite;
+      } catch (err: unknown) {
+        log.i("postSite - DONE with error", err);
+        throw err;
+      }
+    },
+    async patchSite(
+      siteId: string,
+      values: InformationsSiteFormValues,
+    ): Promise<void> {
+      log.i("patchSite - IN", { siteId, values });
+      const organismeCourant = useOrganismeStore().organismeCourant;
+      try {
+        await HebergementService.patchSite(siteId, {
+          description: values.description,
+          hebergementTypeValue: values.typeHebergement,
+          organismeId: Number(organismeCourant?.organismeId),
+          responsable: {
+            email: values.responsable.email,
+            nomPrenom: values.responsable.nomPrenom,
+            telephone: values.responsable.telephone,
+          },
+        });
+        log.d("patchSite - DONE");
+      } catch (err: unknown) {
+        log.i("patchSite - DONE with error", err);
         throw err;
       }
     },

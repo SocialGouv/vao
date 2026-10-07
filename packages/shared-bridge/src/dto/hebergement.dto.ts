@@ -47,8 +47,6 @@ export interface SiteDto extends SiteOrganismeDto {
   adresse: AdresseDto | null;
   organismeId: number;
   nomSiteOfficiel: string | null;
-  hebergementTypeId: number | null;
-  descriptif: string | null;
   createdAt: Date;
   editedAt: Date | null;
   createdBy: number | null;
@@ -62,6 +60,8 @@ export interface SiteOrganismeDto {
   respNomPrenom: string | null;
   respTelephone: string | null;
   respEmail: string | null;
+  hebergementTypeId: number | null;
+  descriptif: string | null;
   excursionDescription: string | null;
   deplacementProximiteDescription: string | null;
   vehiculesAdaptes: boolean | null;

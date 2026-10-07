@@ -8,6 +8,51 @@ export interface SiteFormValidationValues {
   statut?: string | null;
 }
 
+export const DESCRIPTION_MAX = 500;
+
+export interface InformationsSiteFormValues {
+  typeHebergement: string;
+  description: string;
+  responsable: {
+    nomPrenom: string;
+    telephone: string;
+    email: string;
+  };
+}
+
+const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
+
+export const buildInformationsSiteFormValidationSchema = () =>
+  yup.object({
+    typeHebergement: yup
+      .string()
+      .required("Le type d’hébergement est obligatoire."),
+    description: yup
+      .string()
+      .max(
+        DESCRIPTION_MAX,
+        `La description ne doit pas dépasser ${DESCRIPTION_MAX} caractères.`,
+      )
+      .required("La description est obligatoire."),
+    responsable: yup.object({
+      nomPrenom: yup
+        .string()
+        .required("Le nom et prénom du responsable est obligatoire."),
+      telephone: yup
+        .string()
+        .required(`Le champ "Téléphone" est vide. Veuillez le remplir.`)
+        .matches(numTelephoneRegex, "Format de numéro de téléphone invalide."),
+      email: yup
+        .string()
+        .required(
+          `Le champ "Adresse e-mail" est vide. Veuillez le remplir. Exemple : nom@domaine.fr`,
+        )
+        .email(
+          `Le champ "Adresse e-mail" est invalide. Vérifiez le format attendu. Exemple : nom@domaine.fr`,
+        ),
+    }),
+  });
+
 const requiredUnlessBrouillon = (
   field: yup.AnySchema,
   requiredMessage: string,

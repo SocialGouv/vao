@@ -433,24 +433,26 @@ const syncSiteAndUniteOnCreate = async (
       adresse: hebergement.coordonnees?.adresse ?? null,
       adresseId: null,
       createdBy: userId,
-      deplacementProximiteDescription:
-        hebergement.informationsTransport?.deplacementProximite ?? null,
-      descriptif:
-        hebergement.informationsLocaux?.descriptionLieuHebergement ?? null,
-      excursionDescription:
-        hebergement.informationsTransport?.excursion ?? null,
-      hebergementTypeId: null,
-      hebergementTypeValue: hebergement.informationsLocaux?.type ?? null,
       nomSiteOfficiel: hebergement.nom,
-      organismeId,
-      respEmail: hebergement.coordonnees?.email ?? null,
-      respNomPrenom: hebergement.coordonnees?.nomGestionnaire ?? null,
-      respTelephone: hebergement.coordonnees?.numTelephone1 ?? null,
-      vehiculesAdaptes:
-        hebergement.informationsTransport?.vehiculesAdaptes ?? null,
     },
     tx,
   );
+  await HebergementServiceShared.createSiteOrganisme(tx, {
+    deplacementProximiteDescription:
+      hebergement.informationsTransport?.deplacementProximite ?? null,
+    descriptif:
+      hebergement.informationsLocaux?.descriptionLieuHebergement ?? null,
+    excursionDescription: hebergement.informationsTransport?.excursion ?? null,
+    hebergementTypeValue: hebergement.informationsLocaux?.type ?? null,
+    nomSite: hebergement.nom,
+    organismeId,
+    respEmail: hebergement.coordonnees?.email ?? null,
+    respNomPrenom: hebergement.coordonnees?.nomGestionnaire ?? null,
+    respTelephone: hebergement.coordonnees?.numTelephone1 ?? null,
+    siteId: site.siteId,
+    vehiculesAdaptes:
+      hebergement.informationsTransport?.vehiculesAdaptes ?? null,
+  });
   await HebergementServiceShared.linkHebergementToSite(
     tx,
     created.hebergementId,
@@ -993,6 +995,7 @@ module.exports.getById = async (id) => {
         );
       }
       const siteOrganisme = await HebergementServiceShared.getSiteOrganisme(
+        getPool(),
         uniteHebergement.siteId,
         uniteHebergement.organismeId,
       );

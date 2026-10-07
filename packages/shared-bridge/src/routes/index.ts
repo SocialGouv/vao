@@ -64,6 +64,14 @@ export type {
   SiteSimilariteResult,
   SiteSimilariteType,
 } from "./usagers/hebergement/checkSimilarites";
+export type {
+  PatchSiteBody,
+  ResponsableDto,
+} from "./usagers/hebergement/patchSite";
+export type {
+  PostSiteBody,
+  PostSiteResponse,
+} from "./usagers/hebergement/postSite";
 export type { SejourUsagersRoutes } from "./usagers/sejour";
 export { SejourUsagersRoutesSchema } from "./usagers/sejour";
 export type { SiretRoutes } from "./usagers/siret";

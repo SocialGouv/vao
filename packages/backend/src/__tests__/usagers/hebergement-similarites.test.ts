@@ -32,20 +32,24 @@ const createSite = async (
         },
         adresseId: null,
         createdBy: userId,
-        deplacementProximiteDescription: null,
         descriptif: null,
-        excursionDescription: null,
         hebergementTypeId: null,
         hebergementTypeValue: null,
         nomSiteOfficiel,
-        organismeId,
-        respEmail: null,
-        respNomPrenom: null,
-        respTelephone: null,
-        vehiculesAdaptes: null,
       },
       client,
     );
+    await HebergementServiceShared.createSiteOrganisme(client, {
+      deplacementProximiteDescription: null,
+      excursionDescription: null,
+      nomSite: nomSiteOfficiel,
+      organismeId,
+      respEmail: null,
+      respNomPrenom: null,
+      respTelephone: null,
+      siteId,
+      vehiculesAdaptes: null,
+    });
     return siteId;
   } finally {
     client.release();
