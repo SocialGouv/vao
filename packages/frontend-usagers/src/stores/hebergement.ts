@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 import { $fetchBackend, logger } from "#imports";
 import uploadFile from "~/utils/UploadFile";
 import type {
+  CheckTypeHebergementBody,
+  CheckTypeHebergementResponse,
   HebergementDto,
   HebergementFunnelOrigin,
   PostSiteResponse,
@@ -101,13 +103,37 @@ export const useHebergementStore = defineStore("hebergement", {
       }
     },
     async checkSiteSimilarites(site: SiteDto): Promise<SiteSimilariteResult[]> {
+      const organismeCourant = useOrganismeStore().organismeCourant;
+      const organismeId = Number(organismeCourant?.organismeId);
+      if (!Number.isFinite(organismeId) || organismeId <= 0) {
+        throw new FunctionalException(
+          FUNCTIONAL_ERRORS.ORGANISME_COURANT_NOT_FOUND,
+        );
+      }
       try {
         log.i("checkSiteSimilarites - IN", { site });
-        const similarites = await HebergementService.checkSiteSimilarites(site);
+        const similarites = await HebergementService.checkSiteSimilarites({
+          ...site,
+          organismeId,
+        });
         log.d("checkSiteSimilarites - DONE", similarites);
         return similarites;
       } catch (err: unknown) {
         log.i("checkSiteSimilarites - DONE with error", err);
+        throw err;
+      }
+    },
+    async checkTypeHebergement(
+      body: CheckTypeHebergementBody,
+    ): Promise<CheckTypeHebergementResponse> {
+      log.i("checkTypeHebergement - IN", body);
+      try {
+        const result =
+          await HebergementService.checkTypeHebergement(body);
+        log.d("checkTypeHebergement - DONE", result);
+        return result;
+      } catch (err: unknown) {
+        log.i("checkTypeHebergement - DONE with error", err);
         throw err;
       }
     },

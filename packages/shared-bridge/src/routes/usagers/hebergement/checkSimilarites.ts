@@ -16,6 +16,7 @@ export interface SiteSimilariteResult extends SiteDto {
 export interface CheckSiteSimilaritesBody {
   adresse: AdresseDto | null;
   nomSiteOfficiel: string | null;
+  organismeId: number;
 }
 
 export interface CheckSiteSimilaritesRoute extends BasicRoute {
@@ -40,5 +41,6 @@ export const CheckSiteSimilaritesRouteSchema: RouteSchema<CheckSiteSimilaritesRo
     body: yup.object({
       adresse: adresseSchema.required(),
       nomSiteOfficiel: yup.string().nullable(),
+      organismeId: yup.number().required(),
     }) as yup.ObjectSchema<CheckSiteSimilaritesBody>,
   };

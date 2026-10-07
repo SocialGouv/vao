@@ -30,7 +30,18 @@ router.post(
   requestValidatorMiddleware(
     HebergementUsagersRoutesSchema["CheckSimilarites"],
   ),
+  checkPermissionOrganisme,
   HebergementController.checkSimilarites,
+);
+
+router.post(
+  "/site/type-hebergement-control",
+  checkJWT,
+  requestValidatorMiddleware(
+    HebergementUsagersRoutesSchema["CheckTypeHebergement"],
+  ),
+  checkPermissionOrganisme,
+  HebergementController.checkTypeHebergement,
 );
 
 export default router;

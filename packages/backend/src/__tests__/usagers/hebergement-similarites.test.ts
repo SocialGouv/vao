@@ -65,12 +65,16 @@ const buildAdresse = (label: string) => ({
   label,
 });
 
-const buildBody = (overrides: Record<string, unknown> = {}) => {
+const buildBody = (
+  organismeId: number,
+  overrides: Record<string, unknown> = {},
+) => {
   const { adresse: adresseOverride, ...rest } = overrides;
   const adresse = adresseOverride as { label?: string } | undefined;
   const label = adresse?.label ?? "134 rue Gilles de Montal, 67730 La Vancelle";
   return {
     nomSiteOfficiel: "Gîte des Pins",
+    organismeId,
     ...rest,
     adresse: buildAdresse(label),
   };
@@ -116,7 +120,7 @@ describe("POST /hebergement/site/similarites", () => {
 
     const response = await request(getFoAppHelper(authUser))
       .post("/hebergement/site/similarites")
-      .send(buildBody());
+      .send(buildBody(organismeId));
 
     expect(response.status).toBe(200);
     expect(response.body.similarites).toEqual([]);
@@ -136,6 +140,7 @@ describe("POST /hebergement/site/similarites", () => {
       .post("/hebergement/site/similarites")
       .send({
         adresse: buildAdresse("134 rue Gilles de Montal, 67730 La Vancelle"),
+        organismeId,
       });
 
     expect(response.status).toBe(200);
@@ -155,6 +160,7 @@ describe("POST /hebergement/site/similarites", () => {
       .post("/hebergement/site/similarites")
       .send({
         adresse: buildAdresse("5 avenue des Champs, 75001 Paris"),
+        organismeId,
       });
 
     expect(response.status).toBe(200);
@@ -177,6 +183,7 @@ describe("POST /hebergement/site/similarites", () => {
       .send({
         adresse: buildAdresse("avenue des Champs, 75001 Paris"),
         nomSiteOfficiel: "Gîte d'ici",
+        organismeId,
       });
 
     expect(response.status).toBe(200);
@@ -196,7 +203,7 @@ describe("POST /hebergement/site/similarites", () => {
 
     const response = await request(getFoAppHelper(authUser))
       .post("/hebergement/site/similarites")
-      .send(buildBody());
+      .send(buildBody(organismeId));
 
     expect(response.status).toBe(200);
     expect(response.body.similarites).toEqual(
@@ -225,7 +232,7 @@ describe("POST /hebergement/site/similarites", () => {
     const response = await request(getFoAppHelper(authUser))
       .post("/hebergement/site/similarites")
       .send(
-        buildBody({
+        buildBody(organismeId, {
           adresse: { label: "12 avenue des Prés, 67730 La Vancelle" },
         }),
       );
@@ -263,7 +270,7 @@ describe("POST /hebergement/site/similarites", () => {
     const response = await request(getFoAppHelper(authUser))
       .post("/hebergement/site/similarites")
       .send(
-        buildBody({
+        buildBody(organismeId, {
           adresse: { label: "1 rue des Libellules, 67730 La Vancelle" },
           nomSiteOfficiel: "Les Libellules",
         }),
@@ -299,6 +306,7 @@ describe("POST /hebergement/site/similarites", () => {
       .send({
         adresse: buildAdresse("134 rue Gilles de Montal, 67730 La Vancelle"),
         nomSiteOfficiel: "Gîte B",
+        organismeId,
       });
 
     expect(response.status).toBe(200);
@@ -321,6 +329,7 @@ describe("POST /hebergement/site/similarites", () => {
       .post("/hebergement/site/similarites")
       .send({
         adresse: buildAdresse("rue Gilles de Montal, 67730 La Vancelle"),
+        organismeId,
       });
 
     expect(response.status).toBe(200);

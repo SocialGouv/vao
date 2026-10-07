@@ -1,4 +1,6 @@
 import type {
+  CheckTypeHebergementBody,
+  CheckTypeHebergementResponse,
   HebergementUsagersRoutes,
   PatchSiteBody,
   PostSiteBody,
@@ -27,6 +29,18 @@ const HebergementService = {
       body: site,
     })();
     return similarites;
+  },
+  checkTypeHebergement: async (
+    body: CheckTypeHebergementBody,
+  ): Promise<CheckTypeHebergementResponse> => {
+    const result = await buildRequest<
+      HebergementUsagersRoutes["CheckTypeHebergement"]
+    >({
+      path: "/hebergement/site/type-hebergement-control",
+      method: "POST",
+      body,
+    })();
+    return result;
   },
   postSite: async (site: PostSiteBody): Promise<PostSiteResponse> => {
     return await buildRequest<HebergementUsagersRoutes["PostSite"]>({
