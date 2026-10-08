@@ -7,7 +7,7 @@ import {
   apiModel,
   useToaster,
 } from "@vao/shared-ui";
-import { ref, onMounted, onUnmounted, watch } from "vue";
+import { ref, onMounted, onUnmounted, watch, useId } from "vue";
 
 const apiTypes = apiModel.apiTypes;
 
@@ -82,6 +82,7 @@ const searchQuery = ref("");
 const isModalOpen = ref(false);
 const multiselectRef = ref<Multiselect | null>(null);
 const multiselectWrapperRef = ref<HTMLElement | null>(null);
+const inputId = useId();
 
 const canShowClear = ref(false);
 const isPublishingSelection = ref(false);
@@ -262,9 +263,11 @@ function openFreeAddressModal() {
 }
 
 function focusOption(el: HTMLElement) {
-  el.parentElement?.querySelectorAll<HTMLElement>(".multiselect-option").forEach((opt) => {
-    opt.tabIndex = opt === el ? 0 : -1;
-  });
+  el.parentElement
+    ?.querySelectorAll<HTMLElement>(".multiselect-option")
+    .forEach((opt) => {
+      opt.tabIndex = opt === el ? 0 : -1;
+    });
   el.focus();
   const index = Array.from(el.parentElement?.children ?? []).indexOf(el);
   if (index >= 0) {
@@ -417,7 +420,7 @@ onUnmounted(() => {
             'fr-input-group--valid': validMessage,
           }"
         >
-          <label class="fr-label" :for="addressFieldId">
+          <label class="fr-label" :for="inputId">
             {{ label }}
             <span v-if="hint" class="fr-hint-text">
               {{ hint }}
@@ -425,7 +428,7 @@ onUnmounted(() => {
           </label>
           <div ref="multiselectWrapperRef" class="fr-multiselect-adress">
             <Multiselect
-              :id="addressFieldId"
+              :id="inputId"
               ref="multiselectRef"
               :value="selectedLabel"
               value-prop="label"

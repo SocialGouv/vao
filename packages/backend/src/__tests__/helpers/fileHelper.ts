@@ -2,11 +2,161 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { PDFDocument } from "pdf-lib";
+import { PDFDict, PDFDocument, PDFName } from "pdf-lib";
 
 export async function createMinimalPdf(): Promise<Buffer> {
   const pdfDoc = await PDFDocument.create();
   pdfDoc.addPage();
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
+}
+
+export async function createPdfWithJavaScript(): Promise<Buffer> {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage();
+
+  // Action JavaScript représentative d'un générateur de PDF fautif/malveillant.
+  const jsAction = pdfDoc.context.obj({
+    JS: "app.alert('javascript');",
+    S: "JavaScript",
+  });
+
+  // 1. `/OpenAction` au niveau du catalogue racine -> action JavaScript
+  pdfDoc.catalog.set(PDFName.of("OpenAction"), jsAction);
+  // 2. `/AA` (actions additionnelles) au niveau d'une page : déclencheur
+  // d'ouverture (/O) portant une action JavaScript
+  page.node.set(PDFName.of("AA"), pdfDoc.context.obj({ O: jsAction }));
+
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
+}
+
+export async function createPdfWithAcroFormJavaScript(): Promise<Buffer> {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage();
+
+  // Action JavaScript attachée au champ de formulaire (déclencheur de frappe
+  // /K). Le /AA est stocké indirectement (référence) pour couvrir aussi ce cas.
+  const jsAction = pdfDoc.context.obj({
+    JS: "this.getField('dropdown1').setItems([]);",
+    S: "JavaScript",
+  });
+  const aaDict = pdfDoc.context.obj({ K: jsAction });
+  const aaRef = pdfDoc.context.register(aaDict);
+
+  const fieldDict = pdfDoc.context.obj({
+    FT: "Tx",
+    P: page.ref,
+    Rect: [0, 0, 200, 100],
+    Subtype: "Widget",
+    T: "dropdown1",
+    Type: "Annot",
+  }) as PDFDict;
+  fieldDict.set(PDFName.of("AA"), aaRef);
+  const fieldRef = pdfDoc.context.register(fieldDict);
+
+  pdfDoc.catalog.set(
+    PDFName.of("AcroForm"),
+    pdfDoc.context.obj({ Fields: [fieldRef] }),
+  );
+
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
+}
+
+export async function createPdfWithAcroFormNoJs(): Promise<Buffer> {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage();
+
+  const fieldDict = pdfDoc.context.obj({
+    FT: "Tx",
+    P: page.ref,
+    Rect: [0, 0, 200, 100],
+    Subtype: "Widget",
+    T: "plain",
+    Type: "Annot",
+  }) as PDFDict;
+  const fieldRef = pdfDoc.context.register(fieldDict);
+
+  pdfDoc.catalog.set(
+    PDFName.of("AcroForm"),
+    pdfDoc.context.obj({ Fields: [fieldRef] }),
+  );
+
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
+}
+
+export function createCorruptPdf(): Buffer {
+  // Préfixe `%PDF` pour passer la détection de type (mockée via detectFileType),
+  // mais structure trop incomplète pour être chargée par pdf-lib (ni objet, ni
+  // trailer/xref valide) => sanitizePdf doit échouer.
+  return Buffer.from("%PDF-1.4\n");
+}
+
+/**
+ * Retourne le contenu d'un PDF réellement chiffré (security handler Standard,
+ * mot de passe utilisateur vide). pdf-lib le charge avec `ignoreEncryption`
+ * en le signalant via `isEncrypted` — il doit donc être rejeté par
+ * sanitizePdf (415) plutôt que stocké corrompu.
+ */
+export function readEncryptedPdfFixture(): Buffer {
+  return fs.readFileSync(
+    path.join(__dirname, "../fixtures/encrypted-example.pdf"),
+  );
+}
+
+/**
+ * Construit un PDF portant des scripts JavaScript nommés dans
+ * catalogue[/Names][/JavaScript], dont une valeur **directe (inline)** dans
+ * une feuille de l'arbre (cas qui échappait au sweep des objets indirects),
+ * invoquée via une action /OpenAction /Named conservée.
+ */
+export async function createPdfWithNamedJavaScript(): Promise<Buffer> {
+  const pdfDoc = await PDFDocument.create();
+  pdfDoc.addPage();
+
+  const inlineJsAction = pdfDoc.context.obj({
+    JS: "app.alert('named-inline');",
+    S: "JavaScript",
+  });
+  const leaf = pdfDoc.context.obj({
+    Names: [PDFName.of("doIt"), inlineJsAction],
+  });
+  const root = pdfDoc.context.obj({
+    Kids: [pdfDoc.context.register(leaf)],
+  });
+  pdfDoc.catalog.set(PDFName.of("Names"), root);
+  pdfDoc.catalog.set(
+    PDFName.of("OpenAction"),
+    pdfDoc.context.obj({ N: "doIt", S: "Named" }),
+  );
+
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
+}
+
+/**
+ * Construit un PDF dont le /OpenAction (GoTo légitime) possède une suite
+ * d'actions /Next pointant vers une action JavaScript **inline** : seul le
+ * /Next doit être retiré, pas le /OpenAction.
+ */
+export async function createPdfWithNextJavaScript(): Promise<Buffer> {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage();
+
+  pdfDoc.catalog.set(
+    PDFName.of("OpenAction"),
+    pdfDoc.context.obj({
+      D: [page.ref, "XYZ", null, null, null],
+      Next: pdfDoc.context.obj({
+        JS: "app.alert('via next');",
+        S: "JavaScript",
+      }),
+      S: "GoTo",
+    }),
+  );
+
   const pdfBytes = await pdfDoc.save();
   return Buffer.from(pdfBytes);
 }

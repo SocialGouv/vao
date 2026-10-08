@@ -1,16 +1,14 @@
 import fs from "node:fs/promises";
 
-import * as Sentry from "@sentry/node";
 import { normalizeFilename } from "@vao/shared-bridge";
 import type { NextFunction, Response } from "express";
-import { PDFDocument } from "pdf-lib";
 
-import { config } from "../../config";
 import * as DocumentService from "../../services/Document";
 import type { UserRequest } from "../../types/request";
 import AppError from "../../utils/error";
 import { getFileTypeFromBuffer } from "../../utils/file";
 import { logger } from "../../utils/logger";
+import { sanitizePdf } from "../../utils/sanitizePdf";
 
 const log = logger(module.filename);
 
@@ -35,7 +33,7 @@ export default async function upload(
   try {
     const { path, originalname } = file;
     const filename = normalizeFilename(originalname);
-    const fileBuffer = await fs.readFile(path);
+    let fileBuffer: Buffer = await fs.readFile(path);
     const fileType = await getFileTypeFromBuffer(fileBuffer);
 
     if (!fileType) {
@@ -84,24 +82,17 @@ export default async function upload(
         }),
       );
     }
+
     if (fileExtension === "pdf") {
       try {
-        const containsJavaScript = await detectJavaScriptInPDF(fileBuffer);
-        if (containsJavaScript) {
-          log.w("DONE with error: PDF contains JavaScript");
-          return next(
-            new AppError("Le fichier PDF contient du JavaScript.", {
-              name: "FileContainsJavaScriptError",
-              statusCode: 415,
-            }),
-          );
-        }
+        fileBuffer = await sanitizePdf(fileBuffer);
       } catch (err) {
+        log.w("DONE with error: PDF sanitization failed");
         return next(
-          new AppError("Impossible d'analyser le fichier PDF.", {
+          new AppError("Impossible de sécuriser le fichier PDF.", {
             cause: err,
-            name: "PDFDetectionFailed",
-            statusCode: 400,
+            name: "PDFSanitizeError",
+            statusCode: 415,
           }),
         );
       }
@@ -120,29 +111,5 @@ export default async function upload(
   } catch (error) {
     log.w("DONE with error");
     return next(error);
-  }
-}
-
-async function detectJavaScriptInPDF(fileBuffer: Buffer): Promise<boolean> {
-  log.i("detectJavaScriptInPDF - IN");
-  try {
-    const pdfDoc = await PDFDocument.load(fileBuffer);
-
-    log.i("detectJavaScriptInPDF - DONE");
-    return pdfDoc.context.enumerateIndirectObjects().some(([, obj]) => {
-      const str = obj.toString();
-      return (
-        str.includes("/JavaScript") ||
-        str.includes("/JS") ||
-        str.includes("/OpenAction") ||
-        str.includes("/AA")
-      );
-    });
-  } catch (error) {
-    log.w("DONE with error", error);
-    if (config.sentry.enabled) {
-      Sentry.captureException(error);
-    }
-    throw error;
   }
 }
