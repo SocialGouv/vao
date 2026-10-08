@@ -1,10 +1,18 @@
 <template>
-  <component :is="`h${props.titleLevel}`" id="suivi-medical" class="fr-text--lead">
+  <component
+    :is="`h${props.titleLevel}`"
+    id="suivi-medical"
+    class="fr-text--lead"
+  >
     <span class="fr-icon-capsule-fill" aria-hidden="true"></span>
     Suivi médical prévu
   </component>
-  <fieldset class="no-border" aria-labelledby="suivi-medical">
-    <div class="fr-fieldset__element">
+  <component
+    :is="props.modifiable ? 'fieldset' : 'div'"
+    class="no-border"
+    :aria-labelledby="props.modifiable ? 'suivi-medical' : undefined"
+  >
+    <div class="fr-mb-4v">
       <div class="fr-col-12">
         <DsfrInputGroup
           v-if="props.modifiable"
@@ -30,7 +38,7 @@
       </div>
     </div>
 
-    <div class="fr-fieldset__element fr-mt-8v">
+    <div class="fr-mb-4v fr-mt-6v">
       <div class="fr-col-12">
         <DsfrInputGroup
           v-if="props.modifiable"
@@ -55,7 +63,7 @@
         />
       </div>
     </div>
-    <div class="fr-fieldset__element">
+    <div class="fr-mb-4v">
       <UtilsMultiFilesUpload
         v-model="filesProjetsSejoursSuiviMed"
         hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
@@ -63,7 +71,7 @@
         label="Ajouter des fichiers (optionnel)"
       />
     </div>
-  </fieldset>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -164,7 +172,6 @@ defineExpose({
   validateForm,
 });
 </script>
-
 <style scoped>
 fieldset.no-border {
   border: none;

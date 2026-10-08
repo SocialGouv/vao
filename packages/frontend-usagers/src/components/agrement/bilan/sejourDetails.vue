@@ -111,6 +111,13 @@
         :error-message="nbTotalJoursVacancesErrorMessage"
         @update:model-value="onNbTotalJoursVacancesChange"
       />
+      <UtilsDisplayInput
+        v-else
+        :value="nbTotalJoursVacances"
+        :input="displayInput.AgrementBilanAnnuelInput['nbTotalJoursVacances']"
+        :is-valid="nbTotalJoursVacancesMeta.valid"
+        :error-message="nbTotalJoursVacancesErrorMessage"
+      />
     </div>
   </div>
 </template>
@@ -295,5 +302,8 @@ defineExpose({
   gap: 1rem;
   justify-content: flex-start;
   align-items: flex-end;
+}
+.container :deep(.read-only-value.is-empty) {
+  color: #000;
 }
 </style>

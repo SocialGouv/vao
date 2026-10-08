@@ -2,7 +2,7 @@
   <div :class="['container', !isValid ? 'container--error' : '']">
     <div>
       <dl class="fr-text--sm fr-pl-0">
-        <dt v-if="labelVisible">{{ input.label }} :</dt>
+        <dt v-if="labelVisible" :class="labelClass">{{ input.label }} :</dt>
         <dd>
           <span
             v-if="showRequiredEmpty"
@@ -11,7 +11,7 @@
             À compléter
           </span>
           <template v-else>
-            {{ displayValue ? displayValue : "-" }}
+            <DisplayEmpty :value="displayValue" />
           </template>
         </dd>
       </dl>
@@ -26,6 +26,7 @@
 import { computed } from "vue";
 import type { PropType } from "vue";
 import { InputTypes } from "../constantes/input-types";
+import DisplayEmpty from "./DisplayEmpty.vue";
 
 defineEmits(["emitComment"]);
 
@@ -40,6 +41,7 @@ interface DisplayInputOption {
 
 const props = defineProps({
   labelVisible: { type: Boolean, default: true },
+  labelClass: { type: String, default: "" },
   isValid: { type: Boolean, default: true },
   errorMessage: { type: String, default: "" },
   required: { type: Boolean, default: false },
@@ -102,3 +104,8 @@ const showRequiredEmpty = computed(
       displayValue.value === ""),
 );
 </script>
+<style scoped>
+dt {
+  font-weight: bold;
+}
+</style>

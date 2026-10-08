@@ -14,19 +14,25 @@
         >au choix une description texte et/ou un fichier joint</span
       >. L’un des deux est requis.
     </p>
-    <div class="border fr-p-4v">
-      <fieldset class="no-border">
-        <legend class="fr-fieldset__legend fr-text--lead">
+    <div :class="props.modifiable ? 'border fr-p-4v' : ''">
+      <component :is="props.modifiable ? 'fieldset' : 'div'" class="no-border">
+        <component
+          :is="props.modifiable ? 'legend' : 'h4'"
+          :class="
+            props.modifiable
+              ? 'fr-fieldset__legend fr-text--md fr-mb-0'
+              : 'fr-my-2w fr-text--sm fr-text--bold'
+          "
+        >
           Perception et ressenti des vacanciers sur les séjours réalisés
-        </legend>
-        <div class="fr-fieldset__element">
+        </component>
+        <div class="fr-mb-4v">
           <p
             id="bilanQualPerceptionSensibilite-desc"
             class="light-decisions-text-text-mention-grey"
           >
             Objectif : recueillir la perception globale du public accueilli
-            (satisfaction, ressenti, difficultés rencontrées…). Le nombre de
-            caractères est insuffisant.
+            (satisfaction, ressenti, difficultés rencontrées…).
           </p>
           <div class="fr-col-12">
             <DsfrInputGroup
@@ -49,6 +55,7 @@
             <UtilsDisplayInput
               v-else
               :value="bilanQualPerceptionSensibilite"
+              label-class="fr-text--regular"
               :input="
                 displayInput.AgrementBilanAnnuelInput[
                   'bilanQualPerceptionSensibilite'
@@ -59,7 +66,7 @@
             />
           </div>
         </div>
-        <div class="fr-fieldset__element">
+        <div class="fr-mb-4v">
           <UtilsMultiFilesUpload
             v-model="filesBilanQualitPerception"
             label="Ajouter des fichiers"
@@ -70,15 +77,22 @@
             {{ filesBilanQualitPerceptionError }}
           </p>
         </div>
-      </fieldset>
+      </component>
     </div>
-    <div class="border fr-p-4v fr-mt-6v">
-      <fieldset class="no-border fr-p-4v">
-        <legend class="fr-fieldset__legend fr-text--lead">
+    <div class="fr-mt-6v" :class="props.modifiable ? 'border fr-p-4v' : ''">
+      <component :is="props.modifiable ? 'fieldset' : 'div'" class="no-border">
+        <component
+          :is="props.modifiable ? 'legend' : 'h4'"
+          :class="
+            props.modifiable
+              ? 'fr-fieldset__legend fr-text--md fr-mb-0'
+              : 'fr-my-2w fr-text--sm fr-text--bold'
+          "
+        >
           Évolutions prévues des activités VAO et perspectives de développement
           à venir
-        </legend>
-        <div class="fr-fieldset__element">
+        </component>
+        <div class="fr-mb-4v">
           <p
             id="bilanQualPerspectiveEvol-desc"
             class="light-decisions-text-text-mention-grey"
@@ -107,6 +121,7 @@
             <UtilsDisplayInput
               v-else
               :value="bilanQualPerspectiveEvol"
+              label-class="fr-text--regular"
               :input="
                 displayInput.AgrementBilanAnnuelInput[
                   'bilanQualPerspectiveEvol'
@@ -117,7 +132,7 @@
             />
           </div>
         </div>
-        <div class="fr-fieldset__element">
+        <div class="fr-mb-4v">
           <UtilsMultiFilesUpload
             v-model="filesBilanQualitPerspectives"
             label="Ajouter des fichiers"
@@ -128,14 +143,21 @@
             {{ filesBilanQualitPerspectivesError }}
           </p>
         </div>
-      </fieldset>
+      </component>
     </div>
-    <div class="border fr-p-4v fr-mt-6v">
-      <fieldset class="no-border fr-p-4v">
-        <legend class="fr-fieldset__legend fr-text--lead">
+    <div class="fr-mt-6v" :class="props.modifiable ? 'border fr-p-4v' : ''">
+      <component :is="props.modifiable ? 'fieldset' : 'div'" class="no-border">
+        <component
+          :is="props.modifiable ? 'legend' : 'h4'"
+          :class="
+            props.modifiable
+              ? 'fr-fieldset__legend fr-text--md fr-mb-0'
+              : 'fr-my-2w fr-text--sm fr-text--bold'
+          "
+        >
           Eléments marquants autour des activités VAO
-        </legend>
-        <div class="fr-fieldset__element">
+        </component>
+        <div class="fr-mb-4v">
           <p
             id="bilanQualElementsMarquants-desc"
             class="light-decisions-text-text-mention-grey"
@@ -163,7 +185,8 @@
             />
             <UtilsDisplayInput
               v-else
-              :value="bilanQualPerspectiveEvol"
+              :value="bilanQualElementsMarquants"
+              label-class="fr-text--regular"
               :input="
                 displayInput.AgrementBilanAnnuelInput[
                   'bilanQualElementsMarquants'
@@ -174,7 +197,7 @@
             />
           </div>
         </div>
-        <div class="fr-fieldset__element">
+        <div class="fr-mb-4v">
           <UtilsMultiFilesUpload
             v-model="filesBilanQualitElementsMarquants"
             label="Ajouter des fichiers complémentaires"
@@ -188,9 +211,9 @@
             {{ filesBilanQualitElementsMarquantsError }}
           </p>
         </div>
-      </fieldset>
+      </component>
     </div>
-    <div class="fr-fieldset__element fr-mt-6v">
+    <div class="fr-mb-4v fr-mt-6v">
       <UtilsMultiFilesUpload
         v-model="filesBilanQualitComplementaires"
         label="Ajouter des fichiers complémentaires (optionnel)"

@@ -29,6 +29,8 @@ import MessageHover from "./messages/MessageHover.vue";
 import MessageEtat from "./messages/MessageEtat.vue";
 import DisplayInput from "./DisplayInput.vue";
 import DisplayLabel from "./DisplayLabel.vue";
+import DisplayEmpty from "./DisplayEmpty.vue";
+import DisplayCheckbox from "./DisplayCheckbox.vue";
 import UserStatusBadge from "./users/UserStatusBadge.vue";
 import RefusCompteModal from "./users/RefusCompteModal.vue";
 import Header from "./Header.vue";
@@ -89,6 +91,8 @@ export {
   Historique,
   EtapeHistorique,
   DisplayLabel,
+  DisplayEmpty,
   MultiFilesUpload,
   VerificationOtp,
+  DisplayCheckbox,
 };

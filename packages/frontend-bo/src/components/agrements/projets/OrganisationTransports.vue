@@ -22,7 +22,7 @@
     />
   </div>
 
-  <div class="fr-fieldset__element fr-mt-6v">
+  <div class="fr-mb-4v">
     <MultiFilesUpload
       v-model="filesProjetsSejoursOrgaTransports"
       :modifiable="false"

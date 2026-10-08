@@ -8,8 +8,9 @@
   </TitleWithIcon>
   <p class="light-decisions-text-text-default-info fr-text--xs">
     <span class="fr-icon-info-fill" aria-hidden="true"></span>
-    Ces informations sont recueillies à titre indicatif et n'ont pas de valeur
-    contractuelles. <br />
+    Ces informations sont recueillies
+    <span class="fr-text fr-text--bold">à titre indicatif</span> et n'ont pas de
+    valeur contractuelles. <br />
     <span class="fr-ml-6v"
       >Seuls les séjours accueillant plus de 3 vacanciers et ayant une durée
       supérieure à 5 jours doivent être déclarés dans ce formulaire.</span
@@ -22,7 +23,7 @@
   />
   <div class="fr-my-2w separator"></div>
   <p class="fr-text--bold">Informations sur les vacanciers</p>
-  <AgrementsTypeDeficiences
+  <AgrementsProjetsTypeDeficiences
     ref="typeDeficiencesRef"
     :type-deficiences="props.initAgrement.sejourTypeHandicap || []"
   />
@@ -38,7 +39,7 @@
     :value="props.initAgrement.sejourCommentaire"
     :input="AgrementDisplayInput.AgrementProjetsInput['sejourCommentaire']"
   />
-  <div class="fr-fieldset__element">
+  <div class="fr-mb-4v">
     <MultiFilesUpload
       v-model="filesProjetsSejoursPrevus"
       label="Document(s) relatif(s) aux séjours prévus (optionnel)"

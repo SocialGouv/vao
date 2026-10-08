@@ -1,32 +1,45 @@
 <template>
-  <component :is="`h${props.titleLevel}`" id="casier-judiciaire" class="fr-text--lead">
+  <component
+    :is="`h${props.titleLevel}`"
+    id="casier-judiciaire"
+    class="fr-text--lead"
+  >
     <span class="fr-icon-check-line" aria-hidden="true"></span>
     Casier judiciaire
   </component>
-  <fieldset class="no-border" aria-labelledby="casier-judiciaire">
+  <UtilsDisplayCheckbox
+    v-if="!props.modifiable"
+    name="accompRespAttestHono"
+    :label="casierLabel"
+    :checked="accompRespAttestHono"
+    :required="props.initAgrement.statut !== AGREMENT_STATUT.BROUILLON"
+    :is-valid="accompRespAttestHonoMeta.valid"
+    :error-message="accompRespAttestHonoErrorMessage ?? undefined"
+    class="fr-my-2w"
+  />
+  <fieldset v-else class="no-border" aria-labelledby="casier-judiciaire">
     <DsfrCheckbox
       v-model="accompRespAttestHono"
       name="accompRespAttestHono"
-      label="J'atteste que les accompagnants et le responsable du déroulement du séjour sur le lieu de vacances n'ont pas fait l'objet d'une condamnation inscrite au bulletin n° 3 du casier judiciaire"
+      :label="casierLabel"
       :error-message="
         accompRespAttestHonoMeta.touched ? accompRespAttestHonoErrorMessage : ''
       "
-      :readonly="!props.modifiable"
       :required="props.initAgrement.statut !== AGREMENT_STATUT.BROUILLON"
       :value="true"
     />
-
-    <div class="fr-fieldset__element">
-      <FileUpload
-        v-model="fileProjetsSejoursCasier"
-        hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
-        :cdn-url="props.cdnUrl"
-        :modifiable="props.modifiable"
-        label="Ajouter un fichier (optionnel)"
-        :optional="true"
-      />
-    </div>
   </fieldset>
+
+  <div class="fr-mb-4v">
+    <FileUpload
+      v-model="fileProjetsSejoursCasier"
+      hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+      :cdn-url="props.cdnUrl"
+      :modifiable="props.modifiable"
+      label="Ajouter un fichier (optionnel)"
+      :optional="true"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -48,6 +61,9 @@ const props = defineProps({
 
 const log = logger("components/agrement/projets/casierJudiciaire");
 
+const casierLabel =
+  "J'atteste que les accompagnants et le responsable du déroulement du séjour sur le lieu de vacances n'ont pas fait l'objet d'une condamnation inscrite au bulletin n° 3 du casier judiciaire";
+
 const fileProjetsSejoursCasier = ref(
   getFileByCategory({
     category: FILE_CATEGORY.PROJETSSEJOURSCASIER,
@@ -59,7 +75,7 @@ const validationSchema = yup.object({
   accompRespAttestHono: yup.boolean().when("statut", {
     is: (val: AGREMENT_STATUT) => val !== AGREMENT_STATUT.BROUILLON,
     then: (schema) =>
-      schema.oneOf([true], "Vous devez cocher cette case pour continuer"),
+      schema.oneOf([true], "Cette case doit être cochée"),
     otherwise: (schema) => schema.notRequired(),
   }),
 });

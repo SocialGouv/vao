@@ -7,20 +7,28 @@
     >
       Personne physique
     </TitleWithIcon>
-    <dl>
-      <dt>Prénom:</dt>
-      <dd>{{ personnePhysique.prenom || "-" }}</dd>
-      <dt>Nom de naissance:</dt>
-      <dd>{{ personnePhysique.nomNaissance || "-" }}</dd>
-      <dt>Nom d'usage:</dt>
-      <dd>{{ personnePhysique.nomUsage || "-" }}</dd>
-      <dt>Profession:</dt>
-      <dd>{{ personnePhysique.profession || "-" }}</dd>
+    <dl class="fr-text--sm fr-pl-0 fr-mt-6v">
+      <dt class="read-only-label">Prénom:</dt>
+      <dd class="read-only-value">
+        <DisplayEmpty :value="personnePhysique.prenom" />
+      </dd>
+      <dt class="read-only-label">Nom de naissance:</dt>
+      <dd class="read-only-value">
+        <DisplayEmpty :value="personnePhysique.nomNaissance" />
+      </dd>
+      <dt class="read-only-label">Nom d'usage:</dt>
+      <dd class="read-only-value">
+        <DisplayEmpty :value="personnePhysique.nomUsage" />
+      </dd>
+      <dt class="read-only-label">Profession:</dt>
+      <dd class="read-only-value">
+        <DisplayEmpty :value="personnePhysique.profession" />
+      </dd>
 
       <template v-if="!isEditingTelephone">
-        <dt>Téléphone:</dt>
-        <dd>
-          {{ personnePhysique.telephone || "-" }}
+        <dt class="read-only-label">Téléphone:</dt>
+        <dd class="read-only-value">
+          <DisplayEmpty :value="personnePhysique.telephone" />
           <DsfrLinkV2
             v-if="modifiable"
             as="button"
@@ -53,10 +61,14 @@
         </dd>
       </template>
 
-      <dt>Adresse du siège de ses activité:</dt>
-      <dd>{{ personnePhysique.adresseDomicile.label || "-" }}</dd>
-      <dt>Adresse de ses activités:</dt>
-      <dd>{{ personnePhysique.adresseSiege.label || "-" }}</dd>
+      <dt class="read-only-label">Adresse du siège de ses activité:</dt>
+      <dd class="read-only-value">
+        <DisplayEmpty :value="personnePhysique.adresseDomicile.label" />
+      </dd>
+      <dt class="read-only-label">Adresse de ses activités:</dt>
+      <dd class="read-only-value">
+        <DisplayEmpty :value="personnePhysique.adresseSiege.label" />
+      </dd>
     </dl>
   </div>
   <DsfrAlert
@@ -79,7 +91,7 @@
 import { ref, computed } from "vue";
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
-import { TitleWithIcon, DsfrLinkV2 } from "@vao/shared-ui";
+import { TitleWithIcon, DsfrLinkV2, DisplayEmpty } from "@vao/shared-ui";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import type { PersonnePhysiqueDto } from "@vao/shared-bridge";
 import { telephoneYupNullable } from "@/utils/telephoneValidators";
@@ -168,9 +180,6 @@ dl {
 }
 dd {
   padding-left: 0;
-}
-dt {
-  font-weight: bold;
 }
 .full-width {
   grid-column: 1 / span 2;

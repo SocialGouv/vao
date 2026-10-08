@@ -1,9 +1,17 @@
 <template>
-  <component :is="`h${props.titleLevel}`" id="animation-activites" class="fr-text--lead">
+  <component
+    :is="`h${props.titleLevel}`"
+    id="animation-activites"
+    class="fr-text--lead"
+  >
     <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
     Animation et activités prévues
   </component>
-  <fieldset class="no-border" aria-labelledby="animation-activites">
+  <component
+    :is="props.modifiable ? 'fieldset' : 'div'"
+    class="no-border"
+    :aria-labelledby="props.modifiable ? 'animation-activites' : undefined"
+  >
     <div class="flex flex-col">
       <div>
         <DsfrMultiselect
@@ -14,13 +22,21 @@
           select-all
           :button-label="buttonLabel"
           label="Vous pouvez sélectionner une ou plusieurs options."
+          label-class="fr-hint-text fr-mb-2v"
         />
-        <UtilsDisplayInput
-          v-else
-          :input="displayInput.AgrementProjetsInput.activitesSelectionnees"
-          :value="activitesSelectionnees"
-          :error-message="activitesSelectionneesErrorMessage"
-        />
+        <div v-else>
+          <div
+            v-for="activite in activitesSelectionnees"
+            :key="activite"
+            class="fr-mb-1v"
+          >
+            <DisplayCheckbox
+              :label="activite"
+              name="activitesSelectionnees"
+              :checked="true"
+            />
+          </div>
+        </div>
         <p
           v-if="activitesSelectionneesErrorMessage"
           class="fr-error-text fr-mt-1v"
@@ -48,7 +64,7 @@
         />
       </div>
     </div>
-  </fieldset>
+  </component>
 </template>
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
@@ -57,6 +73,7 @@ import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import type { ActiviteDto, AgrementAnimationDto } from "@vao/shared-bridge";
 import * as yup from "yup";
+import { DisplayCheckbox } from "@vao/shared-ui";
 
 const agrementStore = useAgrementStore();
 const log = logger("components/agrement/projets/animationsActivites");
@@ -227,7 +244,6 @@ defineExpose({
   validateForm,
 });
 </script>
-
 <style scoped>
 fieldset.no-border {
   border: none;

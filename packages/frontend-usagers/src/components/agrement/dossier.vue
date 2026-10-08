@@ -3,8 +3,12 @@
     <span class="fr-icon-award-fill" aria-hidden="true"></span>
     Motivations
   </component>
-  <fieldset class="no-border" aria-labelledby="motivations">
-    <div class="fr-fieldset__element">
+  <component
+    :is="modifiable ? 'fieldset' : 'div'"
+    class="no-border"
+    :aria-labelledby="modifiable ? 'motivations' : undefined"
+  >
+    <div class="fr-mb-4v">
       <div class="fr-col-12">
         <DsfrInputGroup
           v-if="modifiable"
@@ -28,7 +32,7 @@
       </div>
     </div>
 
-    <div class="fr-fieldset__element">
+    <div class="fr-mb-4v fr-mt-6v">
       <UtilsMultiFilesUpload
         v-model="filesMotivation"
         hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
@@ -36,7 +40,7 @@
         label="Ajouter des fichiers (optionnel)"
       />
     </div>
-  </fieldset>
+  </component>
   <div class="separator fr-my-4v"></div>
   <component
     :is="`h${titreNiveau}`"
@@ -46,8 +50,12 @@
     <span class="fr-icon-briefcase-fill" aria-hidden="true"></span>
     Immatriculation
   </component>
-  <fieldset class="no-border" aria-labelledby="immatriculations">
-    <div class="fr-fieldset__element">
+  <component
+    :is="modifiable ? 'fieldset' : 'div'"
+    class="no-border"
+    :aria-labelledby="modifiable ? 'immatriculations' : undefined"
+  >
+    <div class="fr-mb-4v">
       <div class="fr-col-12">
         <FileUpload
           :model-value="fileImmatriculation"
@@ -64,7 +72,7 @@
       </div>
     </div>
 
-    <div class="fr-fieldset__element">
+    <div class="fr-mb-4v">
       <div class="fr-col-12">
         <DsfrInputGroup
           v-if="props.modifiable"
@@ -84,6 +92,7 @@
         <UtilsDisplayInput
           v-else
           label="Date d'obtention du certificat d'immatriculation"
+          label-class="fr-text--sm"
           :value="dateObtentionCertificat"
           :input="displayInput.AgrementInput['dateObtentionCertificat']"
           :error-message="dateObtentionCertificatErrorMessage"
@@ -105,7 +114,7 @@
         </div>
       </div>
     </div>
-  </fieldset>
+  </component>
 
   <div class="separator fr-my-4v"></div>
 
@@ -117,8 +126,12 @@
     <span class="fr-icon-file-text-fill" aria-hidden="true"></span>
     Attestations
   </component>
-  <fieldset class="no-border" aria-labelledby="attestations">
-    <div class="fr-fieldset__element">
+  <component
+    :is="modifiable ? 'fieldset' : 'div'"
+    class="no-border"
+    :aria-labelledby="modifiable ? 'attestations' : undefined"
+  >
+    <div class="fr-mb-4v">
       <FileUpload
         :model-value="fileAttestationsRespCivile"
         :cdn-url="props.cdnUrl"
@@ -132,7 +145,7 @@
         @update:model-value="setFileAttestationsRespCivile"
       />
     </div>
-    <div class="fr-fieldset__element">
+    <div class="fr-mb-4v">
       <FileUpload
         :model-value="fileAttestationsRapatriement"
         :cdn-url="props.cdnUrl"
@@ -148,9 +161,9 @@
         @update:model-value="setFileAttestationsRapatriement"
       />
     </div>
-  </fieldset>
+  </component>
   <div v-if="props.showButtons && props.modifiable">
-    <div class="fr-fieldset__element">
+    <div class="fr-mb-4v">
       <UtilsNavigationButtons
         class="fr-mt-6v"
         :show-buttons="props.showButtons"
@@ -166,7 +179,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useForm, useField } from "vee-validate";
-import { FileUpload, TitleWithIcon, useToaster } from "@vao/shared-ui";
+import { FileUpload, useToaster } from "@vao/shared-ui";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
 import {
   isValidFrShort,

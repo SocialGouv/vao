@@ -1,15 +1,26 @@
 <template>
-  <component :is="`h${props.titleLevel}`" id="bilan-financier-dernieres-annee" class="fr-text--lead">
+  <component
+    :is="`h${props.titleLevel}`"
+    id="bilan-financier-dernieres-annee"
+    class="fr-text--lead"
+  >
     <span class="fr-icon-bank-card-fill" aria-hidden="true"></span>
     Bilan financier sur les 4 dernières années
   </component>
-  <fieldset class="no-border" aria-labelledby="bilan-financier-dernieres-annee">
-    <div class="fr-mt-8v">
-      <div class="fr-fieldset__element">
+  <component
+    :is="props.modifiable ? 'fieldset' : 'div'"
+    class="no-border"
+    :aria-labelledby="
+      props.modifiable ? 'bilan-financier-dernieres-annee' : undefined
+    "
+  >
+    <div>
+      <div class="fr-mb-4v">
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
             name="bilanFinancierComptabilite"
+            label-class="fr-text--bold"
             :label="
               displayInput.AgrementBilanAnnuelInput[
                 'bilanFinancierComptabilite'
@@ -26,6 +37,7 @@
           <UtilsDisplayInput
             v-else
             :value="bilanFinancierComptabilite"
+            label-class="fr-text--sm"
             :input="
               displayInput.AgrementBilanAnnuelInput[
                 'bilanFinancierComptabilite'
@@ -38,11 +50,12 @@
       </div>
     </div>
     <div class="fr-mt-8v">
-      <div class="fr-fieldset__element">
+      <div class="fr-mb-4v">
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
             name="bilanFinancierComparatif"
+            label-class="fr-text--bold"
             :label="
               displayInput.AgrementBilanAnnuelInput['bilanFinancierComparatif']
                 .label
@@ -58,6 +71,7 @@
           <UtilsDisplayInput
             v-else
             :value="bilanFinancierComparatif"
+            label-class="fr-text--sm"
             :input="
               displayInput.AgrementBilanAnnuelInput['bilanFinancierComparatif']
             "
@@ -68,11 +82,12 @@
       </div>
     </div>
     <div class="fr-mt-8v">
-      <div class="fr-fieldset__element">
+      <div class="fr-mb-4v">
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
             name="bilanFinancierRessourcesHumaines"
+            label-class="fr-text--bold"
             :label="
               displayInput.AgrementBilanAnnuelInput[
                 'bilanFinancierRessourcesHumaines'
@@ -89,6 +104,7 @@
           <UtilsDisplayInput
             v-else
             :value="bilanFinancierRessourcesHumaines"
+            label-class="fr-text--sm"
             :is-valid="bilanFinancierRessourcesHumainesMeta.valid"
             :error-message="bilanFinancierRessourcesHumainesErrorMessage"
             :input="
@@ -101,7 +117,7 @@
       </div>
     </div>
     <div class="fr-mt-8v">
-      <div class="fr-fieldset__element">
+      <div class="fr-mb-4v">
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
@@ -126,8 +142,8 @@
         </div>
       </div>
     </div>
-  </fieldset>
-  <div class="fr-fieldset__element fr-mt-6v fr-mb-10v">
+  </component>
+  <div class="fr-mb-4v">
     <UtilsMultiFilesUpload
       v-model="filesBilanFinancierQuatreAnnees"
       hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."

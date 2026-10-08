@@ -12,13 +12,18 @@
       <div class="flex">
         <span class="fr-icon-info-fill" aria-hidden="true"></span>
         <div>
-          <p class="fr-mb-0">
-            Ces informations sont recueillies à titre indicatif et n'ont pas de
+          <p class="fr-mb-0 fr-text--xs">
+            Ces informations sont recueillies
+            <span class="fr-text--bold">à titre indicatif</span> et n'ont pas de
             valeur contractuelles.
           </p>
-          <p>
-            Seuls les séjours accueillant plus de 3 vacanciers et ayant une
-            durée supérieure à 5 jours doivent être déclarés dans ce formulaire.
+          <p class="fr-mb-0 fr-text--xs">
+            Seuls les séjours accueillant
+            <span class="fr-text--bold"
+              >plus de 3 vacanciers et ayant une durée supérieure à 5
+              jours</span
+            >
+            doivent être déclarés dans ce formulaire.
           </p>
         </div>
       </div>
@@ -30,7 +35,11 @@
       :modifiable="props.modifiable"
     />
     <div class="separator fr-my-4w"></div>
-    <p><span class="fr-text--bold">Informations sur les vacanciers</span></p>
+    <p>
+      <span class="fr-text--bold fr-text--md"
+        >Informations sur les vacanciers</span
+      >
+    </p>
     <AgrementTypeDeficiences
       ref="typeDeficiencesRef"
       :type-deficiences="props.initAgrement.sejourTypeHandicap || []"
@@ -38,10 +47,17 @@
       :statut="props.initAgrement.statut || AGREMENT_STATUT.BROUILLON"
     />
     <div class="separator fr-mb-6v"></div>
-    <fieldset class="no-border">
-      <legend class="fr-fieldset__legend fr-text--lg">
+    <component :is="props.modifiable ? 'fieldset' : 'div'" class="no-border">
+      <component
+        :is="props.modifiable ? 'legend' : 'h4'"
+        :class="
+          props.modifiable
+            ? 'fr-fieldset__legend fr-text--md fr-mb-0'
+            : 'fr-my-2w fr-text--md fr-text--bold'
+        "
+      >
         Informations complémentaires
-      </legend>
+      </component>
       <div class="fr-col-6 fr-mb-4v">
         <DsfrInput
           v-if="props.modifiable"
@@ -80,7 +96,7 @@
         :is-valid="commentaireMeta.valid"
         :error-message="commentaireErrorMessage"
       />
-      <div class="fr-fieldset__element">
+      <div class="fr-mb-4v">
         <UtilsMultiFilesUpload
           v-model="filesProjetsSejoursPrevus"
           hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
@@ -88,7 +104,7 @@
           :modifiable="props.modifiable"
         />
       </div>
-    </fieldset>
+    </component>
     <div class="fr-p-4v fr-mt-6v bg-light-blue">
       <p>
         <span class="fr-text--bold"

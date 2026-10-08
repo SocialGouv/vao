@@ -19,6 +19,8 @@
           :valid="coordonneesValid"
         />
         <DsfrButton
+          secondary
+          icon="fr-icon-pencil-line"
           class="fr-mb-6v fr-mt-6v"
           @click.prevent="onModifierCoordonnees"
           >Modifier</DsfrButton
@@ -41,9 +43,14 @@
           :cdn-url="cdnUrl"
           :valid="dossierValid"
         />
-        <DsfrButton class="fr-mb-6v fr-mt-6v" @click.prevent="onModifierDossier"
-          >Modifier</DsfrButton
+        <DsfrButton
+          secondary
+          icon="fr-icon-pencil-line"
+          class="fr-mb-6v fr-mt-6v"
+          @click.prevent="onModifierDossier"
         >
+          Modifier
+        </DsfrButton>
       </DsfrAccordion>
       <DsfrAccordion v-if="!props.firstAgrement">
         <template #title>
@@ -60,7 +67,11 @@
           :modifiable="false"
           :cdn-url="cdnUrl"
         />
-        <DsfrButton class="fr-mb-6v fr-mt-6v" @click.prevent="onModifierBilan"
+        <DsfrButton
+          secondary
+          icon="fr-icon-pencil-line"
+          class="fr-mb-6v fr-mt-6v"
+          @click.prevent="onModifierBilan"
           >Modifier</DsfrButton
         >
       </DsfrAccordion>
@@ -79,9 +90,14 @@
           :modifiable="false"
           :cdn-url="cdnUrl"
         />
-        <DsfrButton class="fr-mb-6v fr-mt-6v" @click.prevent="onModifierProjet"
-          >Modifier</DsfrButton
+        <DsfrButton
+          secondary
+          icon="fr-icon-pencil-line"
+          class="fr-mb-6v fr-mt-6v"
+          @click.prevent="onModifierProjet"
         >
+          Modifier
+        </DsfrButton>
       </DsfrAccordion>
       <DsfrAlert role="info">
         <h2>Vérification</h2>
@@ -229,16 +245,23 @@ async function transmitAgrement() {
   emit("update");
 }
 
+function goToStep(step: string) {
+  navigateTo({
+    path: `/agrement/${props.initAgrement?.id ?? ""}`,
+    hash: `#${step}`,
+  });
+}
+
 function onModifierCoordonnees() {
-  navigateTo("/agrement#agrement-coordonnees");
+  goToStep("agrement-coordonnees");
 }
 function onModifierDossier() {
-  navigateTo("/agrement#agrement-dossier");
+  goToStep("agrement-dossier");
 }
 function onModifierBilan() {
-  navigateTo("/agrement#agrement-bilan");
+  goToStep("agrement-bilan");
 }
 function onModifierProjet() {
-  navigateTo("/agrement#agrement-projets");
+  goToStep("agrement-projets");
 }
 </script>

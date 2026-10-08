@@ -1,10 +1,18 @@
 <template>
-  <component :is="`h${props.titleLevel}`" id="changement-evolution-title" class="fr-text--lead">
+  <component
+    :is="`h${props.titleLevel}`"
+    id="changement-evolution-title"
+    class="fr-text--lead"
+  >
     <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
     Changement ou évolution
   </component>
-  <fieldset class="no-border" aria-labelledby="changement-evolution-title">
-    <div class="fr-fieldset__element">
+  <component
+    :is="modifiable ? 'fieldset' : 'div'"
+    class="no-border"
+    :aria-labelledby="modifiable ? 'changement-evolution-title' : undefined"
+  >
+    <div class="fr-mb-4v">
       <div class="fr-col-12">
         <DsfrInputGroup
           v-if="props.modifiable"
@@ -32,7 +40,7 @@
         />
       </div>
     </div>
-    <div class="fr-fieldset__element">
+    <div class="fr-mb-4v fr-mt-6v">
       <UtilsMultiFilesUpload
         v-model="filesChangeEvol"
         hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
@@ -40,17 +48,24 @@
         :modifiable="props.modifiable"
       />
     </div>
-    <div class="fr-fieldset__element">
+    <div class="fr-mb-4v">
       <DsfrCheckbox
+        v-if="props.modifiable"
         v-model="bilanAucunChangementEvolution"
         name="checkbox-required-custom"
         label="Aucun changement ou évolution à déclarer."
-        :readonly="!props.modifiable"
         :error-message="bilanAucunChangementEvolutionErrorMessage"
         :value="true"
       />
+      <UtilsDisplayCheckbox
+        v-else
+        name="bilanAucunChangementEvolution"
+        label="Aucun changement ou évolution à déclarer."
+        :checked="bilanAucunChangementEvolution"
+        :is-valid="true"
+      />
     </div>
-  </fieldset>
+  </component>
 </template>
 
 <script setup lang="ts">

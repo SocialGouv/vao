@@ -6,9 +6,9 @@
   >
     Protocole de réorientation, évacuation, rapatriement prévu
   </TitleWithIcon>
-  <h4 class="fr-text--lg">Réorientation, évacuation</h4>
+  <h4 class="fr-text--md">Réorientation, évacuation</h4>
 
-  <div class="fr-fieldset__element">
+  <div class="fr-mb-4v">
     <div class="fr-col-12">
       <DisplayLabel
         :value="props.initAgrement?.protocoleEvacUrg"
@@ -17,7 +17,7 @@
       />
     </div>
   </div>
-  <div class="fr-fieldset__element fr-mt-8v">
+  <div class="fr-mb-4v">
     <div class="fr-col-12">
       <DisplayLabel
         :value="props.initAgrement?.protocoleRapatUrg"
@@ -27,7 +27,7 @@
     </div>
   </div>
 
-  <div class="fr-fieldset__element">
+  <div class="fr-mb-4v">
     <MultiFilesUpload
       v-model="filesProjetsSejoursProtocoleReorientation"
       :modifiable="false"
@@ -37,8 +37,8 @@
     />
   </div>
   <hr class="fr-mt-8v" />
-  <h4 class="fr-text--lg">Rapatriement</h4>
-  <div class="fr-fieldset__element fr-mt-8v">
+  <h4 class="fr-text--md">Rapatriement</h4>
+  <div class="fr-mb-4v">
     <div class="fr-col-12">
       <DisplayLabel
         :value="props.initAgrement?.protocoleRapatEtranger"
@@ -49,7 +49,7 @@
       />
     </div>
   </div>
-  <div class="fr-fieldset__element fr-mt-8v">
+  <div class="fr-mb-4v">
     <div class="fr-col-12">
       <DisplayLabel
         :value="props.initAgrement?.protocoleInfoFamille"
@@ -60,7 +60,7 @@
       />
     </div>
   </div>
-  <div class="fr-fieldset__element fr-mt-8v">
+  <div class="fr-mb-4v">
     <MultiFilesUpload
       v-model="filesProjetsSejoursProtocoleRapatriement"
       :modifiable="false"

@@ -7,20 +7,25 @@
     >
       Personne morale
     </TitleWithIcon>
-    <dl class="fr-text--sm fr-pl-0">
-      <dt>Dénomination sociale:</dt>
-      <dd>{{ personneMorale.raisonSociale || "-" }}</dd>
-      <dt>Statut, forme juridique:</dt>
-      <dd>{{ personneMorale.statut || "-" }}</dd>
+    <dl class="fr-text--sm fr-pl-0 fr-mt-6v">
+      <dt class="read-only-label">Dénomination sociale:</dt>
+      <dd class="read-only-value">
+        <DisplayEmpty :value="personneMorale.raisonSociale" />
+      </dd>
+      <dt class="read-only-label">Statut, forme juridique:</dt>
+      <dd class="read-only-value">
+        <DisplayEmpty :value="personneMorale.statut" />
+      </dd>
 
       <template v-if="!isEditingTelephone">
-        <dt>Téléphone :</dt>
-        <dd>
-          {{ personneMorale.telephone || "-" }}
+        <dt class="read-only-label">Téléphone :</dt>
+        <dd class="read-only-value">
+          <DisplayEmpty :value="personneMorale.telephone" />
           <DsfrLinkV2
             v-if="modifiable"
             as="button"
             icon-name="icon-edit-line"
+            custom-class="fr-pl-4v fr-text--sm"
             @click="startEditTelephone"
           >
             Modifier
@@ -50,13 +55,14 @@
       </template>
 
       <template v-if="!isEditingEmail">
-        <dt>Email :</dt>
-        <dd>
-          {{ personneMorale.email || "-" }}
+        <dt class="read-only-label">Email :</dt>
+        <dd class="read-only-value">
+          <DisplayEmpty :value="personneMorale.email" />
           <DsfrLinkV2
             v-if="modifiable"
             as="button"
             icon-name="icon-edit-line"
+            custom-class="fr-pl-4v fr-text--sm"
             @click="startEditEmail"
           >
             Modifier
@@ -84,8 +90,10 @@
           </fieldset>
         </dd>
       </template>
-      <dt>Adresse du siège social :</dt>
-      <dd>{{ personneMorale.adresse || "-" }}</dd>
+      <dt class="read-only-label">Adresse du siège social :</dt>
+      <dd class="read-only-value">
+        <DisplayEmpty :value="personneMorale.adresse" />
+      </dd>
     </dl>
 
     <AgrementRepresentants
@@ -101,7 +109,12 @@
 import { ref, computed } from "vue";
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
-import { TitleWithIcon, DsfrLinkV2, useToaster } from "@vao/shared-ui";
+import {
+  TitleWithIcon,
+  DsfrLinkV2,
+  DisplayEmpty,
+  useToaster,
+} from "@vao/shared-ui";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import { telephoneYupNullable } from "@/utils/telephoneValidators";
@@ -216,9 +229,6 @@ dl {
 }
 dd {
   padding-left: 0;
-}
-dt {
-  font-weight: bold;
 }
 .full-width {
   grid-column: 1 / span 2;

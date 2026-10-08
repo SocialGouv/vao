@@ -28,19 +28,28 @@
   </div>
   <p class="light-decisions-text-text-default-info fr-text--xs fr-mt-8v">
     <span class="fr-icon-info-fill" aria-hidden="true"></span>
-    Pour chaque section, renseignez au choix une description texte et/ou un
-    fichier joint. L’un des deux est requis.
+    Pour chaque section, renseignez
+    <span class="fr-text--bold"
+      >au choix une description texte et/ou un fichier joint</span
+    >. L’un des deux est requis.
   </p>
-  <div class="border fr-p-4v">
-    <fieldset class="no-border">
-      <legend class="fr-fieldset__legend fr-text--lead">
+  <div :class="props.modifiable ? 'border fr-pt-4v' : 'fr-pt-4v'">
+    <component :is="props.modifiable ? 'fieldset' : 'div'" class="no-border">
+      <component
+        :is="props.modifiable ? 'legend' : 'h4'"
+        :class="
+          props.modifiable
+            ? 'fr-fieldset__legend fr-text--md'
+            : 'fr-my-2w fr-text--sm fr-text--bold'
+        "
+      >
         Compétences et expériences des accompagnants prévus par lieu de
         vacances, notamment pour ce qui concerne l’encadrement de certaines
         activités sportives. Ou expériences du responsable du déroulement du
         séjour sur le lieu de vacances.
-      </legend>
+      </component>
 
-      <div class="fr-fieldset__element">
+      <div class="fr-mb-4v">
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
@@ -63,7 +72,7 @@
           />
         </div>
       </div>
-      <div class="fr-fieldset__element">
+      <div class="fr-mb-4v">
         <UtilsMultiFilesUpload
           v-model="filesProjetsSejoursCompetencesExperience"
           hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
@@ -77,16 +86,26 @@
           {{ filesProjetsSejoursCompetencesExperienceError }}
         </p>
       </div>
-    </fieldset>
+    </component>
   </div>
-  <div class="border fr-p-4v fr-mt-6v">
-    <fieldset class="no-border">
-      <legend class="fr-fieldset__legend fr-text--lead">
+  <div
+    class="fr-mt-6v"
+    :class="props.modifiable ? 'border fr-pt-4v' : 'fr-pt-4v'"
+  >
+    <component :is="props.modifiable ? 'fieldset' : 'div'" class="no-border">
+      <component
+        :is="props.modifiable ? 'legend' : 'h4'"
+        :class="
+          props.modifiable
+            ? 'fr-fieldset__legend fr-text--md'
+            : 'fr-my-2w fr-text--sm fr-text--bold'
+        "
+      >
         Mesures envisagées au cas où des accompagnants supplémentaires devraient
         être recrutés en urgence
-      </legend>
+      </component>
 
-      <div class="fr-fieldset__element">
+      <div class="fr-mb-4v">
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
@@ -111,7 +130,7 @@
           />
         </div>
       </div>
-      <div class="fr-fieldset__element">
+      <div class="fr-mb-4v">
         <UtilsMultiFilesUpload
           v-model="filesProjetsSejoursMesures"
           :modifiable="props.modifiable"
@@ -122,9 +141,9 @@
           {{ filesProjetsSejoursMesuresError }}
         </p>
       </div>
-    </fieldset>
+    </component>
   </div>
-  <!-- <div class="fr-fieldset__element fr-mt-6v">
+  <!-- <div class="fr-mb-4v">
     <UtilsMultiFilesUpload
       v-model="filesProjetsSejoursComplementaires"
       :modifiable="props.modifiable"

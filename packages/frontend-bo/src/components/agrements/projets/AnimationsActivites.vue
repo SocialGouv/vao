@@ -8,11 +8,17 @@
   </TitleWithIcon>
   <div class="flex flex-col">
     <div>
-      {{
-        (props.initAgrement?.agrementAnimation as any)
-          ?.map((item: any) => item.activite?.libelle)
-          .join(", ")
-      }}
+      <div
+        v-for="item in props.initAgrement?.agrementAnimation"
+        :key="item.activite?.libelle"
+        class="fr-mb-1v"
+      >
+        <DisplayCheckbox
+          :label="item.activite?.libelle"
+          name="agrementAnimation"
+          :checked="true"
+        />
+      </div>
     </div>
     <div class="fr-mt-4v">
       <DisplayLabel
@@ -29,6 +35,7 @@ import {
   TitleWithIcon,
   DisplayLabel,
   AgrementDisplayInput,
+  DisplayCheckbox,
 } from "@vao/shared-ui";
 
 const agrementStore = useAgrementStore();
