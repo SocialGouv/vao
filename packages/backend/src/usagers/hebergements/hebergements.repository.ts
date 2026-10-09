@@ -128,7 +128,7 @@ export const HebergementsRepository = {
       JOIN front.site_organisme so ON so.site_id = s.site_id
       LEFT JOIN front.hebergement_statut hs ON hs.id = uh.statut_id
       LEFT JOIN front.adresse a ON a.id = s.adresse_id
-      LEFT JOIN front.hebergement_type ht ON ht.id = s.hebergement_type_id
+      LEFT JOIN front.hebergement_type ht ON ht.id = so.hebergement_type_id
     `;
 
     const selectQuery = `
