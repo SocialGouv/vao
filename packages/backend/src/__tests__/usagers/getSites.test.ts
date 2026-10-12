@@ -228,6 +228,25 @@ describe("GET /hebergement/sites", () => {
     expect(response.body.rows).toHaveLength(1);
   });
 
+  it("retourne tous les sites sans erreur quand limit est négatif (-1)", async () => {
+    await setFeatureFlagEnabled({
+      enabled: true,
+      name: FeatureFlagName.MODULE_SITE_UNITE_HEBERGEMENT,
+    });
+    const { organismeId } = await createUserAndSiege();
+    await createHebergement({ organismeId, userId: authUser.id });
+    await createHebergement({ organismeId, userId: authUser.id });
+    await createHebergement({ organismeId, userId: authUser.id });
+
+    const response = await request(getFoAppHelper(authUser))
+      .get("/hebergement/sites")
+      .query({ limit: -1 });
+
+    expect(response.status).toBe(200);
+    expect(response.body.total).toBe(3);
+    expect(response.body.rows).toHaveLength(3);
+  });
+
   it("respecte la cohérence entre le statut legacy et celui de l'unité courante", async () => {
     await setFeatureFlagEnabled({
       enabled: true,

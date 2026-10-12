@@ -1,7 +1,6 @@
 const yup = require("yup");
 const dayjs = require("dayjs");
 
-const { logger } = require("../utils/logger");
 const Regions = require("../services/geo/Region");
 const hebergementUtils = require("./hebergement");
 const informationsVacanciersSchema = require("./parts/informations-vacanciers");
@@ -10,34 +9,11 @@ const protocoleTransportSchema = require("./parts/protocoleTransport");
 const protocoleSanitaireSchema = require("./parts/protocoleSanitaire");
 const personne = require("./parts/personne.js");
 const prestataire = require("./parts/prestataire.js");
-const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
+const {
+  DEMANDE_SEJOUR_STATUTS,
+  isSejourComplet,
+} = require("@vao/shared-bridge");
 const Organisme = require("../schemas/organisme");
-
-const log = logger(module.filename);
-
-function isSejourComplet(hebergements, dateDebut, dateFin) {
-  log.d("isSejourComplet - IN", { dateDebut, dateFin, hebergements });
-  if (hebergements.length === 0) {
-    return false;
-  }
-
-  let memoDate = dateDebut;
-
-  for (let i = 0; i < hebergements.length; i++) {
-    log.d("isSejourComplet", hebergements[i].dateDebut, memoDate);
-    const dateDebut = dayjs(hebergements[i].dateDebut).format("YYYY-MM-DD");
-    if (dateDebut !== memoDate) {
-      return false;
-    }
-    memoDate = dayjs(hebergements[i].dateFin).format("YYYY-MM-DD");
-  }
-
-  log.d("isSejourComplet", memoDate, dateFin);
-  if (memoDate !== dateFin) {
-    return false;
-  }
-  return true;
-}
 
 function isUpdateFUsager8Jour(statut) {
   return (

@@ -1,5 +1,4 @@
 fileignoreconfig:
-
 - filename: .claude/product.md
   checksum: 60eb40f72aaa7536bf2ab4e233f5dd9f97c1be0b167664512f88d6bf321ee3b4
 - filename: .env.dev.example.env
@@ -324,6 +323,8 @@ fileignoreconfig:
   checksum: a5c2caf47b1b715b2cf8240e9af9090061faae6261b21bc62173689f1666536e
 - filename: packages/frontend-usagers/src/components/ApiTokenManager.vue
   checksum: 56a62209a9c1ac0d43c66a8971c23c9db1bba9e77bc222211e10468fdc795d79
+- filename: packages/frontend-usagers/src/components/DS/DSHebergementItinerant.vue
+  checksum: 717093280548b9e1dd9b076d807b26ffab896e1087b5d6bd9b625d41110014f4
 - filename: packages/frontend-usagers/src/components/DS/hebergements-sejour-detail.vue
   checksum: ea2516289eea24b6cf226322360163f840249383a5b30f5766ac730e52463162
 - filename: packages/frontend-usagers/src/components/DS/hebergements-sejour.vue
@@ -530,4 +531,4 @@ fileignoreconfig:
   checksum: 02a2dbfd1e8ee33508cfe0c1549876cad19b65eb07c3857d9c2bc97311c2533e
 - filename: s/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
-  version: "1.0"
+version: "1.0"

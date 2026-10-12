@@ -1,10 +1,9 @@
 import * as yup from "yup";
 import dayjs from "dayjs";
-import { formatISOShort } from "@vao/shared-bridge";
+import { isSejourComplet } from "@vao/shared-bridge";
 import {
   informationsPersonnel,
   informationsVacanciers,
-  logger,
   personne,
   projetSejour,
   protocoleSanitaire,
@@ -21,8 +20,6 @@ import regex from "./regex";
 const statuts = {
   ...statusUtils.defaultStatus,
 };
-
-const log = logger("utils/DeclarationSejour");
 
 const isPost8Jour = (statut) =>
   [
@@ -41,34 +38,6 @@ const isUpdate8Jour = (statut) =>
     statuts.A_MODIFIER_8J,
     statuts.SEJOUR_EN_COURS,
   ].includes(statut);
-
-function isSejourComplet(hebergements, dateDebut, dateFin) {
-  log.d("isSejourComplet - IN", { hebergements, dateDebut, dateFin });
-  if (hebergements.length === 0) {
-    return false;
-  }
-
-  const dateFinSejour = formatISOShort(dateFin);
-  let memoDate = formatISOShort(dateDebut);
-  if (!dateFinSejour || !memoDate) {
-    return false;
-  }
-
-  for (let i = 0; i < hebergements.length; i++) {
-    log.d("isSejourComplet", hebergements[i].dateDebut, memoDate);
-    const hebergementDateDebut = formatISOShort(hebergements[i].dateDebut);
-    if (!hebergementDateDebut || hebergementDateDebut !== memoDate) {
-      return false;
-    }
-    memoDate = formatISOShort(hebergements[i].dateFin);
-    if (!memoDate) {
-      return false;
-    }
-  }
-
-  log.d("isSejourComplet", memoDate, dateFinSejour);
-  return memoDate === dateFinSejour;
-}
 
 const baseSchema = {
   libelle: yup
@@ -127,7 +96,7 @@ const hebergementDetailsSchema = {
     ...hebergementUtils.informationsTransportSchema,
     rejoindreEtape: yup.string().nullable(),
   }),
-  nom: yup.string().required(),
+  nom: yup.string().required("Le nom de l'hébergement est obligatoire"),
 };
 
 const attestationSchema = {
@@ -149,21 +118,10 @@ const attestationSchema = {
 
 const hebergementSchema = (dateDebut, dateFin) => ({
   sejourItinerant: yup.boolean().required(),
-  sejourEtranger: yup.boolean().when("sejourItinerant", {
-    is: (sejourItinerant) => !!sejourItinerant,
-    then: (sejourEtranger) => sejourEtranger.required(),
-    otherwise: (sejourEtranger) => sejourEtranger.nullable().strip(),
-  }),
+  sejourEtranger: yup.boolean().nullable(),
   hebergements: yup
     .array()
     .of(yup.object(hebergementDetailsSchema))
-    .when("sejourItinerant", {
-      is: true,
-      otherwise: (hebergements) =>
-        hebergements.length(1, "L'hébergement doit être unique"),
-      then: (hebergements) =>
-        hebergements.min(2, "Au moins deux hebergements sont attendus"),
-    })
     .test(
       "sejourComplet",
       "La liste des hébergements n'est pas complète",

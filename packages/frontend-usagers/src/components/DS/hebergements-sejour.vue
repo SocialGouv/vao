@@ -6,7 +6,29 @@
         sont obligatoires</span
       >
     </div>
-    <div v-if="!nuiteeOpened">
+    <div v-if="isModuleHebergementEnabled">
+      <DSHebergementsSejourModule
+        :modifiable="props.modifiable"
+        :date-debut="demandeSejourStore.demandeCourante.dateDebut!"
+        :date-fin="demandeSejourStore.demandeCourante.dateFin!"
+        :initial-value="demandeSejourStore.demandeCourante.hebergement"
+        :single-site-error="singleSiteError"
+        :itinerary-date-debut-error="itineraryDateDebutError"
+        :itinerary-date-fin-error="itineraryDateFinError"
+        :itinerary-site-error="itinerarySiteError"
+        :sejour-etranger-error="sejourEtrangerErrorMessage"
+        @update="onModuleUpdate"
+        @create-site="openLeaveFunnelModal"
+      />
+      <UtilsNavigationButtons
+        :show-buttons="props.showButtons"
+        :is-downloading="props.isDownloading"
+        :message="props.message"
+        @next="next"
+        @previous="emit('previous')"
+      />
+    </div>
+    <div v-else-if="!nuiteeOpened">
       <div class="fr-fieldset">
         <div class="fr-fieldset__element fr-col-12">
           <div>
@@ -169,11 +191,13 @@ import {
   formatISOShort,
   HebergementFunnelOrigin,
   FeatureFlagName,
+  type DemandeSejourHebergementDto,
   type DemandeSejourHebergementItemDto,
 } from "@vao/shared-bridge";
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 
 type HebergementFormValues = {
+  sejourItinerant: boolean;
   sejourEtranger: boolean;
   hebergements: DemandeSejourHebergementItemDto[];
 };
@@ -261,11 +285,12 @@ const validationSchema = computed(() => {
 const hebergementDemande = demandeSejourStore.demandeCourante.hebergement;
 
 const initialValues: HebergementFormValues = {
+  sejourItinerant: hebergementDemande?.sejourItinerant ?? false,
   sejourEtranger: hebergementDemande?.sejourEtranger ?? false,
   hebergements: hebergementDemande?.hebergements ?? [],
 };
 
-const { meta, values } = useForm<HebergementFormValues>({
+const { meta, values, errors, validate } = useForm<HebergementFormValues>({
   initialValues,
   validationSchema,
 });
@@ -276,6 +301,8 @@ const {
   handleChange: onSejourEtrangerChange,
   meta: sejourEtrangerMeta,
 } = useField<boolean>("sejourEtranger");
+const { handleChange: onSejourItinerantChange } =
+  useField<boolean>("sejourItinerant");
 const { value: hebergements, handleChange: onHebergementsChange } =
   useField<DemandeSejourHebergementItemDto[]>("hebergements");
 
@@ -406,6 +433,58 @@ const isSejourComplet = computed(() =>
   ),
 );
 
+const modulePayload = ref<DemandeSejourHebergementDto | null>(null);
+const lastErrorToast = ref<{ destroy: () => void } | null>(null);
+
+function fieldError(path: string): string {
+  return (errors.value as Record<string, string | undefined>)[path] ?? "";
+}
+
+const singleSiteError = computed(() => {
+  if (modulePayload.value?.sejourItinerant) {
+    return "";
+  }
+  return (
+    fieldError("hebergements[0].hebergementId") ||
+    fieldError("hebergements[0].dateDebut") ||
+    fieldError("hebergements[0].dateFin")
+  );
+});
+
+function itineraryDateDebutError(index: number): string {
+  return fieldError(`hebergements[${index}].dateDebut`);
+}
+
+function itineraryDateFinError(index: number): string {
+  return fieldError(`hebergements[${index}].dateFin`);
+}
+
+function itinerarySiteError(index: number): string {
+  return fieldError(`hebergements[${index}].hebergementId`);
+}
+
+const summaryErrors = computed(() => {
+  const seen = new Set<string>();
+  const messages: string[] = [];
+  for (const [path, message] of Object.entries(errors.value)) {
+    if (!path.startsWith("hebergements") || !message) {
+      continue;
+    }
+    if (!seen.has(message)) {
+      seen.add(message);
+      messages.push(message);
+    }
+  }
+  return messages;
+});
+
+function onModuleUpdate(value: DemandeSejourHebergementDto) {
+  modulePayload.value = value;
+  onHebergementsChange(value.hebergements);
+  onSejourEtrangerChange(value.sejourEtranger ?? false);
+  onSejourItinerantChange(value.sejourItinerant ?? false);
+}
+
 function buildHebergementsPayload() {
   return {
     ...toRaw(values),
@@ -414,7 +493,66 @@ function buildHebergementsPayload() {
   };
 }
 
+function buildIncompleteMessages(
+  items: DemandeSejourHebergementItemDto[],
+): string[] {
+  const messages: string[] = [];
+  items.forEach((item, index) => {
+    const etape = index + 1;
+    if (!item.hebergementId || !item.nom) {
+      messages.push(
+        `À l'étape ${etape}, le lieu d'hébergement n'est pas renseigné`,
+      );
+    }
+    if (!item.dateDebut) {
+      messages.push(`À l'étape ${etape}, renseignez la date de début`);
+    }
+    if (!item.dateFin) {
+      messages.push(`À l'étape ${etape}, renseignez la date de fin`);
+    }
+  });
+  return messages;
+}
+
 async function next() {
+  if (isModuleHebergementEnabled.value && modulePayload.value) {
+    const result = await validate();
+    if (!result.valid) {
+      lastErrorToast.value?.destroy();
+      const details = buildIncompleteMessages(
+        modulePayload.value.hebergements,
+      );
+      const isItinerant = modulePayload.value.sejourItinerant;
+      const count = modulePayload.value.hebergements.length;
+      if (isItinerant && count < 2) {
+        details.push("Au moins deux hébergements sont attendus");
+      } else if (!isItinerant && count !== 1) {
+        details.push("L'hébergement doit être unique");
+      }
+      lastErrorToast.value = toaster.error({
+        id: "hebergements-incomplete",
+        titleTag: "h2",
+        title: "La période du séjour doit être intégralement couverte",
+        description:
+          details.length > 0
+            ? details.join(" ")
+            : summaryErrors.value.join(" "),
+        role: "alert",
+        duration: 6000,
+      });
+      return;
+    }
+    lastErrorToast.value = null;
+    emit(
+      "update",
+      {
+        ...modulePayload.value,
+        nombreHebergements: modulePayload.value.hebergements.length,
+      },
+      "hebergements",
+    );
+    return;
+  }
   if (!meta.value.dirty || !props.modifiable) {
     return emit("next");
   }

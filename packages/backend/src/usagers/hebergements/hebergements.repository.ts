@@ -151,20 +151,27 @@ export const HebergementsRepository = {
       ? ` ORDER BY ${sortColumn} ${direction}`
       : ` ORDER BY s.id DESC`;
 
-    const limitParamIndex = params.length + 1;
-    const offsetParamIndex = params.length + 2;
-
     const countQuery = `
       SELECT COUNT(*)::INT AS "total"
       ${fromJoin}
       WHERE ${where}
     `;
 
+    let pagination = "";
+    const selectParams = [...params];
+    if (limit > 0) {
+      const limitParamIndex = selectParams.length + 1;
+      const offsetParamIndex = selectParams.length + 2;
+      pagination = ` LIMIT $${limitParamIndex} OFFSET $${offsetParamIndex}`;
+      selectParams.push(limit, offset);
+    } else if (offset > 0) {
+      const offsetParamIndex = selectParams.length + 1;
+      pagination = ` OFFSET $${offsetParamIndex}`;
+      selectParams.push(offset);
+    }
+
     const [rowsResult, countResult] = await Promise.all([
-      getPool().query(
-        `${selectQuery}${orderBy} LIMIT $${limitParamIndex} OFFSET $${offsetParamIndex}`,
-        [...params, limit, offset],
-      ),
+      getPool().query(`${selectQuery}${orderBy}${pagination}`, selectParams),
       getPool().query(countQuery, params),
     ]);
 

@@ -1,6 +1,7 @@
 export * from "./date";
 export * from "./errors";
 export * from "./file";
+export * from "./isSejourComplet";
 export * from "./normalizeAdresse";
 export * from "./normalizeFilename";
 export * from "./parseAddressLabel";

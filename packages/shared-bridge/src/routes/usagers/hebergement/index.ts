@@ -4,12 +4,12 @@ import type { CheckTypeHebergementRoute } from "./checkTypeHebergement";
 import { CheckTypeHebergementRouteSchema } from "./checkTypeHebergement";
 import type { GetOneRoute } from "./getOne";
 import { GetOneRouteSchema } from "./getOne";
+import type { GetSitesRoute } from "./getSites";
+import { GetSitesRouteSchema } from "./getSites";
 import type { PatchSiteRoute } from "./patchSite";
 import { PatchSiteRouteSchema } from "./patchSite";
 import type { PostSiteRoute } from "./postSite";
 import { PostSiteRouteSchema } from "./postSite";
-import type { GetSitesRoute } from "./getSites";
-import { GetSitesRouteSchema } from "./getSites";
 
 export type HebergementUsagersRoutes = {
   CheckSimilarites: CheckSiteSimilaritesRoute;
@@ -24,9 +24,9 @@ export const HebergementUsagersRoutesSchema = {
   CheckSimilarites: CheckSiteSimilaritesRouteSchema,
   CheckTypeHebergement: CheckTypeHebergementRouteSchema,
   GetOne: GetOneRouteSchema,
+  GetSites: GetSitesRouteSchema,
   PatchSite: PatchSiteRouteSchema,
   PostSite: PostSiteRouteSchema,
-  GetSites: GetSitesRouteSchema,
 };
 
 export type {
@@ -37,6 +37,6 @@ export type {
   CheckTypeHebergementBody,
   CheckTypeHebergementResponse,
 } from "./checkTypeHebergement";
+export type { SitesUsagersSortColumn } from "./getSites";
 export type { PatchSiteBody, ResponsableDto } from "./patchSite";
 export type { PostSiteBody, PostSiteResponse } from "./postSite";
-export type { SitesUsagersSortColumn } from "./getSites";
