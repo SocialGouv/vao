@@ -143,6 +143,7 @@ import { useForm, useField } from "vee-validate";
 import { DsfrInputGroup, DsfrModal } from "@gouvminint/vue-dsfr";
 import { hebergement, useToaster } from "@vao/shared-ui";
 import InformationsTypeVerificationModal from "./InformationsTypeVerificationModal.vue";
+import type { UniteHebergementDto } from "@vao/shared-bridge";
 import {
   buildInformationsSiteFormValidationSchema,
   DESCRIPTION_MAX,
@@ -150,11 +151,11 @@ import {
 } from "./siteFormValidation";
 
 const typeIcons: Record<string, string> = {
-  hotel: "fr-icon-hotel-line",
-  meuble_tourisme: "fr-icon-home-4-line",
-  residence_tourisme: "fr-icon-store-line",
-  camping: "fr-icon-caravan-line",
-  autre: "fr-icon-map-pin-2-line",
+  hotel: "ri-hotel-line",
+  meuble_tourisme: "ri-home-8-line",
+  residence_tourisme: "ri-store-2-line",
+  camping: "ri-caravan-line",
+  autre: "ri-map-pin-range-line",
 };
 
 const typeHints: Record<string, string> = {
@@ -164,11 +165,13 @@ const typeHints: Record<string, string> = {
 const props = withDefaults(
   defineProps<{
     initValues?: Partial<InformationsSiteFormValues>;
+    initUnites?: UniteHebergementDto[];
     siteId?: string | null;
     organismeId?: number | null;
   }>(),
   {
     initValues: () => ({}),
+    initUnites: () => [],
     siteId: null,
     organismeId: null,
   },
@@ -199,10 +202,29 @@ const initialValues: InformationsSiteFormValues = {
 
 const validationSchema = buildInformationsSiteFormValidationSchema();
 
-const { handleSubmit } = useForm<InformationsSiteFormValues>({
+const { handleSubmit, setValues } = useForm<InformationsSiteFormValues>({
   validationSchema,
   initialValues,
 });
+
+watch(
+  () => props.initValues,
+  (initValues) => {
+    if (!initValues) {
+      return;
+    }
+    setValues({
+      typeHebergement: initValues.typeHebergement ?? "",
+      description: initValues.description ?? "",
+      responsable: {
+        nomPrenom: initValues.responsable?.nomPrenom ?? "",
+        telephone: initValues.responsable?.telephone ?? "",
+        email: initValues.responsable?.email ?? "",
+      },
+    });
+    pendingType.value = initValues.typeHebergement ?? "";
+  },
+);
 
 const {
   value: typeHebergement,

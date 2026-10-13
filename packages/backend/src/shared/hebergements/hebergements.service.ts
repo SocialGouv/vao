@@ -1,4 +1,5 @@
 import {
+  FileMetaDataDto,
   FUNCTIONAL_ERRORS,
   FunctionalException,
   InformationsLocauxDto,
@@ -11,6 +12,7 @@ import {
 import { PoolClient } from "pg";
 
 import { saveAdresse } from "../../services/adresse";
+import { getFileMetaData } from "../../services/Document";
 import { LegacyUniteContextEntity } from "./hebergements.entity";
 import { buildUniteWriteData } from "./hebergements.mapping";
 import { HebergementsRepositoryShared } from "./hebergements.repository";
@@ -43,20 +45,23 @@ type UpdateSiteInput = Omit<CreateSiteInput, "createdBy" | "adresseId"> &
 
 type CreateUniteHebergementInput = Pick<
   UniteHebergementDto,
-  "id" | "hebergementId" | "organismeId" | "siteId" | "statutId"
-> & {
-  createdBy: number;
-  informationsLocaux: InformationsLocauxDto;
-  typePensions: string[];
-  uniteData?: UniteHebergementPayloadDto;
-};
+  "organismeId" | "siteId" | "statutId"
+> &
+  Partial<Pick<UniteHebergementDto, "id" | "hebergementId">> & {
+    createdBy: number;
+    informationsLocaux?: InformationsLocauxDto;
+    prestationsHotelieres?: string[];
+    typePensions: string[];
+    uniteData?: UniteHebergementPayloadDto;
+  };
 
 type UpdateUniteHebergementInput = Pick<
   UniteHebergementDto,
   "id" | "hebergementId" | "statutId"
 > & {
   editedBy: number;
-  informationsLocaux: InformationsLocauxDto;
+  informationsLocaux?: InformationsLocauxDto;
+  prestationsHotelieres?: string[];
   typePensions: string[];
   uniteData?: UniteHebergementPayloadDto;
 };
@@ -66,9 +71,72 @@ type UpdateUniteHebergementInPlaceInput = Pick<
   "statutId"
 > & {
   editedBy: number;
-  informationsLocaux: InformationsLocauxDto;
+  informationsLocaux?: InformationsLocauxDto;
+  prestationsHotelieres?: string[];
   typePensions: string[];
   uniteData?: UniteHebergementPayloadDto;
+};
+
+const EMPTY_INFORMATIONS_LOCAUX: InformationsLocauxDto = {
+  accessibilite: null,
+  accessibilitePrecision: null,
+  amenagementsSpecifiques: null,
+  chambresDoubles: null,
+  chambresUnisexes: null,
+  couchageIndividuel: null,
+  descriptionLieuHebergement: null,
+  fileDernierArreteAutorisationMaire: null,
+  fileDerniereAttestationSecurite: null,
+  fileReponseExploitantOuProprietaire: null,
+  litsDessus: null,
+  nombreLits: null,
+  nombreLitsSuperposes: null,
+  nombreMaxPersonnesCouchage: null,
+  pension: null,
+  precisionAmenagementsSpecifiques: null,
+  prestationsHotelieres: [],
+  rangementIndividuel: null,
+  reglementationErp: null,
+  type: null,
+  visiteLocaux: null,
+  visiteLocauxAt: null,
+};
+
+const enrichFileMeta = async (
+  value: FileMetaDataDto | string | null,
+): Promise<FileMetaDataDto | null> =>
+  typeof value === "string" ? getFileMetaData(value) : value;
+
+const enrichFiles = async (
+  unite: UniteHebergementDto,
+): Promise<UniteHebergementDto> => {
+  const [
+    fileDernierArreteAutorisationMaire,
+    fileDerniereAttestationSecurite,
+    fileReponseExploitantOuProprietaire,
+  ] = await Promise.all([
+    enrichFileMeta(unite.fileDernierArreteAutorisationMaire),
+    enrichFileMeta(unite.fileDerniereAttestationSecurite),
+    enrichFileMeta(unite.fileReponseExploitantOuProprietaire),
+  ]);
+  return {
+    ...unite,
+    fileDernierArreteAutorisationMaire,
+    fileDerniereAttestationSecurite,
+    fileReponseExploitantOuProprietaire,
+  };
+};
+
+const resolveUniteData = (
+  uniteData: UniteHebergementPayloadDto | undefined,
+  informationsLocaux: InformationsLocauxDto | undefined,
+): UniteHebergementPayloadDto => {
+  if (uniteData) {
+    return uniteData;
+  }
+  return buildUniteWriteData({
+    informationsLocaux: informationsLocaux ?? EMPTY_INFORMATIONS_LOCAUX,
+  });
 };
 
 export const HebergementServiceShared = {
@@ -130,16 +198,13 @@ export const HebergementServiceShared = {
       id,
       informationsLocaux,
       organismeId,
+      prestationsHotelieres,
       siteId,
       statutId,
       typePensions,
       uniteData,
     } = input;
-    const data =
-      uniteData ??
-      buildUniteWriteData({
-        informationsLocaux,
-      });
+    const data = resolveUniteData(uniteData, informationsLocaux);
     const uniteId = await HebergementsRepositoryShared.createUniteHebergement(
       tx,
       {
@@ -157,6 +222,11 @@ export const HebergementServiceShared = {
       tx,
       uniteId,
       typePensions,
+    );
+    await HebergementsRepositoryShared.setUniteHebergementPrestationsHotelieres(
+      tx,
+      uniteId,
+      prestationsHotelieres ?? [],
     );
     return { id: uniteId };
   },
@@ -234,25 +304,30 @@ export const HebergementServiceShared = {
   async getUniteHebergementByHebergementId(
     hebergementId: string,
   ): Promise<UniteHebergementDto | null> {
-    return HebergementsRepositoryShared.getUniteHebergementsByHebergementId(
-      hebergementId,
-    );
+    const unite =
+      await HebergementsRepositoryShared.getUniteHebergementsByHebergementId(
+        hebergementId,
+      );
+    return unite ? enrichFiles(unite) : null;
   },
 
   async getUniteHebergementById(
     uniteHebergementId: number,
     tx: PoolClient,
   ): Promise<UniteHebergementDto | null> {
-    return HebergementsRepositoryShared.getUniteHebergementById(
+    const unite = await HebergementsRepositoryShared.getUniteHebergementById(
       uniteHebergementId,
       tx,
     );
+    return unite ? enrichFiles(unite) : null;
   },
 
   async getUniteHebergementsBySiteId(
     siteId: string,
   ): Promise<UniteHebergementDto[]> {
-    return HebergementsRepositoryShared.getUniteHebergementsBySiteId(siteId);
+    const unites =
+      await HebergementsRepositoryShared.getUniteHebergementsBySiteId(siteId);
+    return Promise.all(unites.map((unite) => enrichFiles(unite)));
   },
 
   async linkHebergementToSite(
@@ -390,11 +465,7 @@ export const HebergementServiceShared = {
         { hebergementId },
       );
     }
-    const data =
-      uniteData ??
-      buildUniteWriteData({
-        informationsLocaux,
-      });
+    const data = resolveUniteData(uniteData, informationsLocaux);
     await HebergementsRepositoryShared.unsetUniteHebergementCurrent(
       tx,
       uniteHebergementId,
@@ -421,13 +492,15 @@ export const HebergementServiceShared = {
     { ...input }: UpdateUniteHebergementInPlaceInput,
     tx: PoolClient,
   ): Promise<void> {
-    const { editedBy, informationsLocaux, statutId, typePensions, uniteData } =
-      input;
-    const data =
-      uniteData ??
-      buildUniteWriteData({
-        informationsLocaux,
-      });
+    const {
+      editedBy,
+      informationsLocaux,
+      prestationsHotelieres,
+      statutId,
+      typePensions,
+      uniteData,
+    } = input;
+    const data = resolveUniteData(uniteData, informationsLocaux);
     await HebergementsRepositoryShared.updateUniteHebergement(
       tx,
       uniteHebergementId,
@@ -442,5 +515,12 @@ export const HebergementServiceShared = {
       uniteHebergementId,
       typePensions,
     );
+    if (prestationsHotelieres !== undefined) {
+      await HebergementsRepositoryShared.setUniteHebergementPrestationsHotelieres(
+        tx,
+        uniteHebergementId,
+        prestationsHotelieres,
+      );
+    }
   },
 };

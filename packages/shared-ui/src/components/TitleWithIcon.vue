@@ -1,6 +1,10 @@
 <template>
   <div class="title-with-icon" :class="[marginTopClass, marginBottomClass]">
-    <span :class="iconClass" aria-hidden="true"></span>
+    <span
+      :class="['title-with-icon__icon', iconClass]"
+      aria-hidden="true"
+    ></span>
+
     <slot name="title">
       <component :is="headingTag" :class="['title-with-icon', titleClass]">
         <slot />
@@ -30,6 +34,12 @@ const marginBottomClass = computed(() => props.marginBottom);
 .title-with-icon {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.5rem;
+}
+
+.title-with-icon__icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
 }
 </style>

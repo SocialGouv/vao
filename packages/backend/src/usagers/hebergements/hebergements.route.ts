@@ -8,6 +8,14 @@ import { HebergementController } from "./hebergements.controller";
 
 const router = express.Router();
 
+router.get(
+  "/site/:siteId",
+  checkJWT,
+  requestValidatorMiddleware(HebergementUsagersRoutesSchema["GetSite"]),
+  checkPermissionOrganisme,
+  HebergementController.getSite,
+);
+
 router.post(
   "/site",
   checkJWT,
@@ -42,6 +50,26 @@ router.post(
   ),
   checkPermissionOrganisme,
   HebergementController.checkTypeHebergement,
+);
+
+router.post(
+  "/site/:siteId/unites",
+  checkJWT,
+  requestValidatorMiddleware(
+    HebergementUsagersRoutesSchema["PostUniteHebergement"],
+  ),
+  checkPermissionOrganisme,
+  HebergementController.postUniteHebergement,
+);
+
+router.patch(
+  "/site/:siteId/unites/:uniteId",
+  checkJWT,
+  requestValidatorMiddleware(
+    HebergementUsagersRoutesSchema["PatchUniteHebergement"],
+  ),
+  checkPermissionOrganisme,
+  HebergementController.patchUniteHebergement,
 );
 
 export default router;

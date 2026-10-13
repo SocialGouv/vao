@@ -73,9 +73,17 @@ export type {
   ResponsableDto,
 } from "./usagers/hebergement/patchSite";
 export type {
+  PatchUniteHebergementBody,
+  PatchUniteHebergementResponse,
+} from "./usagers/hebergement/patchUniteHebergement";
+export type {
   PostSiteBody,
   PostSiteResponse,
 } from "./usagers/hebergement/postSite";
+export type {
+  PostUniteHebergementBody,
+  PostUniteHebergementResponse,
+} from "./usagers/hebergement/postUniteHebergement";
 export type { SejourUsagersRoutes } from "./usagers/sejour";
 export { SejourUsagersRoutesSchema } from "./usagers/sejour";
 export type { SiretRoutes } from "./usagers/siret";

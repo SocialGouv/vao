@@ -41,6 +41,7 @@
     "nuxt-maplibre": "catalog:",
     "nuxt-security": "catalog:",
     "pinia": "catalog:",
+    "remixicon": "^4.9.1",
     "query-string": "catalog:",
     "ufo": "^1.5.4",
     "v-calendar": "catalog:",

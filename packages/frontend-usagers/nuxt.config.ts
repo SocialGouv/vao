@@ -17,6 +17,7 @@ export default defineNuxtConfig({
     "@gouvminint/vue-dsfr/styles",
     "@gouvfr/dsfr/dist/utility/icons/icons.min.css",
     "@/assets/css/main.css",
+    "remixicon/fonts/remixicon.css",
   ],
   devtools: { enabled: false },
   modules: [

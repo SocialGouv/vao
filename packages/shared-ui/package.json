@@ -24,6 +24,7 @@
     "debug": "catalog:",
     "ofetch": "catalog:",
     "nuxt": "catalog:",
+    "remixicon": "^4.9.1",
     "vee-validate": "catalog:",
     "vue": "catalog:",
     "yup": "catalog:"

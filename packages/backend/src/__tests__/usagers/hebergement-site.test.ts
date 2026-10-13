@@ -3,6 +3,7 @@ import request from "supertest";
 import { HebergementServiceShared } from "../../shared/hebergements/hebergements.service";
 import { withTransaction } from "../../utils/pgpool";
 import { getFoAppHelper } from "../helpers/appHelper";
+import { createDocument } from "../helpers/documentHelper";
 import { createOrganisme } from "../helpers/organismeHelper";
 import {
   createTestContainer,
@@ -30,6 +31,51 @@ const buildBody = (organismeId: number, overrides: object = {}) => ({
   organismeId,
   ...overrides,
 });
+
+const buildUniteBody = (overrides: object = {}, includeCollections = true) => ({
+  accessibilitePmr: true,
+  accessibilitePrecision: null,
+  amenagementsSpecifiques: false,
+  amenagementsSpecifiquesPrecision: null,
+  chambresDoubles: false,
+  complementLocalisation: "Bâtiment A",
+  couchageIndividuel: true,
+  fileDernierArreteAutorisationMaire: null,
+  fileDerniereAttestationSecurite: null,
+  fileReponseExploitantOuProprietaire: null,
+  litsSuperposes: false,
+  nombreChambreTotal: 4,
+  nombreCouchageTotal: 8,
+  ...(includeCollections
+    ? {
+        prestationsHotelieres: ["blanchisseries", "entretien_locaux"],
+        typePensions: ["demi_pension", "pension_complete"],
+      }
+    : {}),
+  rangementIndividuel: true,
+  reglementationErp: false,
+  separationHommeFemme: true,
+  visiteLocaux: null,
+  visiteLocauxAt: null,
+  ...overrides,
+});
+
+const createSiteForUser = async () => {
+  const user = await createUsagersUser();
+  const organismeId = await createOrganisme({ userId: user.id });
+  const response = await request(getFoAppHelper(user))
+    .post("/hebergement/site")
+    .send(
+      buildBody(organismeId, {
+        adresse: buildAdresse(`134 rue Gilles de Montal, ${user.id}`),
+        nomSite: `Gîte des Pins ${user.id}`,
+        nomSiteOfficiel: `Gîte des Pins ${user.id}`,
+      }),
+    );
+
+  expect(response.status).toBe(201);
+  return { organismeId, siteId: response.body.siteId as string, user };
+};
 
 beforeAll(async () => {
   await createTestContainer();
@@ -169,6 +215,169 @@ const buildPatchBody = (organismeId: number, overrides: object = {}) => ({
     telephone: "0612345678",
   },
   ...overrides,
+});
+
+describe("GET /hebergement/site/:siteId", () => {
+  it("retourne 400 si organismeId est absent du query", async () => {
+    authUser = await createUsagersUser();
+
+    const response = await request(getFoAppHelper(authUser)).get(
+      "/hebergement/site/some-site-id",
+    );
+
+    expect(response.status).toBe(400);
+  });
+
+  it("retourne 403 si l'utilisateur n'est pas lié à l'organisme", async () => {
+    authUser = await createUsagersUser();
+    const otherUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: otherUser.id });
+
+    const response = await request(getFoAppHelper(authUser)).get(
+      `/hebergement/site/some-site-id?organismeId=${organismeId}`,
+    );
+
+    expect(response.status).toBe(403);
+  });
+
+  it("retourne le site lié à l'organisme de l'utilisateur avec son adresse", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+
+    const { body } = await request(getFoAppHelper(authUser))
+      .post("/hebergement/site")
+      .send(buildBody(organismeId));
+    expect(body.siteId).toBeDefined();
+
+    const response = await request(getFoAppHelper(authUser)).get(
+      `/hebergement/site/${body.siteId}?organismeId=${organismeId}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.body.site).not.toBeNull();
+    expect(response.body.site.siteId).toBe(body.siteId);
+    expect(response.body.site.organismeId).toBe(organismeId);
+    expect(response.body.site.nomSite).toBe("Gîte des Pins");
+    expect(response.body.site.nomSiteOfficiel).toBe("Gîte des Pins");
+    expect(response.body.site.adresse?.label).toBe(
+      "134 rue Gilles de Montal, 67730 La Vancelle",
+    );
+    expect(response.body.unitesHebergement).toEqual([]);
+  });
+
+  it("retourne null si le site n'appartient pas à l'organisme", async () => {
+    authUser = await createUsagersUser();
+    const ownerUser = await createUsagersUser();
+    const ownerOrganismeId = await createOrganisme({ userId: ownerUser.id });
+
+    const { body } = await request(getFoAppHelper(ownerUser))
+      .post("/hebergement/site")
+      .send(buildBody(ownerOrganismeId));
+    expect(body.siteId).toBeDefined();
+
+    const userOrganismeId = await createOrganisme({ userId: authUser.id });
+    const response = await request(getFoAppHelper(authUser)).get(
+      `/hebergement/site/${body.siteId}?organismeId=${userOrganismeId}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.body.site).toBeNull();
+    expect(response.body.unitesHebergement).toEqual([]);
+  });
+});
+
+describe("POST /hebergement/site/:siteId/unites", () => {
+  it("crée une unité et enrichit ses fichiers dans la réponse et le GET du site", async () => {
+    const { user, organismeId, siteId } = await createSiteForUser();
+    const [fileArrete, fileAttestation, fileNonAssujettissement] =
+      await Promise.all([
+        createDocument({ userId: user.id }),
+        createDocument({ userId: user.id }),
+        createDocument({ userId: user.id }),
+      ]);
+
+    const response = await request(getFoAppHelper(user))
+      .post(`/hebergement/site/${siteId}/unites`)
+      .send({
+        organismeId,
+        ...buildUniteBody({
+          fileDernierArreteAutorisationMaire: fileArrete,
+          fileDerniereAttestationSecurite: fileAttestation,
+          fileReponseExploitantOuProprietaire: fileNonAssujettissement,
+        }),
+      });
+
+    expect(response.status).toBe(201);
+    expect(response.body.id).toEqual(expect.any(Number));
+    expect(response.body.siteId).toBe(siteId);
+    expect(response.body.typePensions).toEqual([
+      "demi_pension",
+      "pension_complete",
+    ]);
+    expect(response.body.prestationsHotelieres).toEqual([
+      "blanchisseries",
+      "entretien_locaux",
+    ]);
+    expect(response.body.fileDernierArreteAutorisationMaire).toBe(fileArrete);
+    expect(response.body.fileDerniereAttestationSecurite).toBe(fileAttestation);
+    expect(response.body.fileReponseExploitantOuProprietaire).toBe(
+      fileNonAssujettissement,
+    );
+
+    const siteResponse = await request(getFoAppHelper(user)).get(
+      `/hebergement/site/${siteId}?organismeId=${organismeId}`,
+    );
+
+    expect(siteResponse.status).toBe(200);
+    expect(siteResponse.body.unitesHebergement).toHaveLength(1);
+    expect(siteResponse.body.unitesHebergement[0]).toMatchObject({
+      fileDernierArreteAutorisationMaire: {
+        name: "document.pdf",
+        uuid: fileArrete,
+      },
+      fileDerniereAttestationSecurite: {
+        name: "document.pdf",
+        uuid: fileAttestation,
+      },
+      fileReponseExploitantOuProprietaire: {
+        name: "document.pdf",
+        uuid: fileNonAssujettissement,
+      },
+      id: response.body.id,
+    });
+  });
+});
+
+describe("PATCH /hebergement/site/:siteId/unites/:uniteId", () => {
+  it("met à jour l'unité en place et conserve les listes absentes du body", async () => {
+    const { user, organismeId, siteId } = await createSiteForUser();
+    const created = await request(getFoAppHelper(user))
+      .post(`/hebergement/site/${siteId}/unites`)
+      .send({ organismeId, ...buildUniteBody() });
+
+    expect(created.status).toBe(201);
+
+    const updated = await request(getFoAppHelper(user))
+      .patch(`/hebergement/site/${siteId}/unites/${created.body.id}`)
+      .query({ organismeId })
+      .send(buildUniteBody({ nombreCouchageTotal: 12 }, false));
+
+    expect(updated.status).toBe(200);
+    expect(updated.body.id).toBe(created.body.id);
+
+    const siteResponse = await request(getFoAppHelper(user)).get(
+      `/hebergement/site/${siteId}?organismeId=${organismeId}`,
+    );
+
+    expect(siteResponse.status).toBe(200);
+    expect(siteResponse.body.unitesHebergement).toHaveLength(1);
+    expect(siteResponse.body.unitesHebergement[0]).toMatchObject({
+      id: created.body.id,
+      nombreCouchageTotal: 12,
+      prestationsHotelieres: ["blanchisseries", "entretien_locaux"],
+      typePensions: ["demi_pension", "pension_complete"],
+    });
+  });
 });
 
 describe("PATCH /hebergement/site/:siteId", () => {
