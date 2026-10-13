@@ -29,7 +29,9 @@ export const HebergementsRepositoryShared = {
       hebergementId,
       id,
       litsSuperposes,
+      nombreChambreTotal,
       nombreCouchageTotal,
+      complementLocalisation,
       organismeId,
       rangementIndividuel,
       reglementationErp,
@@ -50,10 +52,12 @@ export const HebergementsRepositoryShared = {
       fileDernierArreteAutorisationMaire: string | null;
       fileDerniereAttestationSecurite: string | null;
       fileReponseExploitantOuProprietaire: string | null;
-      hebergementId: string;
-      id: number;
+      hebergementId?: string;
+      id?: number;
       litsSuperposes: boolean | null;
+      nombreChambreTotal: number | null;
       nombreCouchageTotal: number | null;
+      complementLocalisation: string | null;
       organismeId: number;
       rangementIndividuel: boolean | null;
       reglementationErp: boolean | null;
@@ -65,30 +69,41 @@ export const HebergementsRepositoryShared = {
     },
   ): Promise<number> {
     log.i("createUniteHebergement - IN");
-    const query = `
-      INSERT INTO front.unite_hebergement
-        (id, site_id, organisme_id, statut_id, created_by, edited_by,
-         hebergement_id, nombre_couchage_total, lits_superposes,
-         accessibilite_pmr, accessibilite_precision, chambres_doubles,
-         separation_homme_femme, reglementation_erp, couchage_individuel,
-         rangement_individuel, amenagements_specifiques,
-         amenagements_specifiques_precision,
-         file_reponse_exploitant_ou_proprietaire,
-         file_dernier_arrete_autorisation_maire,
-         file_derniere_attestation_securite, visite_locaux, visite_locaux_at)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14,
-              $15, $16, $17, $18, $19, $20, $21, $22, $23)
-      RETURNING id;
-    `;
-    const result = await tx.query(query, [
-      id,
+
+    const columns: string[] = [
+      "site_id",
+      "organisme_id",
+      "statut_id",
+      "created_by",
+      "edited_by",
+      "nombre_couchage_total",
+      "nombre_chambre_total",
+      "complement_localisation",
+      "lits_superposes",
+      "accessibilite_pmr",
+      "accessibilite_precision",
+      "chambres_doubles",
+      "separation_homme_femme",
+      "reglementation_erp",
+      "couchage_individuel",
+      "rangement_individuel",
+      "amenagements_specifiques",
+      "amenagements_specifiques_precision",
+      "file_reponse_exploitant_ou_proprietaire",
+      "file_dernier_arrete_autorisation_maire",
+      "file_derniere_attestation_securite",
+      "visite_locaux",
+      "visite_locaux_at",
+    ];
+    const values: unknown[] = [
       siteId,
       organismeId,
       statutId,
       createdBy,
       editedBy,
-      hebergementId,
       nombreCouchageTotal,
+      nombreChambreTotal,
+      complementLocalisation,
       litsSuperposes,
       accessibilitePmr,
       accessibilitePrecision,
@@ -104,7 +119,23 @@ export const HebergementsRepositoryShared = {
       fileDerniereAttestationSecurite,
       visiteLocaux,
       visiteLocauxAt,
-    ]);
+    ];
+    if (id !== undefined) {
+      columns.unshift("id");
+      values.unshift(id);
+    }
+    if (hebergementId !== undefined) {
+      columns.push("hebergement_id");
+      values.push(hebergementId);
+    }
+    const placeholders = values.map((_, index) => `$${index + 1}`).join(", ");
+    const query = `
+      INSERT INTO front.unite_hebergement
+        (${columns.join(", ")})
+      VALUES (${placeholders})
+      RETURNING id;
+    `;
+    const result = await tx.query(query, values);
     log.i("createUniteHebergement - DONE");
     return result.rows[0].id;
   },
@@ -205,14 +236,23 @@ export const HebergementsRepositoryShared = {
       SELECT
         uh.id, uh.site_id, uh.organisme_id, uh.statut_id, uh.created_at,
         uh.edited_at, uh.hebergement_id, uh."current", uh.created_by, uh.edited_by,
-        uh.nombre_couchage_total, uh.lits_superposes, uh.accessibilite_pmr,
+        uh.nombre_couchage_total, uh.nombre_chambre_total, uh.complement_localisation,
+        uh.lits_superposes, uh.accessibilite_pmr,
         uh.accessibilite_precision, uh.chambres_doubles, uh.separation_homme_femme,
         uh.reglementation_erp, uh.couchage_individuel, uh.rangement_individuel,
         uh.amenagements_specifiques, uh.amenagements_specifiques_precision,
         uh.file_reponse_exploitant_ou_proprietaire,
         uh.file_dernier_arrete_autorisation_maire, uh.file_derniere_attestation_securite,
         uh.visite_locaux, uh.visite_locaux_at,
-        hs.value AS statut
+        hs.value AS statut,
+        (SELECT COALESCE(ARRAY_AGG(hp.value ORDER BY hp.id), ARRAY[]::text[])
+           FROM front.unite_hebergement_to_prestations_hotelieres uhprest
+           JOIN front.hebergement_prestations_hotelieres hp ON hp.id = uhprest.prestation_id
+          WHERE uhprest.unite_hebergement_id = uh.id) AS "prestations_hotelieres",
+        (SELECT COALESCE(ARRAY_AGG(htp.value ORDER BY htp.id), ARRAY[]::text[])
+           FROM front.unite_hebergement_to_type_pension uhtp
+           JOIN front.hebergement_type_pension htp ON htp.id = uhtp.type_pension_id
+          WHERE uhtp.unite_hebergement_id = uh.id) AS "type_pensions"
       FROM front.unite_hebergement uh
       LEFT JOIN front.hebergement_statut hs ON hs.id = uh.statut_id
       WHERE uh.id = $1 AND uh."current" IS TRUE;
@@ -223,6 +263,22 @@ export const HebergementsRepositoryShared = {
     const entity = result.rows[0] as UniteHebergementEntity;
     entity.statut = result.rows[0].statut ?? null;
     return UniteHebergementMapper.toModel(entity);
+  },
+
+  async getUniteHebergementPrestationsHotelieres(
+    uniteHebergementId: number,
+    tx?: PoolClient,
+  ): Promise<string[]> {
+    log.i("getUniteHebergementPrestationsHotelieres - IN");
+    const query = `
+      SELECT hp.value
+      FROM front.unite_hebergement_to_prestations_hotelieres uhprest
+      LEFT JOIN front.hebergement_prestations_hotelieres hp ON hp.id = uhprest.prestation_id
+      WHERE uhprest.unite_hebergement_id = $1;
+    `;
+    const result = await (tx ?? getPool()).query(query, [uniteHebergementId]);
+    log.i("getUniteHebergementPrestationsHotelieres - DONE");
+    return result.rows.map((row) => row.value);
   },
 
   async getUniteHebergementTypePensions(
@@ -249,14 +305,23 @@ export const HebergementsRepositoryShared = {
       SELECT
         uh.id, uh.site_id, uh.organisme_id, uh.statut_id, uh.created_at,
         uh.edited_at, uh.hebergement_id, uh."current", uh.created_by, uh.edited_by,
-        uh.nombre_couchage_total, uh.lits_superposes, uh.accessibilite_pmr,
+        uh.nombre_couchage_total, uh.nombre_chambre_total, uh.complement_localisation,
+        uh.lits_superposes, uh.accessibilite_pmr,
         uh.accessibilite_precision, uh.chambres_doubles, uh.separation_homme_femme,
         uh.reglementation_erp, uh.couchage_individuel, uh.rangement_individuel,
         uh.amenagements_specifiques, uh.amenagements_specifiques_precision,
         uh.file_reponse_exploitant_ou_proprietaire,
         uh.file_dernier_arrete_autorisation_maire, uh.file_derniere_attestation_securite,
         uh.visite_locaux, uh.visite_locaux_at,
-        hs.value AS statut
+        hs.value AS statut,
+        (SELECT COALESCE(ARRAY_AGG(hp.value ORDER BY hp.id), ARRAY[]::text[])
+           FROM front.unite_hebergement_to_prestations_hotelieres uhprest
+           JOIN front.hebergement_prestations_hotelieres hp ON hp.id = uhprest.prestation_id
+          WHERE uhprest.unite_hebergement_id = uh.id) AS "prestations_hotelieres",
+        (SELECT COALESCE(ARRAY_AGG(htp.value ORDER BY htp.id), ARRAY[]::text[])
+           FROM front.unite_hebergement_to_type_pension uhtp
+           JOIN front.hebergement_type_pension htp ON htp.id = uhtp.type_pension_id
+          WHERE uhtp.unite_hebergement_id = uh.id) AS "type_pensions"
       FROM front.unite_hebergement uh
       LEFT JOIN front.hebergement_statut hs ON hs.id = uh.statut_id
       WHERE uh.hebergement_id = $1 AND uh."current" IS TRUE
@@ -279,14 +344,23 @@ export const HebergementsRepositoryShared = {
       SELECT
         uh.id, uh.site_id, uh.organisme_id, uh.statut_id, uh.created_at,
         uh.edited_at, uh.hebergement_id, uh."current", uh.created_by, uh.edited_by,
-        uh.nombre_couchage_total, uh.lits_superposes, uh.accessibilite_pmr,
+        uh.nombre_couchage_total, uh.nombre_chambre_total, uh.complement_localisation,
+        uh.lits_superposes, uh.accessibilite_pmr,
         uh.accessibilite_precision, uh.chambres_doubles, uh.separation_homme_femme,
         uh.reglementation_erp, uh.couchage_individuel, uh.rangement_individuel,
         uh.amenagements_specifiques, uh.amenagements_specifiques_precision,
         uh.file_reponse_exploitant_ou_proprietaire,
         uh.file_dernier_arrete_autorisation_maire, uh.file_derniere_attestation_securite,
         uh.visite_locaux, uh.visite_locaux_at,
-        hs.value AS statut
+        hs.value AS statut,
+        (SELECT COALESCE(ARRAY_AGG(hp.value ORDER BY hp.id), ARRAY[]::text[])
+           FROM front.unite_hebergement_to_prestations_hotelieres uhprest
+           JOIN front.hebergement_prestations_hotelieres hp ON hp.id = uhprest.prestation_id
+          WHERE uhprest.unite_hebergement_id = uh.id) AS "prestations_hotelieres",
+        (SELECT COALESCE(ARRAY_AGG(htp.value ORDER BY htp.id), ARRAY[]::text[])
+           FROM front.unite_hebergement_to_type_pension uhtp
+           JOIN front.hebergement_type_pension htp ON htp.id = uhtp.type_pension_id
+          WHERE uhtp.unite_hebergement_id = uh.id) AS "type_pensions"
       FROM front.unite_hebergement uh
       LEFT JOIN front.hebergement_statut hs ON hs.id = uh.statut_id
       WHERE uh.site_id = $1 AND uh."current" IS TRUE;
@@ -312,6 +386,37 @@ export const HebergementsRepositoryShared = {
     `;
     await tx.query(query, [hebergementId, siteId]);
     log.i("linkHebergementToSite - DONE");
+  },
+
+  async setUniteHebergementPrestationsHotelieres(
+    tx: PoolClient,
+    uniteHebergementId: number,
+    prestationValues: string[],
+  ): Promise<void> {
+    log.i("setUniteHebergementPrestationsHotelieres - IN");
+    await tx.query(
+      `DELETE FROM front.unite_hebergement_to_prestations_hotelieres WHERE unite_hebergement_id = $1`,
+      [uniteHebergementId],
+    );
+    if (prestationValues.length > 0) {
+      const { rows: prestationIdRows } = await tx.query(
+        `SELECT id
+           FROM front.hebergement_prestations_hotelieres
+          WHERE value = ANY($1)`,
+        [prestationValues],
+      );
+      const prestationIds = prestationIdRows.map((row) => row.id as number);
+      if (prestationIds.length > 0) {
+        const values = prestationIds
+          .map((_, i) => `($1, $${i + 2})`)
+          .join(", ");
+        await tx.query(
+          `INSERT INTO front.unite_hebergement_to_prestations_hotelieres (unite_hebergement_id, prestation_id) VALUES ${values}`,
+          [uniteHebergementId, ...prestationIds],
+        );
+      }
+    }
+    log.i("setUniteHebergementPrestationsHotelieres - DONE");
   },
 
   async setUniteHebergementStatut(
@@ -391,7 +496,9 @@ export const HebergementsRepositoryShared = {
       fileReponseExploitantOuProprietaire,
       hebergementId,
       litsSuperposes,
+      nombreChambreTotal,
       nombreCouchageTotal,
+      complementLocalisation,
       rangementIndividuel,
       reglementationErp,
       separationHommeFemme,
@@ -411,7 +518,9 @@ export const HebergementsRepositoryShared = {
       fileReponseExploitantOuProprietaire: string | null;
       hebergementId?: string;
       litsSuperposes: boolean | null;
+      nombreChambreTotal: number | null;
       nombreCouchageTotal: number | null;
+      complementLocalisation: string | null;
       rangementIndividuel: boolean | null;
       reglementationErp: boolean | null;
       separationHommeFemme: boolean | null;
@@ -424,6 +533,8 @@ export const HebergementsRepositoryShared = {
     const updates: Array<{ clause: string; value: unknown }> = [
       { clause: "statut_id", value: statutId },
       { clause: "nombre_couchage_total", value: nombreCouchageTotal },
+      { clause: "nombre_chambre_total", value: nombreChambreTotal },
+      { clause: "complement_localisation", value: complementLocalisation },
       { clause: "lits_superposes", value: litsSuperposes },
       { clause: "accessibilite_pmr", value: accessibilitePmr },
       { clause: "accessibilite_precision", value: accessibilitePrecision },

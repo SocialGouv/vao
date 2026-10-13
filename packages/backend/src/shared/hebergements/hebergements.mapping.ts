@@ -98,6 +98,7 @@ export const mapLocauxToUnite = (
     amenagementsSpecifiquesPrecision:
       informationsLocaux.precisionAmenagementsSpecifiques ?? null,
     chambresDoubles: informationsLocaux.chambresDoubles ?? null,
+    complementLocalisation: null,
     couchageIndividuel: informationsLocaux.couchageIndividuel ?? null,
     fileDernierArreteAutorisationMaire: fileUuid(
       informationsLocaux.fileDernierArreteAutorisationMaire,
@@ -112,6 +113,7 @@ export const mapLocauxToUnite = (
       informationsLocaux.nombreLitsSuperposes == null
         ? null
         : informationsLocaux.nombreLitsSuperposes > 0,
+    nombreChambreTotal: null,
     nombreCouchageTotal:
       nombreCouchageTotal ??
       informationsLocaux.nombreMaxPersonnesCouchage ??
@@ -119,6 +121,7 @@ export const mapLocauxToUnite = (
     rangementIndividuel: informationsLocaux.rangementIndividuel ?? null,
     reglementationErp: informationsLocaux.reglementationErp ?? null,
     separationHommeFemme: informationsLocaux.chambresUnisexes ?? null,
+    prestationsHotelieres: informationsLocaux.prestationsHotelieres ?? [],
     statutId: null,
     visiteLocaux: informationsLocaux.visiteLocaux ?? null,
     visiteLocauxAt: toDate(informationsLocaux.visiteLocauxAt),

@@ -41,6 +41,7 @@
     "nuxt-security": "catalog:",
     "pinia": "catalog:",
     "query-string": "catalog:",
+    "remixicon": "^4.9.1",
     "v-calendar": "catalog:",
     "vee-validate": "catalog:",
     "vue": "catalog:",

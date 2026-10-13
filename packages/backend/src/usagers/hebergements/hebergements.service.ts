@@ -5,10 +5,13 @@ import type {
   PatchSiteBody,
   PostSiteBody,
   PostSiteResponse,
+  PostUniteHebergementBody,
   SiteSimilariteResult,
+  UniteHebergementDto,
 } from "@vao/shared-bridge";
 import type { PoolClient } from "pg";
 
+import { statuts } from "../../helpers/hebergement";
 import { getByIds as getAddresses } from "../../services/adresse";
 import { HebergementsRepositoryShared } from "../../shared/hebergements/hebergements.repository";
 import { HebergementServiceShared } from "../../shared/hebergements/hebergements.service";
@@ -90,6 +93,70 @@ export const HebergementService = {
     };
   },
 
+  async createUniteHebergement(
+    siteId: string,
+    unite: PostUniteHebergementBody,
+    usagerUserId: string,
+  ): Promise<UniteHebergementDto> {
+    return this.writeUniteHebergement(
+      siteId,
+      unite.organismeId,
+      unite,
+      null,
+      usagerUserId,
+    );
+  },
+
+  async ensureSiteBelongsToOrganisme(
+    tx: PoolClient,
+    siteId: string,
+    organismeId: number,
+  ): Promise<void> {
+    const site = await HebergementServiceShared.getSiteWithOrganisme(
+      tx,
+      siteId,
+      organismeId,
+    );
+    if (!site || site.organismeId !== organismeId) {
+      throw new AppError(
+        "Le site est introuvable ou ne dépend pas de l'organisme",
+        { statusCode: 404 },
+      );
+    }
+  },
+
+  async getSite(
+    siteId: string,
+    organismeId: number,
+  ): Promise<{
+    site: PostSiteResponse | null;
+    unitesHebergement: UniteHebergementDto[];
+  }> {
+    log.i("getSite - IN", { organismeId, siteId });
+
+    return withTransaction(async (tx: PoolClient) => {
+      const site = await HebergementServiceShared.getSiteWithOrganisme(
+        tx,
+        siteId,
+        organismeId,
+      );
+      if (!site) {
+        log.i("getSite - site introuvable");
+        return { site: null, unitesHebergement: [] };
+      }
+
+      if (site.adresseId) {
+        const [adresse] = await getAddresses([site.adresseId]);
+        site.adresse = adresse ?? null;
+      }
+
+      const unitesHebergement =
+        await HebergementServiceShared.getUniteHebergementsBySiteId(siteId);
+
+      log.i("getSite - DONE");
+      return { site, unitesHebergement };
+    });
+  },
   async postSite(
     site: PostSiteBody,
     usagerUserId: string,
@@ -157,7 +224,6 @@ export const HebergementService = {
       return result;
     });
   },
-
   async updateSiteInformation(
     siteId: string,
     site: PatchSiteBody,
@@ -204,6 +270,113 @@ export const HebergementService = {
         },
       );
       log.i("updateSiteInformation - DONE");
+    });
+  },
+  async updateUniteHebergement(
+    siteId: string,
+    uniteId: number,
+    organismeId: number,
+    unite: Pick<
+      PostUniteHebergementBody,
+      Exclude<keyof PostUniteHebergementBody, "organismeId">
+    >,
+    usagerUserId: string,
+  ): Promise<UniteHebergementDto> {
+    return this.writeUniteHebergement(
+      siteId,
+      organismeId,
+      unite,
+      uniteId,
+      usagerUserId,
+    );
+  },
+  async writeUniteHebergement(
+    siteId: string,
+    organismeId: number,
+    unite: Pick<
+      PostUniteHebergementBody,
+      Exclude<keyof PostUniteHebergementBody, "organismeId">
+    >,
+    uniteId: number | null,
+    usagerUserId: string,
+  ): Promise<UniteHebergementDto> {
+    log.i("writeUniteHebergement - IN", { organismeId, siteId, uniteId });
+    return withTransaction(async (tx: PoolClient) => {
+      await this.ensureSiteBelongsToOrganisme(tx, siteId, organismeId);
+      const statutId = await HebergementServiceShared.getStatutId(
+        statuts.BROUILLON,
+        tx,
+      );
+      const typePensions = unite.typePensions ?? [];
+      const prestationsHotelieres = unite.prestationsHotelieres ?? [];
+
+      if (uniteId === null) {
+        const { id } = await HebergementServiceShared.createUniteHebergement(
+          {
+            createdBy: Number(usagerUserId),
+            organismeId,
+            prestationsHotelieres,
+            siteId,
+            statutId,
+            typePensions,
+            uniteData: unite,
+          },
+          tx,
+        );
+        const created =
+          await HebergementsRepositoryShared.getUniteHebergementById(id, tx);
+        if (!created) {
+          throw new AppError(
+            "L'unité d'hébergement n'a pas pu être récupérée",
+            { statusCode: 500 },
+          );
+        }
+        log.i("writeUniteHebergement - CREATED", { id });
+        return created;
+      }
+
+      const current =
+        await HebergementsRepositoryShared.getUniteHebergementById(uniteId, tx);
+      if (!current || current.siteId !== siteId) {
+        throw new AppError(
+          "L'unité d'hébergement est introuvable ou ne dépend pas de ce site",
+          { statusCode: 404 },
+        );
+      }
+      const typePensionsFinal =
+        unite.typePensions === undefined
+          ? await HebergementsRepositoryShared.getUniteHebergementTypePensions(
+              uniteId,
+              tx,
+            )
+          : typePensions;
+      const prestationsHotelieresFinal =
+        unite.prestationsHotelieres === undefined
+          ? await HebergementsRepositoryShared.getUniteHebergementPrestationsHotelieres(
+              uniteId,
+              tx,
+            )
+          : prestationsHotelieres;
+      await HebergementServiceShared.updateUniteHebergementInPlace(
+        uniteId,
+        {
+          editedBy: Number(usagerUserId),
+          prestationsHotelieres: prestationsHotelieresFinal,
+          statutId: statutId ?? current.statutId,
+          typePensions: typePensionsFinal,
+          uniteData: unite,
+        },
+        tx,
+      );
+      const updated =
+        await HebergementsRepositoryShared.getUniteHebergementById(uniteId);
+      if (!updated) {
+        throw new AppError("L'unité d'hébergement n'a pas pu être récupérée", {
+          statusCode: 500,
+        });
+      }
+      log.i("writeUniteHebergement - UPDATED", { uniteId });
+      return updated;
     });
   },
 };

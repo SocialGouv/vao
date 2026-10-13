@@ -1,4 +1,5 @@
 import type { AdresseDto } from "./adresse.dto";
+import type { FileMetaDataDto } from "./document.dto";
 
 export interface CoordonneesDto {
   adresse: AdresseDto | null;
@@ -67,6 +68,11 @@ export interface SiteOrganismeDto {
   vehiculesAdaptes: boolean | null;
 }
 
+/**
+ * Unité renvoyée par l'API. Les fichiers sont enrichis en métadonnées dans les
+ * réponses de lecture du site, mais peuvent rester des UUID dans les réponses
+ * immédiates des routes POST et PATCH.
+ */
 export interface UniteHebergementDto {
   id: number;
   siteId: string;
@@ -79,6 +85,8 @@ export interface UniteHebergementDto {
   createdBy: number | null;
   editedBy: number | null;
   nombreCouchageTotal: number | null;
+  nombreChambreTotal: number | null;
+  complementLocalisation: string | null;
   litsSuperposes: boolean | null;
   accessibilitePmr: boolean | null;
   accessibilitePrecision: string | null;
@@ -89,13 +97,16 @@ export interface UniteHebergementDto {
   rangementIndividuel: boolean | null;
   amenagementsSpecifiques: boolean | null;
   amenagementsSpecifiquesPrecision: string | null;
-  fileReponseExploitantOuProprietaire: string | null;
-  fileDernierArreteAutorisationMaire: string | null;
-  fileDerniereAttestationSecurite: string | null;
+  fileReponseExploitantOuProprietaire: FileMetaDataDto | string | null;
+  fileDernierArreteAutorisationMaire: FileMetaDataDto | string | null;
+  fileDerniereAttestationSecurite: FileMetaDataDto | string | null;
+  prestationsHotelieres: string[];
+  typePensions?: string[];
   visiteLocaux: boolean | null;
   visiteLocauxAt: Date | null;
 }
 
+/** Corps d'écriture d'une unité : les champs fichier portent un UUID ou null. */
 export type UniteHebergementPayloadDto = Omit<
   UniteHebergementDto,
   | "id"
@@ -108,7 +119,14 @@ export type UniteHebergementPayloadDto = Omit<
   | "current"
   | "createdBy"
   | "editedBy"
->;
+  | "fileReponseExploitantOuProprietaire"
+  | "fileDernierArreteAutorisationMaire"
+  | "fileDerniereAttestationSecurite"
+> & {
+  fileReponseExploitantOuProprietaire: string | null;
+  fileDernierArreteAutorisationMaire: string | null;
+  fileDerniereAttestationSecurite: string | null;
+};
 
 export type UniteHebergementWriteData = UniteHebergementPayloadDto & {
   statutId: number | null;

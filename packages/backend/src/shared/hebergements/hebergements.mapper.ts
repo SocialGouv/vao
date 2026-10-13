@@ -110,6 +110,7 @@ export const UniteHebergementMapper = {
       amenagementsSpecifiquesPrecision:
         entity.amenagements_specifiques_precision ?? null,
       chambresDoubles: entity.chambres_doubles ?? null,
+      complementLocalisation: entity.complement_localisation ?? null,
       couchageIndividuel: entity.couchage_individuel ?? null,
       createdAt: required(entity.created_at, "unite_hebergement.created_at"),
       createdBy: entity.created_by ?? null,
@@ -128,6 +129,7 @@ export const UniteHebergementMapper = {
       ),
       id: required(entity.id, "unite_hebergement.id"),
       litsSuperposes: entity.lits_superposes ?? null,
+      nombreChambreTotal: entity.nombre_chambre_total ?? null,
       nombreCouchageTotal: entity.nombre_couchage_total ?? null,
       organismeId: required(
         entity.organisme_id,
@@ -136,8 +138,10 @@ export const UniteHebergementMapper = {
       rangementIndividuel: entity.rangement_individuel ?? null,
       reglementationErp: entity.reglementation_erp ?? null,
       separationHommeFemme: entity.separation_homme_femme ?? null,
+      prestationsHotelieres: entity.prestations_hotelieres ?? [],
       siteId: required(entity.site_id, "unite_hebergement.site_id"),
       statutId: entity.statut_id ?? null,
+      typePensions: entity.type_pensions ?? [],
       visiteLocaux: entity.visite_locaux ?? null,
       visiteLocauxAt: entity.visite_locaux_at ?? null,
     };

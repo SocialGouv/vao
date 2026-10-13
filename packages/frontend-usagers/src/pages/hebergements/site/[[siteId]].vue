@@ -18,9 +18,19 @@
           <HebergementsInformationsSiteForm
             :init-values="siteInfoLieu ?? undefined"
             :site-id="createdSiteId"
+            :init-unites="hebergementStore.unitesHebergementCourantes"
             :organisme-id="currentOrganismeId"
             @submit="onStep2Submit"
             @previous="goToStep('site-coordonnees')"
+          />
+        </div>
+        <div v-else-if="hash === 'site-hebergement-detail'">
+          <HebergementsDetailForm
+            :site-id="createdSiteId"
+            :organisme-id="currentOrganismeId"
+            :init-unites="hebergementStore.unitesHebergementCourantes"
+            @submit="onStep3Submit"
+            @previous="goToStep('site-info-lieu')"
           />
         </div>
         <div v-else class="fr-callout">
@@ -41,10 +51,11 @@ import type {
   InformationsSiteFormValues,
   SiteFormValidationValues,
 } from "~/components/hebergements/siteFormValidation";
+import type { HebergementDetailValues } from "~/components/hebergements/hebergementDetails";
 import { useToaster } from "@vao/shared-ui";
 
 definePageMeta({
-  middleware: ["is-connected"],
+  middleware: ["is-connected", "load-hebergement-context"],
 });
 
 const route = useRoute();
@@ -61,6 +72,28 @@ const currentOrganismeId = computed<number | null>(
 const step1Site = ref<SiteFormValidationValues | null>(null);
 const siteInfoLieu = ref<InformationsSiteFormValues | null>(null);
 const createdSiteId = ref<string | null>(null);
+
+const routeSiteId = computed<string | null>(() => {
+  const siteIdParam = route.params.siteId;
+
+  if (!siteIdParam) {
+    return null;
+  }
+
+  return String(siteIdParam);
+});
+createdSiteId.value = routeSiteId.value;
+
+watch(
+  () => hebergementStore.siteCourant,
+  (siteCourant) => {
+    if (siteCourant) {
+      step1Site.value = mapSiteToStep1Site(siteCourant);
+      siteInfoLieu.value = mapSiteToInformationsSiteForm(siteCourant);
+    }
+  },
+  { immediate: true },
+);
 
 const isModuleHebergementEnabled = computed(
   () =>
@@ -161,9 +194,52 @@ async function onStep2Submit(values: InformationsSiteFormValues) {
       });
       return;
     }
+
+    const isSiteLoaded = await hebergementStore.getSite(createdSiteId.value);
+    if (!isSiteLoaded) {
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "Une erreur est survenue lors du chargement des unités d’hébergement du site.",
+        role: "alert",
+      });
+      return;
+    }
   }
 
   await goToStep("site-hebergement-detail");
+}
+
+async function onStep3Submit(payload: {
+  multipleHebergements: boolean;
+  hebergements: HebergementDetailValues[];
+}) {
+  if (createdSiteId.value) {
+    try {
+      await hebergementStore.saveUnites(
+        createdSiteId.value,
+        payload.hebergements,
+      );
+    } catch {
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "Une erreur est survenue lors de l'enregistrement des détails de l'hébergement.",
+        role: "alert",
+      });
+      return;
+    }
+  }
+
+  await goToStep("site-visite-et-transport");
+}
+
+function mapSiteToStep1Site(site: PostSiteResponse): SiteFormValidationValues {
+  return {
+    nomSiteOfficiel: site.nomSiteOfficiel ?? "",
+    nomSiteOrganisme: site.nomSite ?? "",
+    adresse: site.adresse ?? null,
+  };
 }
 
 function mapSiteToInformationsSiteForm(
@@ -181,7 +257,11 @@ function mapSiteToInformationsSiteForm(
 }
 
 async function goToStep(stepId: string) {
-  await navigateTo({ hash: `#${stepId}` });
+  const id = createdSiteId.value ? `/${createdSiteId.value}` : "";
+  await navigateTo({
+    path: `/hebergements/site${id}`,
+    hash: `#${stepId}`,
+  });
   await nextTick();
   pageHeadingRef.value?.focus();
 }

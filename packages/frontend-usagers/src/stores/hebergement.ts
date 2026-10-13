@@ -9,6 +9,7 @@ import type {
   PostSiteResponse,
   SiteDto,
   SiteSimilariteResult,
+  UniteHebergementDto,
 } from "@vao/shared-bridge";
 import { FUNCTIONAL_ERRORS, FunctionalException } from "@vao/shared-bridge";
 import { HebergementService } from "~/services/hebergementService";
@@ -16,6 +17,8 @@ import type {
   InformationsSiteFormValues,
   SiteFormValidationValues,
 } from "~/components/hebergements/siteFormValidation";
+import { mapHebergementDetailToUnitePayload } from "~/components/hebergements/hebergementDetails";
+import type { HebergementDetailValues } from "~/components/hebergements/hebergementDetails";
 import { useOrganismeStore } from "~/stores/organisme";
 
 const log = logger("stores/hebergement");
@@ -32,6 +35,8 @@ interface HebergementStoreState {
   hebergements: HebergementDto[];
   hebergementsTotal: number;
   hebergementCourant: HebergementDto | null;
+  siteCourant: PostSiteResponse | null;
+  unitesHebergementCourantes: UniteHebergementDto[];
   funnelContext: HebergementFunnelContext | null;
 }
 
@@ -40,6 +45,8 @@ export const useHebergementStore = defineStore("hebergement", {
     hebergements: [],
     hebergementsTotal: 0,
     hebergementCourant: null,
+    siteCourant: null,
+    unitesHebergementCourantes: [],
     funnelContext: null,
   }),
   actions: {
@@ -128,14 +135,55 @@ export const useHebergementStore = defineStore("hebergement", {
     ): Promise<CheckTypeHebergementResponse> {
       log.i("checkTypeHebergement - IN", body);
       try {
-        const result =
-          await HebergementService.checkTypeHebergement(body);
+        const result = await HebergementService.checkTypeHebergement(body);
         log.d("checkTypeHebergement - DONE", result);
         return result;
       } catch (err: unknown) {
         log.i("checkTypeHebergement - DONE with error", err);
         throw err;
       }
+    },
+    async getSite(siteId: string): Promise<boolean> {
+      log.i("getSite - IN", { siteId });
+      const organismeCourant = useOrganismeStore().organismeCourant;
+      if (!organismeCourant) {
+        log.w("getSite - organismeCourant non renseigné");
+        this.siteCourant = null;
+        return false;
+      }
+
+      const organismeId = Number(organismeCourant?.organismeId);
+      if (!Number.isFinite(organismeId) || organismeId <= 0) {
+        log.w("getSite - organismeId invalide", { organismeId });
+        this.siteCourant = null;
+        return false;
+      }
+
+      try {
+        const { site, unitesHebergement } = await HebergementService.getSite(
+          siteId,
+          organismeId,
+        );
+        if (!site) {
+          log.w("getSite - site introuvable", { siteId });
+          this.siteCourant = null;
+          this.unitesHebergementCourantes = [];
+          return false;
+        }
+        this.siteCourant = site;
+        this.unitesHebergementCourantes = unitesHebergement;
+        log.d("getSite - DONE", { siteId });
+        return true;
+      } catch (err: unknown) {
+        this.siteCourant = null;
+        this.unitesHebergementCourantes = [];
+        log.w("getSite - FAIL", { siteId, err });
+        return false;
+      }
+    },
+    resetSiteCourant() {
+      this.siteCourant = null;
+      this.unitesHebergementCourantes = [];
     },
     async postSite(site: SiteFormValidationValues): Promise<PostSiteResponse> {
       log.i("postSite - IN", { site });
@@ -173,6 +221,7 @@ export const useHebergementStore = defineStore("hebergement", {
           vehiculesAdaptes: null,
         });
         log.d("postSite - DONE", { siteId: createdSite.siteId });
+        this.siteCourant = createdSite;
         return createdSite;
       } catch (err: unknown) {
         log.i("postSite - DONE with error", err);
@@ -340,6 +389,93 @@ export const useHebergementStore = defineStore("hebergement", {
           > | null) ?? null,
           "fileReponseExploitantOuProprietaire",
         );
+      }
+    },
+    async uploadDetailFiles(
+      hebergement: HebergementDetailValues,
+    ): Promise<HebergementDetailValues> {
+      const uploadIfNeeded = async (
+        fieldName: string,
+        file: HebergementDetailValues["fileDerniereAttestationSecurite"],
+      ): Promise<
+        HebergementDetailValues["fileDerniereAttestationSecurite"]
+      > => {
+        if (file && typeof file === "object" && !("uuid" in file)) {
+          const rawFile = file as unknown as File;
+          const uuid = await uploadFile(fieldName, rawFile);
+          return {
+            uuid,
+            name: rawFile.name,
+            createdAt: new Date(),
+          } as HebergementDetailValues["fileDerniereAttestationSecurite"];
+        }
+        return file;
+      };
+
+      const files = await Promise.all([
+        uploadIfNeeded(
+          "attestation_securite",
+          hebergement.fileDerniereAttestationSecurite,
+        ),
+        uploadIfNeeded(
+          "arrete_autorisation_maire",
+          hebergement.fileDernierArreteAutorisationMaire,
+        ),
+        uploadIfNeeded(
+          "reponse_explouprop",
+          hebergement.fileReponseNonAssujettissementErp,
+        ),
+      ]);
+
+      return {
+        ...hebergement,
+        fileDerniereAttestationSecurite: files[0],
+        fileDernierArreteAutorisationMaire: files[1],
+        fileReponseNonAssujettissementErp: files[2],
+      };
+    },
+    async saveUnites(
+      siteId: string,
+      hebergements: HebergementDetailValues[],
+    ): Promise<void> {
+      log.i("saveUnites - IN", { siteId, count: hebergements.length });
+      const organismeCourant = useOrganismeStore().organismeCourant;
+      const organismeId = Number(organismeCourant?.organismeId);
+      if (!Number.isFinite(organismeId) || organismeId <= 0) {
+        throw new FunctionalException(
+          FUNCTIONAL_ERRORS.ORGANISME_COURANT_NOT_FOUND,
+        );
+      }
+      try {
+        await Promise.all(
+          hebergements.map(async (hebergement, index) => {
+            const detailWithUploadedFiles =
+              await this.uploadDetailFiles(hebergement);
+            const payload = mapHebergementDetailToUnitePayload(
+              detailWithUploadedFiles,
+            );
+            const existing = this.unitesHebergementCourantes[index];
+            if (existing) {
+              await HebergementService.updateUniteHebergement(
+                siteId,
+                existing.id,
+                organismeId,
+                { ...payload, typePensions: hebergement.pension },
+              );
+            } else {
+              await HebergementService.createUniteHebergement(siteId, {
+                ...payload,
+                organismeId,
+                typePensions: hebergement.pension,
+              });
+            }
+          }),
+        );
+        await this.getSite(siteId);
+        log.i("saveUnites - DONE");
+      } catch (err: unknown) {
+        log.i("saveUnites - DONE with error", err);
+        throw err;
       }
     },
   },

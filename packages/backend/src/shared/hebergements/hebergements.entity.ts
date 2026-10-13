@@ -42,6 +42,8 @@ export interface UniteHebergementEntity {
   created_by: number | null;
   edited_by: number | null;
   nombre_couchage_total: number | null;
+  nombre_chambre_total: number | null;
+  complement_localisation: string | null;
   lits_superposes: boolean | null;
   accessibilite_pmr: boolean | null;
   accessibilite_precision: string | null;
@@ -60,7 +62,8 @@ export interface UniteHebergementEntity {
   site?: SiteEntity | null;
   organisme?: object | null;
   statut?: string | null;
-  type_pension?: string[] | null;
+  type_pensions?: string[] | null;
+  prestations_hotelieres?: string[] | null;
 }
 
 export interface UniteHebergementToTypePensionEntity {

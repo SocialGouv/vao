@@ -46,6 +46,27 @@ export const HebergementController = {
       next(error);
     }
   },
+  async getSite(
+    req: RouteRequest<HebergementUsagersRoutes["GetSite"]>,
+    res: RouteResponse<HebergementUsagersRoutes["GetSite"]>,
+    next: NextFunction,
+  ) {
+    log.i("getSite - IN");
+    const { siteId } = req.validatedParams!;
+    const { organismeId } = req.validatedQuery!;
+
+    try {
+      const { site, unitesHebergement } = await HebergementService.getSite(
+        siteId,
+        organismeId,
+      );
+      log.d("getSite", { site, unitesHebergement });
+      res.json({ site, unitesHebergement });
+    } catch (error) {
+      log.w("getSite - DONE with error");
+      next(error);
+    }
+  },
   async patchSite(
     req: RouteRequest<HebergementUsagersRoutes["PatchSite"]>,
     res: RouteResponse<HebergementUsagersRoutes["PatchSite"]>,
@@ -60,6 +81,32 @@ export const HebergementController = {
       res.status(200).json({});
     } catch (error) {
       log.w("patchSite - DONE with error");
+      next(error);
+    }
+  },
+  async patchUniteHebergement(
+    req: RouteRequest<HebergementUsagersRoutes["PatchUniteHebergement"]>,
+    res: RouteResponse<HebergementUsagersRoutes["PatchUniteHebergement"]>,
+    next: NextFunction,
+  ) {
+    log.i("patchUniteHebergement - IN");
+    const { siteId, uniteId } = req.validatedParams!;
+    const { organismeId } = req.validatedQuery!;
+    const { id: usagerUserId } = req.decoded!;
+    const unite = req.validatedBody!;
+
+    try {
+      const updated = await HebergementService.updateUniteHebergement(
+        siteId,
+        Number(uniteId),
+        organismeId,
+        unite,
+        usagerUserId,
+      );
+      log.d("patchUniteHebergement - updated", updated);
+      res.json(updated);
+    } catch (error) {
+      log.w("patchUniteHebergement - DONE with error");
       next(error);
     }
   },
@@ -78,6 +125,29 @@ export const HebergementController = {
       res.status(201).json(createdSite);
     } catch (error) {
       log.w("postSite - DONE with error");
+      next(error);
+    }
+  },
+  async postUniteHebergement(
+    req: RouteRequest<HebergementUsagersRoutes["PostUniteHebergement"]>,
+    res: RouteResponse<HebergementUsagersRoutes["PostUniteHebergement"]>,
+    next: NextFunction,
+  ) {
+    log.i("postUniteHebergement - IN");
+    const { siteId } = req.validatedParams!;
+    const { id: usagerUserId } = req.decoded!;
+    const unite = req.validatedBody!;
+
+    try {
+      const created = await HebergementService.createUniteHebergement(
+        siteId,
+        unite,
+        usagerUserId,
+      );
+      log.d("postUniteHebergement - created", created);
+      res.status(201).json(created);
+    } catch (error) {
+      log.w("postUniteHebergement - DONE with error");
       next(error);
     }
   },
