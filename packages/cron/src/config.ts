@@ -44,8 +44,23 @@ export const notifyAgrementExpiration = {
   name: "REQUEST_AGREMENT",
 };
 
+export const migrateFilesToS3 = {
+  batchSize: Number(
+    process.env.BACKEND_CRON_MIGRATE_FILES_TO_S3_BATCH_SIZE || 500,
+  ),
+  cron: process.env.BACKEND_CRON_MIGRATE_FILES_TO_S3 || "*/15 * * * *",
+  name: "MIGRATE_FILES_TO_S3",
+};
+
 export const postgres = {
   database: process.env.POSTGRES_DB,
+  document: {
+    database: process.env.POSTGRES_DOCUMENT_DB,
+    host: process.env.POSTGRES_DOCUMENT_HOST,
+    password: process.env.PG_VAO_DOCUMENT_PASSWORD,
+    port: process.env.POSTGRES_DOCUMENT_PORT,
+    user: process.env.PG_VAO_DOCUMENT_USER,
+  },
   host: process.env.POSTGRES_HOST,
   password: process.env.PG_VAO_PASSWORD,
   port: process.env.POSTGRES_PORT,
@@ -55,6 +70,15 @@ export const postgres = {
       }
     : false,
   user: process.env.PG_VAO_USER,
+};
+
+export const s3 = {
+  accessKeyId: process.env.S3_BUCKET_ACCESS_KEY!,
+  bucketName: process.env.S3_BUCKET_NAME!,
+  endpoint: process.env.S3_BUCKET_ENDPOINT,
+  region: process.env.S3_BUCKET_REGION!,
+  rootDir: process.env.S3_BUCKET_ROOT_DIR!,
+  secretAccessKey: process.env.S3_BUCKET_SECRET_KEY!,
 };
 
 export const domains = {

@@ -5,7 +5,6 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint ./src",
-    "s3:migrate": "node ./src/scripts/migrate-files-to-s3.js",
     "s3:reset": "node ./src/scripts/reset-s3.js",
     "migrate:make": "knex migrate:make --cwd src",
     "migrate:up": "knex migrate:up --cwd src",
