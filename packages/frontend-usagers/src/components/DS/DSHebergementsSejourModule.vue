@@ -78,6 +78,7 @@ import type {
   SiteListeDto,
 } from "@vao/shared-bridge";
 import { formatISOShort } from "@vao/shared-bridge";
+import { resolveSiteId, sortByDateDebut } from "~/utils/dsItineraire";
 import { HebergementService } from "~/services/hebergementService";
 import type { DSHebergementItinerantBlock } from "./DSHebergementItinerant.vue";
 import type { SiteSelectOption } from "./DSHebergementSelect.vue";
@@ -135,29 +136,26 @@ const siteOptions = computed<SiteSelectOption[]>(() =>
   })),
 );
 
-function resolveSiteId(hebergementId: number): string {
-  return hebergementStore.sites.find((site) => site.id === hebergementId)?.siteId ?? "";
-}
-
 function init() {
   const initialHebergements = props.initialValue?.hebergements ?? [];
   sejourItinerant.value = props.initialValue?.sejourItinerant ?? false;
   sejourEtranger.value = props.initialValue?.sejourEtranger ?? false;
 
   if (sejourItinerant.value && initialHebergements.length > 0) {
-    const sortedHebergements = [...initialHebergements].sort((a, b) =>
-      a.dateDebut.localeCompare(b.dateDebut),
-    );
+    const sortedHebergements = sortByDateDebut(initialHebergements);
     itineraryBlocks.value = sortedHebergements.map(
       (item: DemandeSejourHebergementItemDto, index: number) => ({
         id: `${index}`,
-        siteId: resolveSiteId(item.hebergementId),
+        siteId: resolveSiteId(hebergementStore.sites, item.hebergementId),
         dateDebut: formatISOShort(item.dateDebut) ?? "",
         dateFin: formatISOShort(item.dateFin) ?? "",
       }),
     );
   } else if (initialHebergements.length > 0) {
-    singleSiteId.value = resolveSiteId(initialHebergements[0]!.hebergementId);
+    singleSiteId.value = resolveSiteId(
+      hebergementStore.sites,
+      initialHebergements[0]!.hebergementId,
+    );
   }
 }
 

@@ -98,19 +98,19 @@
 </template>
 
 <script setup lang="ts">
-import dayjs from "dayjs";
-import { formatISOShort, isSejourComplet } from "@vao/shared-bridge";
+import { isSejourComplet } from "@vao/shared-bridge";
+import {
+  dateDebutCoherenceError,
+  dateFinCoherenceError,
+  recalcDatesLendemain,
+} from "~/utils/dsItineraire";
+import type { DSItineraireBlock } from "~/utils/dsItineraire";
 import type { SiteSelectOption } from "./DSHebergementSelect.vue";
 
-export interface DSHebergementItinerantBlock {
-  id: string;
-  siteId: string;
-  dateDebut: string;
-  dateFin: string;
-}
+export type { DSItineraireBlock as DSHebergementItinerantBlock } from "~/utils/dsItineraire";
 
 interface DSHebergementItinerantProps {
-  modelValue: DSHebergementItinerantBlock[];
+  modelValue: DSItineraireBlock[];
   options: SiteSelectOption[];
   dateDebut: string;
   dateFin: string;
@@ -128,12 +128,12 @@ const props = withDefaults(defineProps<DSHebergementItinerantProps>(), {
 });
 
 const emit = defineEmits<{
-  (e: "update:modelValue", value: DSHebergementItinerantBlock[]): void;
+  (e: "update:modelValue", value: DSItineraireBlock[]): void;
   (e: "details", value: string): void;
   (e: "switchedToSingle"): void;
 }>();
 
-const blocks = ref<DSHebergementItinerantBlock[]>([]);
+const blocks = ref<DSItineraireBlock[]>([]);
 
 const isPeriodeComplete = computed(() =>
   isSejourComplet(blocks.value, props.dateDebut, props.dateFin),
@@ -157,21 +157,11 @@ function emitBlocks() {
 }
 
 function recalcFrom(fromIndex: number) {
-  const arr = [...blocks.value];
-  if (arr.length === 0) {
-    blocks.value = [];
-    return;
-  }
-  const dateDebutSejour = formatISOShort(props.dateDebut);
-  arr[0]!.dateDebut = dateDebutSejour ?? arr[0]!.dateDebut;
-  for (let i = Math.max(fromIndex, 0); i < arr.length; i++) {
-    if (i > 0 && arr[i - 1]!.dateFin) {
-      arr[i]!.dateDebut = dayjs(arr[i - 1]!.dateFin)
-        .add(1, "day")
-        .format("YYYY-MM-DD");
-    }
-  }
-  blocks.value = arr;
+  blocks.value = recalcDatesLendemain(
+    blocks.value,
+    props.dateDebut,
+    fromIndex,
+  );
 }
 
 function onDateFinChange(index: number, value: string | number | undefined) {
@@ -227,39 +217,20 @@ function onDetails(siteId: string) {
 }
 
 function dateDebutErrorMessage(index: number): string {
-  const block = blocks.value[index];
-  if (!block || !block.dateDebut) {
-    return props.dateDebutError(index) ?? "";
-  }
-  if (
-    index === 0 &&
-    block.dateDebut < (formatISOShort(props.dateDebut) ?? "")
-  ) {
-    return "La date de début ne doit pas être antérieure au début du séjour";
-  }
-  if (index > 0) {
-    const prev = blocks.value[index - 1];
-    if (prev && prev.dateFin) {
-      const expected = dayjs(prev.dateFin).add(1, "day").format("YYYY-MM-DD");
-      if (block.dateDebut !== expected) {
-        return "La date doit être le lendemain de l’hébergement précédent";
-      }
-    } else {
-      return "La date doit être le lendemain de l’hébergement précédent";
-    }
+  const coherence = dateDebutCoherenceError(
+    blocks.value,
+    props.dateDebut,
+    index,
+  );
+  if (coherence !== "") {
+    return coherence;
   }
   return props.dateDebutError(index) ?? "";
 }
 function dateFinErrorMessage(index: number): string {
-  const block = blocks.value[index];
-  if (!block || !block.dateFin) {
-    return props.dateFinError(index) ?? "";
-  }
-  if (block.dateFin > (formatISOShort(props.dateFin) ?? "")) {
-    return "La date dépasse la fin du séjour saisie dans les informations générales";
-  }
-  if (block.dateDebut && block.dateFin < block.dateDebut) {
-    return "La date de fin doit être postérieure à la date de début";
+  const coherence = dateFinCoherenceError(blocks.value, props.dateFin, index);
+  if (coherence !== "") {
+    return coherence;
   }
   return props.dateFinError(index) ?? "";
 }

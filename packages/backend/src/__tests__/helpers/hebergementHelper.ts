@@ -9,11 +9,15 @@ export const createHebergement = async ({
   organismeId,
   declarationId,
   hebergement = {},
+  dateDebut,
+  dateFin,
 }: {
   userId?: number;
   organismeId?: number;
   declarationId?: number;
   hebergement?: Partial<HebergementDto>;
+  dateDebut?: string;
+  dateFin?: string;
 }): Promise<number> => {
   const fixture: Omit<HebergementDto, "id"> = {
     ...buildHebergementFixture(),
@@ -35,8 +39,12 @@ export const createHebergement = async ({
       `INSERT INTO front.demande_sejour_to_hebergement (
         hebergement_id, demande_sejour_id, date_debut, date_fin
       )
-      VALUES ($1, $2, CURRENT_DATE, CURRENT_DATE + INTERVAL '1 day')`,
-      [hebergementId, declarationId],
+      VALUES (
+        $1, $2,
+        COALESCE($3, CURRENT_DATE),
+        COALESCE($4, CURRENT_DATE + INTERVAL '1 day')
+      )`,
+      [hebergementId, declarationId, dateDebut ?? null, dateFin ?? null],
     );
   }
   return hebergementId;
