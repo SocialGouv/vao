@@ -354,6 +354,9 @@ importers:
 
   packages/cron:
     dependencies:
+      '@aws-sdk/client-s3':
+        specifier: 'catalog:'
+        version: 3.1050.0
       '@sentry/cli':
         specifier: ^2.42.3
         version: 2.46.0

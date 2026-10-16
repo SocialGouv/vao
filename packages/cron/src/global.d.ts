@@ -25,6 +25,8 @@ declare global {
       BACKEND_CRON_SUPPRESSION_COMPTE_INACTIF: string;
       BACKEND_CRON_UPDATE_AND_NOTIFY_SVA: string;
       BACKEND_CRON_REQUEST_AGREMENT_NOTIFY_CRON: string;
+      BACKEND_CRON_MIGRATE_FILES_TO_S3: string;
+      BACKEND_CRON_MIGRATE_FILES_TO_S3_BATCH_SIZE: string;
       FRONTEND_USAGERS_URL: string;
       FRONTEND_BO_URL: string;
       SENDER_EMAIL: string;
@@ -32,6 +34,12 @@ declare global {
       SMTP_IS_POOLED: string;
       SMTP_PORT: string;
       SMTP_IS_SECURE: string;
+      S3_BUCKET_ACCESS_KEY: string;
+      S3_BUCKET_ENDPOINT: string;
+      S3_BUCKET_NAME: string;
+      S3_BUCKET_REGION: string;
+      S3_BUCKET_ROOT_DIR: string;
+      S3_BUCKET_SECRET_KEY: string;
     }
   }
 }

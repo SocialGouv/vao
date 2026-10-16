@@ -11,6 +11,7 @@ CREATE TABLE doc.documents (
 	mime_type 	VARCHAR(100) 	NOT NULL,
 	file 		BYTEA 			NOT NULL,
     created_at  TIMESTAMP       DEFAULT current_timestamp NOT NULL,
+    s3_uploaded_at TIMESTAMP    NULL,
    	constraint pk_identites primary key (uuid)
 );
 

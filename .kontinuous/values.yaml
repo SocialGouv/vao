@@ -165,12 +165,22 @@ cron:
         name: pg-app
     - secretRef:
         name: smtp
+    - secretRef:
+        name: "{{.Values.global.s3SecretName}}"
 
   vars:
     SENTRY_RELEASE: "{{.Values.global.branchSlug32}}-{{.Values.global.shortSha}}"
     POSTGRES_HOST: "$(PGHOST)"
     POSTGRES_PORT: "$(PGPORT)"
     POSTGRES_DB: "$(PGDATABASE)"
+    POSTGRES_DOCUMENT_HOST: "$(PGHOST)"
+    POSTGRES_DOCUMENT_PORT: "$(PGPORT)"
+    POSTGRES_DOCUMENT_DB: "$(PGDATABASE)"
+    S3_BUCKET_ENDPOINT: "$(bucket_endpoint)"
+    S3_BUCKET_NAME: "$(bucket_name)"
+    S3_BUCKET_REGION: "$(bucket_region)"
+    S3_BUCKET_ACCESS_KEY: "$(bucket_access_key)"
+    S3_BUCKET_SECRET_KEY: "$(bucket_secret_key)"
 
 frontend-usagers:
   ~chart: app
