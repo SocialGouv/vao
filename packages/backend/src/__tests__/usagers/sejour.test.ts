@@ -341,6 +341,42 @@ describe("Domaine /sejour", () => {
       expect(response.status).toBeGreaterThanOrEqual(400);
     });
 
+    it("retourne 400 avec un message ValidationError détaillé quand des informations sont invalides", async () => {
+      const dsId = await createDemandeSejour({
+        idFonctionnelle: "TST-DEP-MSG",
+        libelle: "Depose message test",
+        organismeId,
+      });
+      await createHebergement({ declarationId: dsId, organismeId });
+
+      const response = await request(getFoAppHelper(getSejourFoUser()))
+        .post(`/sejour/depose/${dsId}`)
+        .send({
+          attestation: {
+            at: "2026-01-01",
+            by: { nom: "Doe", prenom: "John" },
+          },
+        });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty("name", "ValidationError");
+      expect(response.body.message).toContain(
+        "Certaines informations de la déclaration sont invalides",
+      );
+    });
+
+    it("retourne 500 avec MailError quand l'envoi de mails BO échoue (dépôt 2 mois)", async () => {
+      (mailService.send as jest.Mock)
+        .mockResolvedValueOnce(undefined)
+        .mockRejectedValueOnce(new Error("mail bo failed"));
+
+      const response = await postDepose2Mois("TST-DEP-MAILKO");
+
+      expect(response.status).toBe(500);
+      expect(response.body).toHaveProperty("name", "MailError");
+      expect(response.body.message).toContain("mails aux usagers back office");
+    });
+
     it("retourne 400 quand le statut ne permet pas le dépôt", async () => {
       const dsId = await createDemandeSejour({
         idFonctionnelle: "TST-DEP-STATUT",
