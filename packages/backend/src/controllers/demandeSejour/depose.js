@@ -102,6 +102,28 @@ module.exports = async function post(req, res, next) {
     declaration.dateFin = dayjs(declaration.dateFin).format("YYYY-MM-DD");
   } catch (error) {
     log.i(error);
+    if (error instanceof yup.ValidationError) {
+      const validationErrors = error.inner.length > 0 ? error.inner : [error];
+      const validationMessage = validationErrors
+        .slice(0, 3)
+        .map(({ path, message }) => (path ? `${message} : ${path}` : message))
+        .join("; ");
+      const remainingErrorCount = validationErrors.length - 3;
+      const additionalErrorsMessage =
+        remainingErrorCount > 0
+          ? ` (et ${remainingErrorCount} autre(s) erreur(s))`
+          : "";
+
+      return next(
+        new AppError(
+          `Certaines informations de la déclaration sont invalides : ${validationMessage}${additionalErrorsMessage}`,
+          {
+            name: "ValidationError",
+            statusCode: 400,
+          },
+        ),
+      );
+    }
     return next(new ValidationAppError(error));
   }
 
@@ -373,7 +395,7 @@ module.exports = async function post(req, res, next) {
         new AppError(
           "Une erreur est survenue lors de l'envoi de mails aux usagers back office",
           {
-            name: "SaveDeclarationError",
+            name: "MailError",
             statusCode: error.statusCode || 500,
           },
         ),
