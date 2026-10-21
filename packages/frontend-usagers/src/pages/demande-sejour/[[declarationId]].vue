@@ -802,12 +802,21 @@ async function finalize(attestation: Record<string, unknown>) {
   } catch (error) {
     log.w("Finalisation de la declaration de sejour : ", { error });
     const codeError = (error as ApiError)?.data?.name;
-    const displayMessage =
-      codeError === "SaveDeclarationError"
-        ? "Une erreur est survenue à l'enregistement de la déclaration. L'enregistrement a échoué."
-        : codeError === "MailError"
-          ? "Une erreur est survenue à l'envoie de la notification par mail. La déclaration a bien été enregistrée."
-          : `Une erreur inconnue est survenue lors de la transmission de la déclaration de séjour`;
+    let displayMessage: string;
+    if (codeError === "ValidationError") {
+      displayMessage =
+        (error as ApiError)?.data?.message ??
+        "Certaines informations de la déclaration sont invalides. Vérifiez les champs saisis puis réessayez.";
+    } else if (codeError === "SaveDeclarationError") {
+      displayMessage =
+        "Une erreur est survenue à l'enregistement de la déclaration. L'enregistrement a échoué.";
+    } else if (codeError === "MailError") {
+      displayMessage =
+        "Une erreur est survenue à l'envoie de la notification par mail. La déclaration a bien été enregistrée.";
+    } else {
+      displayMessage =
+        "Une erreur inconnue est survenue lors de la transmission de la déclaration de séjour";
+    }
 
     return toaster.error({
       titleTag: "h2",
