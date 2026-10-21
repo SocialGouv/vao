@@ -26,6 +26,10 @@ migrate-s3:
   vars:
     S3_BUCKET_ROOT_DIR: review-branch/{{ .Values.global.branchSlug32  }}/files
 
+cron:
+  vars:
+    S3_BUCKET_ROOT_DIR: review-branch/{{ .Values.global.branchSlug32  }}/files
+
 jobs:
   runs:
     migrations-db:

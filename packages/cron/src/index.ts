@@ -9,6 +9,8 @@ import { cronBlocageTemporaire3m } from "./blocageTemporaire3m/blocageTemporaire
 import { cronSuppressionCompteInactif } from "./suppressionCompteInactif/suppressionCompteInactif.cron";
 import { cronNotifyAgrementExpiration } from "./notifyAgrementExpiration/notifyAgrementExpiration.cron";
 import { cronUpdateAndNotifySva } from "./updateAndNotifySva/updateAndNotifySva.cron";
+import { cronMigrateFilesToS3 } from "./migrateFilesToS3/migrateFilesToS3.cron";
+import { poolDoc } from "./db/poolDoc";
 import { logger } from "./utils/logger";
 
 const startCrons = () => {
@@ -31,6 +33,8 @@ const startCrons = () => {
   cronNotifyAgrementExpiration().start();
   logger.info("cronUpdateAndNotifySva");
   cronUpdateAndNotifySva().start();
+  logger.info("cronMigrateFilesToS3");
+  cronMigrateFilesToS3().start();
   logger.info("Starting crons done");
 };
 
@@ -45,13 +49,14 @@ const stopCrons = () => {
   cronSuppressionCompteInactif().stop();
   cronNotifyAgrementExpiration().stop();
   cronUpdateAndNotifySva().stop();
+  cronMigrateFilesToS3().stop();
 };
 
 startCrons();
 
 const shutdown = async () => {
   stopCrons();
-  await pool.end();
+  await Promise.all([pool.end(), poolDoc.end()]);
   process.exit(0);
 };
 

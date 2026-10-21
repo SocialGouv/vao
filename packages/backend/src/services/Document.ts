@@ -216,6 +216,10 @@ export const createFile = async (
     log.i("createFile pg - Done");
     log.i("upload file to s3");
     await uploadToS3(filename, category, mimetype, userid, data, uuid);
+    await getPoolDoc().query(
+      `UPDATE doc.documents SET s3_uploaded_at = NOW() WHERE uuid = $1`,
+      [uuid],
+    );
     log.i("upload file to s3 - Done");
     return uuid;
   } catch (err) {

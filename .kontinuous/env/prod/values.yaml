@@ -53,6 +53,10 @@ migrate-s3:
   vars:
     S3_BUCKET_ROOT_DIR: prod/files
 
+cron:
+  vars:
+    S3_BUCKET_ROOT_DIR: prod/files
+
 frontend-usagers:
   autoscale:
     enabled: true

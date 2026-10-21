@@ -36,6 +36,10 @@ export class FileService {
     this.logger.log("File upload started", { userId });
     const uuid = await this.uploadFileToDB(file, userId);
     await this.uploadFileToS3(file, uuid, userId);
+    await this.db.query(
+      `UPDATE doc.documents SET s3_uploaded_at = NOW() WHERE uuid = $1`,
+      [uuid],
+    );
     this.logger.log("File upload ended", { userId });
     return uuid;
   }

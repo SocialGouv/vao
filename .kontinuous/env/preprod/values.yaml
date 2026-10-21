@@ -20,6 +20,10 @@ migrate-s3:
   vars:
     S3_BUCKET_ROOT_DIR: preprod/files
 
+cron:
+  vars:
+    S3_BUCKET_ROOT_DIR: preprod/files
+
 pgweb:
   ~chart: pgweb
   ~needs: [pg]

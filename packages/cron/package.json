@@ -30,6 +30,7 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "catalog:",
     "@sentry/cli": "^2.42.3",
     "@sentry/node": "^9.5.0",
     "@vao/shared-bridge": "workspace:^",
