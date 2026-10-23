@@ -1,4 +1,4 @@
-ARG NODE_VERSION=24.20.0-bookworm-slim
+ARG NODE_VERSION=24.22.1-bookworm-slim
 FROM node:${NODE_VERSION} AS builder
 
 RUN apt-get update \
