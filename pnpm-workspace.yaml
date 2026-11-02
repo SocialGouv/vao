@@ -21,7 +21,7 @@ catalog:
   "@vee-validate/rules": "~4.13.0"
   "@vue/test-utils": "^2.4.11"
   "@vueform/multiselect": "~2.6.7"
-  dayjs: "^1.11.13"
+  dayjs: "^1.11.23"
   debug: "^4.3.4"
   eslint: "^9.39.4"
   eslint-config-prettier: "^10.1.8"
