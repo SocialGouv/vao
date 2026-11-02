@@ -37,7 +37,7 @@ catalog:
   nuxt-security: "^2.6.0"
   ofetch: "^1.5.1"
   pinia: "^3.0.4"
-  pg: "^8.14.0"
+  pg: "^8.23.1"
   prettier: "^3.2.5"
   query-string: "^6.14.1"
   sass: "~1.79.3"

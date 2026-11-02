@@ -109,8 +109,8 @@ catalogs:
       specifier: ^1.5.1
       version: 1.5.1
     pg:
-      specifier: ^8.14.0
-      version: 8.16.0
+      specifier: ^8.23.1
+      version: 8.23.1
     pinia:
       specifier: ^3.0.4
       version: 3.0.4
@@ -306,7 +306,7 @@ importers:
         version: 9.0.2
       knex:
         specifier: 'catalog:'
-        version: 3.2.10(pg-query-stream@4.7.3(pg@8.16.0))(pg@8.16.0)
+        version: 3.2.10(pg-query-stream@4.7.3(pg@8.23.1))(pg@8.23.1)
       multer:
         specifier: 'catalog:'
         version: 2.1.1
@@ -318,7 +318,7 @@ importers:
         version: 0.2.18
       pg:
         specifier: 'catalog:'
-        version: 8.16.0
+        version: 8.23.1
       pg-format:
         specifier: ~1.0.4
         version: 1.0.4
@@ -369,8 +369,8 @@ importers:
         specifier: ^2.7.8
         version: 2.7.8
       '@types/pg':
-        specifier: ^8.15.5
-        version: 8.15.5
+        specifier: ^8.23.1
+        version: 8.23.1
       eslint:
         specifier: 'catalog:'
         version: 9.39.5(jiti@2.7.0)
@@ -421,7 +421,7 @@ importers:
         version: 8.0.9
       pg:
         specifier: 'catalog:'
-        version: 8.16.0
+        version: 8.23.1
       pino:
         specifier: ^9.6.0
         version: 9.6.0
@@ -445,8 +445,8 @@ importers:
         specifier: ^2.7.8
         version: 2.7.8
       '@types/pg':
-        specifier: ^8.15.5
-        version: 8.15.5
+        specifier: ^8.23.1
+        version: 8.23.1
       eslint:
         specifier: 'catalog:'
         version: 9.39.5(jiti@2.7.0)
@@ -521,7 +521,7 @@ importers:
         version: 4.3.1(@nestjs/common@10.4.22(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.22)(@nestjs/swagger@8.1.1(@nestjs/common@10.4.22(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@10.4.22)(reflect-metadata@0.2.2))(zod@3.24.2)
       pg:
         specifier: 'catalog:'
-        version: 8.16.0
+        version: 8.23.1
       pino-http:
         specifier: ^10.3.0
         version: 10.4.0
@@ -569,8 +569,8 @@ importers:
         specifier: ^20.3.1
         version: 20.19.19
       '@types/pg':
-        specifier: ^8.11.10
-        version: 8.15.5
+        specifier: ^8.23.1
+        version: 8.23.1
       '@types/supertest':
         specifier: ^7.2.0
         version: 7.2.0
@@ -860,13 +860,13 @@ importers:
         version: 4.4.3(supports-color@5.5.0)
       knex:
         specifier: 'catalog:'
-        version: 3.2.10(pg-query-stream@4.7.3(pg@8.16.0))(pg@8.16.0)
+        version: 3.2.10(pg-query-stream@4.7.3(pg@8.23.1))(pg@8.23.1)
       pg:
         specifier: 'catalog:'
-        version: 8.16.0
+        version: 8.23.1
       pg-query-stream:
         specifier: ^4.7.0
-        version: 4.7.3(pg@8.16.0)
+        version: 4.7.3(pg@8.23.1)
     devDependencies:
       '@eslint/eslintrc':
         specifier: 'catalog:'
@@ -2680,6 +2680,7 @@ packages:
   '@opentelemetry/sdk-trace-base@2.10.0':
     resolution: {integrity: sha512-GuYQQT7QD2EeO8lcZLRQzcbOyhqAzL+6WWTKTU9mSUBYBazkEDl+VrQcXQhbB08OWM9anD1aHleVadzulpOaUQ==}
     engines: {node: ^18.19.0 || >=20.6.0}
+    deprecated: Use @opentelemetry/sdk-trace package
     peerDependencies:
       '@opentelemetry/api': '>=1.3.0 <1.10.0'
 
@@ -3411,6 +3412,7 @@ packages:
   '@smithy/core@3.24.3':
     resolution: {integrity: sha512-Ep/7tPamGY8mgESE3LyLKtxJyy6U52WWAqr/3wial47Sj4u3PiIF73AOGI27UyLy9duTkhZbgzodOfLV4TduZg==}
     engines: {node: '>=18.0.0'}
+    deprecated: Deprecated due to a bug in custom logger data redaction. See https://github.com/aws/aws-sdk-js-v3/issues/8393.
 
   '@smithy/credential-provider-imds@4.3.3':
     resolution: {integrity: sha512-I2Bti0DKFo2IJyN28ijCsx51BAumEYR4/1yZ1FXyBygy9MqbnMqCev4JPth/MbpRfBSRAX35hITSnAdJRo1u5w==}
@@ -3634,8 +3636,8 @@ packages:
   '@types/pg-format@1.0.5':
     resolution: {integrity: sha512-i+oEEJEC+1I3XAhgqtVp45Faj8MBbV0Aoq4rHsHD7avgLjyDkaWKObd514g0Q/DOUkdxU0P4CQ0iq2KR4SoJcw==}
 
-  '@types/pg@8.15.5':
-    resolution: {integrity: sha512-LF7lF6zWEKxuT3/OR8wAZGzkg4ENGXFNyiV/JeOt9z5B+0ZVwbql9McqX5c/WStFq1GaGso7H1AzP/qSzmlCKQ==}
+  '@types/pg@8.23.1':
+    resolution: {integrity: sha512-fKVHpikPdg4GKks3JuLEhvwSyvwzF23hnabPy6DD8ljVbC7+6J5dQzdv4arV6jqq57djnMgs1HKBxX4P8aBI3A==}
 
   '@types/qs@6.9.18':
     resolution: {integrity: sha512-kK7dgTYDyGqS+e2Q4aK9X3D7q234CIZ1Bv0q/7Z5IwRDoADNU81xXJK/YVyLbLTZCoIwUoDoffFeF+p/eIklAA==}
@@ -5002,6 +5004,7 @@ packages:
 
   crypto-js@4.2.0:
     resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+    deprecated: Active development of CryptoJS has been discontinued. This library is no longer maintained.
 
   css-select@6.0.0:
     resolution: {integrity: sha512-rZZVSLle8v0+EY8QAkDWrKhpgt6SA5OtHsgBnsj6ZaLb5dmDVOWUDtQitd9ydxxvEjhewNudS6eTVU7uOyzvXw==}
@@ -6124,7 +6127,7 @@ packages:
   git-raw-commits@4.0.0:
     resolution: {integrity: sha512-ICsMM1Wk8xSGMowkOmPrzo2Fgmfo4bMHLNX6ytHjajRJUqvHOw/TFapQ+QG75c3X/tTDDhOSRPGC52dDbNM8FQ==}
     engines: {node: '>=16'}
-    deprecated: This package is no longer maintained. For the JavaScript API, please use @conventional-changelog/git-client instead.
+    deprecated: Deprecated and no longer maintained. Use @conventional-changelog/git-client instead.
     hasBin: true
 
   gl-matrix@3.4.4:
@@ -7897,14 +7900,14 @@ packages:
   performance-now@2.1.0:
     resolution: {integrity: sha512-7EAHlyLHI56VEIdK57uwHdHKIaAGbnXPiw0yWbarQZOKaKpvUIgW0jWRVLiatnM+XXlSwsanIBH/hzGMJulMow==}
 
-  pg-cloudflare@1.2.5:
-    resolution: {integrity: sha512-OOX22Vt0vOSRrdoUPKJ8Wi2OpE/o/h9T8X1s4qSkCedbNah9ei2W2765be8iMVxQUsvgT7zIAT2eIa9fs5+vtg==}
+  pg-cloudflare@1.4.1:
+    resolution: {integrity: sha512-6PQbsFWZcp9EmJEwy5cGQ2La+AMWpP46lgbb8X+U/XsHIUweYDNCpeuKck5RxL2MdVFi7krbbEi5nX4Zh7JhrQ==}
+
+  pg-connection-string@2.14.1:
+    resolution: {integrity: sha512-qR3kGNPBLpCNtz0evbKA0Y/MRFXwSSdT+pTJvYp/bXTcReZbvX1kzF0IyTc1QnxqF7AZbOeBhNL8R5mYQZV/MA==}
 
   pg-connection-string@2.6.2:
     resolution: {integrity: sha512-ch6OwaeaPYcova4kKZ15sbJ2hKb/VP48ZD2gE7i1J+L4MspCtBMAx8nMgz7bksc7IojCIIWuEhHibSMFH8m8oA==}
-
-  pg-connection-string@2.9.0:
-    resolution: {integrity: sha512-P2DEBKuvh5RClafLngkAuGe9OUlFV7ebu8w1kmaaOgPcpJd1RIFh7otETfI6hAR8YupOLFTY7nuvvIn7PLciUQ==}
 
   pg-cursor@2.12.3:
     resolution: {integrity: sha512-2koS4+f+oCJnJ6pTdUlp3TkwOCjlPr9lmwcTDPeXZv3eiXDCxZeBC7T0+LldA9+mhqdcO8WDqbuFfdFEJm9YLw==}
@@ -7919,13 +7922,16 @@ packages:
     resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
     engines: {node: '>=4.0.0'}
 
-  pg-pool@3.10.0:
-    resolution: {integrity: sha512-DzZ26On4sQ0KmqnO34muPcmKbhrjmyiO4lCCR0VwEd7MjmiKf5NTg/6+apUEu0NF7ESa37CGzFxH513CoUmWnA==}
+  pg-pool@3.14.0:
+    resolution: {integrity: sha512-gKtPkFdQPU3DksooVLi9LsjZxrsBUZIpa+7aVx+LV5pNh0KzP4Zleud2po+ConrxbuXGBJ6Hfer6hdgpIBpBaw==}
     peerDependencies:
       pg: '>=8.0'
 
   pg-protocol@1.10.0:
     resolution: {integrity: sha512-IpdytjudNuLv8nhlHs/UrVBhU0e78J0oIS/0AVdTbWxSOkFUVdsHC/NrorO6nXsQNDTT1kzDSOMJubBQviX18Q==}
+
+  pg-protocol@1.16.1:
+    resolution: {integrity: sha512-p9VOFMiHB/ZbJATetbg+99PxssTVSQRnyuPSQ67mN1+1KBOjZaZ83ZQzltnxPhJwSsC3nwVjJ10DVJlerbFzLg==}
 
   pg-query-stream@4.7.3:
     resolution: {integrity: sha512-WvsdwYXrvIXNZJflX/2MEQLjKs5TopZWeiyam1zcaFfhwQtL19ENOvGdzVsihGsbsNGdVRU5yiqg2G5p06UAbg==}
@@ -7936,9 +7942,9 @@ packages:
     resolution: {integrity: sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==}
     engines: {node: '>=4'}
 
-  pg@8.16.0:
-    resolution: {integrity: sha512-7SKfdvP8CTNXjMUzfcVTaI+TDzBEeaUnVwiVGZQD1Hh33Kpev7liQba9uLd4CfN8r9mCVsD0JIpq03+Unpz+kg==}
-    engines: {node: '>= 8.0.0'}
+  pg@8.23.1:
+    resolution: {integrity: sha512-aL96AHANtWjPLDOLqnhx+ngp9+UK7ETEU8VJrDCGvsSSi/mGLcWYsS6Herg7lmaBJe4uwrfqsa7gTEFaSizDoQ==}
+    engines: {node: '>= 16.0.0'}
     peerDependencies:
       pg-native: '>=3.0.1'
     peerDependenciesMeta:
@@ -13803,7 +13809,7 @@ snapshots:
 
   '@types/pg-format@1.0.5': {}
 
-  '@types/pg@8.15.5':
+  '@types/pg@8.23.1':
     dependencies:
       '@types/node': 20.19.19
       pg-protocol: 1.10.0
@@ -17963,7 +17969,7 @@ snapshots:
 
   klona@2.0.6: {}
 
-  knex@3.2.10(pg-query-stream@4.7.3(pg@8.16.0))(pg@8.16.0):
+  knex@3.2.10(pg-query-stream@4.7.3(pg@8.23.1))(pg@8.23.1):
     dependencies:
       colorette: 2.0.19
       commander: 10.0.1
@@ -17980,8 +17986,8 @@ snapshots:
       tarn: 3.0.2
       tildify: 2.0.0
     optionalDependencies:
-      pg: 8.16.0
-      pg-query-stream: 4.7.3(pg@8.16.0)
+      pg: 8.23.1
+      pg-query-stream: 4.7.3(pg@8.23.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -19461,31 +19467,33 @@ snapshots:
 
   performance-now@2.1.0: {}
 
-  pg-cloudflare@1.2.5:
+  pg-cloudflare@1.4.1:
     optional: true
+
+  pg-connection-string@2.14.1: {}
 
   pg-connection-string@2.6.2: {}
 
-  pg-connection-string@2.9.0: {}
-
-  pg-cursor@2.12.3(pg@8.16.0):
+  pg-cursor@2.12.3(pg@8.23.1):
     dependencies:
-      pg: 8.16.0
+      pg: 8.23.1
 
   pg-format@1.0.4: {}
 
   pg-int8@1.0.1: {}
 
-  pg-pool@3.10.0(pg@8.16.0):
+  pg-pool@3.14.0(pg@8.23.1):
     dependencies:
-      pg: 8.16.0
+      pg: 8.23.1
 
   pg-protocol@1.10.0: {}
 
-  pg-query-stream@4.7.3(pg@8.16.0):
+  pg-protocol@1.16.1: {}
+
+  pg-query-stream@4.7.3(pg@8.23.1):
     dependencies:
-      pg: 8.16.0
-      pg-cursor: 2.12.3(pg@8.16.0)
+      pg: 8.23.1
+      pg-cursor: 2.12.3(pg@8.23.1)
 
   pg-types@2.2.0:
     dependencies:
@@ -19495,15 +19503,15 @@ snapshots:
       postgres-date: 1.0.7
       postgres-interval: 1.2.0
 
-  pg@8.16.0:
+  pg@8.23.1:
     dependencies:
-      pg-connection-string: 2.9.0
-      pg-pool: 3.10.0(pg@8.16.0)
-      pg-protocol: 1.10.0
+      pg-connection-string: 2.14.1
+      pg-pool: 3.14.0(pg@8.23.1)
+      pg-protocol: 1.16.1
       pg-types: 2.2.0
       pgpass: 1.0.5
     optionalDependencies:
-      pg-cloudflare: 1.2.5
+      pg-cloudflare: 1.4.1
 
   pgpass@1.0.5:
     dependencies:
