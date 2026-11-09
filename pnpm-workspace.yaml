@@ -19,7 +19,7 @@ catalog:
   "@sentry/vue": "~8.54.0"
   "@vee-validate/i18n": "~4.13.0"
   "@vee-validate/rules": "~4.13.0"
-  "@vue/test-utils": "^2.4.11"
+  "@vue/test-utils": "^2.5.1"
   "@vueform/multiselect": "~2.6.7"
   dayjs: "^1.11.13"
   debug: "^4.3.4"
