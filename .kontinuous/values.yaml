@@ -13,6 +13,8 @@ pg:
       oblik.socialgouv.io/enabled: "false"
 
 maildev:
+  labels:
+    oblik.socialgouv.io/enabled: "false"
   resources:
     requests:
       cpu: 100m
