@@ -12,6 +12,15 @@ pg:
     clusterExtraLabels:
       oblik.socialgouv.io/enabled: "false"
 
+maildev:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 250Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
 external-api:
   ~chart: app
   ~needs: [migrations-db, init-db]
